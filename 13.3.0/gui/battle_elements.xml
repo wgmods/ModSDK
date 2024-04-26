@@ -1,0 +1,128 @@
+<battle_elements.xml>
+<!--
+	enabled - false, if component is disabled
+	autoPerfTest - false, if component doesn't need to be draw-performance-auto-tested 
+	autoPerfTestGroup - group name if component is in group for draw-performance-auto-tested
+	
+	this file is beeing used by:		
+		\tools\wows_ui_tools\auto_draw_perf_test\generate_elements_list.py
+-->
+	<elementList forceHideAll="false">
+		<element name="ubBinoculars" class="lesta.unbound2.UbElement" elementName="BinocularsBackground" url="crosshairs.swf" autoPerfTestGroup="binoculars">
+			<properties hitTest = "false"/>
+		</element>
+		<element name="ubFullScreenEffects" class="lesta.unbound2.UbElement" elementName="FullScreenEffectsContainer" autoPerfTestGroup="fullscreen_effect">
+			<properties hitTest = "false"/>
+		</element>
+		<element name="ubMarkersContainer" class="lesta.unbound2.UbElement" elementName="MarkersContainer" url="gui_slots.swf,scenario_markers.swf" autoPerfTestGroup="markers">
+			<properties hitTest = "true"/>
+		</element>
+
+		<element name="unboundPOIIndicators" class="lesta.unbound2.UbElement" elementName="POIIndicatorsContainer" autoPerfTestGroup="poi_indicators">
+			<properties hitTest = "false"/>
+		</element>
+
+		<element name="unboundShipStateBars" class="lesta.unbound2.UbElement" elementName="OwnShipHealth" autoPerfTestGroup="shipInfo">
+			<properties hitTest = "true"/>
+		</element>
+
+		<element name="ubIndicatorSpeed" class="lesta.unbound2.UbElement" elementName="SpeedControl" autoPerfTestGroup="indicator_speed">
+			<properties hitTest = "false"/>
+		</element>
+
+		<element name="logEvent" class="EventLog" url="central_feedback.swf" autoPerfTestGroup="danger_indicators">
+			<properties itemRendererName="[MessageListItemRendererForVictoryPointLogs,MessageListItemRendererForVictoryPointKillsLog,MessageListItemRendererForTeamkillEvent,MessageListItemRendererForThirdParty,MessageListItemRendererWithStatus]"
+						antiSpam="true" blinkTimer="0" enabled="true"
+						listItemRendererDethTime="3" listItemRendererLifeTime="12000"
+						messageBufferLength="1" messageBufferOverflowDeathTime="1"
+						scrollBarStep="1" scrollPosition="left" textDisplayFlow="bottom-up" tweenTime="0.3"
+						tweenListItemRenderer="true" hasSubstitution="true" lineSpacing="0" width="600"/>
+			<fixedRect x="0" y="0" width="600" height="79"/>
+		</element>
+
+		<element name="smokeIndicator" class="SmokeIndicator" url="central_feedback.swf" autoPerfTestGroup="danger_indicators">
+			<fixedRect x="0" y="0" width="70" height="70"/>
+		</element>
+
+		<element name="compass" class="lesta.unbound2.UbElement" elementName="CompassContainer" url="ship_doll.swf" autoPerfTestGroup="indicator_compass" enabled="true">
+			<properties hitTest = "false"/>
+		</element>
+
+		<element name="fpsPanel" class="lesta.unbound2.UbElement" elementName="FpsPanel" autoPerfTestGroup="header_texts">
+			<properties hitTest = "false"/>
+		</element>
+
+		<element name="observedPlayerLabel" class="lesta.unbound2.UbElement" elementName="UbObservedPlayerLabel" autoPerfTestGroup="header_texts"/>
+
+		<element name="dangerousStateIndicator" class="DangerousStateIndicatorClip" url="central_feedback.swf" autoPerfTestGroup="danger_indicators">
+			<fixedRect x="0" y="0" width="70" height="70"/>
+		</element>
+
+		<element name="localWeatherIndicator" class="LocalWeatherIndicatorClip" url="central_feedback.swf" autoPerfTestGroup="danger_indicators">
+			<fixedRect x="0" y="0" width="70" height="70"/>
+		</element>
+
+		<element name="crosshairFull" class="lesta.unbound2.UbElement" elementName="CrosshairContainer" url="crosshair_screen.swf,crosshair_info.swf,gun_marker.swf" autoPerfTestGroup="crosshair">
+			<properties hitTest = "false"/>
+		</element>
+
+		<element name="tacticalMapHelp" class="lesta.unbound2.UbElement" elementName="TacticalMapHelpElement" autoPerfTestGroup="tactical_map"/>
+
+		<element name="flyOffDamage" class="FlyOffDamageClip" url="flyoffdamage.swf" autoPerfTestGroup="flyoff_damage">
+			<fixedRect x="0" y="0" width="1" height="1"/>
+		</element>
+
+		<element name="tacticalMap" class="lesta.unbound2.UbElement" elementName="TacticalMapTextGridContainer" autoPerfTestGroup="tactical_map"/>
+
+		<element name="tasksContainer" class="flash.display.Sprite" url="task_manager.swf" autoPerfTestGroup="pve_progress">
+			<properties x='9' y='18' />
+		</element>
+
+		<element name="mainHud" class="lesta.unbound2.UbElement" elementName="MainHud" url="main_hud.swf,central_feedback.swf,minimap.swf" autoPerfTestGroup="header">
+			<properties hitTest = "true"/>
+		</element>
+
+		<element name="ubMainHudPC" class="lesta.libs.unbound.UnboundElement" autoPerfTestGroup="header">
+			<properties rootElementId='MainHUDPCContainer' hitTest = "true"/>
+		</element>
+
+		<element name="ubExpectedAction" class="lesta.unbound2.UbElement" elementName="TutorialContextHintsContainer" autoPerfTestGroup="header_texts">
+			<properties hitTest = "false"/>
+		</element>
+
+		<element name="ubStatsPanel" class="lesta.libs.unbound.UnboundElement" autoPerfTestGroup="header_texts">
+			<properties rootElementId='BattleStats' hitTest = "true"/>
+		</element>
+
+		<element name="ubQuickCommandsPanel" class="lesta.unbound2.UbElement" elementName="ModalQuickCommandsFullscreenContainer" url="quick_commands.swf" autoPerfTestGroup="quick_commands">
+			<properties hitTest = "true"/>
+		</element>
+
+		<element name="ubQuickCommandsPanelMini" class="lesta.unbound2.UbElement" elementName="ModalWindowQuickCommandsSmallContainer" url="quick_commands.swf" autoPerfTestGroup="quick_commands">
+			<properties hitTest = "true"/>
+		</element>
+
+		<element name="ubEventIngameBattleResults" class="lesta.unbound2.UbElement" elementName="EventIngameBattleResultsContainer" autoPerfTestGroup="pve_progress">
+			<properties hitTest = "true"/>
+		</element>
+
+		<element name="ubHUDModalWindowsContainer" class="lesta.unbound2.UbElement" elementName="HUDModalWindowsContainer" url="main_hud.swf,central_feedback.swf,minimap.swf" autoPerfTestGroup="header">
+			<properties hitTest = "true"/>
+		</element>
+
+	</elementList>
+	
+	<controllers>
+		<controller class="lesta.dialogs.battle_window_controllers.IndicatorsController"
+					clips="logEvent,smokeIndicator,dangerousStateIndicator,localWeatherIndicator"/>
+
+		<controller class="lesta.dialogs.battle_window_controllers.FlyOffMessageController" clips="flyOffDamage"/>
+
+		<controller class="lesta.dialogs.battle_window_controllers.BattleTasksController" clips="tasksContainer"/>
+		
+		<controller class="lesta.dialogs.battle_window_controllers.UnboundElementController" clips="ubMainHudPC"/>
+		<controller class="lesta.dialogs.battle_window_controllers.StatsPanelController" clips="ubStatsPanel"/>
+
+	</controllers>
+
+</battle_elements.xml>

@@ -1,0 +1,409 @@
+(def constant WGNC_RENDER_ITEM_LIST	{	CC.sysMessageImage:					'WGNCMessageImageBanner',
+										CC.sysMessageHeader:				'WgncHeaderElement',
+										CC.wgncMessageTimeLeftInfo:			'WgncTimerElement',
+										CC.sysMessageDescription:			'WgncDescriptionElement',
+										CC.sysMessageHTMLDescription:		'WgncHtmlDescriptionElement',
+										CC.sysMessageButtons:				'WgncMessageButtonContainer',
+										CC.dataComponent:					'WgncAbuseMessage'
+									})
+
+(def constant WGNC_MESSAGE_WIDTH 400)
+(def constant WGNC_BANNER_IMAGE_HEIGHT 225)
+
+(def element WgncMessageContainer () layout=true dispatch_size_change=true
+	(scope
+		(event evRadioButtonSelected)
+		(event evRemovedWgncMessage)
+
+		(event evStartShow)
+		(event evStartHide)
+
+		(var wgncTooltipStateEntity:gfx = "$datahub.getSingleEntity(CC.wgncTooltipState)")
+		(var isWgncMessageVisible:bool = "wgncTooltipStateEntity.wgncTooltipState.isVisible" (event "wgncTooltipStateEntity.wgncTooltipState.evIsVisibleChanged"))
+
+		(var wgncMessageCollection:gfx = "$datahub.getCollection(CC.wgncSysMsgToBeRendered).getChildByPath('reversed')")
+		(var wgncMessageArray:array = "wgncMessageCollection ? wgncMessageCollection.items : []" (event "wgncMessageCollection.evAdded") (event "evRemovedWgncMessage"))
+		(var hasManyMessages:bool = "wgncMessageArray.length > 1")
+
+		(var lastItemIndex:number = "wgncMessageArray.length > 0 ? wgncMessageArray.length - 1 : 0")
+		(var selectedIndex:number = "0")
+		
+		(bind selectedIndex "0" init=false watch=false (event "wgncMessageCollection.evAdded"))
+		(bind selectedIndex "$event.index" init=false watch=false (event "evRadioButtonSelected"))
+		(bind selectedIndex "selectedIndex > lastItemIndex ? lastItemIndex : selectedIndex" init=false watch=false (event "evRemovedWgncMessage"))
+
+		
+		(var wgncMessageArrayLength:number = "wgncMessageCollection.items.length" (event "wgncMessageCollection.evAdded") (event "wgncMessageCollection.evRemoved"))
+		(var isNotLastElement:bool = "wgncMessageArrayLength < wgncMessageArray.length && wgncMessageArrayLength > 0")
+		
+	)
+	(style (width = "WGNC_MESSAGE_WIDTH"))
+
+	
+	(dispatch evRemovedWgncMessage init=false watch=false (bind trigger "wgncMessageArrayLength") (bind enabled "isNotLastElement"))
+	
+
+	
+	(block
+		(dispatch evStartShow dir="EventDirection.DOWN" init=false watch=false (bind enabled "isWgncMessageVisible")	(bind trigger "isWgncMessageVisible"))
+		(dispatch evStartHide dir="EventDirection.DOWN" init=false watch=false (bind enabled "!isWgncMessageVisible")	(bind trigger "isWgncMessageVisible"))
+		
+		(class $FullsizeAbsolute)
+		(style (hitTest = false) (padding = -2px))
+		
+		(element InfotipSystemBlur)
+		(block
+			(class $FullsizeAbsolute)
+			(style (backgroundImage = "'url:../service_kit/panel_backgrounds/infotip_panel.png'") (scale9grid = 3))
+		)
+	)
+
+	
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='WgncMessageContent'
+			(bind enabled "wgncMessageArray.length")
+			(bindcall recreate (bind trigger "wgncMessageArray[selectedIndex]"))
+			(args
+				_wgncEntity = "wgncMessageArray[selectedIndex]"
+			)
+		)
+	)
+
+	
+	(block
+		(style
+			(width = "100%")
+			(alpha = "hasManyMessages ? 1 : 0")
+			(ubScaleY = "hasManyMessages ? 1 : 0")
+			(bind hitTest "hasManyMessages")
+		)
+		(block
+			(class $FullsizeAbsolute)
+			(isMask = true)
+			(style (backgroundColor = 0xFFFFFFFF))
+		)
+
+		(controller $Animation
+			(bindcall play to="{alpha:0}" duration=0.1 easing="Easing.line" action="kill" (bind enabled "!hasManyMessages"))
+			(bindcall play to="{alpha:1}" duration=0.1 easing="Easing.line" action="kill" (bind enabled "hasManyMessages"))
+		)
+		(controller $Animation
+			(bindcall play to="{ubScaleY:0, visible:false}" delay=0.15 duration=0.3 easing="Easing.quint_out" action="kill" (bind enabled "!hasManyMessages"))
+			(bindcall play to="{ubScaleY:1, visible:true}" duration=0.3 easing="Easing.quint_out" action="kill" (bind enabled "hasManyMessages"))
+		)
+
+		(element HorizontalDividerTwoPx)
+		(element WgncMessageRadioButtonContainer
+			_count = "wgncMessageArray.length"
+			_selectedIndex = "selectedIndex"
+		)
+	)
+)
+
+(def element WgncMessageContent (_wgncEntity:gfx) layout=true
+	(scope
+		(var contentEntitiesIds:array = "_wgncEntity ? _wgncEntity.sysMessageCore.contentEntitiesIds : []" (event "_wgncEntity.sysMessageCore.evContentEntitiesIdsChanged"))
+	)
+	(style (width = 100%))
+	(controller $Repeat renderer = 'WgncMessageItem'
+		(bind count "contentEntitiesIds.length")
+		(args
+			_contentEntitiesIds = "contentEntitiesIds"
+		)
+	)
+)
+
+
+(def element WgncMessageItem (_contentEntitiesIds:array) layout=true 
+	(scope
+		(var wgncMessageItemEntity:gfx = "$datahub.getEntity(_contentEntitiesIds[$index])")
+		(var wgncMessageContentType:number = "wgncMessageItemEntity.sysMessageContentType.contentType")
+		(var renderElement:str = "WGNC_RENDER_ITEM_LIST[wgncMessageContentType]")
+
+		(var wgncMessageContentComponent:gfx = "wgncMessageItemEntity.getComponent(wgncMessageContentType)")
+	)
+	(style (width = 100%))
+
+	(controller $Instance
+		(bind renderer "renderElement")
+		(args
+			_contentComponent = "wgncMessageContentComponent"
+		)
+	)
+)
+
+
+(def element WgncHeaderElement (_contentComponent:gfx) layout=true
+	(scope
+		(var title:str = "_contentComponent.header" (event "_contentComponent.evChanged"))
+	)
+	(style
+		(width = "100%")
+		(paddingTop = "M")
+		(paddingLeft = "M")
+		(paddingRight = "SXS")
+		(hitTest = "false")
+	)
+
+	(tf
+		(style (width = "100%") (leading = "-4") (alpha = "TA"))
+		(class $TextDefaultBold21NM)
+		(bind text "title")
+	)
+)
+
+
+(def element WgncTimerElement (_contentComponent:gfx) layout=true
+	(scope
+		(var timestamp:number = "_contentComponent.timestamp" (event "_contentComponent.evChanged"))
+		(var textLine:str = "_contentComponent.textLine" (event "_contentComponent.evChanged"))
+		(var zeroTextLine:str = "_contentComponent.zeroTextLine" (event "_contentComponent.evChanged"))
+		(var unifiedStatus:str = "_contentComponent.unifiedStatus" (event "_contentComponent.evChanged"))
+
+		(macro SERVER_TIME_SCOPE)
+		(var timeLeft:number = "timestamp - serverTime")
+		(var isOneHourLeft:bool = "timeLeft < HOUR_IN_SEC")
+		(var isMoreThanThreeDaysLeft:bool = "timeLeft > (DAY_IN_SEC * 3)")
+		(var timeLeftFormat:str = "formatTime(timeLeft, isMoreThanThreeDaysLeft	? 'HIGHESTDAYS' : 
+																isOneHourLeft	? 'mm:ss' 
+																				: 'HH:mm:ss')")
+
+		(var timerText:str = "timeLeft >= 0	?	textLine	?	subst(textLine, [], { _timeLeft: timeLeftFormat })
+															:	timeLeftFormat
+											: zeroTextLine")
+	)
+	(style
+		(width = "100%")
+		(paddingTop = "SXS")
+		(paddingLeft = "M")
+		(paddingRight = "SXS")
+		(hitTest = "false")
+	)
+
+	(element TooltipSystemStatusLine
+		_unifiedStatus = "timeLeft <= 0 ? SC.Ui_styles.UNIFIED_STATUS.DATE : unifiedStatus"
+		_text = "timerText"
+	)
+)
+
+
+(def element WgncDescriptionElement (_contentComponent:gfx) layout=true
+	(scope
+		(var description:str = "_contentComponent.description" (event "_contentComponent.evChanged"))
+	)
+	(style
+		(width = "100%")
+		(paddingTop = "M")
+		(paddingLeft = "M")
+		(paddingRight = "SXS")
+		(hitTest = "false")
+	)
+	(element TooltipSystemDescriptionText
+		_descriptionText = "description"
+	)
+)
+
+
+(def element WgncHtmlDescriptionElement (_contentComponent:gfx) layout=true
+	(scope
+		(var description:str = "_contentComponent.description" (event "_contentComponent.evChanged"))
+	)
+	(style
+		(width = "100%")
+		(paddingTop = "M")
+		(paddingLeft = "M")
+		(paddingRight = "SXS")
+		(hitTest = "false")
+	)
+	(element TooltipSystemHtmlDescriptionText
+		_descriptionText = "description"
+	)
+)
+
+
+(def element WgncMessageButtonContainer (_contentComponent:gfx) layout=true
+	(scope
+		(var buttons:array = "_contentComponent.buttons" (event "_contentComponent.evButtonsChanged"))
+	)
+	(style
+		(width = "100%")
+		(flow = "horizontal")
+		(align = "center")
+		(paddingLeft = "M")
+		(paddingRight = "M")
+		(paddingTop = "L")
+		(paddingBottom = "M")
+	)
+	
+	(block
+		(style (bind marginRight "buttons.length > 1 ? S : 0"))
+		(controller $Instance renderer='DefaultButton'
+			(bind enabled "buttons.length > 0")
+			(args
+				_name = "buttons[0].name"
+				_enabled = "buttons[0].enabled"
+				_type = "buttons[0].type"
+				_isExternal = "buttons[0].isExternal"
+				_width = "buttons.length == 1 ? 370: 180"
+				_label = "buttons[0].label"
+				_methods = "buttons[0].methods"
+			)
+		)
+	)
+
+	(block
+		(controller $Instance renderer='DefaultButton'
+			(bind enabled "buttons.length > 1")
+			(args
+				_name = "buttons[1].name"
+				_enabled = "buttons[1].enabled"
+				_type = "buttons[1].type"
+				_isExternal = "buttons[1].isExternal"
+				_width = "180"
+				_label = "buttons[1].label"
+				_methods = "buttons[1].methods"
+			)
+		)
+	)
+)
+
+
+(def element WGNCMessageImageBanner (_contentComponent:gfx) layout=true
+	(scope
+		(var imageUrl:str = "_contentComponent.url")
+
+		(var byteArrayCollection:gfx = "$datahub.getCollection(CC.byteArrayData)")
+		(var byteArrayEntity:gfx = "$datahub.getPrimaryEntity(CC.byteArrayData, imageUrl)" (event "byteArrayCollection.evAdded"))
+		(var byteArrayComponent:gfx = "byteArrayEntity ? byteArrayEntity.byteArrayData : null")
+	)
+	(style
+		(width = "WGNC_MESSAGE_WIDTH")
+		(height = "WGNC_BANNER_IMAGE_HEIGHT")
+		(backgroundSize = "fill")
+		(bind backgroundImage "byteArrayComponent.data")
+		(hitTest = "false")
+	)
+)
+
+(def element WgncTimeLeftInfo (_contentComponent:gfx) layout=true
+	(style (width = "100%") (hitTest = "false"))
+	(name = 'SystemNotificationTimeLeftInfo')
+	(controller $Instance renderer='TooltipSystemTimeLeftStatusLine'
+		(bind enabled "_contentComponent")
+		(args
+			_timeLeftTimeStamp = "_contentComponent.timestamp"
+			_substTextIDS = "_contentComponent.textLine"
+			_zeroTimeTextIDS = "_contentComponent.zeroTextLine"
+		)
+	)
+)
+
+
+(def element WgncMessageRadioButtonContainer (_count:number, _selectedIndex:number) layout=true
+	(style
+		(width = "100%")
+		(flow = "tile_horizontal")
+		(align = "center|middle")
+		(paddingLeft = "S")
+		(paddingRight = "S")
+		(paddingTop = "SXS")
+		(paddingBottom = "SXS")
+	)
+
+	(controller $Repeat renderer='RadioButton'
+		(bind count "_count > 1 ? _count : 2")
+		(args
+			_isSelected = "_selectedIndex == $index"
+			_dispatchedEv = 'evRadioButtonSelected'
+			_dispatchParams = "{ index: $index }"
+		)
+	)
+)
+
+
+(def element WgncAbuseMessage (_contentComponent:gfx) layout=true
+	(scope
+		(var data:dict = "_contentComponent.data" (event "_contentComponent.evDataChanged"))
+		(var abuseStatus:number = "'status' in data ? data.status : SC.Common.ABUSE_STATUS.NORMAL")
+
+		(var abuseStatusStr:str = "	abuseStatus == SC.Common.ABUSE_STATUS.NORMAL	? SC.Common.ABUSE_STATUS.NAMES.NORMAL :
+									abuseStatus == SC.Common.ABUSE_STATUS.SUSPECT	? SC.Common.ABUSE_STATUS.NAMES.SUSPECT
+																					: SC.Common.ABUSE_STATUS.NAMES.CONFIRMED")
+		
+		(var headerUnifiedStatus:str = "abuseStatus == SC.Common.ABUSE_STATUS.NORMAL	? SC.Ui_styles.UNIFIED_STATUS.ABUSE_NORMAL :
+										abuseStatus == SC.Common.ABUSE_STATUS.SUSPECT	? SC.Ui_styles.UNIFIED_STATUS.ABUSE_SUSPECT
+																						: SC.Ui_styles.UNIFIED_STATUS.ABUSE_CONFIRMED")
+		(var battlesToClean:number = "'battlesToClean' in data ? data.battlesToClean : 0")
+		
+		(var abuseReasonMessageCollection:gfx = "$datahub.getCollection(CC.abuseStatus).getChildByPath('byStatus.' + SC.Common.ABUSE_STATUS.SUSPECT)")
+		(var abuseReasonMessageArray:array = "abuseReasonMessageCollection ? abuseReasonMessageCollection.items : []" (event "abuseReasonMessageCollection.evAdded") (event "abuseReasonMessageCollection.evRemoved"))
+	)
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "headerUnifiedStatus" "'headerTextColor'" "'headerTextAlpha'")
+	(bind name "'AbuseWarningContainer_' + abuseStatus")
+
+	(style
+		(width = "100%")
+		(paddingLeft = "M")
+		(paddingRight = "M")
+		(paddingTop = "M")
+		(hitTest = false)
+	)
+	
+	(tf
+		(style (width = "100%") (leading = "-4") (bind textColor "headerTextColor") (marginBottom = "M"))
+		(class $TextDefaultBold21NM)
+		(bind alpha "headerTextAlpha")
+
+		(bind text "'IDS_SYS_MSG_ABUSE_STATUS_CHANGED_' + abuseStatus")
+	)
+
+	(block
+		(bind visible "abuseStatus != SC.Common.ABUSE_STATUS.NORMAL")
+		(style (width = 100%) (marginLeft = "XS") (marginBottom = "XS"))
+
+		(controller $Repeat renderer='AbuseReasonMessage'
+			(bind count "abuseReasonMessageArray.length")
+			(args
+				_abuseStatusEntity = "abuseReasonMessageArray[$index]"
+			)
+		)
+	)
+
+	(tf
+		(bind visible "abuseStatus == SC.Common.ABUSE_STATUS.CONFIRMED")
+		(class $TextDefaultNM)
+		(style (width = 100%) (marginBottom = "SXS") (alpha = "TA"))
+		(bind text "tr('IDS_ABUSE_STATUS_' + abuseStatusStr + '_PUNISHMENT')")
+	)
+
+	(tf
+		(bind visible "abuseStatus == SC.Common.ABUSE_STATUS.SUSPECT")
+		(class $TextDefaultNM)
+		(style (width = 100%) (marginBottom = "SXS") (alpha = "TA"))
+		(text ="'IDS_ABUSE_STATUS_SUSPECT_INFO'")
+	)
+
+	(block
+		(style (width = 100%) (flow = "horizontal"))
+		(tf
+			(style (alpha = "TA"))
+			(class $TextDefaultNM)
+			(bind text "tr('IDS_ABUSE_' + abuseStatusStr + '_STATUS_CLEAN_COLON')")
+		)
+		(tf
+			(class $TextDefaultBoldNM)
+			(style (alpha = "TA") (marginLeft = "5px"))
+			(bind text "battlesToClean")
+		)
+	)
+)
+
+(def element AbuseReasonMessage (_abuseStatusEntity:gfx) layout=true
+	(style (width = 100%))
+	(tf	
+		(class $TextDefaultNM)
+		(style (width = 100%) (marginBottom = "S") (alpha = "TA"))
+		(bind text "tr('IDS_ABUSE_REASON_' + toUpper(_abuseStatusEntity.abuseStatus.reason))")
+	)
+)

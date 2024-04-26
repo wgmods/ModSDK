@@ -1,0 +1,296 @@
+(def constant QUICK_COMMANDS_NEAR_SLOTS_COUNT 8)
+(def constant QUICK_COMMANDS_FAR_SLOTS_COUNT 4)
+
+(def element ModalQuickCommandsFullscreenContainer () layout=true
+	(scope
+		(var avatar:gfx =  "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var healthComponent:gfx = "avatar.health")
+		(var isAlive:bool = "healthComponent ? healthComponent.isAlive : false" (event "healthComponent.evIsAliveChanged"))
+	)
+	(controller $Instance renderer='ModalWindowQuickCommandsFullscreen'
+		(bind enabled "isAlive")
+	)
+)
+
+(def element ModalWindowQuickCommandsFullscreen () layout=true
+	(scope
+		(event evCommandChanged)
+		(var quickCommandsPanelEntity:gfx = "$datahub.getSingleEntity(CC.quickCommandsPanel)")
+		(var panelComponent:gfx = "quickCommandsPanelEntity.quickCommandsPanel")
+		(var commandsData:array = "quickCommandsPanelEntity.quickCommandsPanel.commandsData" (event "quickCommandsPanelEntity.quickCommandsPanel.evChanged"))
+		(var currentSelectedCommandIndex:number = -1)
+		(bind currentSelectedCommandIndex "$event.commandIndex" watch=false init=false (event "evCommandChanged"))
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+
+		(var mouseActive:bool = "quickCommandsPanelEntity.quickCommandsPanel.mouseActive" (event "quickCommandsPanelEntity.quickCommandsPanel.evChanged"))
+		(var isPanelActive:bool = "quickCommandsPanelEntity.quickCommandsPanel.active" (event "quickCommandsPanelEntity.quickCommandsPanel.evActiveChanged"))
+		(var isActive:bool = "isPanelActive && !mouseActive")
+
+		(var curCommandId:number = "currentSelectedCommandIndex > -1 && isActive ? commandsData[currentSelectedCommandIndex].commandId : -1")
+		(var stageSmallerDimension:number = "min(stageWidth, stageHeight)")
+	)
+	(style
+		(position="absolute")
+		(bind width "stageWidth")
+		(bind height "stageHeight")
+	)
+
+	(alpha = 0)
+	(visible = false)
+	(controller $Animation
+		(bindcall play duration=0.1 delay=0 from={alpha:0, visible:false} to={alpha:1, visible:true} action="killAll" (bind enabled "isActive"))
+		(bindcall play duration=0.1 delay=0 from={alpha:1, visible:true} to={alpha:0, visible:false} action="killAll" (bind enabled "!isActive"))
+	)
+
+	(bindcall externalCall 'direct.action' "['battle.quickCommand', [curCommandId]]" init=false (event "evCommandChanged"))
+	(dispatch evCommandChanged args="{ commandIndex: -1 }" dir="EventDirection.UP"  (bind trigger "isActive"))
+
+	(block
+		(style
+			(position="absolute")
+			(width = 100%)
+			(height = 100%)
+			(backgroundColor = 0xCCCCCC)
+		)
+		(dispatch evCommandChanged args="{ commandIndex: -1 }" dir="EventDirection.UP" on='rollOver')
+	)
+	(block
+		(class $CenterAbsolute)
+		(block
+			(class $CenterAbsolute)
+			(controller $Repeat renderer='QCSector'
+				(bind count "commandsData.length > 0 ? QUICK_COMMANDS_NEAR_SLOTS_COUNT : 0")
+				(args _stageSmallerDimension="stageSmallerDimension")
+			)
+		)
+		(block
+			(class $CenterAbsolute)
+			(controller $Repeat renderer='QCSectorFar'
+				(bind count "commandsData.length > 0 ? QUICK_COMMANDS_FAR_SLOTS_COUNT : 0")
+				(args _stageWidth="stageWidth" _stageHeight="stageHeight")
+			)
+		)
+		(block
+			(mouseEnabled = false)
+			(mouseChildren = false)
+			(controller $Repeat renderer='QCItem'
+				(bind count "commandsData.length")
+				(args _stageWidth="stageWidth" _stageHeight="stageHeight")
+			)
+		)
+
+		(mc quick_command_crosshair
+			(class $CenterAbsolute)
+			(alpha = 0.6)
+		)
+	)
+)
+
+(def element QCSector (_stageSmallerDimension:number = 1) layout=true
+	(scope
+		(event evCommandChanged)
+		(var quickCommandsPanelEntity:gfx = "$datahub.getSingleEntity(CC.quickCommandsPanel)")
+		(var commandsData:array = "quickCommandsPanelEntity.quickCommandsPanel.commandsData" (event "quickCommandsPanelEntity.quickCommandsPanel.evChanged"))
+		(var selected:bool = "quickCommandsPanelEntity.quickCommandsPanel.commandsData[$index].selected == true" (event "quickCommandsPanelEntity.quickCommandsPanel.evChanged"))
+		(var _circRad:number = "_stageSmallerDimension * 0.4")
+		(var _circInRad:number = "_stageSmallerDimension * 0.1")
+
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+	(style
+		(position = "absolute")
+		(left = 0px)
+		(top = 0px)
+	)
+
+	(alpha = 0.25)
+	(controller $Animation
+		(bindcall play duration=0.05 delay=0 from={alpha:0.25} to={alpha:0.40} action="killAll" (bind enabled "(selected || (rollOver && commandsData[$index].enabled))"))
+		(bindcall play duration=0.05 delay=0 from={alpha:0.40} to={alpha:0.25} action="killAll" (bind enabled "!(selected || (rollOver && commandsData[$index].enabled))"))
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER)
+	(dispatch evCommandChanged args="{ commandIndex: (commandsData[$index].enabled ? $index : -1) }" dir="EventDirection.UP" (bind trigger "rollOver"))
+
+	(block
+		(style 
+			(position = "absolute")
+			(bind rotation "$index * 45 - 22.5")
+		)
+		(block
+			(style 
+				(position = "absolute")
+				(top = "1")
+				(left = "2")
+			)
+			(controller $Sector
+				(bind color "0x000000")
+				(bind arc "45")
+				(bind radius "_circRad")
+				(bind innerRadius "_circInRad")
+			)
+		)
+	)
+	(block
+		(style 
+			(position = "absolute")
+		)
+		(isMask = true)
+		(controller $Sector
+			(bind color "0x000000")
+			(bind arc "360")
+			(bind radius "_circRad + (_stageSmallerDimension * 0.0005)")
+			(bind innerRadius "_circInRad + 3")
+		)
+	)
+)
+
+(def element QCSectorFar (_stageWidth:number = 1, _stageHeight:number = 1) layout=true
+	(scope
+		(event evCommandChanged)
+		(var stageSmallerDimension:number = "min(_stageWidth, _stageHeight)")
+		(var stageLargestDimension:number = "max(_stageWidth, _stageHeight)")
+
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+	(style
+		(position = "absolute")
+	)
+
+	(alpha = 0.25)
+	(controller $Animation
+		(bindcall play duration=0.05 delay=0 from={alpha:0.25} to={alpha:0.40} action="killAll" (bind enabled "rollOver"))
+		(bindcall play duration=0.05 delay=0 from={alpha:0.40} to={alpha:0.25} action="killAll" (bind enabled "!(rollOver)"))
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER)
+	(dispatch evCommandChanged args="{ commandIndex: $index+8 }" dir="EventDirection.UP" (bind trigger "rollOver"))
+
+	(block
+		(style 
+			(position = "absolute")
+			(bind rotation "$index * 90")
+		)
+		(block
+			(style 
+				(position = "absolute")
+				(top = "1")
+				(left = "1")
+			)
+			(controller $Sector
+				(bind color "0x000000")
+				(bind arc "90")
+				(bind radius "stageLargestDimension / 1.41")
+				(bind innerRadius "stageSmallerDimension * 0.403")
+			)
+		)
+	)
+)
+
+(def element QCItem (_stageWidth:number = 1, _stageHeight:number = 1) layout=true
+	(scope
+		(var stageSmallerDimension:number = "min(_stageWidth, _stageHeight)")
+		(var isVerticalOrientation:bool = "stageSmallerDimension == _stageWidth")
+
+		(var quickCommandsPanelEntity:gfx = "$datahub.getSingleEntity(CC.quickCommandsPanel)")
+		(var commandsData:array = "quickCommandsPanelEntity.quickCommandsPanel.commandsData" (event "quickCommandsPanelEntity.quickCommandsPanel.evChanged"))
+		(var selected:bool = "quickCommandsPanelEntity.quickCommandsPanel.commandsData[$index].selected == true" (event "quickCommandsPanelEntity.quickCommandsPanel.evChanged"))
+		(var _circRad:number = "stageSmallerDimension * 0.4")
+		(var _circInRad:number = "stageSmallerDimension * 0.1")
+		(var displayText:str = "commandsData[$index].text")
+		(var iconPath:str = "'url:../quick_commands/' + commandsData[$index].icon + '.png'")
+		(var commandId:str = "commandsData[$index].commandId")
+		(var commandName:str = "commandsData[$index].commandName")
+		(var itemEnabled:bool = "commandsData[$index].enabled")
+
+		(var itemPosition:array = "[
+											{ qc_top: 0,								qc_left: (stageSmallerDimension * 0.27)},
+											{ qc_top: (stageSmallerDimension * 0.18),	qc_left: (stageSmallerDimension * 0.2)},
+											{ qc_top: (stageSmallerDimension * 0.27),	qc_left: 0					},
+											{ qc_top: (stageSmallerDimension * 0.18),	qc_left: -(stageSmallerDimension * 0.2)},
+											{ qc_top: 0,								qc_left: -(stageSmallerDimension * 0.27)},
+											{ qc_top: -(stageSmallerDimension * 0.18),	qc_left: -(stageSmallerDimension * 0.2)},
+											{ qc_top: -(stageSmallerDimension * 0.27),	qc_left: 0					},
+											{ qc_top: -(stageSmallerDimension * 0.18),	qc_left: (stageSmallerDimension * 0.2) },
+
+											{ qc_top: (stageSmallerDimension * 0.10),	qc_left: (stageSmallerDimension * 0.5)},
+											{ qc_top: (stageSmallerDimension * 0.10),	qc_left: -(stageSmallerDimension * 0.5)},
+											{ qc_top: -(stageSmallerDimension * 0.10),	qc_left: -(stageSmallerDimension * 0.5)},
+											{ qc_top: -(stageSmallerDimension * 0.10),	qc_left: (stageSmallerDimension * 0.5)}
+									]"
+									)
+		(var itemPositionVertical:array = "[
+											{ qc_top: 0,								qc_left: (stageSmallerDimension * 0.27)},
+											{ qc_top: -(stageSmallerDimension * 0.18),	qc_left: (stageSmallerDimension * 0.2)},
+											{ qc_top: -(stageSmallerDimension * 0.27),	qc_left: 0					},
+											{ qc_top: -(stageSmallerDimension * 0.18),	qc_left: -(stageSmallerDimension * 0.2)},
+											{ qc_top: 0,								qc_left: -(stageSmallerDimension * 0.27)},
+											{ qc_top: (stageSmallerDimension * 0.18),	qc_left: -(stageSmallerDimension * 0.2)},
+											{ qc_top: (stageSmallerDimension * 0.27),	qc_left: 0					},
+											{ qc_top: (stageSmallerDimension * 0.18),	qc_left: (stageSmallerDimension * 0.2) },
+
+											{ qc_top: -(stageSmallerDimension * 0.25),	qc_left: (stageSmallerDimension * 0.4)},
+											{ qc_top: -(stageSmallerDimension * 0.25),	qc_left: -(stageSmallerDimension * 0.4)},
+											{ qc_top: (stageSmallerDimension * 0.25),	qc_left: -(stageSmallerDimension * 0.4)},
+											{ qc_top: (stageSmallerDimension * 0.25),	qc_left: (stageSmallerDimension * 0.4)}
+									]"
+									)
+		(var leftPos:number = "isVerticalOrientation	? itemPositionVertical[$index].qc_left
+														: itemPosition[$index].qc_left")
+		(var topPos:number = "isVerticalOrientation		? -itemPositionVertical[$index].qc_top
+														: itemPosition[$index].qc_top")
+	)
+
+	(style
+		(position = "absolute")
+		(bind left "leftPos")
+		(bind top "topPos")
+	)
+	(bind alpha "itemEnabled ? 1 : 0.3")
+
+	(block
+		(style
+			(position = "absolute")
+			(vcenter = 0)
+		)
+		(block
+			(block
+				(bind visible "commandsData[$index].icon != null")
+				(style
+					(marginLeft = -50%)
+					(width = 51)
+					(height = 51)
+					(bind backgroundImage "iconPath")
+				)
+			)
+			(tf
+				(macro TFMouseEnabled value=false)
+				(class $QuickCommandNameText)
+				(style
+					(marginLeft = -50%)
+					(textAlign = "center")
+					(textColor = 0xffffff)
+					(bind width "150")
+				)
+				(bind text "displayText")
+			)
+		)
+		(block
+			(style
+				(marginTop = 5px)
+				(marginLeft = -50%)
+			)
+			(controller $Instance renderer='HotkeyIndicator'
+				(bind enabled "commandName !=null")
+				(args
+					_commandId="commandId"
+					_size="SIZE.SMALL"
+					_active=true
+					_fxOnDown="false"
+				)
+			)
+		)
+	)
+)

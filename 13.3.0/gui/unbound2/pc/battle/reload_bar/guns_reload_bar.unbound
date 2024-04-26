@@ -1,0 +1,713 @@
+(def constant SIMULTANEOUS_UNACTIVE_BAR_ALPHA 0.5)
+(def constant SIMULTANEOUS_CHANGE_TIME 0.2)
+
+(def constant RELOAD_WEAPON_ICON_WIDTH 26)
+(def constant RELOAD_WEAPON_ICON_HEIGHT 26)
+
+(def constant RELOAD_BAR_CENTER_WIDTH 13)
+(def constant RELOAD_BAR_MAX_WIDTH 504)
+(def constant RELOAD_BAR_HEIGHT 24)
+(def constant RELOAD_BAR_MARGIN_TOP 22)
+
+(def constant RELOAD_BAR_GAP 10)
+(def constant RELOAD_BAR_PADDING_BOTTOM 16)
+
+(def constant MAX_BARS_ON_SINGLE_LINE 7)
+(def constant RELOAD_BAR_GREEN_COLOR_TRANSFORM {'color':0x4CE8AA})
+(def constant RELOAD_BAR_YELLOW_COLOR_TRANSFORM {'color':0xF78913})
+(def constant RELOAD_BAR_NO_COLOR_TRANSFORM {})
+
+(def constant ReloadBarSize {
+	SMALL: 46,
+	MEDIUM: 82,
+	LARGE: 176,
+	GROUPED: 44
+})
+
+(def constant ReloadBarState {
+	NORMAL: 0,
+	IN_PROGRESS: 1,
+	BLOCKED: 2,
+	CRIT: 3,
+	DEAD: 4,
+	CHARGING: 5
+})
+
+(def macro HLSTATE_TO_BAR_STATE_SCOPE ()
+	(var HLSTATE_TO_BAR_STATE:array = "[
+		ReloadBarState.NORMAL,
+		ReloadBarState.NORMAL,
+		ReloadBarState.CRIT,
+		ReloadBarState.DEAD,
+		ReloadBarState.DEAD
+	]")
+)
+
+(def element GunsReloadBarContainer () layout=true dispatch_size_change=true
+	(scope
+		(macro GET_PREF 'simultaneousReload' "'battle.weapon.indicator.simultaneousReload'")
+		(var weaponsCollection:gfx = "$datahub.getCollection(CC.weaponSlot)")
+		(var weaponItems:array = "weaponsCollection.items")
+
+		(var haveFewWeapons:bool = "weaponItems.length > 1")
+
+		(var avatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var healthComponent:gfx = "avatarEntity.health")
+		(var isAlive:bool = "healthComponent ? healthComponent.isAlive : false" (event "healthComponent.evIsAliveChanged"))
+
+		(var aircarrier:gfx = "$datahub.getSingleComponent(CC.aircarrier)")
+		(var activeSquadron:number = "aircarrier ? aircarrier.activeSquadron : ActiveSquadron.NONE" (event "aircarrier.evStateChanged"))
+		(var squadronCameraMode:str = "aircarrier.squadronCameraMode" (event "aircarrier.evSquadronCameraModeChanged"))
+		(var isLastLookCamera:bool = "aircarrier && (squadronCameraMode != SquadronCameraModes.DEFAULT)")
+
+		(var isVisible:bool = "isAlive && activeSquadron == ActiveSquadron.NONE && !(isLastLookCamera)")
+	)
+
+	(alpha = 0)
+	(style
+		(minHeight = "RELOAD_BAR_HEIGHT + 12")
+	)
+
+	(controller $Animation
+		(play duration=0.5 delay=0.5 to={alpha: 1})
+	)
+
+	(controller $Instance renderer='GunsReloadBar'
+		(bind enabled "isVisible")
+		(args _isSingleBar = "!simultaneousReload || !haveFewWeapons")
+	)
+)
+
+(def element GunsReloadBar (_isSingleBar:bool) layout=true
+	(scope
+		(event evGunListReloadBarAdded)
+		(var weaponController:gfx = "$datahub.getSingleComponent(CC.weaponController)")
+		(var activeWeaponType:number = "weaponController ? weaponController.selectedWeapon : -1" (event "weaponController.evSelectedWeaponChanged") (event "weaponController.evSelectedAmmoTypeChanged"))
+		(var hasActiveWeaponBar:bool = "activeWeaponType >= 0 && activeWeaponType != SC.Ships.SHIP_WEAPON_TYPES.AIRPLANES")
+		(var weaponItems:array = "$datahub.getCollection(CC.reloadBar).items")
+
+		(var rowsCount:number = 0)
+		(bind rowsCount "rowsCount + $event._rowsCount" watch=false init=false (event "evGunListReloadBarAdded"))
+	)
+
+	(style
+		(width = 24px)
+		(bind height " _isSingleBar ? RELOAD_BAR_HEIGHT * 2 + RELOAD_BAR_MARGIN_TOP : (rowsCount + 1) * RELOAD_BAR_HEIGHT + RELOAD_BAR_MARGIN_TOP")
+	)
+
+	
+	(controller $Animation
+		(bindcall play duration="SIMULTANEOUS_CHANGE_TIME" to="{marginTop: -RELOAD_BAR_HEIGHT*rowsCount, alpha: 0}" action="killAll" (bind enabled "!(hasActiveWeaponBar)"))
+		(bindcall play duration="SIMULTANEOUS_CHANGE_TIME" to="{marginTop: 0, alpha: 1}" action="killAll" (bind enabled "(hasActiveWeaponBar)"))
+	)
+
+	(controller $Repeat renderer='GunListReloadBar' count="weaponItems.length"
+		(args
+			_weaponType = "weaponItems[$index].weapon.type"
+			_totalRowCount = "rowsCount"
+			_isSingleBar = "_isSingleBar"
+		)
+		(exprs
+			(scope
+				(bind weaponTypeIsActive "activeWeaponType == weaponItems[$index].weapon.type" watch=false (bind enabled "hasActiveWeaponBar") (bind trigger "activeWeaponType")) 	
+			)
+		)
+	)
+)
+
+
+(def macro GUN_LIST_ANIMATION ()
+	(scope
+		(var incativeAlpha:number = "_isSingleBar ? 0 : SIMULTANEOUS_UNACTIVE_BAR_ALPHA")
+		(var bottomOffset:number = "RELOAD_BAR_PADDING_BOTTOM + order*RELOAD_BAR_GAP + order*RELOAD_BAR_HEIGHT")
+		(var delaySecs:number = "_isSingleBar ? 0 : (SIMULTANEOUS_CHANGE_TIME/4) * abs(otherTypeRowCount - prevOrder)")
+	)
+	(style
+		(alpha = "weaponTypeIsActive ? 1 : incativeAlpha")
+		(position = "absolute")
+		(bottom = "bottomOffset")
+	)
+	(controller $Animation
+		(bind enabled "!isOutOfBounds")
+		(bindcall play	duration="SIMULTANEOUS_CHANGE_TIME"
+						to="{bottom: RELOAD_BAR_PADDING_BOTTOM + prevOrder*RELOAD_BAR_HEIGHT + RELOAD_BAR_HEIGHT/2, alpha: 0}"
+						easing="Easing.quad_out"
+						action="killAll"
+						(event "reloadBar.evOrderChanged")
+						(event "evGunListReloadBarAdded")
+		)
+		(bindcall play	duration="SIMULTANEOUS_CHANGE_TIME"
+						delay="delaySecs + SIMULTANEOUS_CHANGE_TIME"
+						easing="Easing.quad_in"
+						from="{alpha: 0, bottom: bottomOffset - RELOAD_BAR_HEIGHT/2}"
+						to="{bottom: bottomOffset, alpha: weaponTypeIsActive ? 1 : incativeAlpha}"
+						(event "reloadBar.evOrderChanged")
+						(event "evGunListReloadBarAdded")
+		)
+	)
+	(controller $Animation
+		(bind enabled "isOutOfBounds")
+		(bindcall play	delay="delaySecs"
+						duration="SIMULTANEOUS_CHANGE_TIME"
+						easing="Easing.quad_in"
+						to="{bottom: bottomOffset, alpha: weaponTypeIsActive ? 1 : incativeAlpha}"
+						action="killAll"
+						(event "reloadBar.evOrderChanged")
+						(event "evGunListReloadBarAdded")
+		)
+	)
+)
+
+(def element GunListReloadBar (_weaponType:number, _totalRowCount:number, _isSingleBar:bool) layout=true
+	(scope
+		(event evGunListReloadBarAdded)
+
+		(var weaponTypeIsActive:bool = false)
+
+		(var weaponEntity:gfx = "$datahub.getPrimaryEntity(CC.weapon, _weaponType)")
+		(var gunGroupsCount:number = "weaponEntity.weapon.groupsCount")
+		(var reloadBar:gfx = "weaponEntity.reloadBar")
+		(var isOutOfBounds:bool = "reloadBar.isOutOfBounds" (event "reloadBar.evOrderChanged") (event "evGunListReloadBarAdded"))
+		(var order:number = "reloadBar.order" (event "reloadBar.evOrderChanged") (event "evGunListReloadBarAdded"))
+		(var prevOrder:number = "reloadBar.prevOrder" (event "reloadBar.evOrderChanged") (event "evGunListReloadBarAdded"))
+
+		(var gunCollection:gfx = "$datahub.getCollection(CC.gun).child('byWeaponType').child(_weaponType)")
+		(var totalGunsCount:number = "gunCollection ? gunCollection.items.length : 0")
+
+		(var rowsCount:number = "reloadBar.rowsCount")
+
+		(var otherTypeRowCount:number = "_totalRowCount")
+		(var showReloadPart:bool = "weaponTypeIsActive && weaponEntity && weaponEntity.weapon.canForceReload" (event "weaponEntity.weapon.evCanForceReloadChanged"))
+	)
+
+	(dispatch evGunListReloadBarAdded args="{_rowsCount : rowsCount}" dir="EventDirection.UP" on=addedToStage)
+
+	(style (marginLeft = "-50%") (position = "absolute"))
+
+	(macro GUN_LIST_ANIMATION)
+
+	(hblock
+		(block
+			(style
+				(position = "absolute")
+				(left = "-34px")
+				(width = "40px")
+			)
+
+			(hblock
+				(bind visible "showReloadPart")
+				(style
+					(position = "absolute")
+					(top = "1px")
+					(right = 0)
+				)
+				(element HotkeyIndicator _commandId="Cmd.CMD_TORPEDO_RELOAD"
+					(style (marginRight = "2px"))
+				)
+				(mc torpedo_reload)
+			)
+
+			(block
+				(bind visible "!(_isSingleBar) && !(showReloadPart)")
+				(style
+					(position = "absolute")
+					(top = "-XS")
+					(right = 0)
+					(width = "RELOAD_WEAPON_ICON_WIDTH")
+					(height = "RELOAD_WEAPON_ICON_HEIGHT")
+					(bind backgroundImage "'url:../battle_hud/reload_bars/weaponType/reload_bar_weapon_type_' + _weaponType + '.png'" (bind enabled "!(_isSingleBar)"))
+				)
+			)
+		)
+
+		(block
+			(style
+				(align = "center")
+				(marginTop = -5px)
+			)
+
+			(controller $Instance
+				(bind renderer "gunGroupsCount != 0	?	'GroupedGunsReloadBarsContainer'
+													:	'SimpleGunsReloadBarsContainer'")
+				(args "_weaponType")
+			)
+		)
+	)
+)
+
+(def element SimpleGunsReloadBarsContainer (_weaponType:number) layout=true
+	(scope
+		(var gunCollection:gfx = "$datahub.getCollection(CC.gun).child('byWeaponType').child(_weaponType)")
+		(var totalGunsCount:number = "gunCollection ? gunCollection.items.length : 0")
+	)
+	(htile
+		(style
+			(maxWidth = "RELOAD_BAR_MAX_WIDTH")
+			(align = "center")
+		)
+
+		(controller $Repeat renderer='GunReloadBarRenderer'
+			(bind count "totalGunsCount")
+			(args "gunCollection.items" "totalGunsCount")
+		)
+	)
+)
+
+(def element GroupedGunsReloadBarsContainer (_weaponType:number) layout=true
+	(scope
+		(var forwardGunsGroups:gfx = "$datahub.getCollection(CC.gunsGroup).child('byDirection').child(SC.Common.TORPEDOES_GROUP_TYPE.LOOK_FORWARD)")
+		(var backwardGunsGroups:gfx = "$datahub.getCollection(CC.gunsGroup).child('byDirection').child(SC.Common.TORPEDOES_GROUP_TYPE.LOOK_BACKWARD)")	
+	)
+
+	(style
+		(align = "center")
+	)
+	
+	
+	(htile
+		(style
+			(maxWidth = "RELOAD_BAR_MAX_WIDTH")
+			(align = "center")
+		)
+
+		(controller $Repeat renderer='GroupedGunsReloadBarRenderer'
+			(bind count "forwardGunsGroups ? forwardGunsGroups.items.length : 0")
+			(args "forwardGunsGroups")
+		)
+	)
+
+	
+	(htile
+		(style
+			(maxWidth = "RELOAD_BAR_MAX_WIDTH")
+			(align = "center")
+		)
+
+		(controller $Repeat renderer='GroupedGunsReloadBarRenderer'
+			(bind count "backwardGunsGroups ? backwardGunsGroups.items.length : 0")
+			(args "backwardGunsGroups")
+		)
+	)
+)
+
+(def element GroupedGunsReloadBarRenderer (_groupsCollection:gfx) layout=true
+	(scope
+		(var gunsGroup:gfx = "_groupsCollection.items[$index].gunsGroup")
+
+		(var gunsCollection:gfx = "$datahub.getCollection(CC.groupModifier).child('byGroup').child(gunsGroup.groupID)")
+		(var groupGuns:array = "gunsCollection.items" (event "gunsCollection.evUpdated"))
+
+		(var gunWithBestState:gfx = "groupGuns[0]")
+		(var stateOfGunWithBestState:number = "gunWithBestState ? gunWithBestState.gun.state : 0" (event "gunWithBestState.gun.evStateChanged"))
+		(var isSwitchingAmmo:bool = "stateOfGunWithBestState == SC.Weapons.GUN_STATE.SWITCHING_AMMO")
+
+		(var groupPositionID:number = "gunsGroup.groupID + 1")
+		(var reloadBarsCount:number = "isSwitchingAmmo ? 1 : groupGuns.length")
+		(var reloadBarSize:number = "isSwitchingAmmo 	? ReloadBarSize.GROUPED * groupGuns.length
+														: ReloadBarSize.GROUPED")
+	)
+
+	(bind name "'gun_group_' + gunsGroup.groupID")
+
+	(style
+		(marginLeft = "RELOAD_WEAPON_ICON_WIDTH")
+		(marginTop = "15px")
+	)
+
+	(hblock
+		
+		(element ReloadBarId "groupPositionID" "0")
+
+		
+		(hblock
+			(controller $Repeat renderer='ReloadBarAdapter'
+				(bind count "reloadBarsCount")
+				(args
+					_size = "reloadBarSize"
+					_gunEntityId = "groupGuns[$index].id"
+					_progressEntityId = "groupGuns[$index].id"
+					_hideTimer = false
+				)
+			)
+		)
+	)
+)
+
+(def element GunReloadBarRenderer (_weaponGuns:array, _totalGunsCount:number) layout=true
+	(scope
+		(var gunEntity:gfx = "_weaponGuns.length > 0 ? _weaponGuns[$index] : null")
+		(var gunPositionID:number = "gunEntity ? gunEntity.gun.position : 0")
+		(var gunType:number = "gunEntity ? gunEntity.gun.type : SC.Ships.SHIP_WEAPON_TYPES.NONE")
+		
+		(var weaponEntity:gfx = "$datahub.getPrimaryEntity(CC.weapon, gunType)")
+		(var weaponState:number = "weaponEntity ? weaponEntity.weapon.state : 0" (event "weaponEntity.weapon.evStateChanged"))
+
+		(var barrelsComponent:gfx = "gunEntity && gunEntity.hasComponent(CC.barrelsModifier) ? gunEntity.barrelsModifier : null")
+		(var totalBarrels:number = "barrelsComponent && barrelsComponent.barrels.length ? barrelsComponent.barrels.length : 1" (event "barrelsComponent.evChanged"))
+		(var barrelShotMode:bool = "barrelsComponent && barrelsComponent.mode == SC.Weapons.BARREL_FIRE_MODE.SINGLE" (event "barrelsComponent.evModeChanged"))
+		
+		(var serialLoaderComponent:gfx = "gunEntity && gunEntity.hasComponent(CC.serialLoaderModifier) ? gunEntity.serialLoaderModifier : null")
+		(var serialLoads:number = "serialLoaderComponent && serialLoaderComponent.serialLoads.length
+																	? serialLoaderComponent.serialLoads.length
+																	: 1"
+										(event "serialLoaderComponent.evChanged"))
+
+		(var isSerialReload:bool = "serialLoads > 1")
+
+		(var innerBarsCount:number = "serialLoaderComponent ? serialLoads : totalBarrels")
+
+		(var totalGunsCount:number = "serialLoaderComponent ? serialLoads : _totalGunsCount")
+
+		(var reloadBarItemSize:number = "	isSerialReload		? ReloadBarSize.LARGE :
+											totalGunsCount <= 2	? ReloadBarSize.LARGE :
+											totalGunsCount < 4	? ReloadBarSize.MEDIUM
+																: ReloadBarSize.SMALL")
+
+		(var reloadBarsCount:number = "(weaponState != SC.Weapons.GUN_STATE.DESTROYED)
+												&& (barrelShotMode || serialLoaderComponent)	? innerBarsCount 
+																								: 1")
+
+		(var reloadBarSize:number = "reloadBarsCount > 1 	? round(reloadBarItemSize / innerBarsCount) 
+															: reloadBarItemSize")
+	)
+	
+	(bind name "'gun_0' + totalGunsCount + '_0' + gunPositionID")
+
+	(style
+		(marginLeft = "RELOAD_WEAPON_ICON_WIDTH")
+		(marginTop = "10px")
+	)
+
+	(hblock
+		
+		(element ReloadBarId "gunPositionID" "gunEntity.id")
+
+		(controller $Instance renderer='ReloadBarTimeLeft'
+			(args "gunEntity.id")
+			(bind enabled "serialLoaderComponent == null")
+		)
+
+		
+		(hblock
+			(controller $Repeat			
+				(bind renderer "isSerialReload	?	'SerialReloadBarAdapter'
+												:	'ReloadBarAdapter'")
+				(bind count "reloadBarsCount")
+				(args
+					_size = "reloadBarSize"
+					_gunEntityId = "gunEntity.id"
+					_progressEntityId = "	serialLoaderComponent ? serialLoaderComponent.serialLoads[$index] :
+											barrelShotMode	? barrelsComponent.barrels[$index]
+															: gunEntity.id"
+					_hideTimer = "serialLoaderComponent == null"
+				)
+			)	
+		)
+	)
+)
+
+(def element ReloadBarId (_barId:number, _gunEntityId:number) layout=true
+	(scope
+		(var gunEntity:gfx = "$datahub.getEntity(_gunEntityId)")
+		(macro BAR_STATE_FROM_GUN_SCOPE "gunEntity")
+	)
+
+	(style
+		(position = "absolute")
+		(left = "-15px")
+		(width = "11px")
+		(height = "10px")
+		(align = "middle|right")
+	)
+	(bind alpha "	reloadBarState == ReloadBarState.CRIT	? 1 :
+					reloadBarState == ReloadBarState.DEAD	? 0.3
+															: 0.7")
+	(tf
+		(class $TextDefaultNM)
+		(class $FontSizeNano)
+		(class $FontEnableReadability)
+		(style
+			(bind textColor "reloadBarState == ReloadBarState.CRIT ? 0xFF3300 : 0xFFFFFF")
+		)
+		(bind text "_barId")
+	)
+)
+
+(def element ReloadBarTimeLeft (_gunEntityId:number) layout=true
+	(scope
+		(var gunEntity:gfx = "$datahub.getEntity(_gunEntityId)")
+		(var gunComponent:gfx = "gunEntity ? gunEntity.gun : null")
+		(var gunHealthState:number = "gunComponent.status" (event "gunComponent.evStatusChanged"))
+		(var gunState:number = "gunComponent.state" (event "gunComponent.evStateChanged"))
+
+		(var isWorking:bool = "gunState == SC.Weapons.GUN_STATE.WORK")
+		(var isCrit:bool = "gunHealthState == SC.Battle.MODULES_STATES.CRIT")
+		(var isNotSwitchingCritical:bool = "gunState != SC.Weapons.GUN_STATE.SWITCHING_CRITICAL")
+
+		(var progressComponent:gfx = "gunEntity && gunEntity.hasComponent(CC.progress) ? gunEntity.progress : null" (event "gunEntity.evAdded") (event "gunEntity.evRemoved"))		
+		(var progressTime:number = "progressComponent ? progressComponent.value : 0" (event "progressComponent.evChanged"))
+
+		(var remainTime:number = "(progressComponent && !isWorking)	? isCrit && isNotSwitchingCritical	? progressComponent.value
+													 													: progressComponent.max - progressComponent.value
+																	: 0" (event "progressComponent.evChanged"))
+		(macro HUMAN_READABLE_COUNTDOWN_SCOPE "remainTime")
+	)
+
+	(bind visible "remainTime > 0")
+
+	(style
+		(flow = "horizontal")
+		(position = "absolute")
+		(top = "-12px")
+		(width = 100%)
+		(align = "center|middle")
+	)
+	(block
+		(bind visible "isCrit && isNotSwitchingCritical")
+		(style
+			(width = "14px")
+			(height = "16px")
+			(marginTop = "-2px")
+			(backgroundImage = "'bitmap:icon_repair'")
+		)
+	)
+	(tf
+		(alpha = 0.7)
+		(class $TextDefaultNM)
+		(class $FontEnableReadability)
+		(bind text "countdownText")
+	)
+)
+
+(def element SerialReloadBarTimeLeft (_reloadBarState:number, _progressEntityId:number) layout=true
+	(scope
+		(var progressComponent:gfx = "$datahub.getEntity(_progressEntityId).progress")		
+		(var progressMax:number = "progressComponent ? progressComponent.max : 1" (event "progressComponent.evChanged"))
+		(var progressTime:number = "progressComponent ? progressComponent.value : 0" (event "progressComponent.evChanged"))
+
+		(var isCrit:bool = "_reloadBarState == ReloadBarState.CRIT")
+
+		(var remainTime:number = "progressComponent	? isCrit	? progressTime
+																: progressMax - progressTime
+													: 0")
+		(macro HUMAN_READABLE_COUNTDOWN_SCOPE "remainTime")
+	)
+
+	(bind visible "remainTime > 0")
+	(style
+		(flow = "horizontal")
+		(position = "absolute")
+		(top = "-12px")
+		(width = 100%)
+		(align = "center|middle")
+	)
+	(block
+		(bind visible "isCrit")
+		(style
+			(width = "14px")
+			(height = "16px")
+			(marginTop = "-2px")
+			(backgroundImage = "'bitmap:icon_repair'")
+		)
+	)
+	(tf
+		(alpha = 0.7)
+		(class $TextDefaultNM)
+		(class $FontEnableReadability)
+		(bind text "countdownText")
+	)
+)
+
+(def element SerialReloadBarAdapter (_size:number, _gunEntityId:number, _progressEntityId:number, _hideTimer:bool=true) layout=true
+	(scope
+		(var gunEntity:gfx = "$datahub.getEntity(_gunEntityId)")
+		(macro BAR_STATE_FROM_GUN_SCOPE "gunEntity")
+
+		(var progressComponent:gfx = "$datahub.getEntity(_progressEntityId).progress")
+		(var progress:number = "progressComponent ? progressComponent.value / progressComponent.max : 0" (event "progressComponent.evChanged"))
+		(var isBarActive:bool = "progressComponent ? progressComponent.value > 0 : false"  (event "progressComponent.evChanged"))
+
+		(var serialLoadComponent:gfx = "$datahub.getEntity(_progressEntityId).serialLoad")
+		(var serialLoadState:number = "serialLoadComponent ? serialLoadComponent.state : SC.Weapons.GUN_STATE.RELOAD_STOPPED" (event "serialLoadComponent.evStateChanged"))
+		(var isSerialLoadReady:number = "serialLoadState == SC.Weapons.GUN_STATE.READY" (event "serialLoadComponent.evStateChanged"))
+		(var isSerialLoadReloading:number = "serialLoadState == SC.Weapons.GUN_STATE.RELOAD" (event "serialLoadComponent.evStateChanged"))
+
+		(macro SCOPE_IS_BATTLE_IN_PROGRESS "'isBattleInProgress'")
+
+		(var mixedReloadBarState:number = "	isDamaged				? reloadBarState :
+											!isBattleInProgress		? ReloadBarState.IN_PROGRESS :
+											isSerialLoadReady		? ReloadBarState.NORMAL :
+											isSerialLoadReloading	? ReloadBarState.IN_PROGRESS
+																	: reloadBarState")
+	)
+
+	(controller $Instance renderer='SerialReloadBarTimeLeft'
+		(bind enabled "!(_hideTimer) && isBarActive")
+		(args "mixedReloadBarState" "_progressEntityId")
+	)
+
+	(element ReloadBar
+		(scope
+			(bind size "_size")
+			(bind barState "mixedReloadBarState")
+			(bind progress "progress")
+			(bind isBarActive "isBarActive")
+		)
+	)
+)
+
+(def element ReloadBarAdapter (_size:number, _gunEntityId:number, _progressEntityId:number, _hideTimer:bool=true) layout=true
+	(scope
+		(var gunEntity:gfx = "$datahub.getEntity(_gunEntityId)")
+		(macro BAR_STATE_FROM_GUN_SCOPE "gunEntity")
+
+		(var isTransparent:bool = "isInvalid && !(isDamaged)")
+
+		(var progressComponent:gfx = "$datahub.getEntity(_progressEntityId).progress")
+		(var progress:number = "progressComponent ? progressComponent.value / progressComponent.max : 0" (event "progressComponent.evChanged"))
+		(var isBarActive:bool = "progressComponent ? progressComponent.value > 0 : false"  (event "progressComponent.evChanged"))
+	)
+
+	(controller $Instance renderer='ReloadBarTimeLeft'
+		(bind enabled "!(_hideTimer) && isBarActive")
+		(args "_gunEntityId")
+	)
+	
+	(element ReloadBar
+		(scope
+			(bind size "_size")
+			(bind barState "reloadBarState")
+			(bind progress "progress")
+			(bind isBarActive "isBarActive")
+		)
+		(bind alpha "isTransparent ? 0.5 : 1")
+	)
+)
+
+(def element ReloadBar () layout=true
+	(scope
+		(var size:number = 0)
+		(var barState:number = 0)
+		(var progress:number = 0)
+		(var isBarActive:bool = true)
+		
+		(var barCenterWidth:number = "size < ReloadBarSize.SMALL ? 0 : RELOAD_BAR_CENTER_WIDTH")
+		(var barSidesWidth:number = "round((size - barCenterWidth) / 2)")
+
+		(var barColor:str = "	barState == ReloadBarState.NORMAL 		? 'green'	:
+								barState == ReloadBarState.IN_PROGRESS 	? 'yellow' 	:
+								barState == ReloadBarState.CHARGING		? 'blue'	:
+								barState == ReloadBarState.BLOCKED		? 'gray'
+																		: 'crit'")
+		(var barColorTransform:dict = "	barState == ReloadBarState.NORMAL 		? RELOAD_BAR_GREEN_COLOR_TRANSFORM :
+										barState == ReloadBarState.IN_PROGRESS 	? RELOAD_BAR_YELLOW_COLOR_TRANSFORM :
+										RELOAD_BAR_NO_COLOR_TRANSFORM")
+
+		(var barImageUrl:str = "'url:../battle_hud/reload_bars/bar/' + barColor + '/reload_bar_' + barColor")
+
+		(var trackStateFolder:str = "barState == ReloadBarState.DEAD ? 'dead' : 'normal'")
+		(var trackImageUrl:str = "'url:../battle_hud/reload_bars/track/' + trackStateFolder + '/reload_bar_track' + (barState == ReloadBarState.DEAD ? '_dead' : '')")
+	)
+
+	(style
+		(height = "11px")
+		(bind width "size")
+	)
+
+	
+	(hblock
+		(style
+			(position = "absolute")
+			(height = "100%")
+		)
+		(macro RELOAD_BAR_GRAPHICS graphicsPrefix="trackImageUrl" hideCenterPart="size < ReloadBarSize.SMALL")
+	)
+
+	
+	(hblock
+		(bind visible "isBarActive && barState != ReloadBarState.DEAD")
+		(bind colorTransform "barColorTransform")
+		(style
+			(position = "absolute")
+			(height = "100%")
+		)
+		(macro RELOAD_BAR_GRAPHICS graphicsPrefix="barImageUrl" hideCenterPart="size < ReloadBarSize.SMALL")
+		
+		
+		(block
+			(style
+				(position = "absolute")
+				(height = "100%")
+				(bind width "size * progress")
+				(backgroundColor = "0x01000000")
+			)
+			(isMask = true)
+		)
+	)
+)
+
+(def macro BAR_STATE_FROM_GUN_SCOPE (_gunEntity:expression)
+	(var gunComponent:gfx = "_gunEntity ? _gunEntity.gun : null")
+	(var gunTargetComponent:gfx = "_gunEntity ? _gunEntity.gunTarget : null")
+
+	(var gunHealthState:number = "gunComponent.status" (event "gunComponent.evStatusChanged"))
+	(var gunState:number = "gunComponent.state" (event "gunComponent.evStateChanged"))
+
+	(var isReady:bool = "gunState == SC.Weapons.GUN_STATE.READY")
+	(var isWorking:bool = "gunState == SC.Weapons.GUN_STATE.WORK")
+	(var isAiming:bool = "gunTargetComponent ? !(gunTargetComponent.rotated) : true" (event "gunTargetComponent.evRotatedChanged"))
+	(var isReloading:bool = "isIn(gunState, [SC.Weapons.GUN_STATE.RELOAD, SC.Weapons.GUN_STATE.SWITCHING_AMMO])")
+	(var isSwitchingAmmoInCrit:bool = "gunState == SC.Weapons.GUN_STATE.SWITCHING_CRITICAL")
+	(var isCharging:bool = "gunState == SC.Weapons.GUN_STATE.CHARGE")
+	(var isDamaged:bool = "gunHealthState > SC.Battle.MODULES_STATES.NORMAL")
+	(var isCrit:bool = "gunHealthState == SC.Battle.MODULES_STATES.CRIT")
+
+	(var isInvalid:bool = "(gunTargetComponent ? gunTargetComponent.invalid : true) && !(isDamaged)" (event "gunTargetComponent.evInvalidChanged"))
+
+	(var HLSTATE_TO_BAR_STATE:array = "[
+		ReloadBarState.NORMAL,
+		ReloadBarState.NORMAL,
+		ReloadBarState.CRIT,
+		ReloadBarState.DEAD,
+		ReloadBarState.DEAD
+	]")
+
+	(var reloadBarState:number = "	isWorking									? ReloadBarState.NORMAL :
+									isSwitchingAmmoInCrit						? ReloadBarState.IN_PROGRESS :
+									isDamaged									? HLSTATE_TO_BAR_STATE[gunHealthState] :
+									isCharging									? ReloadBarState.CHARGING :
+									(isReloading || isInvalid || isAiming)		? ReloadBarState.IN_PROGRESS
+																				: HLSTATE_TO_BAR_STATE[gunHealthState]")
+
+)
+
+(def macro RELOAD_BAR_GRAPHICS (graphicsPrefix:expression, hideCenterPart:expression="false")
+	(block
+		(style
+			(height = 100%)
+			(bind width "barSidesWidth")
+			(bind backgroundImage "graphicsPrefix + '_left.png'")
+			(backgroundSize = "fill")
+			(scale9grid = [3, 2, 1, 2])
+		)
+	)
+	(block
+		(bind visible "!(hideCenterPart)")
+		(style
+			(height = 100%)
+			(width = "RELOAD_BAR_CENTER_WIDTH")
+			(bind backgroundImage "graphicsPrefix + '.png'")
+			(backgroundSize = "fill")
+			(scale9grid = 1)
+		)
+	)
+	(block
+		(style
+			(height = 100%)
+			(bind width "barSidesWidth")
+			(bind backgroundImage "graphicsPrefix + '_right.png'")
+			(backgroundSize = "fill")
+			(scale9grid = [1, 2, 3, 2])
+		)
+	)
+)

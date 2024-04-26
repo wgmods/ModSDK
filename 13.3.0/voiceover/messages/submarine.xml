@@ -1,0 +1,32 @@
+<submarine.xml>
+	<Message
+			event="VO_Submarine_Energy_Over"
+			tag="Submarine.EnergyOver"
+			node="queue"
+			priority="55.0000"
+			lifetime="7.0000" />
+	<Message
+			event="VO_Submarine_Energy_Full"
+			tag="Submarine.EnergyFull"
+			node="queue"
+			priority="54.0000"
+			lifetime="7.0000" />
+	<Message
+			event="VO_Submarine_Alarm_Energy_Danger"
+			tag="Alarm.Submarine.EnergyDanger"
+			node="queue"
+			priority="57.0000"
+			lifetime="7.0000" />
+	<Message
+			event="VO_Submarine_Detected"
+			tag="Detection.Self.Submarine"
+			node="queue"
+			priority="66.5000"
+			lifetime="5.0000" />
+	<Message
+			event="VO_Submarine_Dive_Limit"
+			tag="Submarine.DiveLimit"
+			node="queue"
+			priority="43.0000"
+			lifetime="7.0000" />
+</submarine.xml>

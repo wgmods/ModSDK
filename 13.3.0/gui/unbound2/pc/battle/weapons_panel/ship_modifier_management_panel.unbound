@@ -1,0 +1,206 @@
+
+(def element ModifierConsumableWeaponGroup(_collection:gfx, isAircarrier:bool = false) layout = true
+
+	(style
+		(flow = "horizontal")
+		(marginLeft = "PANEL_GROUP_MARGIN")
+	)
+
+	(controller $Repeat renderer='ShipModifierManagementSlot' layout=false
+		(bind count "_collection.items.length" (event "_collection.evAdded") (event "_collection.evRemoved"))
+		(bind enabled "_collection != null")
+		(args
+			_entity = "_collection.items[$index]"
+		)
+	)
+)
+
+(def element ShipModifierManagementSlot(_entity:gfx) layout=true
+	(scope
+		(var consumableEntity:gfx = "_entity")
+		(var battleConsumable:gfx = "consumableEntity.battleConsumable")
+
+		(var consumableCmd:str = "battleConsumable.cmd")
+		(var consumableState:number = "battleConsumable.state" (event "battleConsumable.evStateChanged"))
+		(var consumableIndex:number = "battleConsumable.index"  (event "battleConsumable.evStateChanged"))
+		
+		(var cmdEntity:gfx =  "$datahub.getPrimaryEntity(CC.commandMappingCommandName, consumableCmd)")
+		(var commandId:number = "cmdEntity.commandMappingCommand.id" (event  "cmdEntity.commandMappingCommand.evChanged"))
+
+		
+		(var selfVehicleEntity:gfx = "$datahub.getSingleEntity(CC.selfVehicle)")
+		(var selfVehicleId:number = "selfVehicleEntity.vehicle.id" watch=false)
+
+		(var modifierIndex:str = "battleConsumable.modifierIndex")
+
+		(var modifierEntityKey:str = "modifierIndex + '_' + selfVehicleId")
+
+		(var modifierEntityWatcher:gfx = "$datahub.getPrimWatcher(CC.shipModifier, modifierEntityKey)")
+		(var modifierEntity:gfx = "modifierEntityWatcher.entity" (event "modifierEntityWatcher.event"))
+
+		(var shipModifierComponent:gfx = "modifierEntity ? modifierEntity.shipModifier : null" (event "modifierEntity.evAdded") (event "modifierEntity.evRemoved"))
+		(var simpleIconPath:str = "'url:' + battleConsumable.viewData.iconPath") 
+		(var iconPath:str = "shipModifierComponent 	? 'url:../powerups/modifiers/icon_ship_modifier_' + shipModifierComponent.name + '_pumping.png' : null" watch=false (event "modifierEntity.evAdded"))
+		
+		(var modifiersCount:number = "shipModifierComponent ? shipModifierComponent.level : 0"	(event "shipModifierComponent.evLevelChanged"))
+		(var maxLevel:number = "shipModifierComponent ? shipModifierComponent.maxLevel : 0" (event "shipModifierComponent.evMaxLevelChanged"))
+		(var hasModifiers:bool = "modifiersCount > 0 && maxLevel > 0")
+		(var modifierCountPercent:number = "hasModifiers ? modifiersCount/maxLevel : 0")
+		(var modifiersString:str = "modifiersCount")
+	)
+
+	(style
+		(width = "SLOT_SIZE")
+		(height = "SLOT_SIZE")
+	)
+
+	(macro MOUSE_LMB_EXTERNAL_CALL 'direct.action' "['battle.useConsumable', [{consumableIndex: consumableIndex, squadronId: -1}]]")
+
+	(controller $Tooltip (renderer = 'BattleConsumableTooltip')
+		(args _battleConsumable="battleConsumable" _consumableViewData="battleConsumable.viewData" _parameterOwnerId="consumableEntity.id")
+		(align="bottom|center")
+		(position="border")
+		(offset=[0, 20])
+		(screenBoundsOffset={left:10, top:30, right:10, bottom:100})
+		(macro SIMPLE_TOOLTIP_ANIMATION)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+
+		(style
+			(hcenter = "0")
+		)
+
+		(block
+			(macro DIPLOMACY_BG)
+
+			(style
+				(align="center")
+			)
+
+			(mc 'toggeled_consumable_mask'
+				(style
+					(position = "absolute")
+				)
+				(isMask = true)
+			)
+
+			(controller $Instance renderer='ModifierSlotProgressColorElement'
+				(args
+					_percent = "modifierCountPercent"
+				)
+				(exprs
+					(scope
+						(bind percent "modifierCountPercent")
+					)
+				)
+			)
+
+	
+			(block
+				
+				(bind visible "!iconPath")
+				(style
+					(width = "60px")
+					(height = "60px")
+					(bind backgroundImage "simpleIconPath")
+				)
+			)
+
+			(block
+				(bind visible "iconPath")
+
+				(block
+					(style
+						(pivotX = 30px)
+						(pivotY = 20px)
+					)
+					
+					(controller $Animation
+						
+						
+
+						(bindcall play duration=0.15 delay=0.00 from={scaleX:1, scaleY:1} to={scaleX:1.5, scaleY:1.5} (event "shipModifierComponent.evLevelChanged"))
+						(bindcall play duration=0.15 delay=0.15 from={scaleX:1.5, scaleY:1.5} to={scaleX:0.8, scaleY:0.8} (event "shipModifierComponent.evLevelChanged"))
+						(bindcall play duration=0.10 delay=0.30 from={scaleX:0.8, scaleY:0.8} to={scaleX:1.1, scaleY:1.1} (event "shipModifierComponent.evLevelChanged"))
+						(bindcall play duration=0.15 delay=0.40 from={scaleX:1.1, scaleY:1.1} to={scaleX:1, scaleY:1} (event "shipModifierComponent.evLevelChanged"))
+					)
+
+					(block
+						(style
+							(width = "60px")
+							(height = "60px")
+							(bind backgroundImage "iconPath")
+						)
+						(bind alpha "!hasModifiers ? 0.6 : 1")
+					)
+				)
+
+				
+				(tf
+					(bind visible "hasModifiers")
+					(class $TextDefaultBoldNM)
+					(class $MiddleAlignedAbsolutely)
+					(class $FontDropShadowFilterStrong)
+					(style (bottom = "S"))
+					(bind text "modifiersString")
+				)
+			)
+		)
+
+		(mc 'toggeled_consumable_frame'
+			(style
+				(position = "absolute")
+			)
+		)
+
+		(element HotkeyIndicator _commandId="commandId" _toggled="consumableState == SC.Battle.CONSUMABLE_STATES.AT_WORK"
+			(style
+				(position = "absolute")
+				(hcenter = 0px)
+				(bottom = "-HOTKEY_SIZE[SIZE.MEDIUM]")
+			)
+		)
+	)
+)
+
+(def element ModifierSlotProgressColorElement(_percent:number) layout=true
+	(scope
+		(var Red0: number = "230")
+		(var Red100: number = "40")
+		
+		(var Green0: number = "160")
+		(var Green100: number = "230")
+		
+		(var Blue0: number = "40")
+		(var Blue100: number = "140")
+
+		(var percent:number = "_percent")
+	)
+
+	(style
+		(width = "100%")
+		(bind height "1%  * ceil(100 * percent)")
+		(position = "absolute")
+		(bottom = 0)
+	)
+
+	(block
+		(style
+			(backgroundColor = "0xFF000000")
+			(width = "100%")
+			(height = "100%")
+		)
+
+		(bind colorTransform "{redMultiplier:1,
+								greenMultiplier:1,
+								blueMultiplier:1,
+								alphaMultiplier:1,
+								redOffset:Red0 + (Red100 - Red0) * percent,
+								greenOffset:Green0 + (Green100 - Green0) * percent,
+								blueOffset:Blue0 + (Blue100 - Blue0) * percent,
+								alphaOffset:0}")
+	)
+	
+)

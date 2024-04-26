@@ -1,0 +1,275 @@
+(def macro DEFAULT_TOOLTIP_BEHAVIOUR (_priority:expression = "0")
+
+	(bindcall show animation =	{	duration:	"0.3",
+									delay:		"0.3",
+									easing:		"Easing.cubic_out",
+									from:		{ alpha: 0, top: 5 },
+									to:			{ alpha: 1, top: 0 }
+								}
+								on = 'rollOver'
+	)
+
+	(bindcall hide animation = {	duration:	"0.05",
+									delay:		"0",
+									easing:		"Easing.cubic_out",
+									from:		{ alpha: 1, top: 0 },
+									to:			{ alpha: 0, top: -5}
+								}
+								on = 'rollOut'
+	)
+
+	(offset = {	x: 0, y: 15})
+
+	(screenBoundsOffset = {			left:	10,
+									top:	10,
+									right:	10,
+									bottom:	10 })
+	
+	(priority = "_priority")
+
+	(align="bottom|right")
+	(position="trackMouse")
+)
+
+(def macro DEFAULT_INFOTIP_BEHAVIOUR (_priority:expression = "0")
+	(bindcall show animation =	{	duration:	"0.15",
+									easing:		"Easing.quint_in",
+									from:		{ alpha: 0, top: 10 },
+									to:			{ alpha: 1, top: 0 }
+								}
+								on='click'
+	)
+
+	(bindcall hide animation =	{	duration:	"0.15",
+									easing:		"Easing.quint_out",
+									from:		{ alpha: 1, top: 0 },
+									to:			{ alpha: 0, top: 10 }
+								}
+								on='evClickOutside'
+	)
+	(position="border")
+	(priority = "_priority")
+)
+
+(def macro DEFAULT_TOOLTIP_BEHAVIOUR_WITH_TOP (_priority:expression = "0")
+
+	(bindcall show animation =	{	duration:	"0.3",
+									delay:		"0.3",
+									easing:		"Easing.cubic_out",
+									from:		{ alpha: 0 },
+									to:			{ alpha: 1 }
+								}
+								on = 'rollOver'
+	)
+
+	(bindcall hide animation = {	duration:	"0.05",
+									delay:		"0",
+									easing:		"Easing.cubic_out",
+									from:		{ alpha: 1 },
+									to:			{ alpha: 0 }
+								}
+								on = 'rollOut'
+	)
+
+	(offset = {	x: 6, y: 26})
+
+	(screenBoundsOffset = {			left:	10,
+									top:	10,
+									right:	10,
+									bottom:	10 })
+	
+	(priority = "_priority")
+
+	(align="top|right")
+	(position="trackMouse")
+)
+
+(def macro DEFAULT_MENU_BEHAVIOUR (_evHide:expression = "''", _priority:expression = "0")
+	(bindcall show animation =	{	duration:	"0.15",
+									delay:		"0",
+									from:		{ alpha: 0, top: 10 },
+									to:			{ alpha: 1, top: 0 }
+								}
+								on='rightClick'
+	)
+
+	(bindcall hide animation =	{	duration:	"0.05",
+									delay:		"0",
+									from:		{ alpha: 1, top: 0 },
+									to:			{ alpha: 0, top: 10 }
+								}
+								on='stageMouseDown'
+								(event "_evHide")
+	)
+	
+	(offset = {	x: 1, y: 2 })
+
+	(screenBoundsOffset =	{	left:	10,
+								top:	10,
+								right:	10,
+								bottom:	10 })
+
+	(priority = "_priority")
+
+	(align="bottom|right")
+	(position="atMouse")
+)
+
+
+(def macro NOTIFICATIONS_INFOTIP_BEHAVIOUR (_priority:expression = "0")
+
+	(bindcall show animation =	{	duration:	"0.15",
+									easing:		"Easing.quint_in",
+									from:		{ alpha: 0, top: 10 },
+									to:			{ alpha: 1, top: 0 }
+								}
+								on='leftClick'
+	)
+
+	(bindcall hide animation =	{	duration:	"0.15",
+									easing:		"Easing.quint_out",
+									from:		{ alpha: 1, top: 0 },
+									to:			{ alpha: 0, top: 10 }
+								}
+								on='evClickOutside'
+	)
+
+	(offset = {	x: -25, y: 4 })
+	
+	(align="top")
+	(position="borderNoTrack")
+	(priority = "_priority")
+)
+
+(def macro VERTICAL_INFOTIP_BEHAVIOUR (_priority:expression = "0")
+
+	(bindcall show animation =	{	duration:	"0.15",
+									easing:		"Easing.quint_in",
+									from:		{ alpha: 0, top: 10 },
+									to:			{ alpha: 1, top: 0 }
+								}
+								on='leftClick'
+	)
+
+	(bindcall hide animation =	{	duration:	"0.15",
+									easing:		"Easing.quint_out",
+									from:		{ alpha: 1, top: 0 },
+									to:			{ alpha: 0, top: 10 }
+								}
+								on='evClickOutside'
+	)
+
+	(offset = {	x: 0, y: 4 })
+	
+	(align="top|center")
+	(position="borderNoTrack")
+	(priority = "_priority")
+)
+
+(def macro HORIZONTAL_INFOTIP_BEHAVIOUR (_priority:expression = "0")
+
+	(bindcall show animation =	{	duration:	"0.2",
+									delay:		"0.05",
+									easing:		"Easing.cubic_out",
+									from:		{ alpha: 0, top: -10},
+									to:			{ alpha: 1, top: 0}
+								}
+								on='leftClick'
+	)
+
+	(bindcall hide animation =	{	duration:	"0.15",
+									delay:		"0",
+									easing:		"Easing.cubic_out",
+									from:		{ alpha: 1, top: 0 },
+									to:			{ alpha: 0, top: 10 }
+								}
+								on='evClickOutside'
+	)
+
+	(offset = {	x: -10, y: 0 })
+
+	(screenBoundsOffset =	{	left:	10,
+								top:	10,
+								right:	10,
+								bottom:	10 })
+	
+	(align="top|center")
+	(position="borderNoTrack")
+	(priority = "_priority")
+)
+
+(def macro SHIP_TREE_TOOLTIP_BEHAVIOUR (_shipId:expression, _priority:expression = "0")
+
+	(bindcall show animation =	{	duration:	"0.3",
+									delay:		"0.7",
+									easing:		"Easing.cubic_out",
+									from:		{ alpha: 0, top: 5},
+									to:			{ alpha: 1, top: 0}
+								}
+								on = 'rollOver'
+	)
+
+	(bindcall hide animation =	{	duration:	"0.1",
+									delay:		"0.05",
+									easing:		"Easing.cubic_out",
+									from:		{ alpha: 1, top: 0 },
+									to:			{ alpha: 0, top: 10 }
+								}
+								on = 'rollOut'
+	)
+
+	(offset = {	x: 0, y: 10 })
+
+	(screenBoundsOffset =	{	left:	10,
+								top:	10,
+								right:	10,
+								bottom:	10 })
+
+	(priority = "_priority")
+
+	
+	(macro MAKE_TOOLTIP_SHIP_PARAMS_LIST "_shipId")
+
+	(align="top|center")
+	(position="borderNoTrack") 
+	
+	
+	
+)
+
+(def macro SYSTEM_MESSAGE_TOOLTIP_BEHAVIOUR (_priority:expression = "0")
+
+	(bindcall show animation =	{	duration:	"0.3",
+									delay:		"0.3",
+									easing:		"Easing.cubic_out",
+									from:		{ alpha: 0, top: 5 },
+									to:			{ alpha: 1, top: 0 }
+								}
+								on = 'rollOver'
+	)
+
+	(bindcall hide animation = {	duration:	"0.05",
+									delay:		"0",
+									easing:		"Easing.cubic_out",
+									from:		{ alpha: 1, top: 0 },
+									to:			{ alpha: 0, top: 5 }
+								}
+								on = 'rollOut'
+	)
+
+	(offset = {	x: 5, y: 0 })
+
+	(screenBoundsOffset =	{	left:	10,
+								top:	10,
+								right:	10,
+								bottom:	10 })
+
+	(priority = "_priority")
+
+	(align="left|middle")
+	(position="borderNoTrack")
+)
+
+(def macro MAKE_TOOLTIP_SHIP_PARAMS_LIST (_shipId:expression)
+	(bindcall externalCall 'direct.action' "['make_tooltipShipParams_list', [_shipId]]" init=false watch=false on='evStartShow')
+)

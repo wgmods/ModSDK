@@ -1,0 +1,21 @@
+(def element MaxSpeedUnderwater (shipTTX:gfx, underwaterMobilityTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAX_SPEED_UNDER_WATER'
+									_value = "underwaterMobilityTTX.speed"
+									_valueConfig = "VALUE_CONFIG.KNOT_FLOAT"
+	)
+)
+
+(def layout ModuleEngine_ParametersForDock (shipTTX:gfx, hasIntegralDiff:bool)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAXSPEED'
+											_value = "shipTTX.mobility.speed"
+											_valueConfig = "VALUE_CONFIG.KNOT_FLOAT"
+			)
+			(macro TTX_INSTANCE 'MaxSpeedUnderwater' "shipTTX.underwaterMobility")
+		)
+	)
+	(macro TTX_INSTANCE 'ModuleIntegralParams' "shipTTX" "hasIntegralDiff")
+)

@@ -1,0 +1,38 @@
+<WF010_Rangefinder_3m_SW_lod1.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	WF010_Rangefinder_3m_SW	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	WF010_Rangefinder_3m_SW	</node>
+		<geometry>
+			<vertices>	WF010_Rangefinder_3m_SW_lod1Shape.vertices	</vertices>
+			<primitive>	WF010_Rangefinder_3m_SW_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/WSD104_Klas_Horn/finder/WF010_Rangefinder_3m_SW.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1062 -0.0006 -0.0229	</min>
+		<max>	0.1062 0.1250 0.0480	</max>
+	</boundingBox>
+</WF010_Rangefinder_3m_SW_lod1.visual>

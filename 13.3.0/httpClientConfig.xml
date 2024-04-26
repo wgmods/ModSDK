@@ -1,0 +1,27 @@
+<webConfig>
+    <replayCDN>
+        <enabled>true</enabled>
+        <!-- HTTP settings -->
+        <http>
+            <!-- service address -->
+            <url>http://replays-wows-global.gcdn.co</url> <!-- Add CDN to bw.xml later instead of hardcoding it here -->
+            <content_type>binary</content_type>
+            <!-- timeout of calls -->
+            <timeout>7</timeout>
+            <retry_settings>
+                <start_retry_timeout> 5 </start_retry_timeout>
+                <max_retry_timeout> 5 </max_retry_timeout>
+            </retry_settings>
+        </http>
+    </replayCDN>
+	<prospective_event>
+		<enabled>true</enabled>
+		<!-- HTTP settings -->
+		<http>
+			<!-- service address -->
+			<url>http://currentevent.noiseproxy.lesta.io</url>
+			<!-- timeout of calls -->
+			<timeout>7</timeout>
+		</http>
+	</prospective_event>
+</webConfig>

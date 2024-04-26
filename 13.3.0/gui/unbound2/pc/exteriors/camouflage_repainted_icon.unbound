@@ -1,0 +1,53 @@
+(def element CamouflageRepaintedIcon (_camouflageId:number, _fakeColorScheme:dict="null") layout=true
+	(scope
+		(var exteriorEntity:gfx = "$datahub.getPrimaryEntity(CC.exteriorConfig, _camouflageId)")
+		(var exteriorConfig:gfx = "exteriorEntity ? exteriorEntity.exteriorConfig : null")
+		(var ownCamouflage:gfx = "exteriorEntity ? exteriorEntity.ownCamouflage : null")
+
+
+		(macro USER_PREF_DATA)
+		(var previewExteriorId:number = "userPrefs.previewExteriorId")
+		(var isPreviewedExterior:bool = "previewExteriorId == _camouflageId")
+
+		(var iconPatternIndexDH:number = "ownCamouflage.iconPatternIndex" (event "ownCamouflage.evIconPatternIndexUpdated"))
+
+		(var previewCamoColorScheme:number = "ownCamouflage ? ownCamouflage.previewCamoColorScheme : null"	watch=false)
+		(var pickedCamoColorScheme:number = "ownCamouflage ? ownCamouflage.pickedCamoColorScheme : null"	watch=false)
+
+		(bind previewCamoColorScheme "ownCamouflage ? ownCamouflage.previewCamoColorScheme : null" (event "ownCamouflage.evUpdated") (bind trigger "exteriorEntity"))
+		(bind pickedCamoColorScheme "ownCamouflage ? ownCamouflage.pickedCamoColorScheme : null" (event "ownCamouflage.evUpdated") (bind trigger "exteriorEntity"))
+		
+		(var selectedColorSchemeEntityId:number = "isPreviewedExterior ? previewCamoColorScheme : pickedCamoColorScheme")
+		(var colorSchemeEntity:gfx = "$datahub.getEntity(selectedColorSchemeEntityId)")
+
+		(var colorScheme:gfx = "_fakeColorScheme	? _fakeColorScheme :
+								colorSchemeEntity	? colorSchemeEntity.colorScheme
+													: null")
+		(var colorsNum:number = "colorScheme ? colorScheme.colorsNum : 0")
+		(var iconPatternIndex:number = "_fakeColorScheme && 'iconPatternIndex' in _fakeColorScheme ? _fakeColorScheme.iconPatternIndex : iconPatternIndexDH")
+
+		(var imagesPath:str = "	ownCamouflage.isTileflage 										? 'url:../exteriors/camouflages_colored/tileflage/' + toUpper(exteriorConfig.name) + '/' :
+								exteriorConfig.type == SC.Exteriors.EXTERIOR_TYPE.PERMOFLAGE	? 'url:../exteriors/camouflages_colored/permanent/' + iconPatternIndex + '/'+ colorsNum + '_color/'
+																								: 'url:../exteriors/camouflages_colored/expendable/' + toUpper(exteriorConfig.name) + '/'")
+	)
+	(style (height = 60px) (width = 60px))
+	
+	(controller $Repeat renderer='ColoredIcon'
+		(bind count "colorsNum")
+		(args
+			_colorScheme = "colorScheme"
+			_imagesPath = "imagesPath"
+		)
+	)
+)
+
+(def element ColoredIcon (_colorScheme:gfx, _imagesPath:str) layout=true
+	(style (position = "absolute") (bind backgroundImage "_imagesPath + 'color_' + $index + '.png'"))
+
+	(bind colorTransform "	{	redMultiplier:0,
+								greenMultiplier:0,
+								blueMultiplier:0,
+								redOffset: _colorScheme['color' + $index][0],
+								greenOffset: _colorScheme['color' + $index][1],
+								blueOffset: _colorScheme['color' + $index][2]}")
+)

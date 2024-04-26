@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<constants>
+	<enum name="GUN_STATE" type="Integer">
+		<const name="READY"				value="1" /> <!-- Орудие готово к стрельбе -->
+		<const name="WORK" 				value="2" /> <!-- Орудие в работе -->
+		<const name="RELOAD"			value="3" /> <!-- Орудие перезаряжается -->
+		<const name="SWITCHING_AMMO"	value="4" /> <!-- Орудие меняет тип снаряда -->
+		<const name="RELOAD_STOPPED"	value="5" /> <!-- Орудие ожидает перезарядку -->
+		<const name="CHARGE"			value="6" /> <!-- Орудие заряжается -->
+		<const name="CRITICAL"			value="7" /> <!-- Орудие критически повреждено -->
+		<const name="DESTROYED"			value="8" /> <!-- Орудие полностью недоступно -->
+		<const name="SWITCHING_CRITICAL" value="9" /> <!-- Орудие меняет тип снаряда во время повреждения -->
+		<const name="DISABLED" 			value="10" /> <!-- Орудие READY, но не может быть использовано из-за ограничений -->
+
+		<range name="WITH_PROGRESS" values="WORK, RELOAD, CHARGE, SWITCHING_AMMO, SWITCHING_CRITICAL"/>
+	</enum>
+
+	<enum name="BARREL_FIRE_MODE" type="Integer" >
+		<const name="SINGLE"	value="1" />
+		<const name="SALVO" 	value="2" />
+	</enum>
+
+	<enum name="GUN_MARKER_TYPE" type="Integer">
+		<const name="CIRCLE"	value="0" />
+		<const name="RECT" 		value="1" />
+	</enum>
+
+	<enum name="AMMO_UNIQUE_FEATURES" type="Integer">
+		<const name="TORPEDO_CHANGE_DAMAGE_BY_DIST"		value="0" />
+		<value_to_name/>
+	</enum>
+</constants>

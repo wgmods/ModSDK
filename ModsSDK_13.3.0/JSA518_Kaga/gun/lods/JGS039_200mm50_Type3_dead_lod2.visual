@@ -1,0 +1,56 @@
+<JGS039_200mm50_Type3_dead_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	gun200mm_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS100_YGBS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.5250 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.5248 -0.0138 0.0000	</row1>
+					<row2>	0.0000 0.0138 0.5248 0.0000	</row2>
+					<row3>	0.0000 0.0701 0.2718 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.4363 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.4362 -0.0115 0.0000	</row1>
+					<row2>	0.0000 0.0115 0.4362 0.0000	</row2>
+					<row3>	0.0000 0.0805 0.6668 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	gun200mm_dead	</node>
+		<geometry>
+			<vertices>	gun200mm_dead_lod2Shape.vertices	</vertices>
+			<primitive>	gun200mm_dead_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSA518_Kaga/gun/JGS008_150mm50_Type_41_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1076 0.0000 -0.1242	</min>
+		<max>	0.1545 0.1774 0.6670	</max>
+	</boundingBox>
+</JGS039_200mm50_Type3_dead_lod2.visual>

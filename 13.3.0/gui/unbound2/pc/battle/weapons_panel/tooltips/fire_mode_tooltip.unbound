@@ -1,0 +1,84 @@
+(def element FireModeTooltip (_fireModeEntity:gfx=null, _fireModeStruct:gfx=null) layout=true
+	(scope
+		(var ownerEntity:gfx = "_fireModeEntity ? $datahub.getSingleEntity(CC.playerAvatar) : null")
+
+		(var fireModeSlot:gfx = "_fireModeEntity ? _fireModeEntity.fireModeSlot: _fireModeStruct")
+		(var fireModeIconPath:str = "'url:' + fireModeSlot.iconPath")
+
+		(var title:str = "fireModeSlot.title")
+		(var description:str = "fireModeSlot.description")
+
+		(var attributesNegative:array = "_fireModeEntity ? _fireModeEntity.attributes.negative : fireModeSlot.attributes.negative")
+		(var attributesPositive:array = "_fireModeEntity ? _fireModeEntity.attributes.positive : fireModeSlot.attributes.positive")
+		(var attributesNeutral:array = "_fireModeEntity ? _fireModeEntity.attributes.neutral : fireModeSlot.attributes.neutral")
+
+		(var isAttributes:bool = "(attributesNegative.length + attributesPositive.length + attributesNeutral.length) > 0")
+
+	)
+	(style (width = 340) (hitTest = false))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+					_imageUrl="fireModeIconPath"
+					_imageWidth=60
+					_imageHeight=60
+					_unifiedStatus=''
+					_headerText="title"
+					_subheaderText='IDS_DOCK_FIRE_MODE_SUBHEADER'
+		)
+		
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemDescriptionText _descriptionText="description")
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "isAttributes")
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemParamsModifiersList'
+				(bind enabled "isAttributes")
+				(args
+					_attributesNegative="attributesNegative"
+					_attributesPositive="attributesPositive"
+					_attributesNeutral="attributesNeutral"
+					_ownerId="ownerEntity ? ownerEntity.id: 0"
+				)
+			)
+		)
+	)
+)
+
+(def element FireModeTooltipParams (_ownerId:str = '') dispatch_size_change=true
+	(scope
+		(var comparison:gfx = "$datahub.getSingleComponent(CC.comparison)")
+		(var panelTTX:gfx = "comparison ? comparison.panelTTX : null" (event "comparison.evPanelTTXChanged"))
+		(var altFireModeTTX:gfx = "panelTTX ? panelTTX.artillery.altFireMode : null")
+
+		(var shotDelay:gfx = "altFireModeTTX ? altFireModeTTX.shotDelay : DEFAULT_TTX_VALUE")
+		(var numShots:gfx = "altFireModeTTX ? altFireModeTTX.numShots : DEFAULT_TTX_VALUE")
+	)
+	(style (bind width "340px") (paddingLeft = "-M") (paddingRight = "M"))
+	(block
+		(class $TooltipModuleParamsContainer)
+		(block
+			(class $ParametersPanel)
+			(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+				(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+					(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_BURST_FIRE_SALVO_SHOT_DELAY'
+													_value = "shotDelay"
+													_alternativeValueKey = "_ownerId + '_' + SC.Battle.PARAMETER.reloadTimeShot_BurstFire"
+													_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+													_zeroValueHidden = true
+					)
+					(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_BURST_FIRE_SALVO_COUNT'
+													_value = "numShots"
+													_zeroValueHidden = true
+					)
+				)
+			)
+		)
+	)
+)
+

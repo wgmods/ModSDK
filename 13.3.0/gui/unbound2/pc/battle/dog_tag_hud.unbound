@@ -1,0 +1,136 @@
+(def constant DOGTAG_BINDING	{	CONFIRM_WATCH_BATTLE: 	{	title:			"'IDS_CONFIRM_WATCH_BATTLE'",
+																values:			"[Cmd.CMD_SWITCH_CAMERA_SPECTATE]"
+															},
+									CONFIRM_OUT_BATTLE: 	{	title:			"'IDS_CONFIRM_OUT_BATTLE'",
+																values:			"[Cmd.CMD_ESC]"
+															}
+})
+
+(def constant DOGTAG_BIND_LIST		"[	DOGTAG_BINDING.CONFIRM_WATCH_BATTLE,
+										DOGTAG_BINDING.CONFIRM_OUT_BATTLE
+									]")
+
+(def element KillerInfoContainer (_killerId:number)
+	(scope
+		(macro IS_SPECTATOR_MODE)
+		(var killerIsPlayer:bool = "_killerId != 0")
+
+		(var cameraComponent:gfx = "$datahub.getSingleComponent(CC.camera)") 
+		(var isTacticalMap:bool = "cameraComponent ? cameraComponent.isTactical : false" (event "cameraComponent.evTacticalStateChanged"))
+	)
+
+	(controller $Animation
+		(bindcall play to={alpha:0} duration=0.2 action="killAll" easing="Easing.sine_in" watch=false (bind enabled "isTacticalMap"))
+		(bindcall play to={alpha:1} duration=0.2 action="killAll" easing="Easing.sine_in" watch=false (bind enabled "!isTacticalMap"))
+	)
+	(controller $Instance renderer='KillerPlayerInfo'
+		(bind enabled "killerIsPlayer && _killerId != null")
+		(args
+			_killerId = "_killerId"
+		)
+	)
+	
+	(controller $Instance renderer='KillerEventInfo'
+		(bind enabled "!killerIsPlayer && _killerId != null")
+	)
+)
+
+(def element KillerPlayerInfo (_killerId:number) 
+	(scope
+		(var selfAvatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var selfAvatarId:gfx = "selfAvatarEntity ? selfAvatarEntity.avatar.id : INVALID_PLAYER_AVATAR_ID")
+		(var timeToRespawn:number = "selfAvatarEntity ? selfAvatarEntity.playerAvatar.timeToRespawn : null" (event "selfAvatarEntity.playerAvatar.evTimeToRespawnChanged"))
+		
+		(var killerEntity:gfx = "_killerId != 0 ? $datahub.getPrimaryEntity(CC.avatar, _killerId) : null")
+		(var killerRelation:number = "killerEntity ? killerEntity.relation.value : 0")
+		(var playerDbId:number = "killerEntity ? killerEntity.accountSimple.dbId : INVALID_PLAYER_AVATAR_ID")
+		
+		(var isSelfTeamKiller:bool = "selfAvatarEntity ? selfAvatarEntity.avatar.tkStatus : false"  (event "selfAvatarEntity.avatar.evTeamkillStatusChanged"))
+		(var isSuicide:bool = "_killerId == selfAvatarId")
+		(var avatarInfo:gfx = "selfAvatarEntity.accountInfo")
+		(var abuseStatus:number = "avatarInfo.abuseStatus" (event "avatarInfo.evAbuseStatusChanged"))
+		(var killerColorPresetName:str = "isSuicide && isSelfTeamKiller ?	'teamkiller'	
+																		:	isSuicide		?	'division' 
+																							:	'enemy'")
+		(var dogTagViewComponent:gfx = "killerEntity ? killerEntity.dogTagView : null")
+		(var dogTagIdList:array = "dogTagViewComponent ? dogTagViewComponent.components : []" (event "dogTagViewComponent.evComponentsChanged"))
+	)
+
+	(style (height = "DOG_TAG_SIZE.MEDIUM") (flow = "horizontal") (align = "middle"))
+	
+	(block
+		(style (width = "DOG_TAG_SIZE.MEDIUM") (height = "DOG_TAG_SIZE.MEDIUM"))
+		(bind visible "dogTagIdList.length > 0")
+		
+		(controller $Instance renderer='PlayerDogTag'
+			(args
+				_playerId		= "playerDbId"
+				_size			= "DOG_TAG_SIZE.MEDIUM"
+			)
+		)
+	)
+	(block
+		(tf
+			(class $TextDefault17NM)
+			(style
+				(alpha = "TA")
+				(marginBottom = "XS")
+			)
+			(text = 'IDS_DOGTAG_HUD_SHIP_IS_DEAD_OF_PLAYER') 
+		)
+
+		(element ShipBlock	_entity="killerEntity"
+							_textColor="TWO_TEAMS_FONT_COLOR[killerColorPresetName]"
+							_colorTransformation="TWO_TEAMS_COLOR_TRANSFORMS[killerColorPresetName]"
+							_textClass='$TextDefaultBold17NM'
+			(style (marginBottom = "S"))
+		)
+
+		(block
+			(controller $Repeat renderer='HotKeysDogTag'
+				(bind count "DOGTAG_BIND_LIST.length")
+				(args "DOGTAG_BIND_LIST[$index]")
+			)
+		)
+	)
+)
+
+(def element KillerEventInfo () 
+	(style (height = "190px") (align = "middle"))
+	(block
+		(style (marginBottom = "SXS") (width = "190px") (align = "center"))
+		(tf
+			(class $TextDefaultBold17NM)
+			(style (alpha = "TA"))
+			(text = 'IDS_DOGTAG_HUD_SHIP_IS_DEAD') 
+		)
+	)
+	(block
+		(controller $Repeat renderer='HotKeysDogTag'
+			(bind count "DOGTAG_BIND_LIST.length")
+			(args "DOGTAG_BIND_LIST[$index]")
+		)
+	)
+)
+
+(def element HotKeysDogTag (data:dict)
+	(style (align = "middle") (alpha = "TA") (marginBottom = "S") (marginTop = "S") (flow = "horizontal"))
+		(block
+			(style (height = "1px") (width = "45px") (align = "right|middle"))
+
+			(controller $Repeat renderer='HotkeyIndicator'
+				(bind count "data.values.length")
+				(args 
+					_commandId="data.values[$index]"
+					_fxOnDown=false
+					_active=true
+					_size = "SIZE.LARGE"
+				)
+			)
+		)
+		(tf
+			(style (align = "middle") (marginLeft = "SXS"))
+			(class $TextDefault17NM)
+			(bind text "data.title")
+		)
+)

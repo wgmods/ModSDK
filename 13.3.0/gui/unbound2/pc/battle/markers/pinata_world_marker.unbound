@@ -1,0 +1,286 @@
+(def element PinataMarkerIconItem (_markerEntity:gfx) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'vehicle')
+		(var colorOffset:number = "0" watch=false)
+		(controller $Animation
+			(bindcall play	duration=0.15
+							from={colorOffset: 0}
+							to={colorOffset: 160}
+							action="killAll"
+							(event "vehicleComponent.evHit")
+			)
+			(bindcall play	duration=0.45
+							delay=0.15
+							from={colorOffset: 160}
+							to={colorOffset: 0}
+							(event "vehicleComponent.evHit")
+			)
+		)
+		(macro SHIP_MARKER_ICON_DATA "_markerEntity.id")
+		(var markerColorName:str = "isDeadEnemy ? 'sunk' : 'enemy'")
+	)
+
+	(class $WorldMarkerItemMargins)
+	(style
+		(width = "SHIP_ICON_SIZE.WIDTH")
+		(height = "SHIP_ICON_SIZE.HEIGHT")
+		(align = "center|middle")
+	)
+
+	(block
+		(style
+			(width = 0) (height = 0)
+			(align = "center|middle")
+		)
+
+		(block
+			(style
+				(width = "SHIP_ICON_SIZE.WIDTH") (height = "SHIP_ICON_SIZE.HEIGHT")
+				(backgroundSize = "fill")
+				(bind backgroundImage "'url:../battle_hud/markers/pinata/pinata_' + markerColorName + '.png'")
+			)
+		)
+
+		(bind colorTransform "{redOffset: colorOffset, greenOffset: colorOffset, blueOffset: colorOffset}")
+	)
+)
+
+(def layout WorldPinataMarker (_markerEntity:gfx)
+	(scope
+		(event evMarkerShow)
+		(event evMarkerHide)
+
+		
+		(macro GET_MARKER_ENTITY_COMPONENT 'avatar')
+		(macro GET_MARKER_ENTITY_COMPONENT 'distance')
+		(macro GET_MARKER_ENTITY_COMPONENT 'health')
+		(macro GET_MARKER_ENTITY_COMPONENT 'relation')
+		(macro GET_MARKER_ENTITY_COMPONENT 'target')
+		(macro GET_MARKER_ENTITY_COMPONENT 'mapPosition')
+		(macro GET_MARKER_ENTITY_COMPONENT 'dissolve')
+		(macro GET_MARKER_ENTITY_COMPONENT 'scenarioTag')
+
+		
+		(macro ALT_VISION_SCOPE)
+
+		
+		(var targetFlags:number = "targetComponent ? targetComponent.flags : 0" (event "targetComponent.evChanged") (event "targetComponent.evFlagsChanged"))
+		(var isTargetLocked:bool = "(targetFlags & LOCKABLE_WEAPONS) > 0")
+		(var distanceIndex:number = "distanceComponent ? distanceComponent.distanceIndex : DistanceType.NEAR" (event "distanceComponent.evDistanceIndexChanged"))
+		(var relationValue:number = "relationComponent ? relationComponent.value : -1" (event "relationComponent.evChanged"))
+
+		
+		(macro IS_ON_PLANE)
+
+		
+		(var hasBattery:bool = "_markerEntity.hasComponent(CC.battery)" (event "_markerEntity.evAdded"))
+		(var hasSubmarineScreenPosition:bool = "_markerEntity.hasComponent(CC.submarineScreenPosition)" (event "_markerEntity.evAdded"))
+
+		
+		(var isAlive:bool = "healthComponent && healthComponent.isAlive" (event "healthComponent.evIsAliveChanged"))
+		(var distanceType:number = "isTactical								? DistanceType.TACTICAL :
+									isTargetLocked || isFullAltVisionMode 	? DistanceType.NEAR
+																			: distanceIndex")
+
+		(var farAdaptiveAltVisionMode:bool = "isAdaptiveAltVisionMode && distanceType <= DistanceType.FAR")
+		
+		(var shipNameItemVisibility:bool = "((distanceType == DistanceType.TACTICAL && isAdaptiveAltVisionMode) || farAdaptiveAltVisionMode)")
+		(var playerNameItemVisibility:bool = "(distanceType != DistanceType.TACTICAL && farAdaptiveAltVisionMode)")
+		(var distanceItemVisibility:bool = "(!(isIn(distanceType, [DistanceType.TACTICAL, DistanceType.FARTHEST])) || isAdaptiveAltVisionMode)")
+
+		(var weaponController:gfx = "$datahub.getSingleComponent(CC.weaponController)")
+		(var selectedWeapon:number = "weaponController ? weaponController.selectedWeapon : SC.Ships.SHIP_WEAPON_TYPES.NONE" (event "weaponController.evSelectedWeaponChanged"))
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'canHit')
+		(var canHitFlags:number = "canHitComponent ? canHitComponent.flags : 0" (event "canHitComponent.evChanged"))
+		(var cantHit:bool = "selectedWeapon != SC.Ships.SHIP_WEAPON_TYPES.NONE 	? !(canHitFlags & (1 << selectedWeapon))
+																				: false")
+
+		(var healthBarItemLarge:bool = "isAdaptiveAltVisionMode && distanceType <= DistanceType.FAR")
+		(var healthBarItemVisible:bool = "((isAdaptiveAltVisionMode && distanceType <= DistanceType.FARTHEST) || (distanceType == DistanceType.NEAR) || (isTargetLocked && distanceType != DistanceType.TACTICAL))")
+		(var batteryBarItemVisible:bool = "hasBattery && healthBarItemVisible")
+		(var cantHitItemVisible:bool = "(isAdaptiveAltVisionMode || isTargetLocked || distanceType < DistanceType.FAR) && cantHit")
+
+		(var statesCollection:gfx = "$datahub.getCollection(CC.state)")
+		(var entityStates:gfx = "statesCollection.getChildByPath('byEntity.' + _markerEntity.id + '.marker.sorted')" (event "statesCollection.evChildAdded") (event "entityStates.evAdded") (event "entityStates.evRemoved") (event "entityStates.evChanged"))
+		(var stateItems:gfx = "entityStates ? entityStates.items : null" (event "statesCollection.evChildAdded") (event "entityStates.evAdded") (event "entityStates.evRemoved") (event "entityStates.evChanged"))
+
+		(macro SCOPE_HIGHLIGHT_MARKER_ON_WORLD_MOUSE_OVER)
+	)
+
+	(dispatch evMarkerShow args="{}" on='addedToStage')
+
+	(style
+		(width = 0) (height = 0)
+		(bind align "isTactical ? center|middle
+								: center|bottom")
+	)
+
+	(alpha = "0")
+
+	(controller $Animation
+		(bindcall play	duration="DEATH_ANIMATION_DURATION"
+						from="{alpha: 0}"
+						to="{alpha: 1}"
+						init=false
+						watch=false
+						action="killAll"
+						reverse="!(isAlive)"
+						(bind trigger "isAlive")
+		)
+
+		(macro MARKER_DISSOLVE_BINDCALL_ANIMATION "true")
+	)
+
+	(block
+		(style
+			(width = 0)
+			(align = "center|top")
+			(position = "absolute")
+			(bind alpha "distanceItemVisibility ? 1 : 0")
+			(bind top "isTactical	? SHIP_ICON_SIZE.HEIGHT / 2 + DEPTH_INDICATOR_OFFSET_TACTICAL
+									: 0")
+		)
+		(controller $Instance renderer='SubmarineDepthItem'
+			(bind enabled "hasSubmarineScreenPosition")
+			(args _markerEntity="_markerEntity")
+		)
+	)
+
+	
+	(block
+		(style
+			(width = 0) (zindex = 4)
+			(align = "center|bottom")
+			(bind position "isTactical ? absolute : flow")
+			(bind bottom "isTactical ? SHIP_ICON_SIZE.HEIGHT / 2 : 0")
+		)
+
+		(block
+			(element PriorityItem "_markerEntity")
+			(element TargetAnimationItem "_markerEntity"
+				(style
+					(position = "absolute")
+					(top = 0) (left = 50%)
+				)
+			)
+			(controller $Instance renderer='ScenarioTagItem'
+				(bind enabled "scenarioTagComponent != null")
+				(args _markerEntity="_markerEntity")
+				(exprs
+					(style
+						(position = "absolute")
+						(bind top "isTactical ? -24 : -28") (left = 50%)
+					)
+				)
+			)
+		)
+
+		(element ShipNameItem "_markerEntity"
+			(bind visible "shipNameItemVisibility")
+		)
+	)
+
+	
+	(block
+		(element PinataMarkerIconItem "_markerEntity"
+			(style
+				(marginTop = "-6") 
+				(marginBottom = "-5") 
+			)
+			(macro EFFECT_HIGHLIGHT_MARKER_ON_MOUSE_OVER)
+			(macro BIND_SCALE "distanceType == DistanceType.FARTHEST ? 0.7 : 1")
+		)
+		(element TargetLockItem "_markerEntity"
+			(style
+				(position = "absolute")
+				(left = 50%) (top = 50%)
+			)
+			(macro BIND_FAIR_SCALE "isTactical ? 0.7 : 1")
+		)
+		(controller $Repeat renderer='SimpleStateItem'
+			(bind enabled "stateItems")
+			(bind count "stateItems.length")
+			(args _collection = "stateItems")
+			(exprs
+				(style
+					(position = "absolute")
+					(left = "-1")
+				)
+			)
+		)
+		(controller $Instance renderer='CanHitItem'
+			(bind enabled "cantHitItemVisible")
+			(args _markerEntity="_markerEntity")
+			(exprs
+				(style
+					(position = "absolute")
+					(bind left "isTargetLocked ? 42 : 24")
+				)
+			)
+		)
+	)
+
+	
+	(element PlayerNameItem "_markerEntity"
+		(bind visible "playerNameItemVisibility")
+	)
+
+	
+	(block
+		(element MarkerHealthBarItem
+			_markerEntity="_markerEntity"
+			_isLarge="healthBarItemLarge"
+
+			(bind visible "healthBarItemVisible")
+			(bind scaleX "distanceType == DistanceType.FARTHEST ? 0.8 : 1")
+			(bind scaleY "distanceType == DistanceType.FARTHEST ? 0.7 : 1")
+		)
+		(controller $Instance renderer='ShipMarkerBatteryBarItem'
+			(bind enabled "hasBattery")
+			(args _markerEntity="_markerEntity" _isLarge="healthBarItemLarge")
+			(exprs
+				(bind visible "batteryBarItemVisible")
+				(bind scaleX "distanceType == DistanceType.FARTHEST ? 0.8 : 1")
+				(bind scaleY "distanceType == DistanceType.FARTHEST ? 0.7 : 1")
+				(style
+					(marginTop = -1px)
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(style
+			(height = 0px)
+			(width = 0px)
+		)
+		(controller $Instance renderer='ShipMarkerBatteryDamageItem'
+			(bind enabled "hasBattery && !isTactical")
+			(args _markerEntity="_markerEntity")
+			(exprs
+				(style
+					(position = "absolute")
+					(bind left "healthBarItemLarge ? 48 : 24")
+					(bind bottom "healthBarItemVisible	? healthBarItemLarge ? 22 : 18
+														: 0")
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "distanceItemVisibility")
+		(style
+			(width = 0)
+			(align = "center|top")
+			(bind position "isTactical ? absolute : flow")
+			(bind top "isTactical ? SHIP_ICON_SIZE.HEIGHT / 2 : 0")
+		)
+		(element DistanceItem "_markerEntity"
+		)	
+	)
+)
+

@@ -1,0 +1,258 @@
+(def element ModernizationItemStatic (_id:number, _amount:number=0, _params:dict="{}") layout=true
+	(scope
+		(var modernizationEntity:gfx = "$datahub.getPrimaryEntity(CC.modernization, _id)")
+		(var modernizationComponent:gfx = "	modernizationEntity ? modernizationEntity.modernization : null")
+
+		(var name:str = "modernizationComponent ? modernizationComponent.name : null")
+		(var isRecommended:bool = "modernizationComponent ? modernizationComponent.isRecommended : null" (event "modernizationComponent.evIsRecommendedChanged"))
+	)
+
+	(controller $Tooltip
+		(bind renderer "'ModernizationTooltip'")
+		(args
+			_modernizationEntityId = "modernizationEntity.id"
+			_noMouseInstruction = true
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(element ModernizationItemView
+		_name = "name"
+		_amount = "_amount"
+		_isRecommended = "isRecommended"
+	)
+)
+
+(def element ModernizationItemView (_name:str, _amount:number=0, _isRecommended:bool=false)
+	(bind name "'ModernizationItemView_' + _name")
+
+	(style
+		(width = 60px)
+		(height = 60px)
+		(bind backgroundImage "'url:../modernization_icons/icon_modernization_' + _name + '.png'")
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "bottom|right"))
+		(controller $Instance renderer='RecommendedItemIcon'
+			(bind enabled "_isRecommended")
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "bottom|right"))
+
+		(element ImageItemsCounter
+			_amount = "_amount"
+		)
+	)
+)
+
+(def element ModernizationTooltip (_modernizationEntityId:number=0, _noMouseInstruction:bool=false, _isSlotTooltip:bool=false) layout=true
+	(scope
+		(macro PULL_SHIP_ID)
+		(macro PULL_OWN_SHIP
+			_shipId			= "shipIdForModuleInset"
+			_entityField	= "'ownShipEntity'"
+			_scopeFieldShip	= "'ownShipInfo'"
+		)
+
+		(var ownShipComponent:gfx = "ownShipEntity ? ownShipEntity.ownShip : null")
+
+		(var modernizationEntity:gfx = "$datahub.getEntity(_modernizationEntityId)")
+		(var modernizationComponent:gfx = "modernizationEntity ? modernizationEntity.modernization : null")
+		(var modernizationAttributes:gfx = "modernizationEntity ? modernizationEntity.attributes : null")
+
+		(var id:number = "modernizationComponent ? modernizationComponent.modId : null")
+		(var name:str = "modernizationComponent ? modernizationComponent.name : null")
+		(var type:str = "modernizationComponent ? modernizationComponent.type : null")
+		(var numInStorage:number = "modernizationComponent ? modernizationComponent.numInStorage : null" (event "modernizationComponent.evNumInStorageChanged"))
+		(var isInstalled:bool = "modernizationComponent ? modernizationComponent.isInstalled : null" (event "modernizationComponent.evIsInstalledChanged"))
+		(var isRecommended:bool = "modernizationComponent ? modernizationComponent.isRecommended : null" (event "modernizationComponent.evIsRecommendedChanged"))
+
+		(var attributesNegative:array = "modernizationAttributes ? modernizationAttributes.negative : null" (event "modernizationAttributes.evChanged"))
+		(var attributesNeutral:array = "modernizationAttributes ? modernizationAttributes.neutral : null" (event "modernizationAttributes.evChanged"))
+		(var attributesPositive:array = "modernizationAttributes ? modernizationAttributes.positive : null" (event "modernizationAttributes.evChanged"))
+
+		(var isOwned:bool = "ownShipEntity != null")
+		(var isShipLocked:bool = "ownShipComponent ? ownShipComponent.isLocked : null" (event "ownShipComponent.evUpdateLock"))
+		(var isInFormation:bool = "ownShipComponent ? ownShipComponent.isInFormation : null" (event "ownShipComponent.evUpdateLock"))
+
+		(macro PULL_PRICE
+			_entityId		= "id"
+			_actionId		= "SC.Common.PRICE_ACTION.BUY"
+			_elementName	= "'modernization'"
+			_priceIndex		= 0
+		)
+
+		(var headerText:str = "tr('IDS_TITLE_' + toUpper(name))")
+		(var subheaderText:str = "tr('IDS_MODERNIZATION_' + toUpper(type))")
+		(var descriptionText:str = "tr('IDS_DESC_' + toUpper(name))")
+		(var descriptionVisible:str = "descriptionText != ' '")
+
+		(var unifiedStatus:str = "isInstalled ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+		(var isInStorageVisible:bool = "(numInStorage > 0) && !isInstalled")
+		(var isPriceVisible:bool = "(numInStorage == 0) && !isInstalled && type == SC.Ships.SHIP_MODERNIZATION_TYPES.COMMON")
+		(var isArmoryItemStatus:bool = "(numInStorage == 0) && !isInstalled && type != SC.Ships.SHIP_MODERNIZATION_TYPES.COMMON")
+		(var iconPath:str = "'url:../modernization_icons/icon_modernization_' + name + '.png'")
+
+		(var mouseInstruction:dict = "isOwned && !_noMouseInstruction	?	isInFormation		? {	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																									_text: 'IDS_SET_UNREADY_DIVISION_FIRST_TO_BUY_MODERNIZATION' } :
+																			isShipLocked		? {	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																									_text: 'IDS_LEAVE_BATTLE_FIRST_TO_BUY_MODERNIZATION' } :
+																			_isSlotTooltip		? {	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																									_text:	'IDS_OPEN_MODERNIZATIONS_LIST_MOUSE_INSTRUCTION' } :
+																			isInstalled			? {	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_RIGHT,
+																									_text:	'IDS_SELL_OR_UNMOUNT_MODERNIZATION_MOUSE_INSTRUCTION' } :
+																			isArmoryItemStatus	? {	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																									_text:	'IDS_INSTRUCTION_MODERNIZATION_PURCHASE_ARMORY' } :
+																			numInStorage == 0	? {	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																									_text:	'IDS_INSTRUCTION_MODERNIZATION_PURCHASE_AND_INSTALL' } :
+																			numInStorage > 0	? {	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																									_text:	'IDS_INSTRUCTION_MODERNIZATION_INSTALL' }
+																								: null
+																		: null")
+	)
+
+	(name = 'modernization_tooltip')
+
+	(style (hitTest = "false") (width = "340px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_imageUrl =			"iconPath"
+			_headerText =		"headerText"
+			_imageWidth = 		60
+			_imageHeight = 		60
+			_subheaderText =	"subheaderText"
+			_unifiedStatus =	"unifiedStatus"
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isInStorageVisible"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemCounterLine'
+				(bind enabled "isInStorageVisible")
+				(args
+					_title = 'IDS_IN_WAREHOUSE'
+					_count = "numInStorage"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isArmoryItemStatus"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isArmoryItemStatus")
+				(args
+					_text = 'IDS_MODERNIZATION_BUY_IN_ARMORY_STATUS'
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.TO_ARMORY"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isInstalled"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isInstalled")
+				(args
+					_text = 'IDS_MODERNIZATION_IS_INSTALLED'
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isPriceVisible"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemPriceTagLine'
+				(bind enabled "isPriceVisible")
+				(args
+					_title = 'IDS_PURCHASE_COST'
+					_priceInfo = "modernizationPriceInfo"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isRecommended"))
+		)
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isRecommended")
+				(args
+					_text = 'IDS_RECOMMENDED_MODERNIZATION'
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.RECOMMENDED"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "descriptionVisible"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "descriptionVisible")
+				(args
+					_descriptionText = "descriptionText"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemParamsModifiersList'
+				(args
+					_attributesNegative = "attributesNegative"
+					_attributesPositive = "attributesPositive"
+					_attributesNeutral = "attributesNeutral"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "mouseInstruction"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "mouseInstruction")
+				(args
+					_text = "mouseInstruction._text"
+					_unifiedStatus = "mouseInstruction._unifiedStatus"
+				)
+			)
+		)
+	)
+)

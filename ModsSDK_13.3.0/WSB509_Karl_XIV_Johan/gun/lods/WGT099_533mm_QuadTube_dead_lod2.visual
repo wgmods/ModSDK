@@ -1,0 +1,38 @@
+<WGT099_533mm_QuadTube_dead_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	WGT099_533mm_QuadTube_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	WGT099_533mm_QuadTube_dead	</node>
+		<geometry>
+			<vertices>	WGT099_533mm_QuadTube_dead_lod2Shape.vertices	</vertices>
+			<primitive>	WGT099_533mm_QuadTube_dead_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/WSB509_Karl_XIV_Johan/gun/WGT099_533mm_QuadTube_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1220 -0.0005 -0.2628	</min>
+		<max>	0.1210 0.1482 0.3778	</max>
+	</boundingBox>
+</WGT099_533mm_QuadTube_dead_lod2.visual>

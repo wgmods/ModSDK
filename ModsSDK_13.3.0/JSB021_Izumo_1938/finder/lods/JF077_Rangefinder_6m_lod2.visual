@@ -1,0 +1,106 @@
+<JF077_Rangefinder_6m_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Rangefinger_6m	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	JM006	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS200_YDCS_M_1	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.1008 0.0873 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS202_YDCS_M_3	</identifier>
+				<transform>
+					<row0>	1.4616 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.4616 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.4616 0.0000	</row2>
+					<row3>	0.0000 0.1231 -0.1630 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS205_YDSS_M_3	</identifier>
+				<transform>
+					<row0>	1.6128 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.6128 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.6128 0.0000	</row2>
+					<row3>	0.0000 0.2204 -0.1438 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS206_YDSS_S_1	</identifier>
+				<transform>
+					<row0>	0.0000 1.3457 0.0000 0.0000	</row0>
+					<row1>	-1.3457 0.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.3457 0.0000	</row2>
+					<row3>	-0.0691 0.0723 -0.0776 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS206_YDSS_S_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.0000 -1.3457 0.0000 0.0000	</row0>
+					<row1>	1.3457 0.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.3457 0.0000	</row2>
+					<row3>	0.0691 0.0723 -0.0776 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	JM006	</node>
+		<geometry>
+			<vertices>	JM006_lod2Shape.vertices	</vertices>
+			<primitive>	JM006_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director1	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSB021_Izumo_1938/finder/JM107_Binocular.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Rangefinger_6m	</node>
+		<geometry>
+			<vertices>	Rangefinger_6m_lod2Shape.vertices	</vertices>
+			<primitive>	Rangefinger_6m_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSB021_Izumo_1938/finder/JF077_Rangefinder_6m.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.2184 0.0000 -0.1813	</min>
+		<max>	0.2184 0.3547 0.1484	</max>
+	</boundingBox>
+</JF077_Rangefinder_6m_lod2.visual>

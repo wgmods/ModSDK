@@ -1,0 +1,57 @@
+(def element CrosshairGunMarkersContainer () layout=true
+	(scope
+		(var markers:gfx = "$datahub.getCollection(CC.gunMarker)")
+	)
+	(style (position = "absolute"))
+
+	(controller $Repeat renderer='GunMarkerRenderer'
+		(bind count "markers.items.length")
+		(args markerID = "markers.items[$index].id")
+	)
+)
+
+(def element GunMarkerRenderer (markerID:number) layout=true
+	(scope
+		(event evShoot)
+
+		
+		(var marker:gfx = "$datahub.getEntity(markerID)")
+		(var markerType:number = "marker.gunMarker.markerType")
+		(var state:number = "marker.gunMarker.state" (event "marker.gunMarker.evStateChanged"))
+		(var index:number = "marker.gunMarker.index" (event "marker.gunMarker.evIndexChanged"))
+
+		
+		(var progress:number = "marker.progress.max != 0 ? marker.progress.value / marker.progress.max : 0" (event "marker.progress.evChanged"))
+
+		
+		(var azimuth:number = "radToGrad(marker.gunTarget.azimuth)" (event "marker.gunTarget.evAzimuthChanged"))
+		(var isBlocked:bool = "marker.gunTarget.invalid" (event "marker.gunTarget.evInvalidChanged"))
+		(var isRotated:bool = "marker.gunTarget.rotated" (event "marker.gunTarget.evRotatedChanged"))
+		(var isCentral:bool = "index == 0")
+
+		
+		(var isActive:bool = "marker.gunMarker.active" (event "marker.gunMarker.evActiveChanged"))
+		(var position:number = "marker.gunMarker.position" (event "marker.gunMarker.evPositionChanged"))
+		(var isVisible:bool = "marker.gunMarker.visible" (event "marker.gunMarker.evVisibleChanged"))
+		
+		(var cameraComponent:gfx = "$datahub.getSingleComponent(CC.camera)")
+		(var isInTacticalMap:bool = "cameraComponent ? cameraComponent.isTactical : false" (event "cameraComponent.evTacticalStateChanged"))
+	)
+
+	(style (position = "absolute"))
+
+	(bind visible "isActive && isVisible && state < SC.Weapons.GUN_STATE.DESTROYED && (isCentral || !isRotated)")
+
+	(dispatch evShoot dir="EventDirection.DOWN" (bind enabled "(isCentral && !isInTacticalMap)") (event "marker.weapon.evShoot"))
+
+	(element GunMarker _index="index" _markerType="markerType"
+		(scope
+			(bind _azimuth "azimuth")
+			(bind _state "state")
+			(bind _blocked "isBlocked")
+			(bind _progress "progress")
+			(bind _rotated "isRotated")
+		)
+		(style (bind left "position") (position = "absolute"))
+	)
+)

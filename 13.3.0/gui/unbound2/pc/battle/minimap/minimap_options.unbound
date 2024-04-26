@@ -1,0 +1,421 @@
+(def constant OPTION_COLUMN_WIDTH 280)
+
+(def constant SETTINGS_CONTROL_TYPE {
+	CHECKBOX: 'MinimapOptionsCheckBox',
+	RANGE_CHECKBOX: 'MinimapOptionsRangeCheckBox',
+	SLIDER: 'MinimapOptionsSlider'
+})
+
+(def constant MINIMAP_INFOTIP_PIN_SETTINGS
+	{
+		'left'		: "DEFAULT_PINS_OFFSETS",
+		'right'		: "DEFAULT_PINS_OFFSETS",
+		'top'		: {pinTop: "-XXS", pinBottom: 0, pinLeft: 0, pinRight: 0},
+		'bottom'	: {pinTop: 0, pinBottom: "-XXS", pinLeft: 0, pinRight: 0}
+	}
+)
+
+(def constant MINIMAP_OPTIONS_SETTINGS {
+	'visibilityRangeEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.RANGE_CHECKBOX",
+		controlStyle: 'visibilityRangeStyle'
+	},
+	'visibilityPlaneRangeEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.RANGE_CHECKBOX",
+		controlStyle: 'visibilityPlaneRangeStyle'
+	},
+	'visibilityByShipRangePingerEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.RANGE_CHECKBOX",
+		controlStyle: 'visibilityByShipRangePingerStyle'
+	},
+	'atbaRangeEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.RANGE_CHECKBOX",
+		controlStyle: 'atbaRangeStyle'
+	},
+	'aaRangeMaxEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.RANGE_CHECKBOX",
+		controlStyle: 'aaRangeMaxStyle'
+	},
+	'sonarRangeEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.RANGE_CHECKBOX",
+		controlStyle: 'sonarRlsRangeStyle'
+	},
+	'rlsRangeEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.RANGE_CHECKBOX",
+		controlStyle: 'sonarRlsRangeStyle'
+	},
+	'hydrophoneRangeEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.RANGE_CHECKBOX",
+		controlStyle: 'sonarRlsRangeStyle'
+	},
+	'submarineLocatorRangeEnabled':{
+		controlType: "SETTINGS_CONTROL_TYPE.RANGE_CHECKBOX",
+		controlStyle: 'sonarRlsRangeStyle'
+	},
+
+	'shootMGRangeEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.RANGE_CHECKBOX",
+		controlStyle: 'activeEquipmentStyle'
+	},
+	'shootTARangeEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.RANGE_CHECKBOX",
+		controlStyle: 'activeEquipmentStyle'
+	},
+	'shootPingerRangeEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.RANGE_CHECKBOX",
+		controlStyle: 'activeEquipmentStyle'
+	},
+	'shootChargeLaserRangeEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.RANGE_CHECKBOX",
+		controlStyle: 'activeEquipmentStyle'
+	},
+	'shootImpulseLaserRangeEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.RANGE_CHECKBOX",
+		controlStyle: 'activeEquipmentStyle'
+	},
+	'shootAxisLaserRangeEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.RANGE_CHECKBOX",
+		controlStyle: 'activeEquipmentStyle'
+	},
+	'shootWaveGunRangeEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.RANGE_CHECKBOX",
+		controlStyle: 'activeEquipmentStyle'
+	},
+	'shootAirSupportRangeEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.RANGE_CHECKBOX",
+		controlStyle: 'activeEquipmentStyle'
+	},
+
+	'distanceDisplayEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.CHECKBOX",
+		hasTooltip: false,
+		controlStyle: 'defaultStyle'
+	},
+	'shipNamesDisplayEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.CHECKBOX",
+		hasTooltip: false,
+		controlStyle: 'defaultStyle'
+	},
+	'minimapRotationEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.CHECKBOX",
+		hasTooltip: false,
+		controlStyle: 'defaultStyle'
+	},
+
+	'pointAttentionEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.CHECKBOX",
+		hasTooltip: true,
+		controlStyle: 'defaultStyle'
+	},
+
+	'mouseCommandsEnabled': {
+		controlType: "SETTINGS_CONTROL_TYPE.CHECKBOX",
+		hasTooltip: true,
+		controlStyle: 'defaultStyle'
+	},
+
+	'rangesAlpha': {
+		controlType: "SETTINGS_CONTROL_TYPE.SLIDER",
+		minValue: 20, maxValue: 100,
+		controlStyle: 'defaultStyle'
+	},
+	'waterAlpha': {
+		controlType: "SETTINGS_CONTROL_TYPE.SLIDER",
+		minValue: 0, maxValue: 100,
+		controlStyle: 'defaultStyle'
+	}
+})
+
+(def constant TEXT_PREVIEW_ALPHA "0.55")
+
+(def constant MINIMAP_OPTIONS_STYLES {
+	'defaultStyle' : { strokeClip: 'MGRangeStroke', textColor: 0xFFEEEEEE, textClass: '$TextDefaultNM' },
+
+	'visibilityRangeStyle' : { strokeClip: 'VisibilityRangeStroke', textColor: 0xFF6EE1F7, textClass: '$TextDefaultNM' },
+	'visibilityPlaneRangeStyle' : { strokeClip: 'VisibilityPlaneRangeStroke', textColor: 0xFF6EE1D8, textClass: '$TextDefaultNM' },
+	'visibilityByShipRangePingerStyle' : { strokeClip: 'VisibilityRangeStroke', textColor: 0xFF6EE1A7, textClass: '$TextDefaultNM' },
+
+	'atbaRangeStyle' : { strokeClip: 'ATBARangeStroke', textColor: 0xFFA9C272, textClass: '$TextDefaultNM' },
+	'aaRangeMaxStyle' : { strokeClip: 'AARangeStroke', textColor: 0xFFF0A522, textClass: '$TextDefaultNM' },
+	'sonarRlsRangeStyle' : { strokeClip: 'SonarRangeStroke', textColor: 0xFF00CDFF, textClass: '$TextDefaultNM' },
+
+	'activeEquipmentStyle' : { strokeClip: 'MGRangeStroke', textColor: 0xFFCCCCCC, textClass: '$TextDefaultBoldNM' }
+})
+
+(def macro IS_SPECTATOR_MODE_SCOPE (_variableName:expression)
+	(macro IS_SPECTATOR_MODE)
+	(macro IS_ALIVE)
+	(macro IS_ON_PLANE)
+
+	(var name="_variableName" type=bool value="isSpectator || !(isAlive || isOnPlane)")
+)
+
+(def element MinimapOptionsTooltip () layout=true
+	(style (hitTest = false))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(style (width = "auto"))
+
+		(element MinimapOptionsContent "true")
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+				_text = 'IDS_MINIMAP_OPTIONS_HINT'
+		)
+	)
+)
+
+(def element MinimapOptionsInfotip () layout=true
+	(scope
+		(event evPinPositionChanged)	
+										
+		
+		(var pinParams:dict = "MINIMAP_INFOTIP_PIN_SETTINGS['bottom']" watch=false)
+		(bind pinParams "MINIMAP_INFOTIP_PIN_SETTINGS[$event.pinPosition]" init=false (event "evPinPositionChanged"))
+
+		(var offsetTop:number = "0" watch=false)
+		(bind offsetTop "$event.pinPosition == 'top' ? 8 : 0" init=false (event "evPinPositionChanged"))
+	)
+
+	(style (bind marginTop "offsetTop"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(style (width = "auto"))
+		(element MinimapOptionsContent "false")
+	)
+	(element InfotipPins "pinParams" "!isHighContrast")
+)
+
+(def element MinimapOptionsContent (_isReadOnly:bool) layout=true
+	(scope
+		(macro IS_SPECTATOR_MODE_SCOPE "'isSpectatorMode'")
+		(var minimapOptions:gfx = "$datahub.getCollection(CC.minimapOption)")
+	)
+	(element TooltipSystemHeaderSubheaderText
+			_headerText="'IDS_MINIMAP_OPTIONS_CAPTION'"
+			_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+	)
+	(element TooltipSystemHorizontalDivider)
+	(hblock
+		(block
+			(controller $Instance renderer='ShipRelatedOptions'
+				(bind enabled "!isSpectatorMode")
+				(args _minimapOptions="minimapOptions" _isReadOnly="_isReadOnly")
+			)
+		)
+		(block
+			(style (height = 100%))
+			(controller $Instance renderer='TooltipSystemVerticalDivider'
+				(bind enabled "!isSpectatorMode")
+			)
+		)
+		(element MinimapRelatedOptions _minimapOptions="minimapOptions" _isReadOnly="_isReadOnly")
+	)
+)
+
+(def element ShipRelatedOptions (_minimapOptions:gfx, _isReadOnly:bool) layout=true
+	(scope	
+		(var shipParametersCollection:gfx = "_minimapOptions.getChildByPath('byCategory.'+ SC.Battle.MINIMAP_OPTION_CATEGORY.SHIP_PARAMETERS + '.sorted')")
+
+		(var shipWeaponsCollection:gfx = "_minimapOptions.getChildByPath('byCategory.'+ SC.Battle.MINIMAP_OPTION_CATEGORY.SHIP_WEAPONS + '.sorted')" (event "_minimapOptions.evChildAdded") (event "_minimapOptions.evChildRemoved"))
+		(var shipWeaponsCount:number = "shipWeaponsCollection && shipWeaponsCollection.items ? shipWeaponsCollection.items.length : 0" (event "shipWeaponsCollection.evAdded") (event "shipWeaponsCollection.evRemoved"))
+	)
+	(style (width = "OPTION_COLUMN_WIDTH"))
+
+	(element MinimapOptionsSection "'IDS_MINIMAP_OPTIONS_CATEGORY_SHIP_PARAMETERS'" "shipParametersCollection" "_isReadOnly"
+		(style
+			(bind marginBottom "shipWeaponsCount > 0 ? SXS : 0")
+		)
+	)
+	(element MinimapOptionsSection "''" "shipWeaponsCollection" "_isReadOnly")
+)
+
+(def element MinimapRelatedOptions (_minimapOptions:gfx, _isReadOnly:bool) layout=true
+	(scope
+		(var minimapAppearanceCollection:gfx = "_minimapOptions.getChildByPath('byCategory.'+ SC.Battle.MINIMAP_OPTION_CATEGORY.MINIMAP_APPEARANCE + '.sorted')")
+		(var minimapActionsCollection:gfx = "_minimapOptions.getChildByPath('byCategory.'+ SC.Battle.MINIMAP_OPTION_CATEGORY.MINIMAP_ACTIONS + '.sorted')")
+		(var minimapAlphasCollection:gfx = "_minimapOptions.getChildByPath('byCategory.'+ SC.Battle.MINIMAP_OPTION_CATEGORY.MINIMAP_ALPHAS + '.sorted')")
+	)
+	(style (width = "OPTION_COLUMN_WIDTH"))
+	
+	(element MinimapOptionsSection "'IDS_MINIMAP_OPTIONS_CATEGORY_MINIMAP_ACTIONS'" "minimapActionsCollection" "_isReadOnly")
+	(element TooltipSystemHorizontalDivider)
+	(element MinimapOptionsSection "'IDS_MINIMAP_OPTIONS_CATEGORY_MINIMAP_APPEARANCE'" "minimapAppearanceCollection" "_isReadOnly"
+		(style (marginBottom = "M"))
+	)
+	(element MinimapOptionsSection "''" "minimapAlphasCollection" "_isReadOnly")
+)
+
+(def element MinimapOptionsSection (_headerText:str, _optionCollection:gfx, _isReadOnly:bool) layout=true
+	(scope
+		(var sectionItemsCount:number = "_optionCollection && _optionCollection.items ? _optionCollection.items.length : 0")
+	)
+	(style (width = 100%))
+
+	(element TooltipSystemInnerHeaderText _headerText="_headerText" _unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		(bind visible "_headerText != ''")
+		(style
+			(marginBottom = "SXS")
+		)
+	)
+
+	(block
+		(style (width = 100%))
+		(controller $Repeat renderer='MinimapOptionsItemAdapter'
+			(bind count "sectionItemsCount")
+			(bindcall removeChildAt "$event[1]" (event "_optionCollection.evRemoved"))
+			(bindcall addChildAt "$event[1]" (event "_optionCollection.evAdded"))
+			(args "_optionCollection.items[$index]" "_isReadOnly")
+		)
+	)
+)
+
+(def element MinimapOptionsItemAdapter (_entity:gfx, _isReadOnly:bool) layout=true
+	(scope
+		(var itemSetting:dict = "MINIMAP_OPTIONS_SETTINGS[_entity.minimapOption.key]")
+	)
+
+	(style
+		(width = 100%)
+		(bind marginTop "$index > 0 ? SXS : 0")
+	)
+
+	(controller $Instance (bind renderer "itemSetting.controlType")
+		(args	_entity="_entity"
+				_itemSetting="itemSetting"
+				_enabled="!_isReadOnly")
+	)
+)
+
+(def element MinimapOptionsSlider (_entity:gfx, _itemSetting:dict, _enabled:bool=true) layout=true
+	(scope
+		(event evValueChanged)
+		(var minimapOption:gfx = "_entity.minimapOption")
+		(var propValue:number = "minimapOption.value" (event "minimapOption.evValueChanged"))
+	)
+
+	(bindcall externalCall 'direct.action' "['battle.saveMinimapOption', [minimapOption.key, $event.value]]" init=false watch=false (event "evValueChanged"))
+
+	(style (width = "100%") (align = "middle"))
+
+	(tf
+		(class $TextDefaultNM)
+		(bind alpha "_enabled ? TC : TEXT_PREVIEW_ALPHA")
+		(text = "'IDS_MINIMAP_OPTIONS_' + toUpper(minimapOption.key)")
+	)
+	(element Slider
+			_value="propValue"
+			_min="_itemSetting.minValue"
+			_max="_itemSetting.maxValue"
+			_enabled="_enabled"
+		(style (marginTop = "S"))
+	)
+)
+
+(def element MinimapOptionsCheckBox (_entity:gfx, _itemSetting:dict, _enabled:bool=true) layout=true
+	(scope
+		(var minimapOption:gfx = "_entity.minimapOption")
+		(var propValue:bool = "minimapOption.value > 0" (event "minimapOption.evValueChanged"))
+
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var clickMethods:array = "[ { type: 'direct.action', name: 'battle.saveMinimapOption', args: [ minimapOption.key, !propValue ] } ]")
+	)
+
+	(controller $Tooltip
+		(bind enabled "_itemSetting.hasTooltip")
+		(renderer = 'TooltipSystemSimpleTooltip')
+		(args _tooltipText="tr('IDS_MINIMAP_OPTIONS_TOOLTIP_' + toUpper(minimapOption.key))")
+		(align="top|right")
+		(offset=[0, 20])
+		(screenBoundsOffset={left:10, top:10, right:10, bottom:10})
+		(macro SIMPLE_TOOLTIP_ANIMATION)
+	)
+
+	(style (flow = "horizontal") (width = "100%") (align = "middle"))
+
+	(element CheckBoxNoLabel
+		_selected = "propValue"
+		_enabled = "_enabled"
+		_rollOver = "rollOver"
+		_interactive = "_enabled"
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(bind alpha "_enabled ? (rollOver && !(mouseDown) ? TA : TC) : TEXT_PREVIEW_ALPHA")
+		(style
+			(width = "100%")
+			(marginLeft = "S")
+			(marginTop = -3px)
+		)
+		(text = "'IDS_MINIMAP_OPTIONS_' + toUpper(minimapOption.key)")
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "_enabled"
+		_methods = "clickMethods"
+		_soundSet = "'default_checkbox'"
+	)
+)
+
+(def element MinimapOptionsRangeCheckBox (_entity:gfx, _itemSetting:dict, _enabled:bool=true) layout=true
+	(scope
+		(var minimapOption:gfx = "_entity.minimapOption")
+		(var propValue:bool = "minimapOption.value > 0" (event "minimapOption.evValueChanged"))
+
+		(var textPropParameter:number = "_entity.parameter ? _entity.parameter.currentValue : 0" (event "_entity.parameter.evChanged"))
+		(var textProp:str = "formatFloatingPoint(textPropParameter, 1)")
+
+		(var itemVisual:dict = "MINIMAP_OPTIONS_STYLES[_itemSetting.controlStyle]")
+
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var clickMethods:array = "[ { type: 'direct.action', name: 'battle.saveMinimapOption', args: [ minimapOption.key, !propValue ] } ]")
+	)
+	
+	(style (flow = "horizontal") (width = "100%") (align = "middle"))
+
+	(element CheckBoxNoLabel
+		_selected = "propValue"
+		_enabled = "_enabled"
+		_rollOver = "rollOver"
+		_interactive = "_enabled"
+	)
+
+	(block
+		(style (width = "64px") (marginLeft = "S") (marginTop = -3px) (align = "center"))
+		(block
+			(tf
+				(class "itemVisual.textClass")
+				(style (textColor = "itemVisual.textColor"))
+				(bind text "textProp + ' ' + tr('IDS_KILOMETER')")
+			)
+			(mc "itemVisual.strokeClip"
+				(style (position = "absolute") (bottom = "-6px") (width = "100%") (alpha = "TC"))
+			)
+		)
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(bind alpha "_enabled ? (rollOver && !(mouseDown) ? TA : TC) : TEXT_PREVIEW_ALPHA")
+		(style
+			(width = "100%")
+			(marginLeft = "S")
+			(marginTop = -3px)
+		)
+		(text = "'IDS_MINIMAP_OPTIONS_' + toUpper(minimapOption.key)")
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "_enabled"
+		_methods = "clickMethods"
+		_soundSet = "'default_checkbox'"
+	)
+)

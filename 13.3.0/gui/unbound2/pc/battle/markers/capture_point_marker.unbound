@@ -1,0 +1,304 @@
+(def constant CAPTURE_POINT_ANIM_DURATION 0.25)
+(def constant CAPTURE_POINT_FX_ANIM_DURATION 0.15)
+(def constant CAPTURE_POINT_ASSETS_PATH 'url:../battle_hud/markers/capture_point/')
+(def constant CAPTURE_POINT_LABEL_COLORS {
+	RED: 0xFF3300,
+	GREEN: 0x4CE8AA,
+	WHITE: 0xFFFFFF
+})
+(def constant CONTROL_POINT_TYPE
+	{
+		CONTROL:            1,
+		BASE:               2,
+		MEGABASE:           3,
+		BUILDING_CP:        4,
+		BASE_WITH_POINTS:   5,
+		EPICENTER_CP:       6
+	}
+)
+
+(def element CapturePointIndicator (_markerEntity:gfx, _isBattleStatsElement:bool=false) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'capturePoint')
+		(macro GET_MARKER_ENTITY_COMPONENT 'progress')
+		(macro GET_MARKER_ENTITY_COMPONENT 'relation')
+		(macro VAR_RELATION "_markerEntity")
+
+		(var pointType:number = "capturePointComponent ? capturePointComponent.type : 0")
+		(var isLargeBase:bool = "isIn(pointType, [CONTROL_POINT_TYPE.MEGABASE, CONTROL_POINT_TYPE.BASE_WITH_POINTS])")
+		(var isFlagPoint:bool = "isIn(pointType, [CONTROL_POINT_TYPE.BASE_WITH_POINTS, CONTROL_POINT_TYPE.MEGABASE, CONTROL_POINT_TYPE.BASE])")
+
+		(var capturePointLabel:str = "capturePointComponent ? capturePointComponent.label : ''")
+		(var isCapturePointActive:bool = "capturePointComponent ? capturePointComponent.active : 'false'" (event "capturePointComponent.evActiveChanged"))
+		(var capturePointTimerName:str = "capturePointComponent ? capturePointComponent.timerName : ''" (event "_markerEntity.evAdded"))
+		(var neutralProgress:number = "capturePointComponent ? capturePointComponent.neutralProgress : 0" (event "progressComponent.evChanged"))
+		(var bothInside:bool = "capturePointComponent && capturePointComponent.bothInside" (event "capturePointComponent.evBothInsideChanged"))
+
+		(var captureProgress:number = "progressComponent ? progressComponent.value : 0" (event "progressComponent.evChanged"))
+		(var isCaptured:bool = "captureProgress == 0")
+
+		(var timerEntity:gfx = "_isBattleStatsElement ? $datahub.getSingleEntity(CC.battleTimer) : null")
+		(var currentTime:number = "timerEntity && timerEntity.battleTimer ? timerEntity.battleTimer.battleTime : 0" (event "timerEntity.battleTimer.evBattleTimeChanged"))
+	
+		(var linkedTimerTaskWatcher:gfx = "_isBattleStatsElement ? $datahub.getPrimWatcher(CC.task, capturePointTimerName) : null")
+		(var linkedTimerTask:gfx = "linkedTimerTaskWatcher ? linkedTimerTaskWatcher.entity : null" (event "linkedTimerTaskWatcher.event"))
+		(var timeoutComponent:gfx = "linkedTimerTask ? linkedTimerTask.timeout : null" (event "linkedTimerTask.evAdded") (event "linkedTimerTask.evRemoved"))
+		(var linkedTimerValue:number = "timeoutComponent ? timeoutComponent.time : 0" (event "timeoutComponent.evTimeChanged") (event "timeoutComponent.evRunningChanged"))
+		(var timeLeftToCapturePointActivation:number = "linkedTimerValue > currentTime ? linkedTimerValue - currentTime : 0")
+
+		
+		(var invaderRelation:number = "capturePointComponent ? capturePointComponent.invaderRelation : 0" (event "capturePointComponent.evInvaderChanged"))
+		(var relationValue:number = "relationComponent ? relationComponent.value : SC.Battle.PLAYER_RELATION.SELF" (event "relationComponent.evChanged"))
+		(var barRelation:number = "isCaptured ? relationValue : invaderRelation")
+		(var isAlly:bool = "relationValue == SC.Battle.PLAYER_RELATION.ALLY")
+		(var isEnemy:bool = "relationValue == SC.Battle.PLAYER_RELATION.ENEMY")
+		(var isNeutral:bool = "relationValue == SC.Battle.PLAYER_RELATION.NEUTRAL")
+
+		
+		(var isCaptureInProgress:bool = "bothInside || captureProgress > 0 || neutralProgress" (event "progressComponent.evChanged") (event "capturePointComponent.evBothInsideChanged"))
+		(var progressInvertion:number = "invaderRelation == SC.Battle.PLAYER_RELATION.ALLY ? 1 : -1")
+		(var indicatorProgress:number = "isCaptureInProgress    ? captureProgress == 0  ? 360 
+																						: 360 * captureProgress * progressInvertion
+																: 0")
+
+		
+		(var iconPostfix:str = "isLargeBase ? '_expensive.png' : '.png'")
+		(var capturedBarSymbol:str = "isCaptureInProgress   ?   isAlly  ? 'capture_base_bar_green' :
+																isEnemy ? 'capture_base_bar_red'
+																		: ''
+															: ''")
+		(var capturedBarPath:str = "capturedBarSymbol ? CAPTURE_POINT_ASSETS_PATH + capturedBarSymbol + iconPostfix : ''")
+
+		(var invaderBarSymbol:str = "isCaptureInProgress	?	barRelation == SC.Battle.PLAYER_RELATION.ALLY	? 'capture_base_bar_green' :
+																barRelation == SC.Battle.PLAYER_RELATION.ENEMY	? 'capture_base_bar_red'
+																												: ''
+															: ''")
+		(var invaderBarPath:str = "invaderBarSymbol ? CAPTURE_POINT_ASSETS_PATH + invaderBarSymbol + iconPostfix : ''")
+
+		(var indicatorSymbol:str = "isNeutral || isCaptureInProgress ? 'capture_base_bar_dark' : ''")
+		(var indicatorPath:str = "indicatorSymbol ? CAPTURE_POINT_ASSETS_PATH + indicatorSymbol + iconPostfix : ''")
+
+		(var capturedBgSymbol:str = "!(isCaptureInProgress) ? 	isAlly	? 'capture_base_captured_ally' :
+									 							isEnemy	? 'capture_base_captured_enemy'
+									 									: ''
+															: ''")
+		(var capturedBgPath:str = "capturedBgSymbol ? CAPTURE_POINT_ASSETS_PATH + capturedBgSymbol + iconPostfix : ''")
+
+		(var labelTextColor:number = "	isAlly 	? CAPTURE_POINT_LABEL_COLORS.GREEN :
+										isEnemy ? CAPTURE_POINT_LABEL_COLORS.RED
+												: CAPTURE_POINT_LABEL_COLORS.WHITE")
+	)
+
+	
+	
+	
+
+	(block
+		(style
+			(bind alpha "isCapturePointActive ? 1 : 0.5")
+			(pivotX = "50%") (pivotY = "50%")
+			(align = "center|middle")
+		)
+
+		(controller $Animation
+			(bindcall play	duration="CAPTURE_POINT_ANIM_DURATION"
+							from="{rotation: 45}"
+							to="{rotation: 0}"
+							(bind enabled "isCaptureInProgress")
+							(bind trigger "indicatorPath")
+			)
+
+			(bindcall play	duration="CAPTURE_POINT_ANIM_DURATION"
+							from="{rotation: -45}"
+							to="{rotation: 0}"
+							(bind enabled "!(isCaptureInProgress)")
+							(bind trigger "indicatorPath")
+			)
+		)
+
+		
+		
+		
+		(block
+			(style
+				(bind backgroundImage "indicatorPath")
+				(backgroundSize = "autosize")
+				(align = "center|middle")
+			)
+
+			(block
+				(style
+					(bind backgroundImage "capturedBgPath")
+					(backgroundSize = "autosize")
+				)
+			)
+
+			
+			
+			
+			(block
+				(class $FullsizeAbsolute)
+				(bind visible "!(isNeutral) && isCaptureInProgress")
+				(style (bind backgroundImage "capturedBarPath"))
+			)
+
+			
+			
+			
+			(block
+				(class $FullsizeAbsolute)
+				(style (align = "center|middle"))
+
+				(block
+					(controller $Sector
+						(bind arc "indicatorProgress")
+						(offset = "-90")
+						(radius = "23")
+					)
+					(isMask = true)
+				)
+
+				(block
+					(class $FullsizeAbsolute)
+					(style (bind backgroundImage "invaderBarPath"))
+				)
+			)
+		)
+
+		
+		
+		
+		(controller $FxInstance renderer='CapturePointIndicatorFX' lifetime="1"
+			(bindcall create (bind trigger "isCaptureInProgress"))
+			(args "indicatorPath ? indicatorPath : capturedBgPath")
+		)
+	)
+
+	
+	
+	
+	(block
+		(bind visible "!_isBattleStatsElement || isCapturePointActive")
+		(class $FullsizeAbsolute)
+		(style (align = "center|middle"))
+
+		(tf 
+			(bind visible "!(isFlagPoint)")
+			(class $WorldMarkerTextItemShadowFilter)
+			(class $TextDefaultBold17NM)
+			(style (bind textColor "labelTextColor"))
+			(bind text "capturePointLabel")
+		)
+
+		(block
+			(bind visible "isFlagPoint")
+			(style
+				(bind backgroundImage "CAPTURE_POINT_ASSETS_PATH + 'icon_base_' + relation + '_flag.png'")
+				(backgroundSize = "autosize")
+			)
+		)
+	)
+
+	(block $enabled = "_isBattleStatsElement"
+		(bind visible "!isCapturePointActive && timeLeftToCapturePointActivation > 0")
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundColor = "0x01000000")
+			(align = "center|middle")
+		)
+		
+		(controller $Tooltip (renderer = 'SimpleStatusTooltip')
+			(args 
+				_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				_text="'IDS_TIME_TILL_CAPTURE_POINT_ACTIVATION'"
+			)
+			(align="bottom|center")
+			(position="border")
+			(offset=[0, 6])
+			(screenBoundsOffset={left:10, top:10, right:10, bottom:10})
+			(macro SIMPLE_TOOLTIP_ANIMATION)
+		)
+
+		(tf
+			(class $TextDefaultBoldNM)
+			(bind text "countdownFormat(timeLeftToCapturePointActivation, 0, true, true)")
+		)
+	)
+)
+
+
+(def element CapturePointIndicatorFX (_indicatorPath:str) layout=true
+	(scope
+		(event evShow)
+	)
+	(dispatch evShow on='addedToStage')
+
+	(style 
+		(position = "absolute")
+		(pivotX = "50%") (pivotY = "50%")
+		(marginTop = "50%") (marginLeft = "50%")
+		(align = "center|middle")
+	)
+
+	(controller $Animation
+		(bindcall play	duration="CAPTURE_POINT_FX_ANIM_DURATION"
+						delay="CAPTURE_POINT_ANIM_DURATION"
+						to="{scaleX: 2, scaleY: 2, alpha: 0}"
+						(event "evShow")
+		) 
+	)
+	(block
+		(class $WorldMarkerFXBlur)
+		(style
+			(backgroundImage = "_indicatorPath")
+			(backgroundSize = "autosize")
+		)
+	)
+)
+
+
+(def element WorldCapturePointMarker (_markerEntity:gfx) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'scenarioTag')
+		(macro GET_MARKER_ENTITY_COMPONENT 'worldMarkerScale')
+
+		(var scaleValue:number = "worldMarkerScaleComponent.value" (event "worldMarkerScaleComponent.evValueChanged"))
+
+		(macro GET_PREF 'altVisionMode' "'battle.altVision.mode'")
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var altVision:bool = "cameraEntity.camera.altVision" (event "cameraEntity.camera.evAltVisionChanged"))
+		(var isAltVisionMode:bool = "altVision || altVisionMode >= AltVisionMode.ENABLED")
+		(macro SCOPE_HIGHLIGHT_MARKER_ON_WORLD_MOUSE_OVER)
+	)
+	
+	(block
+		(style
+			(position = "absolute")
+			(bottom = 26)
+		)
+		(element TargetAnimationItem "_markerEntity"
+			(style (position = "absolute"))
+		)
+		(controller $Instance renderer='ScenarioTagItem'
+			(bind enabled "scenarioTagComponent != null")
+			(args _markerEntity="_markerEntity")
+			(exprs
+				(style
+					(position = "absolute")
+					(bottom = 18)
+				)
+			)
+		)
+	)
+
+	(element CapturePointIndicator "_markerEntity"
+		(style
+			(marginLeft = "-50%") (marginTop = "-50%")
+			(pivotX = "50%") (pivotY = "50%")
+			(bind scaleX "isAltVisionMode ? 1 : scaleValue")
+			(bind scaleY "isAltVisionMode ? 1 : scaleValue")
+		)
+		(macro EFFECT_HIGHLIGHT_MARKER_ON_MOUSE_OVER)
+	)
+)

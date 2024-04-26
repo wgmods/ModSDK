@@ -1,0 +1,65 @@
+<WGM070_5_5in_Mk1_dead.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS100_YGBS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.5301 -0.0619 0.0308 0.0000	</row0>
+					<row1>	0.0631 0.5305 -0.0200 0.0000	</row1>
+					<row2>	-0.0283 0.0235 0.5333 0.0000	</row2>
+					<row3>	0.0010 0.1118 -0.0013 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.4476 -0.0522 0.0260 0.0000	</row0>
+					<row1>	0.0532 0.4479 -0.0169 0.0000	</row1>
+					<row2>	-0.0239 0.0198 0.4503 0.0000	</row2>
+					<row3>	-0.0173 0.1281 0.3407 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS107_YGLR_M_2	</identifier>
+				<transform>
+					<row0>	0.4312 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.4312 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.4312 0.0000	</row2>
+					<row3>	0.0829 0.1214 -0.0224 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_deadShape.vertices	</vertices>
+			<primitive>	Turret_deadShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/WSD209_Lambros_Katsonis/gun/WGS070_5_5in_Mk1_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1154 0.0013 -0.1687	</min>
+		<max>	0.1115 0.1702 0.3736	</max>
+	</boundingBox>
+</WGM070_5_5in_Mk1_dead.visual>

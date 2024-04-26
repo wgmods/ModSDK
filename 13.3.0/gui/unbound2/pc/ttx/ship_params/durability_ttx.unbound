@@ -1,0 +1,17 @@
+(def element DurabilityTTX (shipTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(class $TTXSecondaryPanel)
+
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_HEALTH'
+									_value = "shipTTX.durability.health"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_HEALTH' 'IDS_TOOLTIP_HEALTH')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PTZDAMAGEPROB'
+									_value = "shipTTX.durability.ptz"
+									_valueConfig = "VALUE_CONFIG.PERCENT"
+									_zeroValueHidden = "true"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_PTZDAMAGEPROB' 'IDS_TOOLTIP_PTZDAMAGEPROB')
+	)
+)

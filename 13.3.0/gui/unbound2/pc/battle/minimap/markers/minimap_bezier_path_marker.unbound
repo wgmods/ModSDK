@@ -1,0 +1,216 @@
+(def element MapPathMarker (_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number) layout=true
+	(scope
+		(var minimapComponent:gfx = "$datahub.getSingleComponent(CC.minimap)")
+		(var angleToRotate:number = "minimapComponent ? minimapComponent.rotationAngleDeg : 0" (event "minimapComponent.evRotationAngleDegChanged"))
+
+		(var minimapPathComponent:gfx = "_markerEntity.minimapBezierPath")
+		(var minimapPath:array = "minimapPathComponent.path" (event "minimapPathComponent.evPathChanged"))
+		(var relation:number = "_markerEntity.relation.value" (event "_markerEntity.relation.evChanged"))
+		(var missionIndex:number = "_markerEntity.scenarioMissionParticipant.index")
+		(var missionProgress:number = "_markerEntity.progress.value" (event "_markerEntity.progress.evChanged"))
+		(var posX:number = "_scaleRatio * minimapPath[0].x")
+		(var posY:number = "_scaleRatio * minimapPath[0].y")
+
+		(var isOvered:bool = "false")
+		(bind isOvered "!isOvered" watch=false (event "minimapPathComponent.evBlink"))
+
+		(var allyNumberPointsCollection:gfx = "$datahub.getCollection(CC.minimapBezierPath).child('byTeam').child(SC.Battle.PLAYER_RELATION.ALLY)")
+		(var allyNumberPointsList:array = "allyNumberPointsCollection.items" (event "allyNumberPointsCollection.evAdded") (event "allyNumberPointsCollection.evRemoved"))	
+		(var enemyNumberPointsCollection:gfx = "$datahub.getCollection(CC.minimapBezierPath).child('byTeam').child(SC.Battle.PLAYER_RELATION.ENEMY)")
+		(var enemyNumberPointsList:array = "enemyNumberPointsCollection.items" (event "enemyNumberPointsCollection.evAdded") (event "enemyNumberPointsCollection.evRemoved"))	
+		(var isNumberPointVisible:bool = "allyNumberPointsList.length > 1 || enemyNumberPointsList.length > 1")
+	)
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	(block
+		(style (position = "absolute") (height = "1") (width = "1") (backgroundColor ="0x01000000")) 
+		(controller $Instance renderer='MapPathLine'
+			(bind enabled "missionProgress != 1")
+			(args
+				_entity = "_markerEntity"
+				_isOvered = "isOvered"
+				_scaleRatio = "_scaleRatio"
+			)
+		)
+	)
+	(block
+		(bind visible "isNumberPointVisible")
+		(style
+			(position = "absolute")
+			(bind left "posX")
+			(bind top "posY")
+			(width = "1px")
+			(height = "1px")
+			(align = "center|middle")
+			(bind rotation "-angleToRotate")
+		)
+		(controller $Instance renderer='MapPathStartMarker'
+			(bind enabled "missionProgress != 1")
+			(args
+				_missionIndex = "missionIndex"
+				_relation = "relation"
+				_isOvered = "isOvered"
+				_isMinimap = "true"
+			)
+		)
+	)
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(def element MapPathStartMarker (_missionIndex:number, _relation:number, _isOvered:bool, _lineAlpha:number=0.3, _disableBackground:bool=false, _isMinimap:bool=false) layout=true
+	(scope
+		(var scaleX:number = "1")
+		(var scaleY:number = "1")
+		(var lineAlpha:number = "_lineAlpha")
+
+		(controller $Animation
+			(bindcall play
+				duration 	= "0.15"
+				easing		= "Easing.cubic_in"
+				from		= {lineAlpha: 0.3, scaleX: 1.00, scaleY: 1.00}
+				to			= {lineAlpha: 1.0, scaleX: 1.15, scaleY: 1.15}
+				reverse		= "_isOvered"
+				(bind trigger "_isOvered")
+			)
+		)
+		(var isAlly:bool = "_relation == SC.Battle.PLAYER_RELATION.ALLY")
+		(var relationStr:str = "toLower(SC.Battle.PLAYER_RELATION.VALUE_TO_NAME[_relation])")
+	)
+	(style 
+		(width = "1px")
+		(height = "1px")
+		(bind scaleX "scaleX")
+		(bind scaleY "scaleY")
+		(align = "center|middle")
+	)
+	(block
+		(style 
+			(alpha = "0.3")
+			(position = "absolute")
+		)
+		(controller $Sector
+			(arc = "360")
+			(bind radius "_isMinimap ? 6 : 8")
+			(bind color "0x000000")
+		)
+	)
+	(block $enabled = "_isMinimap"
+		(style 
+			(bind alpha "lineAlpha")
+			(position = "absolute")
+		)
+		(controller $Sector
+			(arc = "360")
+			(bind radius "7")
+			(innerRadius = "6")
+			(bind color "isAlly ? C_ALLY : C_ENEMY")
+		)
+	)
+	(tf
+		(class $TextDefault12NM)
+		(text = "_missionIndex + 1")
+	)
+)
+
+(def element MapPathLine (_entity:gfx, _isOvered:bool, _scaleRatio:number) layout=true
+	(scope
+		(var minimapPathComponent:gfx = "_entity.minimapBezierPath")
+		(var minimapPath:array = "minimapPathComponent.path" (event "minimapPathComponent.evPathChanged"))
+		(var relation:number = "_entity.relation.value" (event "_entity.relation.evChanged"))
+		(var isAlly:bool = "relation == SC.Battle.PLAYER_RELATION.ALLY")
+		(var relationStr:str = "toLower(SC.Battle.PLAYER_RELATION.VALUE_TO_NAME[relation])")
+		(var missionIndex:number = "_entity.scenarioMissionParticipant.index")
+		(var missionProgress:number = "_entity.progress.value" (event "_entity.progress.evChanged"))
+		(var posX:number = "_scaleRatio * minimapPath[0].x")
+		(var posY:number = "_scaleRatio * minimapPath[0].y")
+
+		(var lineThickness:number = "1")
+		(var lineAlpha:number = "0.3")
+		(var scaleX:number = "1")
+		(var scaleY:number = "1")
+
+		(controller $Animation
+			(bindcall play
+				duration	= "0.15"
+				easing		= "Easing.cubic_in"
+				from		= {lineThickness: 1, lineAlpha: 0.3, scaleX: 1.00, scaleY: 1.00}
+				to			= {lineThickness: 2, lineAlpha: 1, scaleX: 1.15, scaleY: 1.15}
+				reverse="_isOvered"
+				action="killAll"
+				(bind trigger "_isOvered")
+			)
+		)
+	)
+
+	(block 
+		(style
+			(position = "absolute")
+			(bind left "posX")
+			(bind top "posY")
+			(width = "1px")
+			(height = "1px")
+			(bind scaleX "scaleX")
+			(bind scaleY "scaleY")
+			(align = "center|middle")
+		)
+		(controller $Sector
+			(arc = "360")
+			(radius = "1000")
+			(innerRadius = "6")
+			(bind color "0xFFFFFFFF")
+		)
+		(isMask = true)
+	)
+
+	(mc 'lesta.libs.unbound2.MinimapBezierDrawer'
+		(bind lineThickness "lineThickness")
+		(bind scaleRatio "_scaleRatio")
+		(bind color "minimapPathComponent.color")
+		(bind lineAlpha "lineAlpha + 0.4")
+		(bind useMask "true")
+		(bindcall drawPathByCoords "minimapPath" init=true)
+		(bind lineProgress "missionProgress")
+	)
+
+	(mc 'lesta.libs.unbound2.MinimapBezierDrawer'
+		(bind lineThickness "1")
+		(bind scaleRatio "_scaleRatio")
+		(bind color "minimapPathComponent.color")
+		(bind lineAlpha "0.3")
+		(bind useMask "false")
+		(bindcall drawPathByCoords "minimapPath" init=true)
+	)
+)

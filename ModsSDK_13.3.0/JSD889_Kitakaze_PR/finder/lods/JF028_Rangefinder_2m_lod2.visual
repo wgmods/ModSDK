@@ -1,0 +1,102 @@
+<JF028_Rangefinder_2m_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	JF028	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+		<node>
+			<identifier>	Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Root_BlendBone	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 -1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	Rotate_Y	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0333 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Rotate_Y_BlendBone	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 -1.0000 0.0000	</row2>
+						<row3>	0.0000 -0.0333 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	SP_YMS200_YDCS_M_1	</identifier>
+					<transform>
+						<row0>	0.4277 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.4277 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 0.4277 0.0000	</row2>
+						<row3>	0.0000 0.0469 -0.0096 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	SP_YMS203_YDSS_M_1	</identifier>
+					<transform>
+						<row0>	0.0000 0.3266 0.0000 0.0000	</row0>
+						<row1>	-0.3266 0.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 0.3266 0.0000	</row2>
+						<row3>	-0.0479 0.0646 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	SP_YMS203_YDSS_M_1_INDEX_1	</identifier>
+					<transform>
+						<row0>	0.0000 -0.3266 0.0000 0.0000	</row0>
+						<row1>	0.3266 0.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 0.3266 0.0000	</row2>
+						<row3>	0.0479 0.0646 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+		<node>	Root_BlendBone	</node>
+		<node>	Rotate_Y_BlendBone	</node>
+		<geometry>
+			<vertices>	JF028_lod2Shape.vertices	</vertices>
+			<primitive>	JF028_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director_skinned	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSD889_Kitakaze_PR/finder/JF054_Rangefinder_2_5m_skinned.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0725 -0.0020 -0.0307	</min>
+		<max>	0.0725 0.1042 0.0307	</max>
+	</boundingBox>
+</JF028_Rangefinder_2m_lod2.visual>

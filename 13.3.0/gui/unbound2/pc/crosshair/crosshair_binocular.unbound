@@ -1,0 +1,80 @@
+(def constant CROSSHAIR_LIST_TYPES {
+	STATIC:		0,
+	DYNAMIC:	1,
+	CUSTOM:		2
+})
+
+(def constant DYNAMIC_BLACK_CROSSHAIR_ID 15)
+
+(def element CrosshairBinocular () layout=true
+	(scope
+		(macro STAGE_SIZE)
+
+		(macro GET_PREF 'isDynamic' "'battle.ui.crosshair.isDynamic'")
+		(macro GET_PREF 'selectedStaticCrosshairId' "'battle.ui.crosshair.indexStatic'")
+		(macro GET_PREF 'selectedDynamicCrosshairId' "'battle.ui.crosshair.indexDynamic'")
+
+		(var avatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var isSubmarine:bool = "avatarEntity.avatar ? (avatarEntity.avatar.ship.ref.ship.subtype == ShipTypes.SUBMARINE) : false")
+
+		(var staticCrosshairsList:gfx = "$datahub.getPrimaryEntity(CC.crosshairsList, CROSSHAIR_LIST_TYPES.STATIC)")
+		(var staticCrosshairIds:array = "staticCrosshairsList.crosshairsList.crosshairIds")
+
+		
+		(var currentCrosshairId:number = "isSubmarine 	? DYNAMIC_BLACK_CROSSHAIR_ID :
+											isDynamic 	? staticCrosshairIds.length + selectedDynamicCrosshairId
+														: selectedStaticCrosshairId")
+
+		(var crosshairViewEntity:gfx = "$datahub.getPrimaryEntity(CC.crosshairBinocularView, currentCrosshairId)")
+		(var crosshairViewComponent:gfx = "crosshairViewEntity ? crosshairViewEntity.crosshairBinocularView : null")
+		(var crosshairRenderer:str = "crosshairViewComponent.renderer")
+	)
+	
+	(style
+		(position = "absolute")
+		(bind width "stageWidth")
+		(bind height "stageHeight")
+	)
+
+	(controller $Instance
+		(bind renderer "crosshairRenderer == '' ? 'CrosshairBinocularDefaultRenderer' : crosshairRenderer")
+		(args
+			_crosshairId = "currentCrosshairId"
+		)
+	)
+)
+
+(def element CrosshairBinocularDefaultRenderer (_crosshairId:number=0) layout=true
+	(scope
+		(var crosshair:gfx = "$datahub.getPrimaryEntity(CC.crosshairBinocularView, _crosshairId)")
+		(var textureIds:array = "crosshair ? crosshair.crosshairBinocularView.textureIds : []")
+	)
+
+	(class $Fullsize)
+
+	(controller $Repeat renderer='CrosshairBinocularDefaultTextureRenderer'
+		(bind count "textureIds.length")
+		(args
+			_textureIds = "textureIds"
+		)
+	)
+)
+
+(def element CrosshairBinocularDefaultTextureRenderer (_textureIds:array) layout=true dispatch_size_change=true
+	(scope
+		(var textureId:number = "_textureIds[$index]")
+		(var texture:gfx = "$datahub.getPrimaryEntity(CC.crosshairTexture, textureId)")
+
+		(var path:str = "texture ? 'url:' + texture.crosshairTexture.path : null")
+		(var xOffset:number = "texture ? texture.crosshairTexture.x : 0")
+		(var yOffset:number = "texture ? texture.crosshairTexture.y : 0")
+	)
+
+	(class $FullsizeAbsolute)
+	(style
+		(bind top "yOffset")
+		(bind left "xOffset")
+		(bind backgroundImage "path")
+		(backgroundSize = "align")
+	)
+)

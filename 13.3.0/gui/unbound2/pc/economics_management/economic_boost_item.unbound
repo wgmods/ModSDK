@@ -1,0 +1,544 @@
+(def element EconomicBoostItemStatic (_id:number, _amount:number="0", _isReward:bool="false", _params:dict="{}") layout=true
+	(scope
+		(var ecoBoostEntity:gfx = "$datahub.getPrimaryEntity(CC.ecoBoost, _id)")
+		(var ecoBoost:gfx = "ecoBoostEntity ? ecoBoostEntity.ecoBoost : null")
+
+		(var hasShipId:bool = "'shipId' in _params")
+		(var ecoBoostType:str = "ecoBoost ? ecoBoost.type : ''")
+		(var ecoBoostName:str = "ecoBoost ? ecoBoost.name : ''")
+		(var isUnlinkedLinkableBoost:bool = "ecoBoostType == SC.Common.ECOBOOST_TYPES.LINKABLE && !hasShipId")
+
+		(var isMultiBoostTooltip:bool = "ecoBoostType == SC.Common.ECOBOOST_TYPES.LINKABLE")
+		(var isGlobalBoostTooltip:bool = "ecoBoostType == SC.Common.ECOBOOST_TYPES.GLOBAL")
+		(var isEconomicBoostTooltip:bool = "!isMultiBoostTooltip && !isGlobalBoostTooltip")
+	)
+
+	(element EconomicBoostItemView
+		_ecoBoostName = "ecoBoostName"
+		_ecoBoostType = "ecoBoostType"
+		_amount = "_amount"
+		_isUnlinkedLinkableBoost = "isUnlinkedLinkableBoost"
+	)
+
+	(controller $Tooltip
+		(bind enabled "isEconomicBoostTooltip")
+		(renderer = 'EconomicBoostTooltip')
+		(args
+			_id = "_id"
+			_amount = "_amount"
+			_noMouseInstructions = "true"
+			_isReward = "_isReward"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+	
+	(controller $Tooltip
+		(bind enabled "isMultiBoostTooltip")
+		(renderer = 'MultiBoostTooltip')
+		(args
+			_id = "_id"
+			_rewardShipId = "_params.shipId"
+			_amount = "_amount"
+			_noMouseInstructions = "true"
+			_isReward = "_isReward"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(controller $Tooltip
+		(bind enabled "isGlobalBoostTooltip")
+		(renderer = 'GlobalBoostTooltip')
+		(args
+			_id = "_id"
+			_isReward = "_isReward"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element EconomicBoostItemView (_ecoBoostName:str, _ecoBoostType:str, _amount:number="0", _isUnlinkedLinkableBoost:bool = "false")
+	(scope
+		(var isCommonEcooboost:bool = "_ecoBoostType == SC.Common.ECOBOOST_TYPES.COMMON")
+		(var isAmountVisible:bool = "(_amount > 0 && (isCommonEcooboost || _isUnlinkedLinkableBoost)) || (_amount < 0)")
+	)
+	(bind name "'EconomicBoostItem_' + _ecoBoostName")
+
+
+	(style	(width = "60px") (height = "60px")
+	(bind backgroundImage "	_ecoBoostType == SC.Common.ECOBOOST_TYPES.COMMON	? 'url:../eco_boosts/common/' + _ecoBoostName + '.png' :
+							_ecoBoostType == SC.Common.ECOBOOST_TYPES.LINKABLE	? 'url:../eco_boosts/multiboosts/linkable.png' :
+							_ecoBoostType == SC.Common.ECOBOOST_TYPES.GLOBAL	? 'url:../eco_boosts/multiboosts/globalboost.png'
+																				: 'url:../eco_boosts/multiboosts/clanboost.png'"))
+
+	(block
+		(style (hitTest = "false") (position = "absolute"))
+		(controller $Instance renderer='LinkableItemIcon'
+			(bind enabled "_isUnlinkedLinkableBoost")
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "bottom|right"))
+		(controller $Instance renderer='InfinityCounterIcon'
+			(bind enabled "_ecoBoostType != SC.Common.ECOBOOST_TYPES.COMMON && !_isUnlinkedLinkableBoost")
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "bottom|right"))
+		(controller $Instance renderer='ImageItemsCounter'
+			(bind enabled "isAmountVisible")
+			(args
+				_amount = "_amount"
+			)
+		)
+	)
+)
+
+(def element EconomicBoostTooltip (_id:number, _amount:number, _isInstalled:bool=false, _isReward:bool=false, _noMouseInstructions:bool=false) layout=true
+	(scope
+		(macro PULL_PRICE_SCOPE "_id"	"SC.Common.PRICE_ACTION.BUY"	 "'ecoBoostPriceEntity'"	"'ecoBoostPrice'")
+		(macro PULL_CURRENT_SHIP_ID)
+		(macro PULL_OWN_SHIP_SCOPE "shipId" "'shipEntity'" "'shipInfo'")
+
+		(var ownShipInfo:gfx = "shipEntity ? shipEntity.ownShip : null"	(event "shipEntity.ship.evUpdate")
+																		(event "shipEntity.ship.evCurrentSkinChanged"))
+
+		(var isLocked:bool =		"ownShipInfo ? ownShipInfo.isLocked : false"		(event "ownShipInfo.evUpdateLock"))
+		(var isInFormation:bool =	"ownShipInfo ? ownShipInfo.isInFormation : false"	(event "ownShipInfo.evUpdateLock"))
+		(var isNeedRepair:bool =	"ownShipInfo ? ownShipInfo.isNeedRepair : false"	(event "ownShipInfo.evUpdateDockState"))
+		(var isNeedShell:bool =		"ownShipInfo ? ownShipInfo.isNeedShell : false"		(event "ownShipInfo.evUpdateDockState"))
+	
+		(var ecoBoostEntity:gfx = "$datahub.getPrimaryEntity(CC.ecoBoost, _id)")
+		
+		(var rarity:number = "ecoBoostEntity ? ecoBoostEntity.ecoBoost.rarity : 0")
+		(var name:str = "ecoBoostEntity ? ecoBoostEntity.ecoBoost.name : ''")
+		(var type:number = "ecoBoostEntity ? ecoBoostEntity.ecoBoost.type : 0")
+
+		(var headerText:str = "'IDS_' + toUpper(name)")
+		(var subheaderText:str = "tr('IDS_ECONOMIC_BOOST_TYPE_EXPENDABLE_' + rarity)")
+		
+		(var canBeBought:bool = "ecoBoostEntity ? ecoBoostEntity.ecoBoost.canBuy : false" (event "ecoBoostEntity.ecoBoost.evUpdated"))
+		(var ecoBoostsInStorage:number = "ecoBoostEntity ? ecoBoostEntity.countComponent.value : 0" (event "ecoBoostEntity.countComponent.evUpdate"))
+	
+		(var isPriceVisible:bool = "!_isReward && canBeBought")
+		(var isNotForSaleVisible:bool = "!_isReward && !canBeBought")
+	
+		(var unvailableForPurchaseHeaderText:str = "!isNotForSaleVisible	?	'' :
+													rarity == 3				?	'IDS_UNAVAILABLE_RARE_ECOBOOST_FOR_PURCHASE'
+																			:	'IDS_UNAVAILABLE_UNIQUE_ECOBOOST_FOR_PURCHASE'")
+		
+		(var amount:number = "_isReward	? _amount
+										: ecoBoostsInStorage")
+		
+		(var isAmountVisible:bool = "amount > 0")
+		
+	
+		(var isPreinstalled:bool ="_isInstalled && amount == 0 && !_isReward")
+		(var isInstalled:bool ="_isInstalled && amount > 0 && !_isReward")
+		(var isNotInStorageVisible:bool = "!amount && !isPreinstalled")
+
+		(var attributesNegative:array = "ecoBoostEntity ? ecoBoostEntity.attributes.negative : []" (event "ecoBoostEntity.attributes.evChanged"))
+		(var attributesNeutral:array = "ecoBoostEntity ? ecoBoostEntity.attributes.neutral : []" (event "ecoBoostEntity.attributes.evChanged"))
+		(var attributesPositive:array = "ecoBoostEntity ? ecoBoostEntity.attributes.positive : []" (event "ecoBoostEntity.attributes.evChanged"))
+		
+		(var mouseInstructionText:str = "amount == 0 && canBeBought	? 'IDS_MOUSE_INSTRUCTION_PURCHASE_ECONOMIC_BOOST' :
+										_isInstalled				? 'IDS_MOUSE_INSTRUCTION_TAKE_AWAY_ECONOMIC_BOOST'
+																	: 'IDS_MOUSE_INSTRUCTION_INSTALL_ECONOMIC_BOOST'")
+
+		(var unifiedStatus:str = "isInstalled	? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+		
+		(var mouseInstruction:dict = "	_noMouseInstructions			?	null :
+										isInFormation					?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																				_text: 'IDS_SET_UNREADY_DIVISION_FIRST_TO_OPERATE_ECONOMIC_BOOSTS' } :
+										isLocked						?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																				_text: 'IDS_LEAVE_BATTLE_FIRST_TO_OPERATE_ECONOMIC_BOOSTS' } :
+										isNeedRepair || isNeedShell		?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																				_text: 'IDS_SERVICE_SHIP_TO_OPERATE_ECONOMIC_BOOSTS' }
+																		:	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																				_text: mouseInstructionText }")
+	)
+	(style (hitTest = false) (width = 320px))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_imageWidth = 60
+			_imageHeight = 60
+			_unifiedStatus = "unifiedStatus"
+			_headerText = "headerText"
+			_subheaderText = "subheaderText"
+			_headerIconType = "SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.ECO_BOOST"
+			_data = "{ paramsId: name, type: type }"
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isPreinstalled"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isPreinstalled")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+					_text = 'IDS_PREINSTALLED_ECOBOOST'
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isInstalled"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isInstalled")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+					_text = 'IDS_INSTALLED'
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isAmountVisible || isNotInStorageVisible || !_isReward"))
+		)
+		(element TOOLTIP_SYSTEM_ELEMENTS_GROUP
+			(bind visible "isAmountVisible || isNotInStorageVisible || !_isReward")
+
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+				(bind visible "isAmountVisible")
+				(controller $Instance renderer='TooltipSystemCounterLine'
+					(bind enabled "isAmountVisible")
+					(args
+						_title = "_isReward ? 'IDS_COUNT' : 'IDS_IN_WAREHOUSE'"
+						_count = "amount"
+					)
+				)
+			)
+
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+				(bind visible "isNotInStorageVisible")
+				(controller $Instance renderer='TooltipSystemDescriptionText'
+					(bind enabled "isNotInStorageVisible")
+					(args
+						_descriptionText = "'IDS_OUT_OF_STOCK'"
+					)
+				)
+			)
+
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+				(bind visible "isPriceVisible")
+				(controller $Instance renderer='TooltipSystemPriceTagLine'
+					(bind enabled "isPriceVisible")
+					(args
+						_title = "'IDS_COST_COLON'"
+						_priceInfo = "ecoBoostPrice"
+					)
+				)
+			)
+
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+				(bind visible "isNotForSaleVisible")
+				(controller $Instance renderer='TooltipSystemDescriptionText'
+					(bind enabled "isNotForSaleVisible")
+					(args
+						_descriptionText = "unvailableForPurchaseHeaderText"
+					)
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemParamsModifiersList
+			_attributesPositive = "attributesPositive"
+			_attributesNeutral = "attributesNeutral"
+			_attributesNegative = "attributesNegative"
+		)
+
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "mouseInstruction"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "mouseInstruction")
+				(args
+					_unifiedStatus = "mouseInstruction._unifiedStatus"
+					_text = "mouseInstruction._text"
+				)
+			)
+		)
+	)
+)
+
+(def element MultiBoostTooltip (_id:number, _rewardShipId:number, _amount:number, _isInstalled:bool=false, _isReward:bool=false, _noMouseInstructions:bool=false) layout=true
+	(scope
+		(macro PULL_PRICE_SCOPE "_id"	"SC.Common.PRICE_ACTION.BUY"	 "'multiBoostPriceEntity'"	"'multiBoostPrice'")
+		(macro PULL_CURRENT_SHIP_ID)
+		(macro PULL_OWN_SHIP_SCOPE "shipId" "'shipEntity'" "'shipInfo'")
+		(macro PULL_SHIP_SCOPE "_rewardShipId" "'shipEntityFromReward'" "'shipInfoFromReward'")
+
+		(var ownShipInfo:gfx = "shipEntity ? shipEntity.ownShip : null"	(event "shipEntity.ship.evUpdate")
+																		(event "shipEntity.ship.evCurrentSkinChanged"))
+
+		(var isLocked:bool =		"ownShipInfo ? ownShipInfo.isLocked : false"		(event "ownShipInfo.evUpdateLock"))
+		(var isInFormation:bool =	"ownShipInfo ? ownShipInfo.isInFormation : false"	(event "ownShipInfo.evUpdateLock"))
+		(var isNeedRepair:bool =	"ownShipInfo ? ownShipInfo.isNeedRepair : false"	(event "ownShipInfo.evUpdateDockState"))
+		(var isNeedShell:bool =		"ownShipInfo ? ownShipInfo.isNeedShell : false"		(event "ownShipInfo.evUpdateDockState"))
+	
+		(var ecoBoostEntity:gfx = "$datahub.getPrimaryEntity(CC.ecoBoost, _id)")
+		
+		(var name:str = "ecoBoostEntity ? ecoBoostEntity.ecoBoost.name : ''")
+		(var type:number = "ecoBoostEntity ? ecoBoostEntity.ecoBoost.type : 0")
+		(var canBeBought:bool = "ecoBoostEntity ? ecoBoostEntity.ecoBoost.canBuy : false" (event "ecoBoostEntity.ecoBoost.evUpdated"))
+
+		(var isPriceVisible:bool = "!_isReward && canBeBought")
+		(var isNotForSaleVisible:bool = "!_isReward && !canBeBought")
+		
+		(var isLinkedToShip:bool = "ecoBoostEntity ? ecoBoostEntity.ecoBoost.isLinkedToShip : false" (event "ecoBoostEntity.ecoBoost.evUpdated"))
+		(var ecoBoostsInStorage:number = "ecoBoostEntity ? ecoBoostEntity.countComponent.value : 0" (event "ecoBoostEntity.countComponent.evUpdate"))
+
+		
+		(var amount:number = "_isReward	? _amount
+										: ecoBoostsInStorage")
+		
+		(var isAmountVisible:bool = "amount > 0")
+		
+
+		(var isUnlinkedMultiboost:bool = "_isReward	? !_rewardShipId
+													: !isLinkedToShip")
+		(var isTitleWithShip:bool = "!isUnlinkedMultiboost || !amount")
+		(var isPriceVisible:bool = "!_isReward && canBeBought && isUnlinkedMultiboost && !amount")
+		(var isUnlinkedInfoVisible:bool = "isUnlinkedMultiboost && amount")
+
+		(var ecoBoostRestrictions:gfx = "ecoBoostEntity && ecoBoostEntity.hasComponent(CC.filteringGroup) ? ecoBoostEntity.filteringGroup : null" (event "ecoBoostEntity.evAdded") (event "ecoBoostEntity.evRemoved"))
+		(var ecoboostLevelFiltersRoman:str ="ecoBoostRestrictions ? ecoBoostRestrictions.levelString : ''" (event "ecoBoostRestrictions.evUpdate"))
+		(var hasLevelRestrictions:bool = "ecoboostLevelFiltersRoman.length > 0")
+
+		
+		(var attributesNegative:array = "ecoBoostEntity ? ecoBoostEntity.attributes.negative : []" (event "ecoBoostEntity.attributes.evChanged"))
+		(var attributesNeutral:array = "ecoBoostEntity ? ecoBoostEntity.attributes.neutral : []" (event "ecoBoostEntity.attributes.evChanged"))
+		(var attributesPositive:array = "ecoBoostEntity ? ecoBoostEntity.attributes.positive : []" (event "ecoBoostEntity.attributes.evChanged"))
+		
+
+		(var shipName:str = "_rewardShipId	? toUpper(tr(shipInfoFromReward.nameIDS))
+											: toUpper(tr(shipInfo.nameIDS))")
+
+		(var headerText:str = "	isTitleWithShip			? subst('IDS_MULTIBOOST_WITH_SHIP_TITLE',  [], { shipName: shipName}) :
+								hasLevelRestrictions	? subst('IDS_MULTIBOOST_WITH_LEVEL_TITLE', [], { levelRange: ecoboostLevelFiltersRoman })
+														: tr('IDS_MULTIBOOST_TITLE')")
+														
+		(var subheaderText:str = "'IDS_ECONOMIC_BOOST_TYPE_MULTIBOOST'")
+		(var unifiedStatus:str = "	_isReward		? SC.Ui_styles.UNIFIED_STATUS.DEFAULT :
+									isLinkedToShip	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+													: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+
+		(var additionalInstallationInfo:dict = "isLinkedToShip || _isReward || amount	?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.INFINITE,
+																								_text: 'IDS_MULTIBOOST_AUTOREPLENISHMENT_AFTER_PURCHASE_INFO' }
+																						:	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.INFINITE,
+																								_text: 'IDS_MULTIBOOST_AUTOREPLENISHMENT_BEFORE_PURCHASE_INFO' }")
+
+		(var isEcoboostRestrictionsVisible:bool = "	(!_rewardShipId && _isReward) ||
+													(hasLevelRestrictions && !isLinkedToShip && amount)")
+
+		(var mouseInstruction:dict = "	_noMouseInstructions ||	isLinkedToShip			?	null :
+										isInFormation									?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																								_text: 'IDS_SET_UNREADY_DIVISION_FIRST_TO_OPERATE_ECONOMIC_BOOSTS' } :
+										isLocked										?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																								_text: 'IDS_LEAVE_BATTLE_FIRST_TO_OPERATE_ECONOMIC_BOOSTS' } :
+										isNeedRepair || isNeedShell						?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																								_text: 'IDS_SERVICE_SHIP_TO_OPERATE_ECONOMIC_BOOSTS' } :
+										amount											?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																								_text: 'IDS_MOUSE_INSTRUCTION_LINK_MULTIBOOST' }
+																						:	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																								_text: 'IDS_MOUSE_INSTRUCTION_PURCHASE_AND_LINK_MULTIBOOST' }")
+	)
+	(style (hitTest = false) (width = 320px))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_imageWidth = 60
+			_imageHeight = 60
+			_unifiedStatus = "unifiedStatus"
+			_headerText = "headerText"
+			_subheaderText = "subheaderText"
+			_headerIconType = "SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.ECO_BOOST"
+			_data = "{ paramsId: name, type: type }"
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "unifiedStatus == SC.Ui_styles.UNIFIED_STATUS.CHECK"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "unifiedStatus == SC.Ui_styles.UNIFIED_STATUS.CHECK")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+					_text = 'IDS_INSTALLED'
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isAmountVisible"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemCounterLine'
+				(bind enabled "isAmountVisible")
+				(args
+					_title = "!_isReward ? 'IDS_IN_WAREHOUSE' : 'IDS_COUNT'"
+					_tex_countt = "amount"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isPriceVisible"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemPriceTagLine'
+				(bind enabled "isPriceVisible")
+				(args
+					_title = 'IDS_COST_COLON'
+					_tex_countt = "multiBoostPrice"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isUnlinkedInfoVisible"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemPriceTagLine'
+				(bind enabled "isUnlinkedInfoVisible")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.LINKED"
+					_text = 'IDS_MULTIBOOST_NOT_LINKED'
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "additionalInstallationInfo._unifiedStatus"
+			_text = "additionalInstallationInfo._text"
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isEcoboostRestrictionsVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='EntityRestrictionBlock'
+				(bind enabled "isEcoboostRestrictionsVisible")
+				(args
+					_restrictionsEntityId = "ecoBoostEntity"
+					_restrictionsIDS = 'IDS_INSTALL_RESTRICTION_MULTIBOOST'
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemParamsModifiersList
+			_attributesPositive = "attributesPositive"
+			_attributesNeutral = "attributesNeutral"
+			_attributesNegative = "attributesNegative"
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "mouseInstruction"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "mouseInstruction")
+				(args
+					_unifiedStatus = "mouseInstruction._unifiedStatus"
+					_text = "mouseInstruction._text"
+				)
+			)
+		)
+	)
+
+)
+
+(def element GlobalBoostTooltip (_id:number, _isReward:bool=false, _isInstalled:bool=false) layout=true
+	(scope
+		(var ecoBoostEntity:gfx = "$datahub.getPrimaryEntity(CC.ecoBoost, _id)")
+		
+		(var gpName:str = "ecoBoostEntity ? ecoBoostEntity.ecoBoost.gpName : ''")
+		(var name:str = "ecoBoostEntity ? ecoBoostEntity.ecoBoost.name : ''")
+		(var type:number = "ecoBoostEntity ? ecoBoostEntity.ecoBoost.type : 0")
+		
+		
+		(var attributesNegative:array = "ecoBoostEntity ? ecoBoostEntity.attributes.negative : []" (event "ecoBoostEntity.attributes.evChanged"))
+		(var attributesNeutral:array = "ecoBoostEntity ? ecoBoostEntity.attributes.neutral : []" (event "ecoBoostEntity.attributes.evChanged"))
+		(var attributesPositive:array = "ecoBoostEntity ? ecoBoostEntity.attributes.positive : []" (event "ecoBoostEntity.attributes.evChanged"))
+		
+
+		(var unifiedStatus:str = "	_isReward		? SC.Ui_styles.UNIFIED_STATUS.DEFAULT :
+									_isInstalled	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+													: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+	)
+	(style (hitTest = false) (width = 320px))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_imageWidth = 60
+			_imageHeight = 60
+			_unifiedStatus = "unifiedStatus"
+			_headerText = 'IDS_GLOBALBOOST_TITLE'
+			_subheaderText = 'IDS_ECONOMIC_BOOST_TYPE_MULTIBOOST'
+			_headerIconType = "SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.ECO_BOOST"
+			_data = "{ paramsId: name, type: type }"
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_isInstalled && !_isReward"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "_isInstalled && !_isReward")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+					_text = 'IDS_INSTALLED'
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.INFINITE"
+			_text = 'IDS_GLOBALBOOST_AUTOREPLENISHMENT_INFO'
+		)
+		
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemParamsModifiersList
+			_attributesPositive = "attributesPositive"
+			_attributesNeutral = "attributesNeutral"
+			_attributesNegative = "attributesNegative"
+		)
+	)
+)

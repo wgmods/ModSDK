@@ -1,0 +1,70 @@
+(def constant MINEFIELD_RELATION_COLORS
+	[
+		0xFFFFFF,
+		0x49E5A7,
+		0xFF4800,
+		0xFFFFFF
+	]
+)
+
+(def element MapMinefieldMarker (_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'circle')
+		(var circleRadius:number = "circleComponent.radius" (event "circleComponent.evRadiusChanged"))
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'minefield')
+
+		(event evShow)
+		(event evHide)
+	)
+	(dispatch evShow on=addedToStage)
+	(dispatch evHide (event "_markerEntity.interactiveZone.evHide"))
+
+	(macro BIND_FAIR_SCALE "circleRadius")
+
+
+	
+	
+	(block
+		(style (position = "absolute"))
+		(controller $Animation
+			(bindcall  play
+				duration=0.3
+				from={alpha: 0}
+				to={alpha: 1}
+				easing="Easing.quint_in"
+				(event "evShow")
+			)
+			(bindcall  play
+				duration=0.3
+				to={alpha: 0}
+				easing="Easing.quint_in"
+				(event "evHide")
+			)
+		)
+
+		(block
+			(controller $Sector
+				(bind arc "360")
+				(bind radius "MINIMAP_ASSETS_SIZE")
+				(bind innerRadius "MINIMAP_ASSETS_SIZE")
+				(bind lineThickness "8")
+				(bind lineAlpha "0.75")
+				(bind lineColor "MINEFIELD_RELATION_COLORS[_markerEntity.relation.value]")
+				(bind dashLength "16")
+				(bind spacing "58")
+				(bind drawDotted "true")
+			)
+		)
+
+		(block
+			(style (alpha = 0.18))
+			(controller $Sector
+				(bind arc "360")
+				(bind color "MINEFIELD_RELATION_COLORS[_markerEntity.relation.value]")
+				(bind radius "MINIMAP_ASSETS_SIZE")
+			)
+		)
+	)
+	
+)

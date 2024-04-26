@@ -1,0 +1,97 @@
+<AD044_Director_Mk54_lod1.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	DirectorMk54	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	DirectorMk54_wires	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_AM652_Radar_Mk13	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.1527 -0.0239 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS200_YDCS_M_1	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0002 0.0313 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS206_YDSS_S_1	</identifier>
+				<transform>
+					<row0>	0.0000 1.0217 0.0000 0.0000	</row0>
+					<row1>	-1.0217 0.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0217 0.0000	</row2>
+					<row3>	-0.0904 0.0251 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS206_YDSS_S_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.0000 -1.0217 0.0000 0.0000	</row0>
+					<row1>	1.0217 0.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0217 0.0000	</row2>
+					<row3>	0.0904 0.0251 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	DirectorMk54	</node>
+		<geometry>
+			<vertices>	DirectorMk54_lod1Shape.vertices	</vertices>
+			<primitive>	DirectorMk54_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ASC020_Des_Moines_1948/director/AD044_Director_Mk54.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	DirectorMk54_wires	</node>
+		<geometry>
+			<vertices>	DirectorMk54_wires_lod1Shape.vertices	</vertices>
+			<primitive>	DirectorMk54_wires_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPWIRE_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ASC020_Des_Moines_1948/director/AD044_Director_Mk54_wire.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.2488 0.0000 -0.1255	</min>
+		<max>	0.2488 0.1606 0.0852	</max>
+	</boundingBox>
+</AD044_Director_Mk54_lod1.visual>

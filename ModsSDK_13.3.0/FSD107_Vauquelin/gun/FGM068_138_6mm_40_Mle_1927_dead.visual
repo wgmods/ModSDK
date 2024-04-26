@@ -1,0 +1,92 @@
+<FGM068_138_6mm_40_Mle_1927_dead.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	MP_XM124_YGBS_Space_M_1	</identifier>
+				<transform>
+					<row0>	0.3575 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.3559 -0.0335 0.0000	</row1>
+					<row2>	0.0000 0.0335 0.3559 0.0000	</row2>
+					<row3>	0.0000 0.0865 0.0298 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_XM127_YGRS_Space_M_1	</identifier>
+				<transform>
+					<row0>	0.3609 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.3593 -0.0338 0.0000	</row1>
+					<row2>	0.0000 0.0338 0.3593 0.0000	</row2>
+					<row3>	0.0000 0.1091 0.2713 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_XM433_YGLC_Soviet_M_1	</identifier>
+				<transform>
+					<row0>	0.2787 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.2787 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.2787 0.0000	</row2>
+					<row3>	0.0000 0.1393 -0.0369 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_XM440_YGRS_FranceArc_M_1	</identifier>
+				<transform>
+					<row0>	0.5141 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.5123 -0.0438 0.0000	</row1>
+					<row2>	0.0000 0.0438 0.5123 0.0000	</row2>
+					<row3>	0.0000 0.1081 0.2713 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_XM441_YGLL_FranceArc_M_1	</identifier>
+				<transform>
+					<row0>	0.5093 -0.0580 0.0225 0.0000	</row0>
+					<row1>	0.0581 0.5098 0.0000 0.0000	</row1>
+					<row2>	-0.0224 0.0025 0.5126 0.0000	</row2>
+					<row3>	-0.0923 0.0983 -0.0267 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_XM442_YGLR_FranceArc_M_1	</identifier>
+				<transform>
+					<row0>	0.5093 0.0580 -0.0225 0.0000	</row0>
+					<row1>	-0.0581 0.5098 0.0000 0.0000	</row1>
+					<row2>	0.0224 0.0025 0.5126 0.0000	</row2>
+					<row3>	0.0923 0.0983 -0.0267 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_deadShape.vertices	</vertices>
+			<primitive>	Turret_deadShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/FSD107_Vauquelin/gun/FGM068_138_6mm_40_Mle_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0953 -0.0041 -0.1705	</min>
+		<max>	0.1054 0.1395 0.2711	</max>
+	</boundingBox>
+</FGM068_138_6mm_40_Mle_1927_dead.visual>

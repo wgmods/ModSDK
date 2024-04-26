@@ -1,0 +1,220 @@
+(def element SignalItemStatic (_id:number, _amount:number="0", _isReward:bool="false", _params:dict="{}")
+	(scope
+		(var signalEntity:gfx = "$datahub.getPrimaryEntity(CC.signal, _id)")
+		(var signalName:str = "signalEntity.signal.name")
+	)
+
+	(element SignalItemView
+		_signalName = "signalName"
+		_amount = "_amount"
+	)
+
+	(controller $Tooltip
+		(renderer = 'SignalTooltip')
+		(args
+			_signalId = "_id"
+			_amount = "_amount"
+			_noMouseInstructions = "true"
+			_isReward = "_isReward"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element SignalItemView (_signalName:str, _amount:number="0")
+	(bind name "'SignalItemDock_' + _signalName")
+	(style (height = 60px) (width = 60px) (bind backgroundImage "'url:../signal_flags/' + _signalName + '.png'"))
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "bottom|right"))
+		(controller $Instance renderer='ImageItemsCounter'
+			(args
+				_amount = "_amount"
+			)
+		)
+	)
+)
+
+(def element SignalTooltip (_signalId:number, _amount:number="0", _noMouseInstructions:bool="false", _isReward:bool="false")
+	(scope
+		(macro PULL_CURRENT_SHIP_ID)
+		(var shipEntity:gfx = "shipId ? $datahub.getPrimaryEntity(CC.ship, shipId) : null")
+		(var shipInfo:gfx =	 "shipEntity ? shipEntity.ship : null"	(event "shipEntity.ship.evUpdate")
+																	(event "shipEntity.ship.evCurrentSkinChanged")
+																	(event "shipEntity.ship.evFlagNameWithCrewChanged"))
+
+		(var ownShipInfo:gfx = "shipEntity ? shipEntity.ownShip : null"	(event "shipEntity.ship.evUpdate")
+																		(event "shipEntity.ship.evCurrentSkinChanged"))
+
+		(var installedSignalsCollection:gfx = "$datahub.getCollection(CC.signal).getChildByPath('isInstalled')")
+		(var installedSignalsCount:number = "installedSignalsCollection ? installedSignalsCollection.items.length : 0")
+		
+		(var signalEntity:gfx = "$datahub.getPrimaryEntity(CC.signal, _signalId)")
+
+		(var isNeedRepair:bool =	"ownShipInfo ? ownShipInfo.isNeedRepair : false"	(event "ownShipInfo.evUpdateDockState"))
+		(var isNeedShell:bool =		"ownShipInfo ? ownShipInfo.isNeedShell : false"		(event "ownShipInfo.evUpdateDockState"))
+		(var isLocked:bool =		"ownShipInfo ? ownShipInfo.isLocked : false"		(event "ownShipInfo.evUpdateLock"))
+		(var isInFormation:bool =	"ownShipInfo ? ownShipInfo.isInFormation : false"	(event "ownShipInfo.evUpdateLock"))
+		(var signalsLimit:number =	"ownShipInfo ? ownShipInfo.sigLimit : 0"			(event "ownShipInfo.evUpdateConfig"))
+
+		(var isInstalledDH:bool = "signalEntity ? signalEntity.signal.isInstalled : false"		(event "signalEntity.signal.evUpdated"))
+		(var isUseless:bool = "signalEntity ? !(signalEntity.attributes.useful) : false"		(event "signalEntity.attributes.evUsefulChanged"))
+		(var attributes:gfx = "signalEntity ? signalEntity.attributes : null"					(event "signalEntity.attributes.evChanged"))
+		(var signalsInStorage:number = "signalEntity ? signalEntity.countComponent.value : 0"	(event "signalEntity.signal.evUpdated"))
+
+		(var amount:number = "_isReward	?	_amount
+										:	signalsInStorage")
+
+		(var isInstalled:bool = "isInstalledDH && amount > 0 && !_isReward")
+		(var isPreinstalled:bool = "isInstalledDH && amount == 0 && !_isReward")
+		
+		(var unifiedStatus:str = "isInstalled	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+												: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+	
+		(var signalName:str = "signalEntity ? signalEntity.signal.name : ''")
+		(var signalNameUpper:str = "toUpper(signalName)")
+		(var headerIconPath:str = "signalName ? 'url:../signal_flags/' + signalName + '.png' : ''")
+		(var headerText:str = "signalNameUpper ? tr('IDS_' + signalNameUpper) : ''")
+
+		(var maxSignalsInstalled:bool = "installedSignalsCount == signalsLimit")
+		(var isInteractable:bool = "!(maxSignalsInstalled && !isInstalled)")
+		
+		(var mouseInstructionText:bool = "	isPreinstalled	? 'IDS_MOUSE_INSTRUCTION_DISABLE_PREINSTALL_SIGNAL' :
+											isInstalled		? 'IDS_MOUSE_INSTRUCTION_TAKE_AWAY_SIGNAL' :
+											amount > 0		? 'IDS_MOUSE_INSTRUCTION_INSTALL_SIGNAL'
+															: 'IDS_MOUSE_INSTRUCTION_PREINSTALL_SIGNAL'")
+	
+		(var mouseInstruction:dict =	"_noMouseInstructions				?	null :
+										isInFormation						?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																					_text: 'IDS_SET_UNREADY_DIVISION_FIRST_TO_OPERATE_SIGNALS' } :
+										isLocked							?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																					_text: 'IDS_LEAVE_BATTLE_FIRST_TO_OPERATE_SIGNALS' } :
+										isNeedRepair || isNeedShell			?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																					_text: 'IDS_SERVICE_SHIP_TO_OPERATE_SIGNALS' } :
+										maxSignalsInstalled && !isInstalled	?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																					_text: 'IDS_MAXIMUM_FLAGS_IS_INSTALLED' }
+																			:	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																					_text: mouseInstructionText }")
+	)
+	(style (hitTest = false) (width = 320px))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHeaderWithIconAndText'
+				(args
+					_imageUrl= "headerIconPath"
+					_imageWidth = "60"
+					_imageHeight = "60"
+					_unifiedStatus = "unifiedStatus"
+					_headerText = "headerText"
+					_subheaderText = "'IDS_BATTLE_SIGNAL'"
+					_headerIconType = "SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.SIMPLE"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isUseless && !_isReward"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isUseless && !_isReward")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.NEGATIVE"
+					_text = "'IDS_WARNING_USELESS_SIGNAL'"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isInstalled"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isInstalled")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+					_text = "'IDS_INSTALLED'"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isPreinstalled"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isPreinstalled")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+					_text = "'IDS_PREINSTALLED_SIGNAL'"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemCounterLine'
+				(bind enabled "amount")
+				(args
+					_title = "_isReward ? 'IDS_COUNT' : 'IDS_IN_WAREHOUSE'"
+					_count = "amount"
+				)
+			)
+
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "!amount")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+					_text = "'IDS_OUT_OF_STOCK'"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "!amount"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemParamsModifiersList'
+				(bind enabled "!amount")
+				(args
+					_attributesPositive = "attributes.positive"
+					_attributesNeutral = "attributes.neutral"
+					_attributesNegative = "attributes.negative"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "mouseInstruction"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "mouseInstruction")
+				(args
+					_unifiedStatus = "mouseInstruction._unifiedStatus"
+					_text = "mouseInstruction._text"
+				)
+			)
+		)
+	)
+)
+
+(def element SignalUselessIcon ()
+	(style (backgroundImage = "'url:../service_kit/icons/icon_useless_big.png'"))
+)

@@ -1,0 +1,38 @@
+<GD050_Torpedo_Zielsaule.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	GD050_Torpedo_Zielsaule	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	GD050_Torpedo_Zielsaule	</node>
+		<geometry>
+			<vertices>	GD050_Torpedo_ZielsauleShape.vertices	</vertices>
+			<primitive>	GD050_Torpedo_ZielsauleShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/GSD103_G_101/director/GD050_Torpedo_Zielsaule.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0137 -0.0005 -0.0137	</min>
+		<max>	0.0137 0.1092 0.0137	</max>
+	</boundingBox>
+</GD050_Torpedo_Zielsaule.visual>

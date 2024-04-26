@@ -1,0 +1,17 @@
+
+
+
+(def element AcousticBackground (_width:number=SLOT_SIZE, _height:number=SLOT_SIZE) layout=true
+	(scope
+		(var _isPreSelected:bool = false)
+		(var _isSelected:bool = false)
+	)
+	(bind alpha "_isPreSelected || _isSelected ? 1 : 0.6")
+	(style
+		(position = "absolute")
+		(width = "_width")
+		(height = "_height")
+
+		(bind backgroundImage "'url:../battle_hud/weapons_panel/guns/torpedo/weapon_panel_torpedo_acoustic.png'")
+	)
+)

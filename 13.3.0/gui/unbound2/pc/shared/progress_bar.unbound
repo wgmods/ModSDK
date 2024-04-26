@@ -1,0 +1,87 @@
+(def element DefaultProgressBar ( _progress:number, _width:number="0", _height:number="0", _color:str="null") layout=true
+	(style	
+		(bind width "_width ? _width : 100%")
+		(bind height "_height ? _height : 4px")
+
+		(backgroundImage = "'url:../service_kit/progress_bars/bar_default_bg.png'")
+		(scale9grid = 2)
+		(padding = "1px")
+	)
+	(block
+		(style
+			(height = "100%")
+			(bind width "toString((_progress > 1 ? 1 : _progress) * 100) + '%'")
+			(bind backgroundColor "_color ? _color : SC.Ui_styles.SERVICE_COLORS.YELLOW")
+		)
+	)
+)
+
+
+(def element DoubleProgressBar  ( _progress1:number, _progress2:number, _color1:str="null", _color2:str="null", _width:number="0", _height:number="0") layout=true
+	(scope
+		(var progressLeftWidth:str = "toString(round(_progress1 * 100)) + '%'")
+		(var progressRightWidth:str = "toString(round(_progress2 * 100)) + '%'")
+	)
+
+	(style	
+		(flow = "tile_horizontal")
+		(bind width "_width ? _width : 100%")
+		(bind height "_height ? _height : 4px")
+
+		(backgroundImage = "'url:../service_kit/progress_bars/bar_default_bg.png'")
+		(scale9grid = 2)
+		(padding = "1px")
+	)
+
+	(block
+		(style
+			(height = "100%") (position = "absolute")
+			(bind width "progressLeftWidth")
+			(bind backgroundColor "_color1 ? _color1 : SC.Ui_styles.SERVICE_COLORS.YELLOW")
+		)
+	)
+
+	(block
+		(style
+			
+			
+			(height = "100%") (position = "absolute")
+			(bind width "progressRightWidth")
+			(bind left "progressLeftWidth")
+			(bind backgroundColor "_color2 ? _color2 : SC.Ui_styles.SERVICE_COLORS.YELLOW")
+		)
+	)
+)
+
+(def element AnimatedProgressBar (	_startProgress:number=0, _progress:number=0, _progressbarMotionDuration:number=0,
+									_width:number=0, _height:number=0, _color:str='') layout=true dispatch_size_change=true
+	(scope
+		(event evAddedToStage)
+		(var paramScaleX:number = "_startProgress / 100" watch=false)
+
+		(controller $Animation
+			(bindcall play	to = "{paramScaleX: _progress / 100}"
+							duration = "_progressbarMotionDuration"
+							delay=0.1
+							(bind trigger "_progress") (event "evAddedToStage")
+			)
+		)
+	)
+	(style
+		(bind width "_width ? _width : 100%")
+		(bind height "_height ? _height : 4px")
+
+		(backgroundImage = "'url:../service_kit/progress_bars/bar_default_bg.png'")
+		(scale9grid = 2)
+		(padding = 1px)
+	)
+	(dispatch evAddedToStage on='addedToStage')
+
+	(block
+		(style
+			(height = 100%) (width = 100%) (position = "absolute")
+			(bind backgroundColor "_color ? _color : SC.Ui_styles.SERVICE_COLORS.YELLOW")
+			(bind ubScaleX "paramScaleX")
+		)
+	)
+)

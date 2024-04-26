@@ -1,0 +1,124 @@
+(def element RepeatStatusTooltip (_width:number="null", _tooltipDataArray:array="[]", _isShowUB2Tooltip:bool=false) layout=true  dispatch_size_change=true
+	(style (hitTest = "false") (bind width "_width ? _width : 320"))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(controller $Repeat renderer='RepeatStatusLine'
+			(bind count "_tooltipDataArray.length")
+			(args
+				_text = "_tooltipDataArray[$index].text"
+				_unifiedStatus = "_tooltipDataArray[$index].unifiedStatus"
+			)
+		)
+	)
+)
+
+(def element RepeatStatusLine (_text:str = "''", _unifiedStatus:str = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT") layout=true
+	(style (width = "100%"))
+
+	(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "$index != 0"))
+	(element TooltipSystemStatusLine
+		_text =				"_text"
+		_unifiedStatus =	"_unifiedStatus"
+	)
+)
+
+(def element SimpleStatusTooltip (_text:str = "''", _unifiedStatus:str = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT", _isShowUB2Tooltip:bool=false) layout=true dispatch_size_change=true
+	(name = "'simpleStatusTooltip'")
+	(style (hitTest = false))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER _width = "'auto'"
+		(element StatusLine
+			_text = "_text"
+			_textClass = '$TextDefaultNM'
+			_leading = -3
+			_unifiedStatus = "_unifiedStatus"
+			_width = "'auto'"
+			_maxWidth = "270"
+		)
+	)
+)
+
+(def element HeaderDescriptionInstructionTooltip (_headerText:str, _descriptionText:str='', _mouseInstructionText:str='', _isShowUB2Tooltip:bool=false) layout=true dispatch_size_change=true
+	(style (width = 300px) (hitTest = false))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "_headerText"
+		)
+		
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_descriptionText"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "_descriptionText")
+				(args
+					_descriptionText = "_descriptionText"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_mouseInstructionText"))
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "_mouseInstructionText")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+					_text = "_mouseInstructionText"
+				)
+			)
+		)
+	)
+)
+
+(def element DescriptionStatusLineTooltip (_descriptionText:str, _statusText:str, _unifiedStatus:str="SC.Ui_styles.UNIFIED_STATUS.DEFAULT", _isShowUB2Tooltip:bool=false) layout=true dispatch_size_change=true
+	(style (hitTest = "false") (width = "250px"))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "_descriptionText"
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_statusText"))
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "_statusText")
+				(args
+					_text="_statusText"
+					_unifiedStatus="_unifiedStatus"
+				)
+			)
+		)
+
+	)
+)
+
+(def element SimpleHeaderSubheaderTooltip (_headerText:str, _subheaderText:str='', _isShowUB2Tooltip:bool=false) layout=true dispatch_size_change=true
+	(style (hitTest = "false") (width = "344px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(macro PULL_TOOLTIP_UB2_STATE)
+	
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText _headerText="_headerText" _subheaderText="_subheaderText")
+	)
+)

@@ -1,0 +1,404 @@
+(def constant TAB_BUTTON_DEFAULT_HEIGHT 32)
+
+(def macro DEFAULT_CONTROL_MARKER_ANIMATION (_isVisible:expression)
+	(controller $Animation
+		(bindcall play
+			duration = 0.12
+			from	 = { alpha: 0, y: 8 }
+			to		 = { alpha: 1, y: 0 }
+			action="kill"
+			easing = "Easing.quad_in"
+			(bind enabled "_isVisible")
+		)
+		(bindcall play
+			duration = 0.12
+			from	 = { alpha: 1, y: 0 }
+			to		 = { alpha: 0, y: -8 }
+			action="kill"
+			easing = "Easing.quad_out"
+			(bind enabled "!_isVisible")
+		)
+	)
+)
+
+(def macro DEFAULT_CONTROL_STATE_ANIMATION_ALPHA (_trigger:expression, _alpha:expression)
+	(controller $Animation
+		(bindcall play
+			duration = "0.1"
+			to = "{alpha: _alpha}"
+			easing = "Easing.quad_in"
+			
+			(bind trigger "_trigger")
+		)
+	)
+)
+
+(def constant TAB_BUTTON_LABEL_ALPHA {
+	SC.Ui_styles.BUTTON_STATE.DISABLED	: 0.2,
+	SC.Ui_styles.BUTTON_STATE.SELECTED	: "TA",
+	SC.Ui_styles.BUTTON_STATE.DOWN		: 0.3,
+	SC.Ui_styles.BUTTON_STATE.OVER		: 0.75,
+	SC.Ui_styles.BUTTON_STATE.UP		: 0.65
+})
+
+(def constant TAB_BUTTON_LINE_ALPHA {
+	SC.Ui_styles.BUTTON_STATE.DISABLED	: 0,
+	SC.Ui_styles.BUTTON_STATE.SELECTED	: "TA",
+	SC.Ui_styles.BUTTON_STATE.DOWN		: 0.2,
+	SC.Ui_styles.BUTTON_STATE.OVER		: 0.5,
+	SC.Ui_styles.BUTTON_STATE.UP		: 0
+})
+
+(def element TabButton (_label:str='', _isSelected:bool=false, _isDisabled:bool=false, _width:str='',
+						_isNewMarker:bool=false, _isAttentionMarker:bool=false, _newContentCounter:number=0, _image:str='',
+						_dispatchedEv:str='', _dispatchParams:gfx={}, _methods:array=[], _tooltipElement:str='SimpleStatusTooltip', _tooltipData:dict={}, _name:str='')
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var showMarkerNew:bool = "_isNewMarker")
+		(var showMarkerAttention:bool = "_isAttentionMarker && !_isNewMarker")
+		(var showMarkerCounter:bool = "_newContentCounter > 0 && !showMarkerNew && !showMarkerAttention")
+
+		(var state:number = "	_isDisabled	? SC.Ui_styles.BUTTON_STATE.DISABLED :
+								_isSelected	? SC.Ui_styles.BUTTON_STATE.SELECTED :
+								mouseDown	? SC.Ui_styles.BUTTON_STATE.DOWN :
+								rollOver	? SC.Ui_styles.BUTTON_STATE.OVER
+											: SC.Ui_styles.BUTTON_STATE.UP")
+
+		(var labelAlpha:number = "TAB_BUTTON_LABEL_ALPHA[state]")
+		(var lineAlpha:number = "TAB_BUTTON_LINE_ALPHA[state]")
+
+		(var label:str = "_label ? toUpper(tr(_label)) : ''")
+
+		(var tooltipText:str = "'_text' in _tooltipData ? _tooltipData._text : ''")
+		(var tooltipUnifiedStatus:str = "'_unifiedStatus' in _tooltipData ? _tooltipData._unifiedStatus : SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+	)
+
+	(bind name "_name")
+
+	(style
+		(align = "center")
+		(bind width "_width ? _width : 'auto'")
+		(height = "TAB_BUTTON_DEFAULT_HEIGHT")
+	)
+
+	(hblock
+		(bind name "_isSelected")
+
+		(style
+			(bind marginLeft "_width ? 0px : MS")
+			(bind marginRight "_width ? 0px : MS")
+		)
+
+		
+		(hblock
+			(macro DEFAULT_CONTROL_STATE_ANIMATION_ALPHA _trigger="state" _alpha="labelAlpha")
+			
+			(style
+				(bind alpha "labelAlpha" watch=false)
+			)
+
+			
+			(block
+				(bind visible "_image")
+
+				(style
+					(marginTop = 3px)
+					(width = 24px)
+					(height = 24px)
+					(bind backgroundImage "_image")
+				)
+			)
+
+			
+			(block
+				(bind visible "_label")
+
+				(tf
+					(class $TextDefaultBoldNM)
+
+					(style
+						(marginTop = 10px)
+						(multiline = false)
+						(bind marginLeft "_image ? XS : 0px")
+					)
+
+					(bind text "toUpper(tr(_label))")
+				)
+			)
+		)
+
+		
+		(block
+			(style
+				(position = "absolute")
+				(bind right "_width ? -40px : -23px")
+				(top = 2px)
+			)
+
+			(block
+				(macro DEFAULT_CONTROL_MARKER_ANIMATION "showMarkerNew")
+				(style
+					(bind alpha "showMarkerNew ? 1 : 0" watch=false)
+				)
+
+				(element MarkerNew)
+			)
+		)
+
+		
+		(block
+			(style (position = "absolute") (right = "-MS") (top = 2px))
+			(block
+				(macro DEFAULT_CONTROL_MARKER_ANIMATION "showMarkerAttention")
+				(style
+					(bind alpha "showMarkerAttention ? 1 : 0" watch=false)
+				)
+
+				(element MarkerAttention)
+			)
+		)
+
+		
+		(block			
+			(style (position = "absolute") (right = -3px) (top = 2px))
+
+			(block
+				(macro DEFAULT_CONTROL_MARKER_ANIMATION "showMarkerCounter")
+				(style
+					(position = "absolute")
+					(bind alpha "showMarkerCounter ? 1 : 0" watch=false)
+				)
+				(element MarkerNewCounter
+					_newContentCounter = "_newContentCounter"
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(style
+			(position = "absolute")
+			(bind alpha "lineAlpha" watch=false)
+			(width = 100%)
+			(bottom = 0px)
+			(height = 2px)
+			(backgroundColor = 0xFFFFFFFF)
+		)
+		(macro DEFAULT_CONTROL_STATE_ANIMATION_ALPHA _trigger="state" _alpha="lineAlpha")
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "!_isDisabled && !_isSelected"
+		_dispatchedEv = "_dispatchedEv"
+		_dispatchParams = "_dispatchParams"
+		_methods = "_methods"
+		_soundSet = "'button_tab'"
+	)
+
+	(controller $Tooltip
+		(bind enabled "tooltipText")
+		(bind renderer "_tooltipElement")
+		(args
+			_text = "tooltipText"
+			_unifiedStatus = "tooltipUnifiedStatus"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+
+(def element AsideNavigationButton (_label:str, _isSelected:bool, _dispatchedEv:str='', _dispatchParams:gfx={}, _methods:array=[])
+	(scope
+		
+		
+
+		
+
+		
+
+
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+
+	(style
+		(width = 100%)
+		(height = 36px)
+		(marginBottom = 1px)
+		(bind hitTest "!_isSelected")
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(width = 100%)
+			
+			(height = 36px)
+			(marginBottom = 1px)
+		)
+
+		(element NavButtonBgAndCounter
+			_isSelected = "_isSelected"
+			_rollOver = "rollOver"
+			
+			
+			
+			
+		)
+	)
+
+	(block
+		
+		(style (hitTest = false) (width = 100%))
+
+		(element NavButtonLabelAndMarker
+			_isSelected = "_isSelected"
+			_label = "_label"
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "!_isSelected"
+		_dispatchedEv = "_dispatchedEv"
+		_dispatchParams = "_dispatchParams"
+		_methods = "_methods"
+		_soundSet = "'button_secondary'"
+	)
+)
+
+
+(def element NavButtonBgAndCounter (_isSelected:bool, _rollOver:bool)
+	(scope
+		(var bgState:str = "_isSelected ? 'selected' : 'down'")
+	)
+
+	(style (width = 100%) (height = 36px))
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(alpha = 1)
+			(bind backgroundImage "'url:../service_kit/buttons/navigation_button/button_navigation_' +  bgState + '.png'")
+			(scale9grid = [12, 0, 9, 0])
+		)
+
+		(controller $Animation
+			(bindcall play
+				duration = 0.1
+				from	 = { alpha: 0 }
+				to		 = { alpha: 1 }
+				easing = "Easing.quad_in"
+				action="kill"
+				(bind trigger "_isSelected")
+			)
+		)
+	)
+
+	(block
+		(bind visible "!_isSelected")
+
+		(class $FullsizeAbsolute)
+		(style
+			(alpha = 0)
+			(backgroundImage = 'url:../service_kit/buttons/navigation_button/button_navigation_over.png')
+			(scale9grid = [12, 0, 9, 0])
+		)
+
+		(controller $Animation
+			(bindcall play
+				duration = 0.1
+				from	 = { alpha: 0 }
+				to		 = { alpha: 1 }
+				easing = "Easing.quad_in"
+				action="kill"
+				reverse	 = "!_rollOver"
+				(bind trigger "_rollOver")
+			)
+		)
+	)
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+)
+
+(def element NavButtonLabelAndMarker (_isSelected:bool, _label:str, _fontClass:str='', _paddingRight:number="LM")
+	(scope
+		
+		
+		
+		
+		
+
+		
+		
+		
+		
+		
+		
+	)
+
+	(style
+		(hitTest = false)
+		(flow = "horizontal")
+		
+		(width = 100%)
+		(minWidth = 160px)
+		(marginLeft = "SXS")
+		(marginTop = "SXS")
+		(marginBottom = "SXS")
+		(bind paddingRight "_paddingRight")
+	)
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	(tf
+		(class $TextDefaultBold17NM)
+		(bind class "_isSelected ? '$DropShadowDisabler' : '$FontDropShadowFilter'")
+		
+		(style
+			(bind textColor "_isSelected ? '0xff08222a' : '0xffffffff'")
+			(multiline = false)
+			
+		)
+
+		(bind text "toUpper(tr(_label))")
+	)
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+)

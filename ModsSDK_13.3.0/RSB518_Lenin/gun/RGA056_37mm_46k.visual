@@ -1,0 +1,74 @@
+<RGA056_37mm_46k.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	gun	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	HP_gunFire1	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.8640 -0.5035 0.0000	</row1>
+					<row2>	0.0000 0.5035 0.8640 0.0000	</row2>
+					<row3>	0.0237 0.1847 0.1431 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	HP_gunFire2	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.8640 -0.5035 0.0000	</row1>
+					<row2>	0.0000 0.5035 0.8640 0.0000	</row2>
+					<row3>	0.0090 0.1944 0.1374 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	HP_gunFire3	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.8640 -0.5035 0.0000	</row1>
+					<row2>	0.0000 0.5035 0.8640 0.0000	</row2>
+					<row3>	-0.0090 0.1944 0.1374 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	HP_gunFire4	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.8640 -0.5035 0.0000	</row1>
+					<row2>	0.0000 0.5035 0.8640 0.0000	</row2>
+					<row3>	-0.0237 0.1847 0.1431 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	gun	</node>
+		<geometry>
+			<vertices>	gunShape.vertices	</vertices>
+			<primitive>	gunShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/RSB518_Lenin/gun/RGA056_37mm_46k.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1111 0.0000 -0.1111	</min>
+		<max>	0.1111 0.2820 0.2328	</max>
+	</boundingBox>
+</RGA056_37mm_46k.visual>

@@ -1,0 +1,38 @@
+<RGT071_533mm_PTA_5tubes_dead_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	RGT071_533mm_5tubes_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	RGT071_533mm_5tubes_dead	</node>
+		<geometry>
+			<vertices>	RGT071_533mm_5tubes_dead_lod2Shape.vertices	</vertices>
+			<primitive>	RGT071_533mm_5tubes_dead_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/RSD210_Grozovoy_pr_40N/gun/RGT071_533mm_PTA_5tubes_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1271 0.0000 -0.2698	</min>
+		<max>	0.1203 0.1570 0.2663	</max>
+	</boundingBox>
+</RGT071_533mm_PTA_5tubes_dead_lod2.visual>

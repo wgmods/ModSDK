@@ -1,0 +1,180 @@
+(def constant MAIN_TAB_BUTTONS_BGR_HEIGHT 30)
+(def constant MAIN_TAB_BUTTON_DEFAULT_HEIGHT 28)
+
+(def constant MAIN_TAB_BUTTON_WIDTH {
+	TINY	: 160,
+	SMALL	: 180,
+	MEDIUM	: 200,
+	LARGE	: 220
+})
+
+(def element MAIN_TAB_BUTTONS_BLOCK ()
+	(style	(flow = "horizontal") (height = "MAIN_TAB_BUTTONS_BGR_HEIGHT") (padding = 1px)
+			(backgroundImage = 'url:../service_kit/tabs/main/backplate.png') (scale9grid = 2))
+)
+
+(def constant MAIN_TAB_BUTTON_PLATE_ALPHA {
+	SC.Ui_styles.BUTTON_STATE.DISABLED	: 0,
+	SC.Ui_styles.BUTTON_STATE.SELECTED	: 0.60,
+	SC.Ui_styles.BUTTON_STATE.DOWN		: 0,
+	SC.Ui_styles.BUTTON_STATE.OVER		: 0.15,
+	SC.Ui_styles.BUTTON_STATE.UP		: 0
+})
+
+(def constant MAIN_AND_SIDE_TAB_LABEL_ALPHA {
+	SC.Ui_styles.BUTTON_STATE.DISABLED	: 0.2,
+	SC.Ui_styles.BUTTON_STATE.SELECTED	: "TA",
+	SC.Ui_styles.BUTTON_STATE.DOWN		: 0.3,
+	SC.Ui_styles.BUTTON_STATE.OVER		: "TA",
+	SC.Ui_styles.BUTTON_STATE.UP		: "TC"
+})
+
+(def constant MAIN_AND_SIDE_TAB_LABEL_YELLOW_ALPHA {
+	SC.Ui_styles.BUTTON_STATE.DISABLED	: 0.2,	
+	SC.Ui_styles.BUTTON_STATE.SELECTED	: "TA", 
+	SC.Ui_styles.BUTTON_STATE.DOWN		: 0.3,	
+	SC.Ui_styles.BUTTON_STATE.OVER		: "1",	
+	SC.Ui_styles.BUTTON_STATE.UP		: "1"	
+})
+
+(def element MainTabButton	(	_label:str='', _isSelected:bool=false, _isDisabled:bool=false, _width:number="MAIN_TAB_BUTTON_WIDTH.MEDIUM",
+								_isNewMarker:bool=false, _isAttentionMarker:bool=false, _newContentCounter:number=0, _dispatchedEv:str='', _dispatchParams:gfx={}, _methods:array=[],
+								_name:str='', _isLast:bool=false)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+		(event stateAnimationFinised)
+
+		(var showMarkerNew:bool = "_isNewMarker")
+		(var showMarkerAttention:bool = "_isAttentionMarker && !_isNewMarker")
+		(var showMarkerCounter:bool = "_newContentCounter > 0 && !showMarkerNew && !showMarkerAttention")
+
+		(var state:number = "	_isDisabled	? SC.Ui_styles.BUTTON_STATE.DISABLED :
+								_isSelected	? SC.Ui_styles.BUTTON_STATE.SELECTED :
+								mouseDown	? SC.Ui_styles.BUTTON_STATE.DOWN :
+								rollOver	? SC.Ui_styles.BUTTON_STATE.OVER
+											: SC.Ui_styles.BUTTON_STATE.UP")
+
+		(var plateAlpha:number = "MAIN_TAB_BUTTON_PLATE_ALPHA[state]")
+
+		(var labelColor:number = "	state == SC.Ui_styles.BUTTON_STATE.SELECTED	? SC.Ui_styles.SERVICE_COLORS.MATTE_BLACK
+																				: SC.Ui_styles.SERVICE_COLORS.WHITE"
+									watch=false (event "stateAnimationFinised"))
+		(var labelAlpha:number = "MAIN_AND_SIDE_TAB_LABEL_ALPHA[state]")
+	)
+
+	(bind name "_name")
+
+	(style
+		(flow = "horizontal")
+		(backgroundColor = 0x01000000)
+	)
+
+	(hblock
+		(bind name "_isSelected")
+		(style
+			(align = "center")
+			(height = "MAIN_TAB_BUTTON_DEFAULT_HEIGHT")
+			(bind width "_width")
+		)
+
+		
+		(block
+			(macro DEFAULT_CONTROL_STATE_ANIMATION_ALPHA _trigger="state" _alpha="plateAlpha")
+
+			(class $FullsizeAbsolute)
+			(style
+				(backgroundColor = "SC.Ui_styles.SERVICE_COLORS.WHITE")
+				(bind alpha "plateAlpha" watch=false)
+			)
+		)
+
+		
+		(block
+			(tf
+				(controller $Animation
+					(bindcall play
+						duration = "0.1"
+						to = "{alpha: labelAlpha}"
+						easing = "Easing.quad_in"
+						
+						(bind trigger "state")
+					)
+					(dispatch stateAnimationFinised on=evAnimEnded)
+				)
+
+				(class $TextDefaultBold17NM)
+				(bind class "labelColor == SC.Ui_styles.SERVICE_COLORS.MATTE_BLACK ? '$DropShadowDisabler' : '$FontDropShadowFilter'")
+
+				(style
+					(marginTop = "S")
+					(marginBottom = "S")
+					(multiline = false)
+					(hitTest = false)
+					(bind textColor "labelColor")
+					(bind alpha "labelAlpha" watch=false)
+				)
+
+				(bind text "toUpper(tr(_label))")
+			)
+
+			
+			(block
+				(style (position = "absolute") (right = -40px) (top = 1px))
+
+				(block
+					(macro DEFAULT_CONTROL_MARKER_ANIMATION "showMarkerNew")
+
+					(style
+						(bind alpha "showMarkerNew ? 1 : 0" watch=false)
+					)
+
+					(element MarkerNew)
+				)
+			)
+
+			
+			(block
+				(style (position = "absolute") (right = "-MS") (top = 1px))
+
+				(block
+					(macro DEFAULT_CONTROL_MARKER_ANIMATION "showMarkerAttention")
+
+					(style
+						(bind alpha "showMarkerAttention ? 1 : 0" watch=false)
+					)
+
+					(element MarkerAttention)
+				)
+			)
+
+			
+			(block			
+				(style (position = "absolute") (right = -3px) (top = 1px))
+
+				(block
+					(macro DEFAULT_CONTROL_MARKER_ANIMATION "showMarkerCounter")
+					(style
+						(position = "absolute")
+						(bind alpha "showMarkerCounter ? 1 : 0" watch=false)
+					)
+					(element MarkerNewCounter
+						_newContentCounter = "_newContentCounter"
+					)
+				)
+			)
+		)
+
+		(macro MOUSE_HANDLER
+			_enabled = "!_isDisabled && !_isSelected"
+			_dispatchedEv = "_dispatchedEv"
+			_dispatchParams = "_dispatchParams"
+			_methods = "_methods"
+			_soundSet = "'button_tab'"
+		)
+	)
+
+	(block
+		(bind visible "!_isLast")
+		(style (height = 100%) (width = 1px) (backgroundImage = 'url:../service_kit/tabs/main/divider.png'))
+	)
+)

@@ -1,0 +1,59 @@
+(def element QuickCommandsTextTooltip (text:str = '') layout=true
+	(scope
+
+		(event evQuickCommandChanged)
+
+		(var _text:str = "text")
+		(var _visible:bool = false)
+		(var showOffsetY:number = 10)
+		(var rightOffset:number = 26)
+		(var bottomOffset:number = 6)
+		(var appearDuration:number = 0.1)
+		(var disappearDuration:number = 0.1)
+
+		(macro GET_PREF 'contrastEnabled' "'graphics.GUI.contrast'")
+
+		(var mouseComponent:gfx = "$datahub.getSingleComponent(CC.mouse)")
+		(var stageComponent:gfx = "$datahub.getSingleComponent(CC.stage)")
+		(var calcMouse:bool = "mouseComponent && stageComponent")
+	)
+	(style
+		(position = "absolute")
+		(bind left "calcMouse ? mouseComponent.x / stageComponent.scale + bottomOffset : 0" (event "evEnterFrame"))
+		(bind top "calcMouse ? mouseComponent.y / stageComponent.scale + rightOffset : 0" (event "evEnterFrame"))
+	)
+
+	(dispatch evQuickCommandChanged (bind trigger "_text"))
+
+	
+	(block
+		(style
+			(position = "absolute")
+		)
+		(alpha = 0)
+		(visible = false)
+
+		(controller $Animation
+			(bindcall play duration="appearDuration"  from={alpha:0, visible:false, top: 10} to={alpha:1, visible:true, top:0} watch=false action="killAll" (event "evQuickCommandChanged") (bind enabled "_visible"))
+			(bindcall play duration="disappearDuration" from={alpha:1, visible:true, top: 0} to={alpha:0, visible:false, top:-10} watch=false action="killAll" (bind enabled "!_visible"))
+		)
+
+		(mc contrast_panel
+			(class $FullsizeAbsolute)
+			(bind visible "contrastEnabled")
+		)
+
+		(mc hint_panel
+			(class $FullsizeAbsolute)
+		)
+		
+		(tf
+			(class $InfoBlockIndentNoWidth)
+			(class $TextHeaderBigDefault)
+			(style
+				(maxWidth = 300)
+			)
+			(bind text "_text" (bind enabled "_text!=''"))
+		)
+	)
+)

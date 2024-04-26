@@ -1,0 +1,36 @@
+(def element ButtonDivisionTooltip (_battleType:str, _isFormationsEnabled:bool = false, _isShowUB2Tooltip:bool=false) layout=true dispatch_size_change=true
+	(scope
+		(var rankSeasonEntity:gfx = "$datahub.getSingleEntity(CC.rankSeason)")
+		(var rankSeasonComponent:gfx = "rankSeasonEntity ? rankSeasonEntity.rankSeason : null" (event "rankSeasonEntity.rankSeason.evChanged"))
+		(var isDivisionAllowedInRanked:bool = "rankSeasonComponent ? rankSeasonComponent.isDivisionAllowed : false")
+	)
+	(style (width = 260) (hitTest = false))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "_isFormationsEnabled")
+				(args
+					_descriptionText = 'IDS_HINT_CREATE_DIVISION'
+				)
+			)
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "!_isFormationsEnabled")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.WARNING"
+					_text = "	_battleType == SC.Common.BATTLE_TYPES.RANKED_BATTLE && !isDivisionAllowedInRanked	? 'IDS_DIVISIONS_ARE_NOT_ALLOWED_IN_RANK_BATTLES' :
+								_battleType == SC.Common.BATTLE_TYPES.TRAINING_BATTLE								? 'IDS_DIVISIONS_ARE_NOT_ALLOWED_IN_TRAINING_BATTLES'
+																													: 'UNKNOWN_DENY_REASON'"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+			_text = 'IDS_CHOOSE_DIVISION_HINT'
+		)
+	)
+)

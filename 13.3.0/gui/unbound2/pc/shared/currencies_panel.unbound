@@ -1,0 +1,455 @@
+(def element CurrenciesPanel (_priceInfo:array, _width:number=30, _isExpandable:bool=true) dispatch_size_change=true
+	(scope
+		(event evRollOver)
+		(event evRollOut)
+		(event evMouseDown)
+		(event evMouseUp)
+
+		(var rollOver:bool = "$event.isOver" init=false watch=false (event "evRollOver") (event "evRollOut"))
+		(var mouseDown:bool = "$event.isDown" init=false watch=false (event "evMouseDown") (event "evMouseUp"))
+
+		(macro GET_PREF 'isCurrenciesPanelExpanded' "'ui.isCurrenciesPanelExpanded'")
+	)
+
+	(dispatch evRollOver		on='rollOver'		args="{isOver: true}")
+	(dispatch evRollOut			on='rollOut'		args="{isOver: false}")
+	(dispatch evMouseUp			on='stageMouseUp'	args="{isDown: false}")
+	(dispatch evMouseDown		on='mouseDown'		args="{isDown: true}")
+
+	(style (paddingBottom = "M"))
+
+	(macro SOUND_HANDLER "_isExpandable ? 'dropdown' : ''")
+
+	(bindcall externalCall "_isExpandable ? 'direct.action' : ''" "['option.set', ['ui.isCurrenciesPanelExpanded', !isCurrenciesPanelExpanded]]" init=false watch=false on='click')
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(alpha = 0.17)
+			(scale9grid = 2)
+			(hitTest = false)
+			(backgroundImage = 'url:../service_kit/frames/one_pixel_frame.png')
+		)
+	)
+
+	(hblock
+		(style (padding = "SXS") (backgroundColor = 0x01000000))
+
+		
+		(block
+			(style (hitTest = false) (marginRight = "SXS") (paddingTop = 1px))
+
+			(controller $Instance renderer='ButtonExpand'
+				(bind enabled "_isExpandable")
+				(args 
+					_isInOverState="rollOver"
+					_isInDownState="mouseDown"
+					_expanded="isCurrenciesPanelExpanded"
+				)
+			)
+		)
+
+		
+		(hblock
+			(bind visible "_isExpandable")
+			(alpha = "!isCurrenciesPanelExpanded ? 1 : 0")
+			
+			(controller $Animation
+				(bindcall play
+					from = "{alpha: 0}"
+					to = "{alpha: 1}"
+					reverse = "isCurrenciesPanelExpanded"
+					duration = 0.15
+					delay = "!isCurrenciesPanelExpanded ? 0.01 : 0"
+					action = "kill"
+					(bind trigger "!isCurrenciesPanelExpanded")
+				)
+			)
+			
+			(style
+				(hitTest = false)
+				(width = 100%)
+				(align = "center")
+				(position = "absolute")
+			)
+
+			(controller $Repeat renderer='CurrenciesPanelPrices'
+				(bind enabled "_isExpandable")
+				(bind count "_priceInfo.length")
+				(args
+					_priceInfo = "_priceInfo[$index]"
+					_isExpanded = false
+				)
+			)
+		)
+		
+		
+		(hblock	
+			(block
+				(alpha = "!_isExpandable || isCurrenciesPanelExpanded ? 1 : 0")
+				(controller $Animation
+					(bindcall play
+						from =	"{ubScaleY: 0}"
+						to =	"{ubScaleY: 1}"
+						reverse = "_isExpandable && !isCurrenciesPanelExpanded"
+						duration=0.2
+						delay="_isExpandable && !isCurrenciesPanelExpanded ? 0.07 : 0"
+						(bind trigger "_isExpandable && isCurrenciesPanelExpanded")
+					)
+				)
+				(controller $Animation
+					(bindcall play
+						from =	"{alpha: 0}"
+						to =	"{alpha: 1}"
+						reverse = "_isExpandable && !isCurrenciesPanelExpanded"
+						duration = 0.15
+						delay = "_isExpandable && isCurrenciesPanelExpanded ? 0.13 : 0"
+						action = "kill"
+						(bind trigger "_isExpandable && isCurrenciesPanelExpanded")
+					)
+				)
+
+				(style
+					(hitTest = false)
+					(flow = "horizontal")
+					(ubScaleY = "!_isExpandable || isCurrenciesPanelExpanded ? 1 : 0")
+					(bind minWidth "_width - 49") 
+				)
+
+				(block
+					(tf
+						(class $TextDefault17NM)
+						(style (alpha = "TC") (marginBottom = 11px))
+						(text = 'IDS_CURRENCIES_OPERATION_BEFORE')
+					)
+				
+					(tf
+						(class $TextDefault17NM)
+						(style (alpha = "TC"))
+						(text = 'IDS_CURRENCIES_OPERATION_AFTER')
+					)
+				)
+
+				
+				(block
+					(style
+						(width = 100%)
+					)
+				)
+
+				(hblock
+					(controller $Repeat renderer='CurrenciesPanelPrices'
+						(bind count "_priceInfo.length")
+						(args
+							_priceInfo = "_priceInfo[$index]"
+							_isExpanded = true
+						)
+					)
+				)
+			)
+		)
+
+		(controller $Tooltip
+			(bind renderer "'CurrenciesPanelTooltip'")
+			(args
+				_priceInfo = "_priceInfo"
+				_isExpanded = "isCurrenciesPanelExpanded"
+				_isExpandable = "_isExpandable"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+	)	
+)
+
+(def element CurrenciesPanelPrices (_priceInfo:dict, _isExpanded:bool=false)
+	(scope
+		(var elementRendered:str =		"'expPreviousShip' in _priceInfo	? 'CurrenciesPanelPriceItemShipXP'	: 'CurrenciesPanelPriceItemCommon'")
+		(var expPreviousShip:number =	"'expPreviousShip' in _priceInfo	? _priceInfo.expPreviousShip		: 0")
+		(var finalPrice:number =		"'finalPrice' in _priceInfo			? _priceInfo.finalPrice				: 0")
+		
+		(var isAvaliableForRender:bool = "_priceInfo.currency != null")
+	)
+
+	(controller $Instance 
+		(bind renderer "elementRendered")
+		(bind enabled "isAvaliableForRender")
+		(args
+			_currency = "_priceInfo.currency"
+			_finalPrice = "finalPrice"
+			_expPreviousShip = "expPreviousShip"
+			_isExpanded = "_isExpanded"
+		)
+	)
+)
+
+(def element CurrenciesPanelPriceItemCommon (_currency:str, _finalPrice:number, _expPreviousShip:number, _isExpanded:bool=false)
+	(scope
+		(var accountResourceComponent:gfx = "$datahub.getSingleEntity(CC.accountResource)")
+	
+		(var accountResourcePrice:number = "accountResourceComponent != null	? accountResourceComponent.accountResource[_currency]
+																				: 0" 	(event	"accountResourceComponent.accountResource.evChangedGold")
+																						(event	"accountResourceComponent.accountResource.evChangedCredit")
+																						(event	"accountResourceComponent.accountResource.evChangedFreeXP")
+																						(event	"accountResourceComponent.accountResource.evChangedEliteXP"))
+		(var accountResource:dict = "{currency: _currency, finalPrice: accountResourcePrice}")
+
+		(var priceSum:number = "max(accountResourcePrice + _finalPrice, 0)")
+		(var priceInfo:dict = "{currency: _currency, finalPrice: priceSum}")
+	)
+
+	(style (paddingLeft = "SXS") (align = "right"))
+	(block
+		(style (marginBottom = "SXS"))
+		(element PriceTag
+			_priceInfo = "accountResource"
+			_size = "SIZE.MEDIUM"
+			_isColumnAlign = true
+		)
+	)
+
+	(controller $Instance renderer='PriceTag'
+		(bind enabled "_isExpanded")
+		(args
+			_priceInfo = "priceInfo"
+			_size = "SIZE.SMALL"
+			_isColumnAlign = true
+		)
+	)
+
+)
+
+(def element CurrenciesPanelPriceItemShipXP (_currency:str, _finalPrice:number, _expPreviousShip:number, _isExpanded:bool=false)
+	(scope
+		(var accountResource:dict = "{currency: _currency, finalPrice: _expPreviousShip}")
+		(var priceSum:number = "max(_expPreviousShip + _finalPrice, 0)")
+		(var priceInfo:dict = "{currency: _currency, finalPrice: priceSum}")
+	)
+
+	(style (paddingLeft = "SXS") (align = "right"))
+	
+	(block
+		(style (marginBottom = "SXS"))
+		(element PriceTag
+			_priceInfo = "accountResource"
+			_size = "SIZE.MEDIUM"
+			_isColumnAlign = true
+		)
+	)
+
+	(controller $Instance renderer='PriceTag'
+		(bind enabled "_isExpanded")
+		(args
+			_priceInfo = "priceInfo"
+			_size = "SIZE.SMALL"
+			_isColumnAlign = true
+		)
+	)
+)
+
+(def element CurrenciesPanelByPricesIds (_pricesIds:array, _selectedCurrencyIndex:number = 0, _width:number=30, _isExpandable:bool=true) dispatch_size_change=true
+	(scope
+		(event evRollOver)
+		(event evRollOut)
+		(event evMouseDown)
+		(event evMouseUp)
+
+		(var rollOver:bool = "$event.isOver" init=false watch=false (event "evRollOver") (event "evRollOut"))
+		(var mouseDown:bool = "$event.isDown" init=false watch=false (event "evMouseDown") (event "evMouseUp"))
+
+		(macro GET_PREF 'isCurrenciesPanelExpanded' "'ui.isCurrenciesPanelExpanded'")
+	)
+
+	(dispatch evRollOver		on='rollOver'		args="{isOver: true}")
+	(dispatch evRollOut			on='rollOut'		args="{isOver: false}")
+	(dispatch evMouseUp			on='stageMouseUp'	args="{isDown: false}")
+	(dispatch evMouseDown		on='mouseDown'		args="{isDown: true}")
+
+	(style (paddingBottom = "M"))
+
+	(macro SOUND_HANDLER "_isExpandable ? 'dropdown' : ''")
+
+	(bindcall externalCall "_isExpandable ? 'direct.action' : ''" "['option.set', ['ui.isCurrenciesPanelExpanded', !isCurrenciesPanelExpanded]]" init=false watch=false on='click')
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(alpha = 0.17)
+			(scale9grid = 2)
+			(hitTest = false)
+			(backgroundImage = 'url:../service_kit/frames/one_pixel_frame.png')
+		)
+	)
+
+	(hblock
+		(style (padding = "SXS") (backgroundColor = 0x01000000))
+
+		
+		(block
+			(style (hitTest = false) (marginRight = "SXS") (paddingTop = 1px))
+
+			(controller $Instance renderer='ButtonExpand'
+				(bind enabled "_isExpandable")
+				(args 
+					_isInOverState="rollOver"
+					_isInDownState="mouseDown"
+					_expanded="isCurrenciesPanelExpanded"
+				)
+			)
+		)
+
+		
+		(hblock
+			(bind visible "_isExpandable")
+			(alpha = "!isCurrenciesPanelExpanded ? 1 : 0")
+			
+			(controller $Animation
+				(bindcall play
+					from = "{alpha: 0}"
+					to = "{alpha: 1}"
+					reverse = "isCurrenciesPanelExpanded"
+					duration = 0.15
+					delay = "!isCurrenciesPanelExpanded ? 0.01 : 0"
+					action = "kill"
+					(bind trigger "!isCurrenciesPanelExpanded")
+				)
+			)
+			
+			(style
+				(hitTest = false)
+				(width = 100%)
+				(align = "center")
+				(position = "absolute")
+			)
+
+			(controller $Repeat renderer='CurrenciesPanelPricesByPricesIds'
+				(bind enabled "_isExpandable")
+				(bind count "_pricesIds.length")
+				(args
+					_priceId = "_pricesIds[$index]"
+					_isExpanded = false
+				)
+				(exprs
+					(scope
+						(bind _isSelected "$index == _selectedCurrencyIndex")
+					)
+				)
+			)
+		)
+		
+		
+		(hblock	
+			(block
+				(alpha = "!_isExpandable || isCurrenciesPanelExpanded ? 1 : 0")
+				(controller $Animation
+					(bindcall play
+						from =	"{ubScaleY: 0}"
+						to =	"{ubScaleY: 1}"
+						reverse = "_isExpandable && !isCurrenciesPanelExpanded"
+						duration=0.2
+						delay="_isExpandable && !isCurrenciesPanelExpanded ? 0.07 : 0"
+						(bind trigger "_isExpandable && isCurrenciesPanelExpanded")
+					)
+				)
+				(controller $Animation
+					(bindcall play
+						from =	"{alpha: 0}"
+						to =	"{alpha: 1}"
+						reverse = "_isExpandable && !isCurrenciesPanelExpanded"
+						duration = 0.15
+						delay = "_isExpandable && isCurrenciesPanelExpanded ? 0.13 : 0"
+						action = "kill"
+						(bind trigger "_isExpandable && isCurrenciesPanelExpanded")
+					)
+				)
+
+				(style
+					(hitTest = false)
+					(flow = "horizontal")
+					(ubScaleY = "!_isExpandable || isCurrenciesPanelExpanded ? 1 : 0")
+					(bind minWidth "_width - 49") 
+				)
+
+				(block
+					(tf
+						(class $TextDefault17NM)
+						(style (alpha = "TC") (marginBottom = 11px))
+						(text = 'IDS_CURRENCIES_OPERATION_BEFORE')
+					)
+				
+					(tf
+						(class $TextDefault17NM)
+						(style (alpha = "TC"))
+						(text = 'IDS_CURRENCIES_OPERATION_AFTER')
+					)
+				)
+
+				
+				(block
+					(style
+						(width = 100%)
+					)
+				)
+
+				(hblock
+					(controller $Repeat renderer='CurrenciesPanelPricesByPricesIds'
+						(bind count "_pricesIds.length")
+						(args
+							_priceId = "_pricesIds[$index]"
+							_isExpanded = true
+						)
+						(exprs
+							(scope
+								(bind _isSelected "$index == _selectedCurrencyIndex")
+							)
+						)
+					)
+				)
+			)
+		)
+
+		(controller $Tooltip
+			(bind renderer "'CurrenciesPanelTooltipByPricesIds'")
+			(args
+				_pricesIds = "_pricesIds"
+				_isExpanded = "isCurrenciesPanelExpanded"
+				_isExpandable = "_isExpandable"
+				_selectedCurrencyIndex = "_selectedCurrencyIndex"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+	)	
+)
+
+(def element CurrenciesPanelPricesByPricesIds (_priceId:number, _isExpanded:bool=false)
+	(scope
+		(var _isSelected:bool = false)
+		(var priceEntity:gfx = "$datahub.getEntity(_priceId)")
+		(var priceInfo:gfx = "priceEntity.itemPrice")
+
+		(var accountResourceComponent:gfx = "$datahub.getSingleEntity(CC.accountResource)")
+		(var accountResourcePrice:number = "accountResourceComponent != null	? accountResourceComponent.accountResource[priceInfo.currency]
+																				: 0" 	(event	"accountResourceComponent.accountResource.evChangedGold")
+																						(event	"accountResourceComponent.accountResource.evChangedCredit")
+																						(event	"accountResourceComponent.accountResource.evChangedFreeXP")
+																						(event	"accountResourceComponent.accountResource.evChangedEliteXP"))
+		(var accountResource:dict = "{currency: priceInfo.currency, finalPrice: accountResourcePrice}")
+		(var isDeficit:bool = "accountResourcePrice - priceInfo.finalPrice < 0")
+
+		(var elementRendered:str =		"priceInfo.expPreviousShip							? 'CurrenciesPanelPriceItemShipXP'	: 'CurrenciesPanelPriceItemCommon'")
+		(var expPreviousShip:number =	"priceInfo.expPreviousShip							? priceInfo.expPreviousShip			: 0")
+		(var finalPrice:number =		"_isSelected && priceInfo.finalPrice && !isDeficit	? -priceInfo.finalPrice				: 0")
+		
+		(var isAvaliableForRender:bool = "priceInfo.currency != null")
+	)
+
+	(controller $Instance 
+		(bind renderer "elementRendered")
+		(bind enabled "isAvaliableForRender")
+		(args
+			_currency = "priceInfo.currency"
+			_finalPrice = "finalPrice"
+			_expPreviousShip = "expPreviousShip"
+			_isExpanded = "_isExpanded"
+		)
+	)
+)

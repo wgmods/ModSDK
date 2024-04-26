@@ -1,0 +1,38 @@
+<WGT018_450mm_twin_AW_dead_lod1.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	WGT018_450mm_twin_AW_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	WGT018_450mm_twin_AW_dead	</node>
+		<geometry>
+			<vertices>	WGT018_450mm_twin_AW_dead_lod1Shape.vertices	</vertices>
+			<primitive>	WGT018_450mm_twin_AW_dead_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/WSD102_Tatra/gun/WGT018_450mm_twin_AW_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0570 -0.0009 -0.1281	</min>
+		<max>	0.0570 0.0755 0.1952	</max>
+	</boundingBox>
+</WGT018_450mm_twin_AW_dead_lod1.visual>

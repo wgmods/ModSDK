@@ -1,0 +1,28 @@
+<communication.xml>
+	<Message
+			event="VO_Quick_Commands"
+			tag="QuickCommands"
+			node="quick-commands"
+			priority="60.0000"
+			lifetime="7.0000" />
+	<Message
+			event="VO_Quick_Commands_Receive"
+			tag="QuickCommands.Receive"
+			node="quick-commands-receive"
+			priority="52.0000"
+			lifetime="4.0000" />
+	<Message
+			event="VO_Priority_Target"
+			tag="Ping.PriorityTarget"
+			node="queue"
+			priority="91.0000"
+			lifetime="5.0000" />
+	<Message
+			event="VO_Quick_Commands"
+			tag="QuickCommandsPort"
+			node="quick-commands-port"
+			priority="60.0000"
+			lifetime="7.0000"
+			notImportantAfter="0.0000"
+			discardOtherMessages="true" />
+</communication.xml>

@@ -1,0 +1,435 @@
+<texture_detail_levels.xml>
+	<rule>
+		<pattern>	.*	</pattern>
+		<lodMode>	1	</lodMode>
+		<format>	BC1_UNORM	</format>
+	</rule>
+	<rule>
+		<pattern>	.*(lightmap_shadow).*	</pattern>
+		<lodMode>	0	</lodMode>
+		<noResize>	true	</noResize>
+		<mipCount>	3	</mipCount>
+		<format>	BC3_UNORM	</format>
+	</rule>
+	<rule>
+		<pattern>	.*(lightMapIndirection).*	</pattern>
+		<lodMode>	0	</lodMode>
+		<noResize>	true	</noResize>
+		<mipCount>	1	</mipCount>
+		<format>	A8R8G8B8	</format>
+	</rule>
+	<rule>
+		<pattern>	.*(forest_tintmap).*	</pattern>
+		<lodMode>	0	</lodMode>
+		<noResize>	true	</noResize>
+		<mipCount>	1	</mipCount>
+		<format>	BC3_UNORM	</format>
+	</rule>
+	<rule>
+		<pattern>	.*(space_variation_map).*	</pattern>
+		<lodMode>	0	</lodMode>
+		<noResize>	true	</noResize>
+		<mipCount>	0	</mipCount>
+		<format>	BC3_UNORM	</format>
+		<streamingStrategy> 0 </streamingStrategy>
+	</rule>
+	<rule>
+		<pattern>	.*(sdf_dir).*	</pattern>
+		<lodMode>	0	</lodMode>
+		<noResize>	true	</noResize>
+		<mipCount>	1	</mipCount>
+		<format>	BC4_UNORM	</format>
+		<streamingStrategy> 0 </streamingStrategy>
+	</rule>
+	<rule>
+		<pattern>	.*(sdf_dist).*	</pattern>
+		<lodMode>	0	</lodMode>
+		<noResize>	true	</noResize>
+		<mipCount>	0	</mipCount>
+		<format>	BC4_UNORM	</format>
+		<streamingStrategy> 0 </streamingStrategy>
+	</rule>
+	<rule>
+		<pattern>	.*(font).* </pattern>
+		<lodMode>	0	</lodMode>
+		<format>	A8R8G8B8	</format>
+	</rule>
+	<rule>
+		<pattern>	.*(_transmittance_n\.).*	</pattern>
+		<noResize>	false	</noResize>
+		<mipCount>	0	</mipCount>
+		<lodMode>	3	</lodMode>
+		<format>	BC3_UNORM	</format>
+	</rule>
+	<rule>
+		<pattern>	.*(_n\.|_n_[0-9]+\.).*	</pattern>
+		<noResize>	false	</noResize>
+		<mipCount>	0	</mipCount>
+		<lodMode>	3	</lodMode>
+		<format>	BC7_UNORM	</format>
+	</rule>
+	<rule>
+		<pattern>	.*(_ann\.|_ann_[0-9]+\.).*	</pattern>
+		<noResize>	false	</noResize>
+		<mipCount>	0	</mipCount>
+		<lodMode>	3	</lodMode>
+		<format>	BC7_UNORM	</format>
+	</rule>
+	<rule>
+		<pattern>	.*(_mg\.|_mg_[0-9]+\.).*	</pattern>
+		<lodMode>	2	</lodMode>
+		<format>	BC1_UNORM	</format>
+	</rule>
+	<rule>
+		<pattern>	.*(_detail\.).*	</pattern>
+		<lodMode>	0	</lodMode>
+		<mipCount>	0	</mipCount>
+		<format>	X8R8G8B8	</format>
+	</rule>
+	<rule>
+		<pattern>	.*(_s\.).*	</pattern>
+		<lodMode>	2	</lodMode>
+		<format>	BC1_UNORM	</format>
+	</rule>
+	<rule>
+		<pattern>	.*(_a\.|_a_[0-9]+\.).*	</pattern>
+		<lodMode>	2	</lodMode>
+		<format>	BC1_UNORM	</format>
+	</rule>
+	<rule>
+		<pattern>	.*(_alpha_a\.).*	</pattern>
+		<lodMode>	1	</lodMode>
+		<format>	BC3_UNORM	</format>
+	</rule>
+	<rule>
+		<pattern>	.*(_ao\.).*	</pattern>
+		<lodMode>	1	</lodMode>
+		<format>	BC1_UNORM	</format>
+	</rule>
+	<rule>
+		<pattern> .*(_rnmn\.).* </pattern>
+		<lodMode>	1	</lodMode>
+		<streamingStrategy> 2 </streamingStrategy>
+		<format>	BC7_UNORM	</format>
+	</rule>
+	<rule>
+		<pattern> .*(_atlasDecal\.).* </pattern>
+		<lodMode>	1	</lodMode>
+		<streamingStrategy> 2 </streamingStrategy>
+		<format>	BC3_UNORM	</format>
+	</rule>
+	<rule>
+		<pattern> .*(_dirShadow\.).* </pattern>
+		<lodMode>	1	</lodMode>
+		<streamingStrategy> 2 </streamingStrategy>
+		<format>	BC6H	</format>
+	</rule>
+	<rule>
+		<pattern> .*(_indirAO\.).* </pattern>
+		<lodMode>	1	</lodMode>
+		<streamingStrategy> 2 </streamingStrategy>
+		<format>	BC6H	</format>
+	</rule>
+	<rule>
+		<pattern>	.*(_blend\.).*	</pattern>
+		<lodMode>	1	</lodMode>
+		<streamingStrategy> 2 </streamingStrategy>
+		<format>	BC3_UNORM	</format>
+	</rule>
+	<rule>
+		<pattern>	.*(_od\.).*	</pattern>
+		<lodMode>	1	</lodMode>
+		<streamingStrategy> 2 </streamingStrategy>
+		<format>	BC3_UNORM	</format>
+	</rule>	
+	<rule>
+		<pattern>	.*(_rnb\.).*	</pattern>
+		<lodMode>	3	</lodMode>
+		<streamingStrategy> 2 </streamingStrategy>
+		<format>	BC7_UNORM	</format>
+	</rule>
+	<rule>
+		<pattern> .*(system/maps).* </pattern>
+		<lodMode>	0	</lodMode>
+		<format>	BC1_UNORM	</format>
+	</rule>
+	<rule>
+		<pattern>	.*(_texanim_posn\.).*	</pattern>
+		<lodMode>	0	</lodMode>
+		<streamingStrategy> 0 </streamingStrategy>
+	</rule>
+	<rule>
+		<pattern>	.*(_texanim_tb\.).*	</pattern>
+		<lodMode>	0	</lodMode>
+		<streamingStrategy> 0 </streamingStrategy>
+	</rule>
+	<rule>
+		<pattern>	.*(_pivotanim_pos\.).*	</pattern>
+		<lodMode>	0	</lodMode>
+		<streamingStrategy> 0 </streamingStrategy>
+	</rule>
+	<rule>
+		<pattern>	.*(_pivotanim_rot\.).*	</pattern>
+		<lodMode>	0	</lodMode>
+		<streamingStrategy> 0 </streamingStrategy>
+	</rule>
+	<rule>
+		<pattern>	.*(_emission_timeline\.).*	</pattern>
+		<lodMode>	0	</lodMode>
+		<streamingStrategy> 0 </streamingStrategy>
+		<format>	A8R8G8B8	</format>
+	</rule>
+	<directory>
+		<path>	particles	</path>
+		<directory>
+			<path>	deform16f	</path>
+			<rule>
+				<pattern>	.*	</pattern>
+				<lodMode>	0	</lodMode>
+				<format>	G16R16F</format>
+			</rule>
+		</directory>
+		<directory>
+			<path>	trails	</path>
+			<rule>
+				<pattern>	.*	</pattern>
+				<lodMode>	0	</lodMode>
+				<format>	A8R8G8B8	</format>
+			</rule>
+		</directory>
+		<directory>
+			<path>	ramps	</path>
+			<rule>
+				<pattern>	.*	</pattern>
+				<lodMode>	0	</lodMode>
+				<mipCount>  1   </mipCount>
+				<format>	A8R8G8B8	</format>
+			</rule>
+			<rule>
+				<pattern>	.*(_HDR\.).*	</pattern>
+				<lodMode>	0	</lodMode>
+				<mipCount>  1   </mipCount>
+				<format>	BC6H </format>
+			</rule>
+		</directory>
+		<directory>
+			<path>	animated	</path>
+			<rule>
+				<pattern>	.*	</pattern>
+				<lodMode>	1	</lodMode>
+				<format>	BC3_UNORM	</format>
+				<streamingStrategy> 1 </streamingStrategy>
+			</rule>
+			<rule>
+				<pattern>	.*(_MVEA\.).*	</pattern>
+				<lodMode>	1	</lodMode>
+				<format>	BC7_UNORM	</format>
+				<streamingStrategy> 1 </streamingStrategy>
+			</rule>
+			<rule>
+				<pattern>	.*(_LM\.).*	</pattern>
+				<lodMode>	1	</lodMode>
+				<format>	BC7_UNORM	</format>
+				<streamingStrategy> 1 </streamingStrategy>
+			</rule>
+			<rule>
+				<pattern>	.*(_foam\.).*	</pattern>
+				<lodMode>	0	</lodMode>
+				<format>	BC1_UNORM	</format>
+				<streamingStrategy> 0 </streamingStrategy>
+			</rule>
+			<rule>
+				<pattern>	.*(_a\.|_a_[0-9]+\.).*	</pattern>
+				<lodMode>	1	</lodMode>
+				<format>	BC1_UNORM	</format>
+			</rule>
+		</directory>
+		<directory>
+			<path>	textures	</path>
+			<rule>
+				<pattern>	.*	</pattern>
+				<lodMode>	1	</lodMode>
+				<format>	BC3_UNORM	</format>
+			</rule>
+		</directory>
+	</directory>
+	<rule>
+		<pattern>	.*(lightcube).*	</pattern>
+		<lodMode>	0	</lodMode>
+	</rule>	
+	<directory>
+		<path>	resources/maps	</path>
+		<directory>
+			<path>	gizmo	</path>
+			<rule>
+				<pattern>	.*	</pattern>
+				<lodMode> 0 </lodMode>
+				<format> A8R8G8B8 </format>
+			</rule>
+		</directory>
+		<directory>
+			<path>	gui	</path>
+			<rule>
+				<pattern>	.*	</pattern>
+				<lodMode> 0 </lodMode>
+				<format> A8R8G8B8 </format>
+			</rule>
+		</directory>
+	</directory>	
+	<directory>
+		<path>	helpers/maps	</path>
+		<rule>
+			<pattern>	.*	</pattern>
+			<lodMode> 0 </lodMode>
+			<format> A8R8G8B8 </format>
+		</rule>
+	</directory>
+	<directory>
+		<path>	content/gameplay/common/flags	</path>
+		<rule>
+			<pattern>	.*	</pattern>
+			<lodMode> 0 </lodMode>
+			<noResize>	true	</noResize>
+			<format> A8R8G8B8 </format>
+		</rule>
+	</directory>
+		
+	<!-- Battle space and Dock streaming rules -->
+	<directory>
+		<path>	content/location	</path>
+		<rule>
+			<pattern>	.*	</pattern>
+			<streamingStrategy> 2 </streamingStrategy>
+		</rule>
+	</directory>
+	<directory>
+		<path>	content/ports	</path>
+		<rule>
+			<pattern>	.*	</pattern>
+			<streamingStrategy> 2 </streamingStrategy>
+		</rule>
+	</directory>	
+	
+	<!-- Ships and Stuff streaming rules -->
+	<directory>
+		<path>	content/gameplay	</path>
+		<rule>
+			<pattern>	.*	</pattern>
+			<streamingStrategy> 3 </streamingStrategy>
+		</rule>
+	</directory>	
+	<directory>
+		<path>	content/gameplay/common	</path>
+		<rule>
+			<pattern>	.*	</pattern>
+			<streamingStrategy> 0 </streamingStrategy>
+		</rule>
+	</directory>
+	<directory>
+		<path>	content/gameplay/common/camouflage/textures	</path>
+		<rule>
+			<pattern>	.*\.dds$	</pattern>
+			<lodMode>	2	</lodMode>
+			<streamingStrategy> 3 </streamingStrategy>
+		</rule>
+	</directory>	
+	
+	<directory>
+		<path>	content/location/skybox/textures	</path>
+		<rule>
+			<pattern>	.*	</pattern>
+			<lodMode> 0 </lodMode>
+			<mipCount>	1	</mipCount>
+			<format> A8R8G8B8 </format>
+			<streamingStrategy> 0 </streamingStrategy>			
+		</rule>
+	</directory>
+	<directory>
+		<path>	content/location/skybox/textures/cloud_shadows	</path>
+		<rule>
+			<pattern>	.*	</pattern>
+			<lodMode> 0 </lodMode>
+			<mipCount>	0	</mipCount>
+			<format> BC1_UNORM </format>
+			<streamingStrategy> 0 </streamingStrategy>			
+		</rule>
+	</directory>
+	<directory>
+		<path>	content/location/sun	</path>
+		<rule>
+			<pattern>	.*	</pattern>
+			<lodMode> 0 </lodMode>
+			<format> A8R8G8B8 </format>
+			<streamingStrategy> 0 </streamingStrategy>			
+		</rule>
+	</directory>
+	<directory>
+		<path>	gui	</path>
+		<rule>
+			<pattern>	.*	</pattern>
+			<lodMode> 0 </lodMode>
+			<format> A8R8G8B8 </format>
+		</rule>
+	</directory>
+	
+	<!-- Texture Arrays rules -->
+	<rule>
+		<pattern>	.*(_tiles_rnao\.).*	</pattern>
+		<lodMode>	1	</lodMode>
+		<format>	BC3_UNORM	</format>
+		<streamingStrategy> 0 </streamingStrategy>
+	</rule>	
+	<rule>
+		<pattern>	.*(_tiles_ah\.).*	</pattern>
+		<lodMode>	1	</lodMode>
+		<format>	BC3_UNORM	</format>
+		<streamingStrategy> 0 </streamingStrategy>
+	</rule>
+	
+	<!-- SpeedTree rules -->
+	<directory>
+		<path>	content/location/speedtree	</path>
+		<rule>
+			<pattern>	.*	</pattern>
+			<lodMode>	1	</lodMode>
+			<streamingStrategy> 0 </streamingStrategy>
+		</rule>
+		<rule>
+			<pattern>	.*(_spt_a\.).*	</pattern>
+			<alphaCoverage>		0.75	</alphaCoverage>
+			<format>	BC3_UNORM	</format>
+		</rule>
+		<rule>
+			<pattern>	.*(_spt_n\.).*	</pattern>
+			<format>	BC3_UNORM	</format>
+		</rule>
+	</directory>
+
+	<!-- Projectiles rules -->
+	<directory>
+		<path>	content/gameplay/common/projectile/artillery/textures	</path>
+		<rule>
+			<pattern>	.*	</pattern>
+			<lodMode>	0	</lodMode>
+			<streamingStrategy> 0 </streamingStrategy>
+		</rule>
+		<rule>
+			<pattern>	.*(incandescence_map).*	</pattern>
+			<mipCount>	1	</mipCount>
+			<format> A8R8G8B8 </format>
+		</rule>
+		<rule>
+			<pattern>	.*(_mg\.).*	</pattern>
+			<format>	BC3_UNORM	</format>
+		</rule>
+	</directory>
+	<directory>
+		<path>	editor/icons	</path>
+		<rule>
+			<pattern>	.*	</pattern>
+			<lodMode>	0	</lodMode>
+			<format>	DXT3	</format>
+		</rule>
+	</directory>
+
+</texture_detail_levels.xml>

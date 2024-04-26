@@ -1,0 +1,83 @@
+<HGM006_Bofors_152mm53_Model_1942_barrel2_dead_lod1.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	MP_HM417_Rangefinder_for_HGM006_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.1642 -0.2044 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS101_YGCS_M_1_INDEX_3	</identifier>
+				<transform>
+					<row0>	0.4534 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.6699 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.4444 0.0000	</row2>
+					<row3>	0.0292 0.0468 0.1754 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS101_YGCS_M_1_INDEX_4	</identifier>
+				<transform>
+					<row0>	0.4534 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.6699 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.4444 0.0000	</row2>
+					<row3>	-0.0295 0.0468 0.1784 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_2	</identifier>
+				<transform>
+					<row0>	0.3654 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.3632 -0.0407 0.0000	</row1>
+					<row2>	0.0000 0.0407 0.3632 0.0000	</row2>
+					<row3>	0.0294 0.1165 0.4979 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_3	</identifier>
+				<transform>
+					<row0>	0.3641 0.0010 0.0311 0.0000	</row0>
+					<row1>	-0.0010 0.3654 -0.0001 0.0000	</row1>
+					<row2>	-0.0311 0.0000 0.3641 0.0000	</row2>
+					<row3>	-0.0447 0.0962 0.4978 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_dead_lod1Shape.vertices	</vertices>
+			<primitive>	Turret_dead_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/HSC107_Eendracht/gun/HGM006_Bofors_152mm53_Model_1942_barrel2_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1579 0.0000 -0.2678	</min>
+		<max>	0.1579 0.1642 0.4984	</max>
+	</boundingBox>
+</HGM006_Bofors_152mm53_Model_1942_barrel2_dead_lod1.visual>

@@ -1,0 +1,38 @@
+<FF047_SGC_Rangefinder_3m.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	FF047_SGC_Rangefinder_3m	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	FF047_SGC_Rangefinder_3m	</node>
+		<geometry>
+			<vertices>	FF047_SGC_Rangefinder_3mShape.vertices	</vertices>
+			<primitive>	FF047_SGC_Rangefinder_3mShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/FSB105_Bretagne/finder/FF047_SGC_Rangefinder_3m.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1093 0.0000 -0.1272	</min>
+		<max>	0.1093 0.1067 0.0846	</max>
+	</boundingBox>
+</FF047_SGC_Rangefinder_3m.visual>

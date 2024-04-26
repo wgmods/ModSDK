@@ -1,0 +1,107 @@
+(def constant SLOT_RELOAD_FONT_SIZE 27)
+(def constant C_SLOT_RELOAD 0xFFFFE68B)
+
+(def css $TextColorChargeFx ()
+	(textColor = 0xFF07CEFA)
+)
+
+(def element SlotReloadBar () layout=true
+	(scope
+		(var _reloadEntityId:number = -1)
+		(var _atWork:bool = false)
+		(var _atCharge:bool = false)
+		(var _inverted:bool = true)
+		(var _remainTime:number = 0)
+		(var _showTime:bool = true)
+		(var _percentPassed:number = 0)
+		(var _fontSize:number = "SLOT_RELOAD_FONT_SIZE")
+
+		(macro HUMAN_READABLE_COUNTDOWN_SCOPE "_remainTime")
+
+		(var fxMargins:number = "(SLOT_FX_SIZE - SLOT_SIZE) / 2")
+
+		(var percentPassed:number = "abs((_atWork && _inverted ? 0 : 1) - _percentPassed)")
+		(var progress:number = "percentPassed")
+		(var curMaskY:number = "SLOT_SIZE * (1 - progress)")
+	)
+
+	(style
+		(position = "absolute")
+		(top = "-fxMargins")
+		(left = "-fxMargins")
+		(align = "center|middle")
+		(width = "SLOT_FX_SIZE")
+		(height = "SLOT_FX_SIZE")
+	)
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundImage = 'url:../battle_hud/weapons_panel/slot/weapon_panel_slot_bg.png')
+		)
+	)
+
+	
+	(block
+		(style
+			(position = "absolute")
+			(width = "SLOT_SIZE")
+			(height = "SLOT_SIZE")
+			(top = "fxMargins")
+			(left = "fxMargins")
+		)
+
+		(block
+			(style
+				(position = "absolute")
+				(top = "-fxMargins")
+				(left = "-fxMargins")
+			)
+			(block
+				(style
+					(bind backgroundImage "	_atWork		? 'url:../battle_hud/weapons_panel/slot/weapon_panel_slot_tint_green.png' :
+											_atCharge 	? 'url:../battle_hud/weapons_panel/slot/weapon_panel_slot_tint_blue.png'
+														: 'url:../battle_hud/weapons_panel/slot/weapon_panel_slot_tint_orange.png'")
+				)	
+			)
+		)
+
+		(block
+			(style
+				(position = "absolute")
+				(left = "-fxMargins")
+				(bind top "curMaskY")
+			)
+			(block
+				(style
+					(bind backgroundImage "	_atWork		? 'url:../battle_hud/weapons_panel/slot/weapon_panel_slot_bar_green.png' :
+									   		_atCharge	? 'url:../battle_hud/weapons_panel/slot/weapon_panel_slot_bar_blue.png'
+									   					: 'url:../battle_hud/weapons_panel/slot/weapon_panel_slot_bar_orange.png'")
+				)
+			)
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(bind top "curMaskY")
+				(backgroundColor = "0xFF000000")
+			)
+			(isMask = true)
+		)
+	)
+
+	(tf
+		(bind visible "_showTime")
+		(class $ActionPanelTimerCountdown)
+		(style
+			(bind fontSize "_fontSize")
+		)
+		(macro TFMouseEnabled value=false)
+		(bind class "_atWork	? '$TextColorHUDPositivePC' :
+					 _atCharge	? '$TextColorChargeFx'
+					 			: '$TextColorReloadFx'")
+		(bind text "countdownText")
+	)
+)

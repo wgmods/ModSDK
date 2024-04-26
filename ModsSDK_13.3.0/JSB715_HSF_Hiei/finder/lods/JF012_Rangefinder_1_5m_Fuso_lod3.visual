@@ -1,0 +1,38 @@
+<JF012_Rangefinder_1_5m_Fuso_lod3.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	JF012_Rangefinder_1_5m	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	JF012_Rangefinder_1_5m	</node>
+		<geometry>
+			<vertices>	JF012_Rangefinder_1_5m_lod3Shape.vertices	</vertices>
+			<primitive>	JF012_Rangefinder_1_5m_lod3Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Misc	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSB715_HSF_Hiei/finder/JF012_Rangefinder_1_5m_Fuso.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0622 0.0000 -0.0437	</min>
+		<max>	0.0622 0.0660 0.0444	</max>
+	</boundingBox>
+</JF012_Rangefinder_1_5m_Fuso_lod3.visual>

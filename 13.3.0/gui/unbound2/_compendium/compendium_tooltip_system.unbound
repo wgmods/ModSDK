@@ -1,0 +1,988 @@
+(def element UICompendiumTooltipSystemInsetUb2 () layout=true dispatch_size_change=true
+	(scope
+		(macro PULL_CURRENT_SHIP_ID)
+		(var serverTime:number = "currentServerSeconds()" (event "evInfrequent"))
+
+		(var testTooltipHeaders:array = "[	{	_headerText: 'Test one line header text',
+												_subheaderText: '',
+												_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.DEFAULT},
+
+											{	_headerText: 'Test very very long two lines long header text',
+												_subheaderText: '',
+												_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.DEFAULT},
+
+											{	_headerText: 'Test one line header text',
+												_subheaderText: 'One line subheader text',
+												_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.DEFAULT},
+
+											{	_headerText: 'Test one line header text',
+												_subheaderText: 'One line subheader text',
+												_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.CHECK},
+
+											{	_headerText: 'Test one line header text',
+												_subheaderText: 'One line subheader text',
+												_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION},
+
+											{	_headerText: 'Test one line header text',
+												_subheaderText: 'One line subheader text',
+												_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.WARNING},
+
+											{	_headerText: 'Test one line header text',
+												_subheaderText: 'Two lines very very long subheader text to test subheader',
+												_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.DEFAULT},
+
+											{	_headerText: 'Test very very long two lines long header text',
+												_subheaderText: 'Two lines very very long subheader text to test subheader',
+												_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.DEFAULT}
+										]")
+
+
+		(var testTooltipSecondaryHeaders:array = "	[	{	_headerText: 'Test one line header text'},
+														{	_headerText: 'Test very very long two lines long header text'}
+													]")
+
+		(var testTooltipIconsHeaders:array = "[	{	_imageUrl: 'url:../campaigns/task_item_icons/placeholder.png',
+													_imageWidth: 80, _imageHeight: 80,
+													_headerText: 'No subheader text'},
+
+												{	_imageUrl: 'url:../campaigns/task_item_icons/placeholder.png',
+													_imageWidth: 80, _imageHeight: 80,
+													_headerText: 'One line header text',
+													_subheaderText: 'One line subheader text'},
+
+												{	_headerIconType: SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.WITH_AMOUNT,
+													_iconAmount: 20,
+													_imageUrl: 'url:../campaigns/task_item_icons/placeholder.png',
+													_imageWidth: 80, _imageHeight: 80,
+													_headerText: 'Icon with amount',
+													_subheaderText: 'One line subheader text'},
+
+												{	_imageUrl: 'url:../campaigns/task_item_icons/placeholder.png',
+													_imageWidth: 80, _imageHeight: 80,
+													_headerText: 'One line header text',
+													_subheaderText: 'Two lines long subheader test text',
+													_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.CHECK},
+
+												{	_imageUrl: 'url:../campaigns/task_item_icons/placeholder.png',
+													_imageWidth: 80, _imageHeight: 80,
+													_headerText: 'Test two lines very long header text',
+													_subheaderText: 'Two lines long subheader test text',
+													_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION},
+
+												{	_imageUrl: 'url:../campaigns/task_item_icons/placeholder.png',
+													_imageWidth: 60, _imageHeight: 60,
+													_headerText: 'Test two lines very long-long-long header text long-long-long',
+													_subheaderText: 'Two lines long subheader long-long-long test long-long-long text',
+													_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.DEFAULT}
+											]")
+
+		(var testTooltipStatusLines:array = "[	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.CHECK,
+													_text: 'Check status'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+													_text: 'Attention status'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.WARNING,
+													_text: 'Warning status'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.NEGATIVE,
+													_text: 'Negative status'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.DATE,
+													_text: 'Default date status'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.DATE_ATTENTION,
+													_text: 'Attention date status'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.UPDATE,
+													_text: 'IDS_SYNC_GOES_INFO'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.LOCK,
+													_text: 'IDS_TOOLTIP_AVAILABLE_LATER'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.REWARD_DEFAULT,
+													_text: (subst('IDS_SUBST_NEWBIE_GIFTS_CONDITION_TO_GET_SHIP', [], {battleCount: 3}, 3))},
+													
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE,
+													_text: 'IDS_REWARD_AVAILABLE'},
+													
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.CAMPAIGN_REWARD,
+													_text: 'IDS_AVAILABLE_REWARD'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.CONTAINER_REWARD,
+													_text: 'IDS_LOOTBOX_AVAILABLE'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.BROTHERHOOD_REWARD,
+													_text: 'IDS_AVAILABLE_REFERRAL_POINTS'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.SALE_AVAILABLE,
+													_text: 'IDS_BOOSTER_AVAILABLE'},							
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.REPAINTED,
+													_text: 'IDS_ALTERNATIVE_COLOR_SCHEME'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.EPIC_SKILL,
+													_text: 'IDS_SKILL_ISEPIC'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ADVANCED_CREW,
+													_text: 'IDS_ADVANCED_CREW_STATUS'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.UNIQUE_CREW,
+													_text: 'IDS_UNIQUE_CREW_STATUS'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.IN_BATTLE,
+													_text: 'IDS_CASUAL_CVC_MATCHING_STAGE_DESCR'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.OUT_BATTLE,
+													_text: 'IDS_PL_CASUAL_CVC_WAR_STAGE_ATTEMPTS_STATUS'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.RECOMMENDED,
+													_text: 'IDS_RECOMMENDED_SKILL'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.RETRAINING,
+													_text: 'IDS_TOOLTIP_STATUS_NEED_RETRAINING_TO_ASSIGN'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.TO_ARMORY,
+													_text: 'IDS_MODERNIZATION_BUY_IN_ARMORY_STATUS'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.DEFAULT,
+													_text: 'Default status'},
+													
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+													_text: 'IDS_GO_TO_LOOTBOXES_MOUSE_INSTRUCTION'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_DOUBLE_LEFT,
+													_text: 'IDS_CHOOSE_PVE_OPERATION_MOUSE_INSTRUCTION'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_RIGHT,
+													_text: 'IDS_HINT_RIGHT_CLICK_FOR_CONTEXT_MENU'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_SCROLL,
+													_text: 'IDS_KEY_SCROLL'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.LINKED,
+													_text: 'IDS_MSKIN_NOT_LINKED'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.HIDDEN,
+													_text: 'Hidden exterior peculiarity'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.INFO,
+													_text:	'IDS_PERMOFLAGE_AUTOREPLENISHMENT_AFTER_PURCHASE_INFO'},
+
+												{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.EARLY_ACCESS,
+													_text:	'IDS_EARLY_ACCESS_STATUS_INFO'}
+											]")
+
+		(var testTooltipDueDateStatusLines:array = "	[	{	_dueDateTimeStamp: serverTime + (DAY_IN_SEC * 2),
+																_substTextIDS: 'IDS_BONUS_TAG_EXPIRATION_DATE'},
+
+															{	_dueDateTimeStamp: serverTime + HOUR_IN_SEC,
+																_substTextIDS: 'IDS_BONUS_TAG_EXPIRATION_DATE'},
+
+															{	_dueDateTimeStamp: 100,
+																_substTextIDS: 'IDS_BONUS_TAG_EXPIRATION_DATE'},
+
+															{	_dueDateTimeStamp: 100,
+																_substTextIDS: 'IDS_BONUS_TAG_EXPIRATION_DATE',
+																_zeroTimeTextIDS: 'IDS_RENT_STATUS_TIME_IS_UP'}
+														]")
+
+		(var testTooltipTimeLeftStatusLines:array = "	[	{	_timeLeftTimeStamp: serverTime + (DAY_IN_SEC * 2),
+																_substTextIDS: 'IDS_LOCKED_MISSION_TIME_LEFT_TOOLTIP'},
+
+															{	_timeLeftTimeStamp: serverTime + HOUR_IN_SEC,
+																_substTextIDS: 'IDS_LOCKED_MISSION_TIME_LEFT_TOOLTIP'},
+
+															{	_timeLeftTimeStamp: 100,
+																_substTextIDS: 'IDS_LOCKED_MISSION_TIME_LEFT_TOOLTIP'},
+
+															{	_timeLeftTimeStamp: 100,
+																_substTextIDS: 'IDS_LOCKED_MISSION_TIME_LEFT_TOOLTIP',
+																_zeroTimeTextIDS: 'IDS_RENT_STATUS_TIME_IS_UP'}
+														]")
+
+		(var attributesPositive:array = "	[	{	attributeIDS: 'Percent positive attribute',
+													measuredValue: '+50',
+													measure: 'IDS_PERCENT',
+													category: 'positive'
+												},
+												{	attributeIDS: 'Two lines long kilometer positive attribute',
+													measuredValue: '+5.2',
+													measure: 'IDS_KILOMETER',
+													category: 'positive'
+												}
+											]")
+
+		(var attributesNeutral:array = "	[	{	attributeIDS: 'Neutral attribute',
+													measuredValue: '10',
+													measure: 'IDS_SECOND',
+													category: 'neutral'
+												}
+											]")
+										
+		(var attributesNegative:array = "	[	{	attributeIDS: 'Negative attribute',
+													measuredValue: '-3',
+													measure: 'IDS_KILOMETER_HOUR',
+													category: 'negative'
+												}
+											]")
+
+		(var testTooltipSystemRewards:array = "	[	{
+														id:	null,
+														name: '',
+														amount: '1000',
+														type: 'Resource',
+														subtype: SC.Common.CURRENCIES.XP,
+														params: {}
+													},
+													{
+														id:	null,
+														name: '',
+														amount: '3534530',
+														type: 'Resource',
+														subtype: SC.Common.CURRENCIES.CREDITS,
+														params: {}
+													},
+													{
+														id:	null,
+														name: '',
+														amount: '5',
+														type: 'Resource',
+														subtype: 'slots',
+														params: {}
+													},
+													{
+														id:	null,
+														name: '',
+														amount: '235',
+														type: 'Resource',
+														subtype: SC.Common.CURRENCIES.GOLD,
+														params: {}
+													}
+												]")
+
+		(var testTooltipSystemCounterLine:array = "[	{_title: 'Count', _count: 10000},
+														{_title: 'Overpriced price of the price for two lines more and more', _count: 10000} ]")
+
+		(var testTooltipSystemProgressBarBlockRepeater:array = "[	{_title: 'Progress bar title', _currentValue: 0, _maxValue: 1200},
+																	{_title: 'Progress bar title', _currentValue: 500, _maxValue: 1200},
+																	{_title: 'Progress bar title', _currentValue: 800, _maxValue: 1200, _showPercent: true}
+																]")
+
+		(var testTooltipSystemDoubleProgressBarBlockRepeater:array = "[	{_title: 'Progress bar title', _currentValue: 1100, _valueIncrement: 300, _maxValue: 1200, _showPercent: true} ]")
+		
+		(var testTooltipSystemPriceTagLine:array = "[	{_title: 'Overpriced price of the price for two lines more and more', _priceInfo: {basePrice: 1700, finalPrice: 1500, currency: SC.Common.CURRENCIES.ELITE_XP}},
+														{_title: 'Earn', _priceInfo: {finalPrice: 398, currency: SC.Common.CURRENCIES.CREDITS}},
+														{_title: 'Smth else', _priceInfo: {finalPrice: 15, currency: SC.Common.CURRENCIES.XP}}
+													]")
+
+		(var restrictionCollection:gfx = "$datahub.getCollection(CC.dogTagEmblem)")
+		(var testTooltipSystemTaskRestrictions:array = "[restrictionCollection.items[0]]") 
+	)
+
+	(style (marginBottom = "L"))
+
+	(hblock
+		(style (marginLeft = "M") (marginTop = "XS"))
+	
+		
+		(block
+			(style (marginLeft = "M"))
+			
+			(element CompendiumElementTitle "'TooltipSystemHeaderSubheaderText'")
+			(controller $Repeat renderer='TestTooltipSystemHeaderSubheaderTextRepeater'
+				(bind count "testTooltipHeaders.length")
+				(args
+					_headerText =		"'_headerText'		in testTooltipHeaders[$index] ? testTooltipHeaders[$index]._headerText 		: null"
+					_subheaderText =	"'_subheaderText'	in testTooltipHeaders[$index] ? testTooltipHeaders[$index]._subheaderText 	: null"
+					_unifiedStatus =	"'_unifiedStatus'	in testTooltipHeaders[$index] ? testTooltipHeaders[$index]._unifiedStatus 	: null"
+				)
+			)
+
+			(element CompendiumElementTitle "'TooltipSystemSecondaryHeaderText'")
+			(controller $Repeat renderer='TestTooltipSystemSecondaryHeaderTextRepeater'
+				(bind count "testTooltipSecondaryHeaders.length")
+				(args
+					_headerText =		"'_headerText'		in testTooltipSecondaryHeaders[$index] ? testTooltipSecondaryHeaders[$index]._headerText 		: null"
+					_unifiedStatus =	"'_unifiedStatus'	in testTooltipSecondaryHeaders[$index] ? testTooltipSecondaryHeaders[$index]._unifiedStatus 	: null"
+				)
+			)
+
+			(element CompendiumElementTitle "'TooltipSystemHeaderWithIconAndText'")
+			(controller $Repeat renderer='TestTooltipSystemHeaderWithIconAndTextRepeater'
+				(bind count "testTooltipIconsHeaders.length")
+				(args
+					_headerText =		"'_headerText'		in testTooltipIconsHeaders[$index] ? testTooltipIconsHeaders[$index]._headerText 		: null"
+					_imageUrl =			"'_imageUrl'		in testTooltipIconsHeaders[$index] ? testTooltipIconsHeaders[$index]._imageUrl			: null"
+					_imageWidth =		"'_imageWidth'		in testTooltipIconsHeaders[$index] ? testTooltipIconsHeaders[$index]._imageWidth		: null"
+					_imageHeight =		"'_imageHeight'		in testTooltipIconsHeaders[$index] ? testTooltipIconsHeaders[$index]._imageHeight		: null"
+					_unifiedStatus =	"'_unifiedStatus'	in testTooltipIconsHeaders[$index] ? testTooltipIconsHeaders[$index]._unifiedStatus 	: null"
+					_headerIconType =	"'_headerIconType'	in testTooltipIconsHeaders[$index] ? testTooltipIconsHeaders[$index]._headerIconType	: null"
+					_iconAmount =		"'_iconAmount'		in testTooltipIconsHeaders[$index] ? testTooltipIconsHeaders[$index]._iconAmount		: null"
+					_subheaderText =	"'_subheaderText'	in testTooltipIconsHeaders[$index] ? testTooltipIconsHeaders[$index]._subheaderText 	: null"
+				)
+			)
+			(element CompendiumElementTitle "'TooltipSystemHeaderShip'")
+			(element TestTooltipSystemHeaderShip
+				_shipId =	"3760141776"
+				_withFlag =	"true"
+			)
+		)	
+		
+
+		
+		(block
+			(style (marginLeft = "LM"))
+			(element CompendiumElementTitle "'TooltipSystemStatusLine'")
+
+			(controller $Repeat renderer='TestTooltipSystemStatusLineRepeater'
+				(bind count "testTooltipStatusLines.length")
+				(args
+					_text =				"'_text'			in testTooltipStatusLines[$index] ? testTooltipStatusLines[$index]._text 			: null"
+					_unifiedStatus =	"'_unifiedStatus'	in testTooltipStatusLines[$index] ? testTooltipStatusLines[$index]._unifiedStatus 	: null"
+				)
+			)
+		)
+		
+		(block
+			(style (marginLeft = "LM"))
+
+			(element CompendiumElementTitle "'TooltipSystemDateStatusLine'")
+			(block
+				(controller $Repeat renderer='TestTooltipSystemDateStatusLineRepeater'
+					(bind count "testTooltipDueDateStatusLines.length")
+					(args
+						_dueDateTimeStamp =	"'_dueDateTimeStamp'	in testTooltipDueDateStatusLines[$index] ? testTooltipDueDateStatusLines[$index]._dueDateTimeStamp	: null"
+						_substTextIDS =		"'_substTextIDS'		in testTooltipDueDateStatusLines[$index] ? testTooltipDueDateStatusLines[$index]._substTextIDS		: null"
+						_zeroTimeTextIDS =	"'_zeroTimeTextIDS'		in testTooltipDueDateStatusLines[$index] ? testTooltipDueDateStatusLines[$index]._zeroTimeTextIDS	: null"
+					)
+				)
+			)
+
+			(element CompendiumElementTitle "'TooltipTimeLeftStatusLine'")
+			(block
+				(controller $Repeat renderer='TestTooltipSystemTimeLeftStatusLineRepeater'
+					(bind count "testTooltipTimeLeftStatusLines.length")
+					(args
+						_timeLeftTimeStamp =	"'_timeLeftTimeStamp'	in testTooltipTimeLeftStatusLines[$index] ? testTooltipTimeLeftStatusLines[$index]._timeLeftTimeStamp	: null"
+						_substTextIDS =			"'_substTextIDS'		in testTooltipTimeLeftStatusLines[$index] ? testTooltipTimeLeftStatusLines[$index]._substTextIDS		: null"
+						_zeroTimeTextIDS =		"'_zeroTimeTextIDS'		in testTooltipTimeLeftStatusLines[$index] ? testTooltipTimeLeftStatusLines[$index]._zeroTimeTextIDS		: null"
+					)
+				)
+			)
+
+			(element CompendiumElementTitle "'TooltipSystemShipsRange'")
+			(element TestTooltipSystemShipsRange
+				_startShipId =	"4293867504"
+				_endShipId =	"4286527472"
+			)
+			
+			(element CompendiumElementTitle "'TooltipSystemShipWithTitle'")
+			(element TestTooltipSystemShipWithTitle
+				_title =	"'Long Long title bla-bla-bla:'"
+				_shipId =	"4293867504"
+				
+				(style (marginBottom = "M"))
+			)
+
+			(element TestTooltipSystemShipWithTitle
+				_title =	"'IDS_CREW_ASSIGNED_TO_SELECT_SHIP'"
+				_shipId =	"4286527472"
+				_withFlag =	"true"
+			)
+			
+			(element CompendiumElementTitle "'TooltipSystemDescriptionText'")
+			(element TestTooltipSystemDescription
+				_descriptionText =	"'Description block without any style customization at all'"
+			)
+
+			(element CompendiumElementTitle "'TooltipSystemParamsModifiersList'")
+			(element TestTooltipSystemParamsModifiersList
+				_attributesPositive =	"attributesPositive"
+				_attributesNeutral =	"attributesNeutral"
+				_attributesNegative =	"attributesNegative"
+			)
+
+			(element CompendiumElementTitle "'TooltipSystemPriceTagLine (ТРЕБУЕТСЯ ДОРАБОТКА UB2)'")
+			(block
+				(controller $Repeat renderer='TestTooltipSystemPriceTagLineRepeater'
+					(bind count "testTooltipSystemPriceTagLine.length")
+					(args
+						_title =		"'_title'	in testTooltipSystemPriceTagLine[$index] 			? testTooltipSystemPriceTagLine[$index]._title		: null"
+						_priceInfo =	"'_priceInfo'		in testTooltipSystemPriceTagLine[$index]	? testTooltipSystemPriceTagLine[$index]._priceInfo	: null"
+					)
+				)
+			)
+
+			(element CompendiumElementTitle "'TooltipSystemCounterLine (ТРЕБУЕТСЯ ДОРАБОТКА UB2)'")
+			(block
+				(controller $Repeat renderer='TestTooltipSystemCounterLineRepeater'
+					(bind count "testTooltipSystemCounterLine.length")
+					(args
+						_title =	"'_title'	in testTooltipSystemCounterLine[$index] 	? testTooltipSystemCounterLine[$index]._title	: null"
+						_count =	"'_count'	in testTooltipSystemCounterLine[$index]		? testTooltipSystemCounterLine[$index]._count	: null"
+					)
+				)
+			)
+
+			(element CompendiumElementTitle "'TooltipSystemProgressBarBlock'")
+			(block
+				(controller $Repeat renderer='TestTooltipSystemProgressBarBlockRepeater'
+					(bind count "testTooltipSystemProgressBarBlockRepeater.length")
+					(args
+						_title =		"'_title'			in testTooltipSystemProgressBarBlockRepeater[$index] 	? testTooltipSystemProgressBarBlockRepeater[$index]._title			: null"
+						_currentValue =	"'_currentValue'	in testTooltipSystemProgressBarBlockRepeater[$index]	? testTooltipSystemProgressBarBlockRepeater[$index]._currentValue	: null"
+						_maxValue =		"'_maxValue'		in testTooltipSystemProgressBarBlockRepeater[$index]	? testTooltipSystemProgressBarBlockRepeater[$index]._maxValue		: null"
+						_showPercent =	"'_showPercent'		in testTooltipSystemProgressBarBlockRepeater[$index]	? testTooltipSystemProgressBarBlockRepeater[$index]._showPercent	: null"
+					)
+				)
+			)
+
+			(element CompendiumElementTitle "'TooltipSystemDoubleProgressBarBlock'")
+			(block
+				(controller $Repeat renderer='TestTooltipSystemDoubleProgressBarBlockRepeater'
+					(bind count "testTooltipSystemDoubleProgressBarBlockRepeater.length")
+					(args
+						_title =			"'_title'			in testTooltipSystemDoubleProgressBarBlockRepeater[$index] 	? testTooltipSystemDoubleProgressBarBlockRepeater[$index]._title			: null"
+						_currentValue =		"'_currentValue'	in testTooltipSystemDoubleProgressBarBlockRepeater[$index]	? testTooltipSystemDoubleProgressBarBlockRepeater[$index]._currentValue		: null"
+						_maxValue =			"'_maxValue'		in testTooltipSystemDoubleProgressBarBlockRepeater[$index]	? testTooltipSystemDoubleProgressBarBlockRepeater[$index]._maxValue			: null"
+						_showPercent =		"'_showPercent'		in testTooltipSystemDoubleProgressBarBlockRepeater[$index]	? testTooltipSystemDoubleProgressBarBlockRepeater[$index]._showPercent		: null"
+						_valueIncrement =	"'_valueIncrement'	in testTooltipSystemDoubleProgressBarBlockRepeater[$index]	? testTooltipSystemDoubleProgressBarBlockRepeater[$index]._valueIncrement	: null"
+					)
+				)
+			)
+		)
+
+		(block
+			(style (marginLeft = "LM"))
+
+			(element CompendiumElementTitle "'TooltipSystemRewards'")
+			(element TestTooltipSystemRewards
+				_rewardsTitle =	"'IDS_REWARDS_CAMPAIGN_TASK'"
+				_rewards =		"testTooltipSystemRewards"
+			)
+
+			(element CompendiumElementTitle "'TooltipSystemRewardsList'")
+			(element TestTooltipSystemRewardsList
+				_rewards =	 "testTooltipSystemRewards"
+			)
+
+			(element CompendiumElementTitle "'TooltipSystemIntegralShipParams'")
+			(element TestTooltipSystemIntegralShipParams
+				_title = "'IDS_AFTER_MOUNT'"
+				
+			)
+
+			(element CompendiumElementTitle "'TooltipSystemParamsList'")
+			(element TestTooltipSystemParamsList
+				_title = "'IDS_AFTER_MOUNT'"
+			)
+
+			(element CompendiumElementTitle "'TooltipSystemTaskRestrictions'")
+			(element TestTooltipSystemTaskRestrictions
+				_restrictions =	"testTooltipSystemTaskRestrictions"
+			)
+
+			(element CompendiumElementTitle "'TooltipSystemShipStereotypeWithDenyReason'")
+			(element TestTooltipSystemShipStereotype
+				_shipId =	"shipId"
+				_isReady = 	"true"
+			)
+		)
+		(block
+			(style (marginLeft = "LM"))
+
+			(element CompendiumElementTitle "'Complex tooltip example'")
+			(element TestTooltipSystemComplexTooltip
+				_title =	"'IDS_AFTER_MOUNT'"
+			)
+		)
+	)
+)
+
+(def element CompendiumElementTitle (_title:str)
+	(tf
+		(style (marginBottom = "M") (marginTop = "L"))
+		(class $TextDefault17NM)
+		(bind text "_title")
+	)
+)
+
+
+(def element TestTooltipSystemHeaderWithIconAndTextRepeater (	_headerText:str, _imageUrl:str = '', _imageWidth:number = 0, _imageHeight:number = 0, _unifiedStatus:str = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT",
+																_headerIconType:str = '', _iconAmount:str = '', _subheaderText:str = '') layout=true
+	(style (marginBottom = "M"))
+	(element TestTooltipSystemHeaderWithIconAndText
+		_imageUrl =			"_imageUrl"
+		_imageWidth =		"_imageWidth"
+		_imageHeight =		"_imageHeight"
+		_unifiedStatus =	"_unifiedStatus"
+		_headerText =		"_headerText"
+		_headerIconType =	"_headerIconType"
+		_iconAmount =		"_iconAmount"
+		_subheaderText =	"_subheaderText"
+	)
+)
+
+(def element TestTooltipSystemHeaderWithIconAndText (	_imageUrl:str = '', _imageWidth:number = 0, _imageHeight:number = 0, _unifiedStatus:str = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT",
+														_headerText:str = '', _headerIconType:str = '', _iconAmount:str = '', _subheaderText:str = '')
+	(style (hitTest = "false") (width = "300px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_imageUrl =			"_imageUrl"
+			_imageWidth =		"_imageWidth"
+			_imageHeight =		"_imageHeight"
+			_unifiedStatus =	"_unifiedStatus"
+			_headerText =		"_headerText"
+			_headerIconType =	"_headerIconType"
+			_iconAmount =		"_iconAmount"
+			_subheaderText =	"_subheaderText"
+		)
+	)
+)
+
+(def element TestTooltipSystemHeaderSubheaderTextRepeater (_headerText:str = '', _subheaderText:str = '', _unifiedStatus:str = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+	(style (marginBottom = "M"))
+	(element TestTooltipSystemHeaderSubheaderText
+		_headerText =		"_headerText"
+		_subheaderText =	"_subheaderText"
+		_unifiedStatus =	"_unifiedStatus"
+	)
+)
+
+(def element TestTooltipSystemHeaderSubheaderText (_headerText:str = '', _subheaderText:str = '', _unifiedStatus:str = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+	(style (hitTest = "false") (width = "300px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "_headerText"
+			_subheaderText = "_subheaderText"
+			_unifiedStatus = "_unifiedStatus"
+		)
+	)
+)
+
+(def element TestTooltipSystemSecondaryHeaderTextRepeater (_headerText:str = '', _unifiedStatus:str = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+	(style (marginBottom = "M"))
+	(element TestTooltipSystemSecondaryHeaderText
+		_headerText = "_headerText"
+		_unifiedStatus = "_unifiedStatus"
+	)
+)
+
+(def element TestTooltipSystemSecondaryHeaderText (_headerText:str = '', _unifiedStatus:str = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+	(style (hitTest = "false") (width = "300px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemSecondaryHeaderText
+			_headerText = "_headerText"
+			_unifiedStatus = "_unifiedStatus"
+		)
+	)
+)
+
+
+
+(def element TestTooltipSystemStatusLineRepeater (_text:str = '', _unifiedStatus:str = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+	(style (marginBottom = "M"))
+	(element TestTooltipSystemStatusLine
+		_text = "_text"
+		_unifiedStatus = "_unifiedStatus"
+	)
+)
+
+(def element TestTooltipSystemStatusLine (_text:str = '', _unifiedStatus:str = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+	(style (hitTest = "false") (width = "300px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemStatusLine
+			_text = "_text"
+			_unifiedStatus = "_unifiedStatus"
+		)
+	)
+)
+
+(def element TestTooltipSystemDateStatusLineRepeater (_dueDateTimeStamp:number, _substTextIDS:str = '', _zeroTimeTextIDS:str = '')
+	(style (marginBottom = "M"))
+
+	(element TestTooltipSystemDateStatusLine
+		_dueDateTimeStamp =	"_dueDateTimeStamp"
+		_substTextIDS =		"_substTextIDS"
+		_zeroTimeTextIDS =	"_zeroTimeTextIDS"
+	)
+)
+
+(def element TestTooltipSystemDateStatusLine (_dueDateTimeStamp:number, _substTextIDS:str = '', _zeroTimeTextIDS:str = '')
+	(style (hitTest = "false") (width = "300px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemDueDateStatusLine
+			_dueDateTimeStamp =	"_dueDateTimeStamp"
+			_substTextIDS =		"_substTextIDS"
+			_zeroTimeTextIDS =	"_zeroTimeTextIDS"
+		)
+	)
+)
+
+(def element TestTooltipSystemTimeLeftStatusLineRepeater (_timeLeftTimeStamp:number, _substTextIDS:str = '', _zeroTimeTextIDS:str = '')
+	(style (marginBottom = "M"))
+	(element TestTooltipSystemTimeLeftStatusLine
+		_timeLeftTimeStamp =	"_timeLeftTimeStamp"
+		_substTextIDS =			"_substTextIDS"
+		_zeroTimeTextIDS =		"_zeroTimeTextIDS"
+	)
+)
+
+(def element TestTooltipSystemTimeLeftStatusLine (_timeLeftTimeStamp:number, _substTextIDS:str = '', _zeroTimeTextIDS:str = '')
+	(style (hitTest = "false") (width = "300px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemTimeLeftStatusLine
+			_timeLeftTimeStamp =	"_timeLeftTimeStamp"
+			_substTextIDS =			"_substTextIDS"
+			_zeroTimeTextIDS =		"_zeroTimeTextIDS"
+		)
+	)
+)
+
+(def element TestTooltipSystemDescription (_descriptionText:str)
+	(style (hitTest = "false") (width = "300px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemDescriptionText
+			_descriptionText =	"_descriptionText"
+		)
+	)
+)
+
+(def element TestTooltipSystemParamsModifiersList (_attributesPositive:array="[]", _attributesNeutral:array="[]", _attributesNegative:array="[]")
+	(style (hitTest = "false") (width = "300px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemParamsModifiersList
+			_attributesPositive =	"_attributesPositive"
+			_attributesNeutral =	"_attributesNeutral"
+			_attributesNegative =	"_attributesNegative"
+		)
+	)
+)
+
+(def element TestTooltipSystemRewards (_rewardsTitle:str, _rewards:array)
+	(style (hitTest = "false") (width = "300px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemRewards
+			_rewardsTitle =	"_rewardsTitle"
+			_rewards =	"_rewards"
+		)
+	)
+)
+
+(def element TestTooltipSystemRewardsList (_rewards:array)
+	(style (hitTest = "false") (width = "300px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemRewardsList
+			_rewards =	"_rewards"
+		)
+	)
+)
+
+(def element TestTooltipSystemPriceTagLineRepeater (_title:str, _priceInfo:dict)
+	(style (marginBottom = "M"))
+
+	(element TestTooltipSystemPriceTagLine
+		_title =		"_title"
+		_priceInfo =	"_priceInfo"
+	)
+)
+
+(def element TestTooltipSystemPriceTagLine (_title:str, _priceInfo:dict)
+	(style (hitTest = "false") (width = "300px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemPriceTagLine
+			_title =		"_title"
+			_priceInfo =	"_priceInfo"
+		)
+	)
+)
+
+(def element TestTooltipSystemCounterLineRepeater (_title:str, _count:number)
+	(style (marginBottom = "M"))
+
+	(element TestTooltipSystemCounterLine
+		_title = "_title"
+		_count = "_count"
+	)
+)
+
+(def element TestTooltipSystemCounterLine (_title:str, _count:number)
+	(style (hitTest = "false") (width = "300px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemCounterLine
+			_title =	"_title"
+			_count =	"_count"
+		)
+	)
+)
+
+(def element TestTooltipSystemIntegralShipParams (_title:str)
+	
+	
+	
+	(style (hitTest = "false") (width = "300px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		
+		
+		
+		
+		
+	)
+)
+
+(def element TestTooltipSystemParamsList ()
+	
+	
+	
+	
+	
+
+	(style (hitTest = "false") (width = "300px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		
+		
+		
+	)
+)
+
+(def element TestTooltipSystemTaskRestrictions (_restrictions:array)
+	(style (hitTest = "false") (width = "300px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(controller $Repeat renderer='TooltipSystemTaskRestrictions'
+			(bind count "_restrictions.length")
+			(args
+				_restrictionEntity = "_restrictions[$index]"
+			)
+		)
+	)
+)
+
+(def element TestTooltipSystemProgressBarBlockRepeater (_title:str, _currentValue:number, _maxValue:number, _showPercent:bool="false")
+	(style (marginBottom = "M"))
+
+	(element TestTooltipSystemProgressBarBlock
+		_title =			"_title"
+		_currentValue =		"_currentValue"
+		_maxValue =			"_maxValue"
+		_showPercent =		"_showPercent"
+	)
+)
+
+(def element TestTooltipSystemProgressBarBlock (_title:str, _currentValue:number, _maxValue:number, _showPercent:bool="false")
+	(style (hitTest = "false") (width = "300px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemProgressBarBlock
+			_title =			"_title"
+			_currentValue =		"_currentValue"
+			_maxValue =			"_maxValue"
+			_showPercent =		"_showPercent"
+		)
+	)
+)
+
+
+(def element TestTooltipSystemDoubleProgressBarBlockRepeater (_title:str, _currentValue:number, _valueIncrement:number, _maxValue:number, _showPercent:bool="false")
+	(style (marginBottom = "M"))
+
+	(element TestTooltipSystemDoubleProgressBarBlock
+		_title =			"_title"
+		_currentValue =		"_currentValue"
+		_maxValue =			"_maxValue"
+		_showPercent =		"_showPercent"
+		_valueIncrement = 	"_valueIncrement"
+	)
+)
+
+(def element TestTooltipSystemDoubleProgressBarBlock (_title:str, _currentValue:number, _valueIncrement:number, _maxValue:number, _showPercent:bool="false")
+	(style (hitTest = "false") (width = "300px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemDoubleProgressBarBlock
+			_title =			"_title"
+			_currentValue =		"_currentValue"
+			_maxValue =			"_maxValue"
+			_showPercent =		"_showPercent"
+			_valueIncrement = 	"_valueIncrement"
+		)
+	)
+)
+
+(def element TestTooltipSystemShipsRange (_startShipId:number, _endShipId:number)
+	(style (hitTest = "false") (width = "300px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemShipsRange
+			_startShipId = "_startShipId"
+			_endShipId = "_endShipId"
+		)
+	)
+)
+
+(def element TestTooltipSystemShipWithTitle (_shipId:number, _title:str = "''", _withFlag:bool = "false")
+	(style (hitTest = "false") (width = "300px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemShipWithTitle
+			_title = "_title"
+			_shipId = "_shipId"
+			_withFlag = "_withFlag"
+		)
+	)
+)
+
+(def element TestTooltipSystemShipStereotype (_shipId:number, _isReady:bool)
+	(style (hitTest = "false") (width = "300px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemShipStereotype
+			_shipId = "_shipId"
+			_isReady = "_isReady"
+		)
+	)
+)
+
+(def element TestTooltipSystemHeaderShip (_shipId:number, _withFlag:bool)
+	(style (hitTest = "false") (width = "300px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderShip
+			_shipId = "_shipId"
+			_withFlag = "_withFlag"
+		)
+	)
+)
+
+(def element TestTooltipSystemComplexTooltip (_title:str)
+	(scope
+		
+		(macro PULL_SHIP_ID)
+		(var shipEntity:gfx =	"$datahub.getPrimaryEntity(CC.ship, shipId)")
+		(var shipInfo:gfx =		"shipEntity ? shipEntity.ship : null"	(event "shipEntity.ship.evUpdate") (event "shipEntity.ship.evCurrentSkinChanged"))
+
+		(var serverTime:number = "currentServerSeconds()" (event "evInfrequent"))
+		(var timeLeftTimeStamp:number = "serverTime + (DAY_IN_SEC * 2)")
+		
+		(var tooltipData:dict = "{	headerIconType: SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.WITH_AMOUNT,
+									imageUrl: 'url:../campaigns/task_item_icons/placeholder.png',
+									unifiedStatus:  SC.Ui_styles.UNIFIED_STATUS.CHECK,
+									headerText: 'Test two lines long tooltip header text',
+									subheaderText: 'subheader categoty',
+									descriptionText: 'Some description of this item can be longer than one line. And contains additional information.',
+									attributesPositive: 	[	{	attributeIDS: 'Percent positive attribute',
+																measuredValue: '+50',
+																measure: 'IDS_PERCENT',
+																category: 'positive'
+															},
+															{	attributeIDS: 'Two lines long kilometer positive attribute',
+																measuredValue: '+5.2',
+																measure: 'IDS_KILOMETER',
+																category: 'positive'
+															}],
+									attributesNeutral: 		[	{	attributeIDS: 'Neutral attribute',
+																measuredValue: '10',
+																measure: 'IDS_SECOND',
+																category: 'neutral'
+															}],
+									attributesNegative: 	[	{	attributeIDS: 'Negative attribute',
+																measuredValue: '-3',
+																measure: 'IDS_KILOMETER_HOUR',
+																category: 'negative'
+															}]
+								}")
+	)
+	(style (hitTest = "false") (width = "300px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_imageUrl =			"tooltipData.imageUrl"
+			_imageWidth =		"80"
+			_imageHeight =		"80"
+			_unifiedStatus =	"tooltipData.unifiedStatus"
+			_headerText =		"tooltipData.headerText"
+			_headerIconType =	"tooltipData.headerIconType"
+			_iconAmount =		"10"
+			_subheaderText =	"tooltipData.subheaderText"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_text = "'Check status line'"
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemTimeLeftStatusLine
+			_timeLeftTimeStamp =	"timeLeftTimeStamp"
+			_substTextIDS =			"'IDS_LOCKED_MISSION_TIME_LEFT_TOOLTIP'"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemDescriptionText
+			_descriptionText =	"tooltipData.descriptionText"
+		)
+
+		
+		
+		
+		
+		
+		
+		
+
+		
+		
+		
+		
+		
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_text = "'Left click mouse instruction'"
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+		)
+	)
+)

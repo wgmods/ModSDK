@@ -1,0 +1,155 @@
+(def element AirDefenseTTX (shipTTX:gfx) layout=true
+	(scope
+		(var guns:array = "shipTTX.airDefense ? shipTTX.airDefense.guns : null")
+		(var bubble:gfx = "shipTTX.airDefense ? shipTTX.airDefense.bubble : null")
+		(var prioritySector:gfx = "shipTTX.airDefense ? shipTTX.airDefense.prioritySector : null")
+	)
+	(class $ParametersPanel)
+	(class $TTXSecondaryPanel)
+
+	(macro TTX_REPEAT 'AirDefenseGunTTX' "guns")
+	(macro TTX_INSTANCE 'AirDefenseConstDamageTTX' "shipTTX.airDefense")
+	(macro TTX_INSTANCE 'AirDefenseBubblesTTX' "bubble")
+	(macro TTX_INSTANCE 'AirDefensePrioritySectorTTX' "prioritySector")
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_AA_COVERAGE_MID'
+									_value = "shipTTX.airDefense.averageAura.maxDist"
+									_valueConfig = "VALUE_CONFIG.KILOMETER"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_AA_COVERAGE_MID' 'IDS_TOOLTIP_AA_MAX_DIST')
+	)
+)
+
+(def element AirDefenseGunTTX (shipTTX:gfx, airDefenseGunTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element ShipParameter_GunConfiguration	_title = 'IDS_SHIP_PARAM_AA'
+											_gunTTX = "airDefenseGunTTX"
+											_onNewLine = false
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro TTX_TOOLTIP 'AirDefenseGunTooltipTTX' "airDefenseGunTTX")
+		(element ShipParamExcursionButton	_shipTTX = "shipTTX"	
+											_excursionId = "['_AirDefence', $index]"
+											_isExcursionOn = "false"
+		)
+	)
+)
+
+(def element AirDefenseGunTooltipTTX (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER	
+		(macro TTX_HEADER_ROW "'IDS_SHIP_PARAM_AA'" "'IDS_TOOLTIP_AA_GUN'")
+		(element TooltipSystemExcursionMouseInstruction		_shipTTX = "shipTTX")
+	)
+)
+
+
+(def element AirDefenseConstDamageTTX (shipTTX:gfx, airDefenseTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_AA_AVERAGE_CONST_DAMAGE'
+									_value = "airDefenseTTX.averageAura.damage"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro TTX_TOOLTIP 'AirDefenseConstDamageTooltipTTX' "airDefenseTTX")
+	)
+)
+
+(def element AirDefenseConstDamageTooltipTTX (shipTTX:gfx, airDefenseTTX:gfx) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW	_title = "'IDS_SHIP_PARAM_AA_AVERAGE_CONST_DAMAGE'"
+								_descr = "'IDS_TOOLTIP_AA_AVERAGE_CONST_DAMAGE'"
+		)
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(macro TTX_REPEAT 'AirDefenseAuraTTX' "airDefenseTTX.auras")
+			)
+		)
+	)
+)
+
+(def element AirDefenseAuraTTX (shipTTX:gfx, airDefenseAuraTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element ShipParameter_Number	_title = "'IDS_SHIP_PARAM_AA_AVERAGE_DAMAGE_' + toUpper(airDefenseAuraTTX.type)"
+									_value = "airDefenseAuraTTX.damage"
+	)
+	(element ShipParameter_Percent	_title = "'IDS_SHIP_PARAM_AA_' + toUpper(airDefenseAuraTTX.type) + '_HITCHANCE'"
+									_value = "airDefenseAuraTTX.hitChance"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_AA_MAX_DIST'
+									_value = "airDefenseAuraTTX.maxDist"
+									_valueConfig = "VALUE_CONFIG.KILOMETER"
+	)
+)
+
+
+
+(def element AirDefenseBubblesTTX (shipTTX:gfx, bubbleTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_AA_BUBBLE_DAMAGE_IN_A_SECOND'
+									_value = "bubbleTTX.damage"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro TTX_TOOLTIP 'BubbleTooltipTTX' "bubbleTTX")
+	)
+)
+
+(def element BubbleTooltipTTX (shipTTX:gfx, bubbleTTX:gfx) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW	_title = "'IDS_SHIP_PARAM_AA_BUBBLE_DAMAGE_IN_A_SECOND'"
+								_descr = "'IDS_TOOLTIP_AA_BUBBLE_DAMAGE_IN_A_SECOND'"
+		)
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_AA_EXPL_COUNT'
+												_value = "bubbleTTX.numBubbles"
+				)
+				(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_AA_BUBBLE_HITCHANCE'
+												_value = "bubbleTTX.hitChance"
+				)
+				(element ShipParameter_Range	_title = 'IDS_SHIP_PARAM_AA_BUBBLE_RANGE'
+												_valueMin = "bubbleTTX.minDist"
+												_valueMax = "bubbleTTX.maxDist"
+												_valueConfig = "VALUE_CONFIG.KILOMETER"
+				)
+			)
+		)
+	)
+)
+
+
+
+(def element AirDefensePrioritySectorTTX (shipTTX:gfx, prioritySectorTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_AA_MAX_PRIORITY_SECTOR_AMPLIFICATION_TITLE'
+									_value = "prioritySectorTTX.strength"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro TTX_TOOLTIP 'AirDefensePrioritySectorTooltipTTX' "prioritySectorTTX")
+	)
+)
+
+(def element AirDefensePrioritySectorTooltipTTX (shipTTX:gfx, prioritySectorTTX:gfx) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW	_title = "'IDS_SHIP_PARAM_AA_MAX_PRIORITY_SECTOR_AMPLIFICATION_TITLE'"
+								_descr = "'IDS_TOOLTIP_AA_MAX_PRIORITY_SECTOR_AMPLIFICATION'"
+		)
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_AA_SECTOR_START_DAMAGE'
+												_value = "prioritySectorTTX.startDamage"
+												_valueConfig = "VALUE_CONFIG.DEFAULT"
+												_zeroValueHidden = true
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_AA_SECTOR_INCREASED_TIME'
+												_value = "prioritySectorTTX.workTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_AA_SECTOR_COOLDOWN'
+												_value = "prioritySectorTTX.prepareTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+			)
+		)
+	)
+)

@@ -1,0 +1,322 @@
+(def element PlaybackTimeTooltip (isRightAlign:bool=false) layout=true
+	(scope
+		(macro GET_PREF 'contrastEnabled' "'graphics.GUI.contrast'")
+
+		(var recordTime:number = "-1")
+		(var battleTime:number = "-1")
+	)
+	
+	(style (hitTest = false) (width = "10px"))
+
+	(block
+		(style
+			(hitTest = false)
+			(width = "1px")
+			(bind align "isRightAlign ? right : left")
+		)
+		(block
+			(style
+				(margin = "XXS")
+				(align = "middle")
+				(backgroundColor = 0x88051523)
+			)
+			(mc contrast_panel
+				(class $FullsizeAbsolute)
+				(bind visible "contrastEnabled")
+			)
+			(mc notification_panel
+				(class $FullsizeAbsolute)
+			)
+			
+			(block
+				(alpha = 0.75)
+				(style (margin = "XS"))
+				(tf
+					(class $InfoBlockHorizontalIndent)
+					(class $TextHeaderBold)
+					(style
+						(paddingTop = "XS")
+						(width = "50px")
+						(textAlign = "center")
+					)
+					(bind text "countdownFormat(recordTime, 0, true, true)")
+				)
+				(tf
+					(class $InfoBlockHorizontalIndent)
+					(class $TextSecondary)
+					(style
+						(paddingTop = "XS")
+						(width = "50px")
+						(textAlign = "center")
+						(bind textColor "battleTime < 0 ? 0xFFFFBB00 : 0xFFEEEEEE")
+					)
+					(bind text "countdownFormat(abs(battleTime), 0, true, true)")
+				)
+			)
+		)
+	)	
+)
+
+(def element PlaybackTooltipWithHeader (cmdId:number, isRightAlign:bool) layout=true
+	(scope
+		(macro GET_PREF 'contrastEnabled' "'graphics.GUI.contrast'")
+
+		(var tipText:str = "''")
+		(var headerText:str = "''")
+	)
+	
+	(style (hitTest = false) (width = "10px"))
+
+	(block
+		(style
+			(hitTest = false)
+			(bind align "isRightAlign ? right : left")
+		)
+		(block
+			(style
+				(backgroundColor = 0x88051523)
+				(margin = "XXS")
+				(align = "middle")
+			)
+			(mc contrast_panel
+				(class $FullsizeAbsolute)
+				(bind visible "contrastEnabled")
+			)
+
+			(mc notification_panel
+				(class $FullsizeAbsolute)
+			)
+
+			(tf
+				(class $InfoBlockIndentNoWidth)
+				(class $TextDefaultBold17NM)
+				(alpha = 0.75)
+				(style
+					(margin = "S")
+					(marginLeft = "SXS")
+					(marginRight = "SXS")
+					(maxWidth = 300px)
+				)
+				(bind text "headerText")
+			)
+
+			(element HotkeyDividerLine
+				(style
+					(marginTop = "0")
+					(marginBottom = "0")
+				)
+			)
+			(hblock
+				(alpha = 0.75)
+				(style
+					(paddingLeft = "XXS")
+					(paddingRight = "XXS")
+				)
+				(element HotkeyIndicator _commandId="cmdId" _active="true"
+					(style
+						(marginTop = "SXS")
+						(marginLeft = "SXS")
+						(marginRight = "-XS")
+					)
+					(bind visible "cmdId != Cmd.CMD_NONE")
+				)
+
+				(tf
+					(class $InfoBlockIndentNoWidth)
+					(class $TextDefault17NM)
+					(style
+						(margin = "S")
+						(maxWidth = 300px)
+					)
+					(bind text "tipText")
+				)
+			)
+		)
+	)
+)
+
+(def element PlaybackTooltip (_isRightAlignDefault:bool = false) layout=true
+	(scope
+		(macro GET_PREF 'contrastEnabled' "'graphics.GUI.contrast'")
+
+		(var tipText:str = "''")
+		(var cmdId:number = "Cmd.CMD_NONE")
+
+		(var isRightAlign:bool = "_isRightAlignDefault")
+	)
+	
+	(style (hitTest = false) (width = "10px"))
+
+	(block
+		(style
+			(hitTest = false)
+			(bind align "isRightAlign ? right : left")
+		)
+		(block
+			(style
+				(backgroundColor = 0x88051523)
+			)
+			(mc contrast_panel
+				(class $FullsizeAbsolute)
+				(bind visible "contrastEnabled")
+			)
+
+			(mc notification_panel
+				(class $FullsizeAbsolute)
+			)
+			(hblock
+				(alpha = 0.75)
+				(style
+					(align = "middle")
+				)
+				(block
+					(controller $Instance renderer='HotkeyIndicator'
+						(bind enabled "cmdId != Cmd.CMD_NONE")
+						(args _commandId="cmdId" _fxOnDown="true" _active="true")
+						(exprs
+							(style
+								(marginLeft = "SXS")
+								(marginRight = "-XS")
+							)
+						)
+					)
+				)
+
+				(tf
+					(class $InfoBlockIndentNoWidth)
+					(class $TextDefault17NM)
+					(style
+						(marginTop = "XXS")
+						(marginBottom = "XXS")
+						(margin = "S")
+						(maxWidth = 250px)
+					)
+					(bind text "tipText")
+				)
+			)
+		)
+	)
+)
+
+(def element HotkeyTutorialLine (cmdId:number, title:str) layout=true
+	(hblock
+		(alpha = 0.75)
+		(style
+			(margin = "XS")
+			(align = "middle")
+		)
+		(block
+			(style
+				(height = "MS")
+				(width = "XL")
+			)
+			(element HotkeyIndicator _commandId="cmdId" _active="true"
+				(style
+					(right = "XS")
+					(top = "XXS")
+					(position = "absolute")
+				)
+			)
+		)		
+		(tf
+			(class $TextDefault19NM)
+			(style
+				(marginLeft = "XS")
+				(marginRight = "S")
+				(maxWidth = "350px")
+			)
+			(text = "title")
+		)
+	)
+)
+
+
+(def element HotkeysTutorialUI () layout=true dispatch_size_change=true
+	
+	(element HotkeyTutorialLine "Cmd.CMD_FREE_CURSOR" "tr('IDS_REPLAYS_PLAYBACK_TUTORIAL_SHOW_CURSOR')")
+	(element HotkeyTutorialLine "Cmd.CMD_REPLAY_HIDE_PLAYBACK_UI" "tr('IDS_REPLAYS_PLAYBACK_TUTORIAL_HIDE_PLAYER')")
+	(element HotkeyTutorialLine "Cmd.CMD_HIDE_INTERFACE" "tr('IDS_REPLAYS_PLAYBACK_TUTORIAL_HIDE_UI')")
+)
+
+(def element HotkeysTutorialPlayback () layout=true dispatch_size_change=true
+	
+	(element HotkeyTutorialLine "Cmd.CMD_REPLAY_PAUSE" "tr('IDS_REPLAYS_PLAYBACK_TUTORIAL_PLAY_PAUSE')")
+	(element HotkeyTutorialLine "Cmd.CMD_REPLAY_INCREASE_SPEED" "tr('IDS_REPLAYS_PLAYBACK_SPEEDUP')")
+	(element HotkeyTutorialLine "Cmd.CMD_REPLAY_DECREASE_SPEED" "tr('IDS_REPLAYS_PLAYBACK_SLOWDOWN')")
+	(element HotkeyTutorialLine "Cmd.CMD_REPLAY_NORMAL_SPEED" "tr('IDS_REPLAYS_PLAYBACK_RESET_SPEED')")
+	
+	(element HotkeyTutorialLine "Cmd.CMD_REPLAY_FAST_FORWARD" "tr('IDS_REPLAYS_PLAYBACK_FASTFORWARD_20SEC')")
+	(element HotkeyTutorialLine "Cmd.CMD_REPLAY_REWIND" "tr('IDS_REPLAYS_PLAYBACK_REWIND_20SEC')")
+)
+
+(def element HotkeysTutorialCamera () layout=true dispatch_size_change=true
+	
+	(element HotkeyTutorialLine "Cmd.CMD_REPLAY_FREE_CAMERA" "tr('IDS_REPLAYS_PLAYBACK_CHANGE_CAMERA_MODE')")
+)
+
+(def element HotkeyDividerLine () layout=true
+	(style
+		(margin = "XXS")
+		(marginTop = "XS")
+		(marginBottom = "XS")
+		(width = 99%)
+		(height = 1px)
+		(backgroundColor = 0x33FFFFFF)
+	)
+)
+
+(def element HotkeysTooltip () layout=true
+	(scope
+		(macro GET_PREF 'contrastEnabled' "'graphics.GUI.contrast'")
+	)
+	
+	(style (hitTest = false) (width = "10px"))
+
+	(block
+		(style
+			(hitTest = false)
+			(width = "1px")
+			(align="left")
+		)
+		(block
+			(style
+				(backgroundColor = 0x88051523)
+			)
+			(mc contrast_panel
+				(class $FullsizeAbsolute)
+				(bind visible "contrastEnabled")
+			)
+
+			(mc notification_panel
+				(class $FullsizeAbsolute)
+			)
+			(tf
+				(class $TextHeaderBold)
+				(alpha = "0.9")
+				(style
+					(width = 100%)
+					(margin = "XS")
+					(marginTop = "S")
+					(marginLeft = "SXS")
+				)
+				(text = 'IDS_REPLAYS_PLAYBACK_TUTORIAL_HEADER')
+			)
+			(element HotkeyDividerLine)
+			
+			(block
+				(style (paddingBottom = "XS"))
+				
+				(element HotkeysTutorialUI)
+
+				(element HotkeyDividerLine)
+
+				
+				(element HotkeysTutorialPlayback)
+
+				(element HotkeyDividerLine)
+
+				(element HotkeysTutorialCamera)
+			)
+		)
+	)
+)

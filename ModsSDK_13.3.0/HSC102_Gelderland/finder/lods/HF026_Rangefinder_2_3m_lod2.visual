@@ -1,0 +1,38 @@
+<HF026_Rangefinder_2_3m_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	HF026_Rangefinder_2_3m	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	HF026_Rangefinder_2_3m	</node>
+		<geometry>
+			<vertices>	HF026_Rangefinder_2_3m_lod2Shape.vertices	</vertices>
+			<primitive>	HF026_Rangefinder_2_3m_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/HSC102_Gelderland/finder/HF026_Rangefinder_2_3m.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0847 -0.0010 -0.0204	</min>
+		<max>	0.0847 0.1042 0.0344	</max>
+	</boundingBox>
+</HF026_Rangefinder_2_3m_lod2.visual>

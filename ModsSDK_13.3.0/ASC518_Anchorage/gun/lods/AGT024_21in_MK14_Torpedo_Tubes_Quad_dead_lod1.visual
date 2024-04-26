@@ -1,0 +1,38 @@
+<AGT024_21in_MK14_Torpedo_Tubes_Quad_dead_lod1.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	AGT004_21in_MK14_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	AGT004_21in_MK14_dead	</node>
+		<geometry>
+			<vertices>	AGT004_21in_MK14_dead_lod1Shape.vertices	</vertices>
+			<primitive>	AGT004_21in_MK14_dead_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ASC518_Anchorage/gun/AGT004_21in_MK14_Torpedo_Tubes_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0978 0.0000 -0.2234	</min>
+		<max>	0.0887 0.1384 0.3151	</max>
+	</boundingBox>
+</AGT024_21in_MK14_Torpedo_Tubes_Quad_dead_lod1.visual>

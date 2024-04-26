@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<constants>
+	<!-- СИМВОЛЫ -->
+	<enum name="SYMBOL_GROUPS" type="Integer">
+		<const name="UNITS_AND_ATTRIBUTES"/>
+		<const name="SHIPS_AND_BATTLES"/>
+		<const name="ACHIEVEMENTS"/>
+		<const name="GAME_EVENTS"/>
+		<const name="COLLABS"/>
+		<const name="COUNTRIES_AND_DATES"/>
+		<const name="SPORT"/>
+		<const name="MISC"/>
+
+		<value_to_name/>
+
+		<range name="SORT_ORDER"	values="UNITS_AND_ATTRIBUTES, SHIPS_AND_BATTLES, ACHIEVEMENTS, GAME_EVENTS,
+											COLLABS, COUNTRIES_AND_DATES, SPORT, MISC"/>
+	</enum>
+
+	<!-- ФОНЫ -->
+	<enum name="BG_SHAPE_GROUPS" type="Integer">
+		<const name="BASIC_COLORIZABLE"/>
+		<const name="UNIQUE"/>
+		
+		<value_to_name/>
+
+		<range name="SORT_ORDER"	values="BASIC_COLORIZABLE, UNIQUE"/>
+	</enum>
+
+	<!-- ЦВЕТА ФОНА -->
+	<enum name="BG_COLOR_GROUPS" type="Integer">
+		<const name="BASIC"/>
+		
+		<value_to_name/>
+
+		<range name="SORT_ORDER"	values="BASIC"/>
+	</enum>
+
+	<!-- ЦВЕТА КАНТА -->
+	<enum name="BG_BORDER_COLOR_GROUPS" type="Integer">
+		<const name="BASIC"/>
+
+		<value_to_name/>
+
+		<range name="SORT_ORDER"	values="BASIC"/>
+	</enum>
+
+	<!-- ТЕКСТУРЫ -->
+	<enum name="BG_MATERIAL_GROUPS" type="Integer">
+		<const name="BASIC"/>
+
+		<value_to_name/>
+
+		<range name="SORT_ORDER"	values="BASIC"/>
+	</enum>
+
+	<!-- НАШИВКИ -->
+	<enum name="PATCH_GROUPS" type="Integer">
+		<const name="SHIPS_AND_BATTLES"/>
+		<const name="ACHIEVEMENTS"/>
+		<const name="EVENTS"/>
+		<const name="COLLAB"/>
+		<const name="COUNTRIES_AND_DATES"/>
+		<const name="SPORT"/>
+		<const name="MISC"/>
+
+		<value_to_name/>
+
+		<range name="SORT_ORDER" values="SHIPS_AND_BATTLES, ACHIEVEMENTS, EVENTS, COLLAB, COUNTRIES_AND_DATES, SPORT, MISC"/>
+	</enum>
+
+	<!-- ЭМБЛЕМЫ -->
+	<enum name="EMBLEM_GROUPS" type="Integer">
+		<const name="NATIONS"/>
+		<const name="CLASSES"/>
+		<const name="BATTLE_TYPES"/>
+		<const name="SPECIAL"/>
+
+		<value_to_name/>
+		
+		<range name="SORT_ORDER"	values="NATIONS, CLASSES, BATTLE_TYPES, SPECIAL"/>
+	</enum>
+
+	<enum name="NATIONS_EMBLEM" type="Integer">
+		<const name="JAPAN"/>
+		<const name="USA"/>
+		<const name="RUSSIA"/>
+		<const name="GERMANY"/>
+		<const name="UK"/>
+		<const name="FRANCE"/>
+		<const name="ITALY"/>
+		<const name="PANASIA"/>
+		<const name="EUROPE"/>
+		<const name="NETHERLANDS"/>
+		<const name="SPAIN"/>
+		<const name="PANAMERICA"/>
+
+		<value_to_name/>
+
+		<range name="SORT_ORDER"	values="JAPAN, USA, RUSSIA, GERMANY, UK, FRANCE, ITALY, PANASIA, EUROPE, 
+											NETHERLANDS, SPAIN, PANAMERICA"/>
+	</enum>
+
+	<enum name="CLASSES_EMBLEM" type="Integer">
+		<const name="SUBMARINE"/>
+		<const name="DESTROYER"/>
+		<const name="CRUISER"/>
+		<const name="BATTLESHIP"/>
+		<const name="AIRCARRIER"/>
+		
+		<value_to_name/>
+
+		<range name="SORT_ORDER"	values="SUBMARINE, DESTROYER, CRUISER, BATTLESHIP, AIRCARRIER"/>
+	</enum>
+
+	<enum name="BATTLE_TYPES_EMBLEM" type="Integer">
+		<const name="RANKED_BATTLES"/>
+		<const name="CLAN_BATTLES"/>
+		<const name="TOURNAMENTS"/>
+
+		<value_to_name/>
+
+		<range name="SORT_ORDER"	values="RANKED_BATTLES, CLAN_BATTLES, TOURNAMENTS"/>
+	</enum>
+
+	<enum name="SPECIAL_EMBLEM" type="Integer">		
+		<const name="MODMAKER"/>
+		<const name="PRIVATEER"/>
+		<const name="CONTRIBUTOR"/>
+		<const name="ST"/>
+		<const name="CST"/>
+		<const name="PT"/>
+		<const name="COLLECTIONER"/>
+
+		<value_to_name/>
+		
+		<range name="SORT_ORDER"	values="MODMAKER, PRIVATEER, CONTRIBUTOR, ST, CST, PT, COLLECTIONER"/>
+	</enum>
+</constants>

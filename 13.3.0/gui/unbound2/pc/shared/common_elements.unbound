@@ -1,0 +1,654 @@
+(def constant PROGRESSBAR_BG_URL 'url:../service_kit/progress_bars/bar_hud_bg.png')
+
+(def css $TextBackBtn()
+	(extends $TextDefaultBold17NM)
+	(extends $FontColorBlueish)
+	(extends $GlowDisabler)
+)
+
+(def element InstructionWarning(_instructionText:str = '', _maxWidth:number = 0, _leading:number = 0) layout=true
+	(style 
+		(flow = "horizontal")
+	)
+	(mc icon_warning_orange)
+	(tf 
+		(style 
+			(marginTop = -5px)
+			(marginLeft = "XS")
+			(bind maxWidth "_maxWidth  ?  _maxWidth  :  180")
+			(bind leading "_leading")
+		)
+		(class $WarningTextOrange)
+		(bind text "_instructionText")
+	)
+)
+
+(def element MouseInstruction(_type: str, _instructionText: str, _maxWidth: number, _leading: number) layout=true
+	(style
+		(flow = "horizontal")
+	)
+	(block
+		(bind visible "_type != 'no_icon'")
+		(mc icon_mouse
+			(bindcall gotoAndStop "_type" init=true)
+		)
+	)
+	(tf 
+		(class $TextHeaderBigDefault)
+		(style
+			(bind marginLeft "(_type == 'no_icon') ? 0px : 4px")
+			(bind leading "_leading")
+			(bind maxWidth "_maxWidth")
+		)
+		(style 
+			(marginTop = "-2px")
+		)
+		(bind text "_instructionText")
+	)
+)
+
+
+
+
+
+(def element MouseInstructionRepeater(_type:str, _instructionText:str, _maxWidth:number, _lastIndex:number) layout=true
+	(style
+		(bind marginBottom "$index != _lastIndex  ?  6 : 0")
+	)
+	
+	(controller $Instance renderer='MouseInstruction'
+		(args 
+			_type = "_type" 
+			_instructionText = "_instructionText"
+			_maxWidth = "_maxWidth"
+			_leading = 0
+		)
+		(bind enabled "!(_type == 'warning')")
+	)
+	
+	(controller $Instance renderer='InstructionWarning'
+		(args _instructionText = "_instructionText" _maxWidth = "_maxWidth")
+		(bind enabled "_type == 'warning'")
+	)
+)
+
+
+(def layout InvertableTextLine ()
+	(scope
+		(var _name:str = '')
+		(var _width:number = 0)
+		(var _maxWidth:number = 9999)
+		(var _invert:bool = false)
+		(var _normalClass:str = '$FontFamilyDefault')
+		(var _invertedClass:str = '$FontFamilyDefault')
+		(var _letterSpacing:number = 0)
+		(var _text:str = '')
+	)
+
+	(tf
+		(bind name "_name")
+		(bind class "_invert ? _normalClass : _invertedClass")
+		(style
+			(position = "absolute") (top = 1px)
+			(bind multiline "_width ? false : true")
+			(bind letterSpacing "_letterSpacing ? _letterSpacing : 0")
+			(bind width "_width ? _width : 'auto'")
+			(bind maxWidth "_maxWidth ? _maxWidth : 9999")
+		)
+		(alpha = 0.35)
+		(bind text "_text")
+	)
+	(tf
+		(bind class "_invert ? _normalClass : _invertedClass")
+		(style
+			(position = "absolute") (top = -1px)
+			(bind multiline "_width ? false : true")
+			(bind letterSpacing "_letterSpacing ? _letterSpacing : 0")
+			(bind width "_width ? _width : 'auto'")
+			(bind maxWidth "_maxWidth ? _maxWidth : 9999")
+		)
+		(alpha = 0.1)
+		(bind text "_text")
+	)
+	(tf
+		(bind class "_invert ? _normalClass : _invertedClass")
+		(style
+			(position = "absolute") (left = 1px)
+			(bind multiline "_width ? false : true")
+			(bind letterSpacing "_letterSpacing ? _letterSpacing : 0")
+			(bind width "_width ? _width : 'auto'")
+			(bind maxWidth "_maxWidth ? _maxWidth : 9999")
+		)
+		(alpha = 0.2)
+		(bind text "_text")
+	)
+	(tf
+		(bind class "_invert ? _normalClass : _invertedClass")
+		(style
+			(position = "absolute") (left = -1px)
+			(bind multiline "_width ? false : true")
+			(bind letterSpacing "_letterSpacing ? _letterSpacing : 0")
+			(bind width "_width ? _width : 'auto'")
+			(bind maxWidth "_maxWidth ? _maxWidth : 9999")
+		)
+		(alpha = 0.2)
+		(bind text "_text")
+	)
+	(tf
+		(bind class "_invert ? _invertedClass : _normalClass")
+		(style
+			(bind multiline "_width ? false : true")
+			(bind letterSpacing "_letterSpacing ? _letterSpacing : 0")
+			(bind width "_width ? _width : 'auto'")
+			(bind maxWidth "_maxWidth ? _maxWidth : 9999")
+		)
+		(bind text "_text")
+	)
+)
+
+(def css $WarningTextOrange()
+	(extends $TextDefault)
+	(extends $FontColorUnready)
+)
+
+(def element FormationPlayerIcon (_isOtherDivision:bool=false, _isReady:bool=false, _isCommander:bool=false,
+									_isMercenary:bool=false, _isInBattle:bool=false, _isEmptySlot:bool=false) layout=true
+	(scope
+		(var formationType:str = 'division')
+		(var postfix:str = "_isOtherDivision ? '_other_division' : ''")
+		(var readySuffix:str = "_isReady ? _isCommander ? '' : 'ready_' : 'not_ready_'")
+	)
+
+	(style (width = 15))
+
+	(mc formation_player_status
+		(style (marginTop = 3))
+		(bindcall gotoAndStop "	_isEmptySlot	?	('empty_slot_'							+ formationType) :
+								_isInBattle		?	('player_in_battle_'					+ formationType + postfix) :
+								_isCommander	?	('commander_'			+ readySuffix	+ formationType + postfix) :
+								!_isMercenary	?	('player_'				+ readySuffix	+ formationType + postfix)
+												:	'mercenary_'			+ readySuffix	+ formationType"
+			init=true
+		)
+	)
+)
+
+(def element StatusLine (_text:str, _unifiedStatus:str="SC.Ui_styles.UNIFIED_STATUS.DEFAULT", _textClass:str='$TextDefaultNM',
+								_width:number=0, _maxWidth:number=9999, _leading:number=-3, _noTranslate:bool=false) layout=true
+	(style
+		(flow = "horizontal")
+		(bind width "_width" (bind enabled "_width != 0"))
+	)
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "_unifiedStatus" "'textColor'" "'textAlpha'")
+
+	(block
+		(bind visible "_unifiedStatus && _unifiedStatus != SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+		(style	
+			(width = 19px) (height = 19px) (marginTop = -4px) (marginLeft = -3px)
+			(marginBottom = -7px) (marginRight = 5px) (backgroundSize = "cover")
+			(bind backgroundImage "'url:../service_kit/unified_status_icons/icon_' + _unifiedStatus + '.png'")
+		)
+	)
+
+	(tf
+		(bind alpha "textAlpha")
+		(style
+			(bind width "_width" (bind enabled "_width != 0"))
+			(bind maxWidth "_maxWidth")
+			(bind leading "_leading")
+			(bind textColor "textColor")
+			(bind noTranslate "_noTranslate")
+		)
+		(bind class "_textClass")
+		(bindcall substitute imageOffset=5 sourceText="tr(_text)" postfix='' init=true)
+	)
+)
+
+(def element NamedProgressBar(_titleIDS:str, _progressEnitityId:number, _barColor:number) layout=true
+	(scope
+		
+		(var currentPercent:number = "1")
+		(var remainTime:number = "0.7")
+		(macro HUMAN_READABLE_COUNTDOWN_SCOPE "remainTime")
+	)
+	(tf
+		(class $TextDefaultBoldNM)
+		(class $FontDropShadowFilterStrong)
+		(style
+			(textAlign = "center")
+			(width = 100%)
+			(marginBottom = "0px")
+		)
+		(bind text "tr(_titleIDS)")
+	)
+	(tf
+		(alpha = 0.7)
+		(class $TextDefaultNM)
+		(class $FontEnableReadability)
+		(style
+			(textAlign = "center")
+			(width = 100%)
+			(marginBottom = "-1px")
+		)
+		(bind text "countdownText")
+	)
+
+	
+	
+	
+	(block
+		(style
+			(width = "180px")
+			(height = "4px")
+			(backgroundColor = "0x44000000")
+		)
+		(block
+			(style
+				(margin = "1px")
+				(height = "2px")
+				(bind width "(180px - 2px) * currentPercent")
+				(bind backgroundColor "_barColor")
+			)
+		)
+	)
+)
+
+(def element NamedCountDownBar(_titleIDS:str, _countDownEnitityId:number, _barColor:number) layout=true
+	(scope
+		(var countdownEntity:gfx = "$datahub.getEntity(_countDownEnitityId)")
+		(var countdown:gfx = "countdownEntity && countdownEntity.hasComponent(CC.countDown)	? countdownEntity.countDown
+																							: null" 
+							(event "countdownEntity.evAdded") (event "countdownEntity.evRemoved")
+		)
+		(var duration:number = "countdown ? countdown.duration : 1" (event "countdown.evDurationChanged") (event "countdown.evChanged"))
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+		(var remainTime:number = "countdown ? max(countdown.endTime - timerEntity.timer.currentTime, 0) : 0" (event "timerEntity.timer.evFrequent") (event "countdown.evEndTimeChanged"))
+		(var barPercent:number = "countdown ? remainTime / (duration ? duration : 1) : 1")
+		(macro HUMAN_READABLE_COUNTDOWN_SCOPE "remainTime")
+
+		(var countdownVisible:bool = "remainTime > 0")
+
+		(var countdownAnimAlpha:number = "countdownVisible ? 1 : 0" watch=false)
+		(controller $Animation
+			(bindcall play  duration=0.35
+							easing="Easing.quad_in"
+							from="{ countdownAnimAlpha: countdownVisible ? 0 : 1 }"
+							to="{ countdownAnimAlpha: countdownVisible ? 1 : 0 }"
+							watch=false
+							action=kill
+							(bind trigger "countdownVisible")
+			)
+		)
+	)
+	(style
+		(align = "center")
+	)
+	(bind alpha "countdownAnimAlpha")
+	(tf
+		(class $TextDefaultBoldNM)
+		(class $FontDropShadowFilterStrong)
+		(alpha = "TA")
+		(style
+			(textAlign = "center")
+			(width = 100%)
+			(marginBottom = "0px")
+		)
+		(bind text "tr(_titleIDS)")
+	)
+	(tf
+		(class $TextDefaultNM)
+		(class $FontEnableReadability)
+		(alpha = "TC")
+		(style
+			(textAlign = "center")
+			(width = 100%)
+			(marginBottom = "-1px")
+		)
+		(bind text "countdownText")
+	)
+	
+	
+	
+	(block
+		(style
+			(width = 180px)
+			(height = 4px)
+			(backgroundColor = "0x44000000")
+		)
+		(block
+			(style
+				(position = "absolute")
+				(top = 1px)
+				(left = 1px)
+				(height = 2px)
+				(bind width "(180px - 2px) * barPercent")
+				(bind backgroundColor "_barColor")
+			)
+		)
+	)
+)
+
+(def element BattleProgressBar (_barWidth:number, _barHeight:number, _maxProgress:number, _valueProgress:number, _color:str) layout=true
+	(scope
+		(var maxProgress:number = "_maxProgress" watch=false)
+		(var valueProgress:number = "_valueProgress" watch=true)
+
+		(var barWidth:number = "_barWidth" watch=false)
+		(var barHeight:number = "_barHeight ? _barHeight : 4" watch=false)
+		(var color:gfx = "_color")
+	)
+	(style
+		(width = "barWidth")
+		(height = "barHeight")
+		(backgroundImage = "PROGRESSBAR_BG_URL")
+		(scale9grid = 1)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(top = "1px")
+			(left = "1px")
+			(bind height "barHeight - 2")
+			(width = "barWidth - 2")
+			(bind backgroundColor "color")
+			(bind scaleX "valueProgress <=  maxProgress	? valueProgress / maxProgress
+														: 1")
+		)
+	)
+)
+
+(def element ImageItemsCounter (_amount:number) layout=true
+	(bind visible "_amount")
+
+	(style	(align = "center") (minWidth = "19px") (paddingLeft = "5px")
+			(paddingRight = "XS") (paddingTop = "XS") (paddingBottom = "XS") (scale9grid = 4)
+			(backgroundImage = "'url:../service_kit/panel_backgrounds/counter.png'"))
+
+	(tf
+		(style (alpha = "TA"))
+		(class $TextDefaultBoldNM)
+		(bind text "formatSeparator(_amount)")
+	)
+)
+
+(def element ImageTextCounter (_text:str, _textColor:str = "SC.Ui_styles.SERVICE_COLORS.WHITE") layout=true
+	(style	(align = "center") (minWidth = "19px") (paddingLeft = "5px") (paddingRight = "XS") (paddingTop = "XS") (paddingBottom = "XS")
+			(backgroundImage = "'url:../service_kit/panel_backgrounds/counter.png'") (scale9grid = 4))
+
+	(tf
+		(class $TextDefaultBoldNM)
+		(bind alpha "_textColor == SC.Ui_styles.SERVICE_COLORS.WHITE ? TA : 1")
+		(style (bind textColor "_textColor"))
+		(bind text "_text")
+	)
+)
+
+(def element ImageCurrencyCounter (_priceInfo:dict) layout=true
+	(scope
+		(var textColor:str = "	_priceInfo.currency == SC.Common.CURRENCIES.GOLD		? SC.Ui_styles.SERVICE_COLORS.YELLOW :
+								_priceInfo.currency == SC.Common.CURRENCIES.FREE_XP		? SC.Ui_styles.SERVICE_COLORS.LIGHT_GREEN :
+								_priceInfo.currency == SC.Common.CURRENCIES.ELITE_XP	? SC.Ui_styles.SERVICE_COLORS.LIGHT_BLUE
+																						: SC.Ui_styles.SERVICE_COLORS.WHITE")
+	)
+
+	(style	(align = "center") (minWidth = "19px") (paddingLeft = "5px")
+			(paddingRight = "XS") (paddingTop = "XS") (paddingBottom = "XS") (scale9grid = 4)
+			(bind backgroundImage "_priceInfo.finalPrice < 0	? 'url:../service_kit/panel_backgrounds/counter_negative.png'
+																: 'url:../service_kit/panel_backgrounds/counter.png'"))
+
+	(tf
+		(class $TextDefaultBoldNM)
+		(bind alpha "textColor == SC.Ui_styles.SERVICE_COLORS.WHITE ? TA : 1")
+		(style (bind textColor "textColor") (bind margin "_priceInfo.finalPrice < 0 ? 1 : 0"))
+
+		(bind text "formatSeparator(_priceInfo.finalPrice)")
+	)
+)
+
+(def element CloseButton (_isDisabled:bool=false, _name:str='', _tooltipText:str='', _dispatchedEv:str='', _dispatchParams:gfx={}, _methods:array=[]) layout=true
+	(scope
+		(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM_SCOPE)
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+
+	(style
+		(width = 12px)
+		(height = 12px)
+		(padding = -1px)
+		(backgroundImage = 'url:../service_kit/buttons/button_close.png')
+	)
+
+	(bind name "_name")
+	(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM "!_isDisabled")
+
+	(controller $Tooltip
+		(renderer='SimpleStatusTooltip')
+		(bind enabled "_tooltipText")
+		(args
+			_text = "_tooltipText ? _tooltipText : 'IDS_CLOSE'"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(macro MOUSE_HANDLER
+		_dispatchedEv = "_dispatchedEv"
+		_dispatchParams = "_dispatchParams"
+		_methods = "_methods"
+		_soundSet = "'button_default'"
+	)
+)
+
+(def element StaticHotkeyWithText (_text:str='', _isDisabled:bool=false, _tooltipText:str='', _dispatchedEv:str='', _dispatchParams:gfx={}, _methods:array=[]) layout=true
+	(scope
+		(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM_SCOPE)
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+
+	(style
+		(backgroundImage = 'url:../service_kit/buttons/hotkey_background.png')
+		(scale9grid = [5, 13, 5, 13])
+	)
+
+	(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM "!_isDisabled")
+
+	(tf
+		(class $BlackLabel)
+		(style (marginLeft = 3) (marginRight = 3) (marginTop = -1) (marginBottom = -1))
+		(bind text "_text")
+	)
+
+	(macro MOUSE_HANDLER
+		_dispatchedEv = "_dispatchedEv"
+		_dispatchParams = "_dispatchParams"
+		_methods = "_methods"
+		_soundSet = "'button_default'"
+	)
+)
+
+(def element BackButton (_name:str='', _text:str='', _dispatchedEv:str='', _dispatchParams:gfx={}, _methods:array=[]) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+
+	(style (height = 28px))
+
+	
+	(name = 'btn_back')
+	(macro INPUT "'btn_back'")
+
+	
+	(block
+		(class $FullsizeAbsolute)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(alpha = 0)
+				(scale9grid = 4)
+				(backgroundImage = 'url:../service_kit/buttons/button_dock/over.png')
+			)
+
+			(controller $Animation
+				(bindcall play
+					duration = 0.15
+					from	 = { alpha: 0 }
+					to		 = { alpha: 1 }
+					reverse	 = "!(rollOver && !mouseDown)"
+					(bind trigger "rollOver && !mouseDown")
+				)
+			)
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(alpha = 0)
+				(scale9grid = 4)
+				(backgroundImage = 'url:../service_kit/buttons/button_dock/down.png')
+			)
+
+			(controller $Animation
+				(bindcall play
+					duration = 0.15
+					from	 = { alpha: 0 }
+					to		 = { alpha: 1 }
+					reverse	 = "!mouseDown"
+					(bind trigger "mouseDown")
+				)
+			)
+		)
+	)
+	
+
+	
+	(hblock
+		(style
+			(align = "middle")
+			(height = 100%)
+			(paddingTop = 1px)
+		)
+
+		
+		(block
+			(style
+				(marginLeft = 6px)
+				(hitTest = "false")
+			)
+
+			(block
+				(style
+					(width = 14px)
+					(height = 14px)
+					(backgroundImage = 'url:../service_kit/buttons/icon_navigate/left.png')
+				)
+			)
+		)
+		
+
+		
+		(block
+			(bind name "_name ? _name : '' ")
+
+			(style
+				(marginLeft = 5px)
+				(marginRight = 10px)
+				(marginTop = 5px)
+				(marginBottom = 6px)
+			)
+
+			
+			(tf
+				(class $TextBackBtn)
+				(class $FontColorAlmostBlack)
+				(style (alpha = 0.4) (position = "absolute") (top = 1px))
+				(bind text "_text")
+			)
+			(tf
+				(class $TextBackBtn)
+				(class $FontColorAlmostBlack)
+				(style (alpha = 0.2) (position = "absolute") (top = -1px))
+				(bind text "_text")
+			)
+			(tf
+				(class $TextBackBtn)
+				(class $FontColorAlmostBlack)
+				(style (alpha = 0.2) (position = "absolute") (left = 1px))
+				(bind text "_text")
+			)
+			(tf
+				(class $TextBackBtn)
+				(class $FontColorAlmostBlack)
+				(style (alpha = 0.2) (position = "absolute") (left = -1px))
+				(bind text "_text")
+			)
+			
+
+			(tf
+				(class $TextBackBtn)
+				(bind text "_text")
+			)
+		)
+		
+	)
+	
+
+	(macro MOUSE_HANDLER
+		_dispatchedEv = "_dispatchedEv"
+		_dispatchParams = "_dispatchParams"
+		_methods = "_methods"
+		_soundSet = "'button_default'"
+	)
+)
+
+(def element RecommendedItemIcon ()
+	(style (width = 16px) (height = 16px) (backgroundImage = "'url:../service_kit/icons/icon_recommended.png'"))
+)
+
+(def element DockSubmenuItem (_selected:bool) layout=true
+	(scope
+		(event evMenuItemClicked)
+		(event evMenuItemHover)
+
+		(macro MOUSE_HANDLER_SCOPE
+			_prefix = "'DockSubmenuItem_'"
+		)
+
+		(var normalAlpha:number = "_selected ? 0.5 : 0")
+		(var mouseDownAlpha:number = "_selected ? 0.5 : 0.3")
+
+		(var currentAlpha:number = "normalAlpha" watch=false)
+		(controller $Animation
+			(bindcall play  duration=0.3
+							action="kill"
+							from = "{ currentAlpha: normalAlpha }"
+							to = "{ currentAlpha: 1 }"
+							watch=false
+							reverse="!(DockSubmenuItem_rollOver)"
+							(bind trigger "DockSubmenuItem_rollOver")
+			)
+			(bindcall play  duration=0.3
+							action="kill"
+							from = "{ currentAlpha: DockSubmenuItem_rollOver ? 1 : normalAlpha }"
+							to = "{ currentAlpha: mouseDownAlpha }"
+							watch=false
+							reverse="!(DockSubmenuItem_mouseDown)"
+							(bind trigger "DockSubmenuItem_mouseDown")
+			)
+		)
+	)
+
+	(dispatch evMenuItemClicked dir="EventDirection.UP" (event "DockSubmenuItem_evMouseDown"))
+	(dispatch evMenuItemHover dir="EventDirection.UP" args="{isOver:DockSubmenuItem_rollOver}" (bind trigger "DockSubmenuItem_rollOver"))
+
+	(style
+		(backgroundImage = 'url:../service_kit/buttons/dock_submenu_over.png')
+		(scale9grid = [1, 2, 122, 12])
+		(bind alpha "currentAlpha")
+	)
+
+	(macro MOUSE_HANDLER
+		_prefix = "'DockSubmenuItem_'"
+		_soundSet = "'default_button'"
+	)
+)

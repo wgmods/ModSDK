@@ -1,0 +1,56 @@
+<JGM203_140mm_40_11th_Year_Type_dead_lod3.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS100_YGBS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.3702 -0.0324 -0.0325 0.0000	</row0>
+					<row1>	0.0296 0.3705 -0.0324 0.0000	</row1>
+					<row2>	0.0351 0.0296 0.3702 0.0000	</row2>
+					<row3>	0.0027 0.0794 -0.0038 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.3529 -0.0309 -0.0310 0.0000	</row0>
+					<row1>	0.0282 0.3531 -0.0309 0.0000	</row1>
+					<row2>	0.0335 0.0282 0.3529 0.0000	</row2>
+					<row3>	0.0280 0.1005 0.2624 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_dead_lod3Shape.vertices	</vertices>
+			<primitive>	Turret_dead_lod3Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSS518_I56/gun/JGM203_140mm_40_11th_Year_Type_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0304 0.0000 -0.1317	</min>
+		<max>	0.0352 0.1106 0.2634	</max>
+	</boundingBox>
+</JGM203_140mm_40_11th_Year_Type_dead_lod3.visual>

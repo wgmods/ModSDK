@@ -1,0 +1,125 @@
+(def css $MWCommonInfoText ()
+	(extends $TextDefault21NM)
+	(width = 100%)
+	(alpha = "TA")
+	(textAlign = "center")
+)
+
+(def element ModalWindowHeaderFullSize (_windowName:str='', _hideBackButton:bool=false, _hideCloseButton:bool=false, _hideDivider:bool=false, _paddingTop:number=0, _paddingRight:number=0, _paddingLeft:number=0,
+										_backButtonText:str='IDS_RETURN_FROM_MODAL_WINDOW_BUTTON', _dispatchedEv:str='', _dispatchParams:gfx={}, _methods:array=[])
+	(style (width = 100%))
+
+	(block
+		(style
+			(align = "center")
+			(width = 100%)
+			(paddingTop =	"_paddingTop	? _paddingTop	: {720: 20, 1080: 50}")
+			(paddingRight =	"_paddingRight	? _paddingRight	: {1280: 20, 1920: 46}")
+			(paddingLeft =	"_paddingLeft	? _paddingLeft	: {1280: 20, 1920: 46}")
+		)
+
+		(block
+			(bind visible "!_hideBackButton")
+
+			(style
+				(position = "absolute")
+				(top = -5)
+			)
+
+			(element BackButton
+				_text = "_backButtonText"
+				_dispatchedEv = "_dispatchedEv"
+				_dispatchParams = "_dispatchParams"
+				_methods = "_methods"
+			)
+		)
+
+		(block
+			(bind visible "!_hideCloseButton")
+
+			(style
+				(position = "absolute")
+				(right = "XS")
+				(top = "-XXS")
+			)
+
+			(element ModalWindowCloseIcon)
+		)
+
+		(block
+			(bind visible "_windowName")
+
+			(tf
+				(name = 'ModalWindowHeaderName')
+
+				(class $TextDefaultBold21NM)
+				(text = "toUpper(tr(_windowName))")
+			)
+		)
+	)
+
+	(block
+		(bind visible "!_hideDivider")
+
+		(style
+			(width = 100%)
+			(marginTop = "{720: SXS, 1080: M}")
+		)
+		(element HorizontalDividerTwoPx)
+	)
+)
+
+(def element ModalWindowShortHeader (_header:str, _headerWidth:number=0, _hasDivider:bool=true)
+	(style (width = 100%) (align = "center"))
+
+	(tf
+		(class $TextDefaultBold21NM)
+		(style
+			(alpha = "TA")
+			(bind marginBottom "_hasDivider ? SXS : M")
+		)
+
+		(bind text "toUpper(tr(_header))")
+	)
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='HorizontalDividerTwoPx'
+			(bind enabled "_hasDivider")
+		)
+	)
+)
+
+(def element ModalWindowCloseIcon (_tooltipText:str='')
+	(scope
+		(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM_SCOPE)
+	)
+
+	(style
+		(flow = "horizontal")
+		(backgroundColor = 0x01000000)
+	)
+
+	(macro INPUT "'btn_cancel'")
+	(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM "true")
+
+	(controller $Tooltip
+		(renderer = 'SimpleStatusTooltip')
+		(args
+			_text = "_tooltipText ? _tooltipText : 'IDS_CLOSE'"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(block
+		(style (alpha = 0.8))
+		(element StaticHotkeyWithText _text = 'ESC' _isDisabled = true)
+	)
+
+	(block
+		(style (marginLeft = "XXS") (marginTop = "XS"))
+		(element CloseButton
+			_isDisabled = true
+		)
+	)
+)

@@ -1,0 +1,63 @@
+<highschoolfleet.xml>
+	<Message
+			event="VO_Alarm_Map_Border"
+			tag="Alarm.MapBorder"
+			node="queue"
+			priority="46.0000"
+			lifetime="7.0000" />
+	<Message
+			event="VO_Highschool_Fleet_Capture_Fort"
+			tag="HighschoolFleet.CaptureFort"
+			node="anime-hsf"
+			priority="80.0000"
+			lifetime="4.0000" />
+	<Message
+			event="VO_Highschool_Fleet_MG_Shot"
+			tag="HighschoolFleet.MGShot"
+			node="anime-hsf"
+			priority="50.0000"
+			lifetime="4.0000" />
+	<Message
+			event="VO_Highschool_Fleet_TA_shot"
+			tag="HighschoolFleet.TAShot"
+			node="anime-hsf"
+			priority="48.0000"
+			lifetime="6.0000">
+		<Trigger
+				type="Before">
+			<SetSwitch
+					name="isPlayer"
+					value="True" />
+		</Trigger>
+	</Message>
+	<Message
+			event="VO_Highschool_Fleet_Torpedo_Hit"
+			tag="HighschoolFleet.TorpedoHit"
+			node="anime-hsf"
+			priority="47.0000"
+			lifetime="4.0000" />
+	<Message
+			event="VO_Result_Stinger"
+			tag="Announcement.ResultStinger"
+			node="queue"
+			priority="92.0000"
+			lifetime="15.0000" />
+	<Message
+			event="VO_Lock_Weapon"
+			tag="Weapon.Lock"
+			node="queue"
+			priority="44.0000"
+			lifetime="5.0000" />
+	<Message
+			event="VO_Alarm_Weather_Changed"
+			tag="Alarm.WeatherChange"
+			node="queue"
+			priority="42.0000"
+			lifetime="7.0000" />
+	<Message
+			event="VO_Damage_Death"
+			tag="Damage.Death"
+			node="queue"
+			priority="91.5000"
+			lifetime="7.0000" />
+</highschoolfleet.xml>

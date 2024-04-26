@@ -1,0 +1,194 @@
+(def constant CURRENCIES_PANEL_TOOLTIP_WIDTH 340)
+
+(def element CurrenciesPanelTooltip (_priceInfo:array, _isExpanded:bool, _isExpandable:bool=true)
+	(style (hitTest = false) (width = "CURRENCIES_PANEL_TOOLTIP_WIDTH"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(controller $Repeat renderer = 'CurrenciesPanelTooltipCurrency'
+			(bind count "_priceInfo.length")
+			(args
+				_priceInfo = "_priceInfo[$index]"
+			)
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer = 'TooltipSystemHorizontalDivider'
+				(bind enabled "_isExpandable")
+			)
+		)
+		(block
+			(style (width = 100%) (paddingBottom = "XXS"))
+			(controller $Instance renderer = 'TooltipSystemStatusLine'
+				(bind enabled "_isExpandable")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+					_text = "_isExpanded	? 'IDS_COLLAPSE_CURRENCIES_PANEL_MOUSE_INSTRUCTION' 
+											: 'IDS_EXPAND_CURRENCIES_PANEL_MOUSE_INSTRUCTION'"
+				)
+			)
+		)
+	)
+)
+
+(def element CurrenciesPanelTooltipCurrency (_priceInfo:dict)
+	(scope
+		(var elementRendered:str = "'expPreviousShip' in _priceInfo ? 'CurrenciesPanelTooltipItemShipXP' : 'CurrenciesPanelTooltipItemCommon'")
+		(var expPreviousShip:number = "'expPreviousShip' in _priceInfo ? _priceInfo.expPreviousShip : 0")
+		(var finalPrice:number = "'finalPrice' in _priceInfo ? _priceInfo.finalPrice : 0")
+		(var isAvaliableForRender:bool = "_priceInfo.currency != null")
+	)
+	(style (width = 100%))
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer = 'TooltipSystemHorizontalDivider' (bind enabled "$index !=  0"))
+	)
+
+	(controller $Instance 
+		(bind renderer "elementRendered")
+		(bind enabled "isAvaliableForRender")
+		(args
+			_currency = "_priceInfo.currency"
+			_finalPrice = "finalPrice"
+			_expPreviousShip = "expPreviousShip"
+		)
+	)
+)
+
+(def element CurrenciesPanelTooltipItemCommon (_currency:str, _finalPrice:number, _expPreviousShip:number)
+	(scope
+		(var accountResourceComponent:gfx = "$datahub.getSingleEntity(CC.accountResource)")
+	
+		(var accountResourcePrice:number = "accountResourceComponent != null	? accountResourceComponent.accountResource[_currency]
+																				: 0" 	(event	"accountResourceComponent.accountResource.evChangedGold")
+																						(event	"accountResourceComponent.accountResource.evChangedCredit")
+																						(event	"accountResourceComponent.accountResource.evChangedFreeXP")
+																						(event	"accountResourceComponent.accountResource.evChangedEliteXP"))
+		(var accountResource:dict = "{currency: _currency, finalPrice: accountResourcePrice}")
+		(var priceSum:number = "max(accountResourcePrice + _finalPrice, 0)")
+		(var priceInfo:dict = "{currency: _currency, finalPrice: priceSum}")
+	)
+	(style (width = 100%))
+
+	(element TooltipSystemSecondaryHeaderText
+		_headerText = "tr('IDS_CURRENCY_'+toUpper(_currency))"
+	)
+	
+	(element TooltipSystemHorizontalDivider)
+	
+	(block
+		(style (width = 100%))
+		(macro TOOLTIP_SYSTEM_INNER_PANEL_BACKGROUND)
+		(element TOOLTIP_SYSTEM_ELEMENTS_GROUP
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+				(element TooltipSystemRewardPriceTag _title = "'IDS_CURRENCIES_OPERATION_BEFORE'" _priceInfo = "accountResource")
+			)
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+				(element TooltipSystemRewardPriceTag _title = "'IDS_CURRENCIES_OPERATION_AFTER'" _priceInfo = "priceInfo")
+			)
+		)
+	)
+)
+
+(def element CurrenciesPanelTooltipItemShipXP (_currency:str, _finalPrice:number, _expPreviousShip:number)
+	(scope
+		(var accountResource:dict = "{currency: _currency, finalPrice: _expPreviousShip}")
+		(var priceSum:number = "max(_expPreviousShip + _finalPrice, 0)")
+		(var priceInfo:dict = "{currency: _currency, finalPrice: priceSum}")
+	)
+	(style (width = 100%))
+
+	(element TooltipSystemSecondaryHeaderText
+		_headerText = "tr('IDS_CURRENCY_' + toUpper(_currency))"
+	)
+
+	(element TooltipSystemHorizontalDivider)
+	
+	(block
+		(style (width = 100%))
+		(macro TOOLTIP_SYSTEM_INNER_PANEL_BACKGROUND)
+		(element TOOLTIP_SYSTEM_ELEMENTS_GROUP
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+				(element TooltipSystemRewardPriceTag _title = "'IDS_CURRENCIES_OPERATION_BEFORE'" _priceInfo = "accountResource")
+			)
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+				(element TooltipSystemRewardPriceTag _title = "'IDS_CURRENCIES_OPERATION_AFTER'" _priceInfo = "priceInfo")
+			)
+		)
+	)
+)
+
+(def element CurrenciesPanelTooltipByPricesIds (_pricesIds:array, _selectedCurrencyIndex:number=0, _isExpanded:bool=false, _isExpandable:bool=true)
+	(style (hitTest = false) (width = "CURRENCIES_PANEL_TOOLTIP_WIDTH"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(controller $Repeat renderer = 'CurrenciesPanelTooltipCurrencyByPricesIds'
+			(bind count "_pricesIds.length")
+			(args
+				_priceId = "_pricesIds[$index]"
+			)
+			(exprs
+				(scope
+					(bind _isSelected "$index == _selectedCurrencyIndex")
+				)
+			)
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer = 'TooltipSystemHorizontalDivider'
+				(bind enabled "_isExpandable")
+			)
+		)
+		(block
+			(style (width = 100%) (paddingBottom = "XXS"))
+			(controller $Instance renderer = 'TooltipSystemStatusLine'
+				(bind enabled "_isExpandable")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+					_text = "_isExpanded	? 'IDS_COLLAPSE_CURRENCIES_PANEL_MOUSE_INSTRUCTION' 
+											: 'IDS_EXPAND_CURRENCIES_PANEL_MOUSE_INSTRUCTION'"
+				)
+			)
+		)
+	)
+)
+
+(def element CurrenciesPanelTooltipCurrencyByPricesIds (_priceId:number)
+	(scope
+		(var _isSelected:bool = false)
+		(var priceEntity:gfx = "$datahub.getEntity(_priceId)")
+		(var priceInfo:gfx = "priceEntity.itemPrice")
+
+		(var accountResourceComponent:gfx = "$datahub.getSingleEntity(CC.accountResource)")
+		(var accountResourcePrice:number = "accountResourceComponent != null	? accountResourceComponent.accountResource[priceInfo.currency]
+																				: 0" 	(event	"accountResourceComponent.accountResource.evChangedGold")
+																						(event	"accountResourceComponent.accountResource.evChangedCredit")
+																						(event	"accountResourceComponent.accountResource.evChangedFreeXP")
+																						(event	"accountResourceComponent.accountResource.evChangedEliteXP"))
+		(var accountResource:dict = "{currency: priceInfo.currency, finalPrice: accountResourcePrice}")
+		(var isDeficit:bool = "accountResourcePrice - priceInfo.finalPrice < 0")
+
+		(var elementRendered:str = "priceInfo.expPreviousShip ? 'CurrenciesPanelTooltipItemShipXP' : 'CurrenciesPanelTooltipItemCommon'")
+		(var expPreviousShip:number = "priceInfo.expPreviousShip ? priceInfo.expPreviousShip : 0")
+		(var finalPrice:number = "_isSelected && priceInfo.finalPrice && !isDeficit ? -priceInfo.finalPrice : 0")
+		(var isAvaliableForRender:bool = "priceInfo.currency != null")
+	)
+	(style (width = 100%))
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer = 'TooltipSystemHorizontalDivider' (bind enabled "$index !=  0"))
+	)
+
+	(controller $Instance 
+		(bind renderer "elementRendered")
+		(bind enabled "isAvaliableForRender")
+		(args
+			_currency = "priceInfo.currency"
+			_finalPrice = "finalPrice"
+			_expPreviousShip = "expPreviousShip"
+		)
+	)
+)

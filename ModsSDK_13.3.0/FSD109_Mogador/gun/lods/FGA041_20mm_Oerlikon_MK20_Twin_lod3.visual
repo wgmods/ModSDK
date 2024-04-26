@@ -1,0 +1,56 @@
+<FGA041_20mm_Oerlikon_MK20_Twin_lod3.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	OerlikonTwin	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	HP_gunFire1	</identifier>
+				<transform>
+					<row0>	1.0000 -0.0030 0.0013 0.0000	</row0>
+					<row1>	0.0033 0.8735 -0.4868 0.0000	</row1>
+					<row2>	0.0003 0.4868 0.8735 0.0000	</row2>
+					<row3>	0.0064 0.1332 0.0777 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	HP_gunFire2	</identifier>
+				<transform>
+					<row0>	1.0000 -0.0030 0.0013 0.0000	</row0>
+					<row1>	0.0033 0.8735 -0.4868 0.0000	</row1>
+					<row2>	0.0003 0.4868 0.8735 0.0000	</row2>
+					<row3>	-0.0063 0.1333 0.0777 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	OerlikonTwin	</node>
+		<geometry>
+			<vertices>	OerlikonTwin_lod3Shape.vertices	</vertices>
+			<primitive>	OerlikonTwin_lod3Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/FSD109_Mogador/gun/FGA014_20mm_Oerlikon_MK4.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0526 0.0000 -0.0492	</min>
+		<max>	0.0527 0.1353 0.0782	</max>
+	</boundingBox>
+</FGA041_20mm_Oerlikon_MK20_Twin_lod3.visual>

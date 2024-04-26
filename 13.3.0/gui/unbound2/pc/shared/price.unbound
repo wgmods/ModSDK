@@ -1,0 +1,232 @@
+(def element PriceTag (_priceInfo:dict, _size:number = "SIZE.SMALL", _showDiscountTag:bool="false", _isDeficit:bool="false", _isColumnAlign:bool="false") layout=true
+	(scope
+		(var textColor:str = "	_isDeficit												? SC.Ui_styles.SERVICE_COLORS.RED :
+								_priceInfo.currency == SC.Common.CURRENCIES.GOLD		? SC.Ui_styles.SERVICE_COLORS.YELLOW :
+								_priceInfo.currency == SC.Common.CURRENCIES.FREE_XP		? SC.Ui_styles.SERVICE_COLORS.LIGHT_GREEN :
+								_priceInfo.currency == SC.Common.CURRENCIES.ELITE_XP	? SC.Ui_styles.SERVICE_COLORS.LIGHT_BLUE
+																						: SC.Ui_styles.SERVICE_COLORS.WHITE")
+
+		(var formattedPrice:str = "_priceInfo.currency == SC.Common.CURRENCIES.FOR_FREE ? 'IDS_FOR_FREE'
+																						: formatSeparator(_priceInfo.finalPrice)")
+
+		(var isShowDiscountTag:bool = "	'basePrice' in _priceInfo &&
+										'finalPrice' in _priceInfo &&
+										_priceInfo.basePrice &&
+										_priceInfo.finalPrice != _priceInfo.basePrice &&
+										_priceInfo.currency != SC.Common.CURRENCIES.FOR_FREE &&
+										_showDiscountTag")
+	)
+
+	(style (flow = "horizontal") (align = "right"))
+
+	(block
+		(bind visible "isShowDiscountTag")
+		(style
+			(paddingTop = "-6")
+			(paddingBottom = "-6")
+			(bind marginTop "	_size == SIZE.LARGE		? 7 :
+								_size == SIZE.MEDIUM	? 4
+														: 5")
+		)
+		(controller $Instance renderer='DiscountTag'
+			(bind enabled "isShowDiscountTag")
+			(args
+				_size = "_size == SIZE.LARGE || _size == SIZE.MEDIUM ? SIZE.LARGE : SIZE.MEDIUM"
+			)
+		)
+	)
+	(block
+		(tf
+			(bind class "	_priceInfo.currency == SC.Common.CURRENCIES.FOR_FREE	?
+									_size == SIZE.LARGE		?	'$TextDefault25NM':
+									_size == SIZE.MEDIUM	? 	'$TextDefault17NM'
+															:	'$TextDefaultNM'
+																				:
+									_size == SIZE.LARGE		?	'$TextDefaultBold25NM':
+									_size == SIZE.MEDIUM	? 	'$TextDefaultBold17NM'
+															:	'$TextDefaultBoldNM'")
+
+			(style
+				(bind textColor "textColor")
+				(bind alpha "textColor == SC.Ui_styles.SERVICE_COLORS.WHITE ? TA : 1")
+			)
+			(bind text "formattedPrice")
+		)
+	)
+	
+	(block
+		(style
+			(bind paddingTop "		_size == SIZE.LARGE		? -2 :
+									_size == SIZE.MEDIUM	? -6
+															: -2")
+
+			(bind paddingBottom "	_size == SIZE.LARGE		? -10 :
+									_size == SIZE.MEDIUM	? -8
+															: -4")
+			
+			(bind marginLeft "	_size == SIZE.LARGE		? 3 :
+								_size == SIZE.MEDIUM	? 3 :
+								_isColumnAlign 			? 8 
+														: 3")
+
+			(bind marginRight "	!_isColumnAlign			? 0 :
+								_size == SIZE.LARGE		? 0 :
+								_size == SIZE.MEDIUM	? 0
+														: 6")
+		)
+
+		(controller $Instance renderer='Currency'
+			(bind enabled "	_priceInfo.currency != SC.Common.CURRENCIES.MONEY &&
+							_priceInfo.currency != SC.Common.CURRENCIES.ACC_POINTS &&
+							_priceInfo.currency != SC.Common.CURRENCIES.FOR_FREE")
+			(args
+				_currency =	"_priceInfo.currency"
+				_size = "_size"
+			)
+		)
+	)
+)
+
+(def element PriceDeficit (_priceInfo:dict, _deficit:number, _hideIcon:bool="false", _size:number = "null") layout=true
+	(style (flow = "horizontal") (align = "middle"))
+
+	(block
+		(style (paddingTop = "-8px") (paddingBottom = "-8px"))
+		(block
+			(bind visible "!_hideIcon")
+			(style (bind marginTop "_size == SIZE.LARGE ? 3 : 0") (width = "19px") (height = "19px") (marginRight = "1px") (backgroundImage = "'url:../service_kit/unified_status_icons/icon_negative.png'"))
+		)
+	)
+
+	(tf
+		(bind class "	_size == SIZE.LARGE		?	'$TextDefault25NM':
+						_size == SIZE.MEDIUM	? 	'$TextDefault17NM'
+												:	'$TextDefaultNM'")
+		(style
+			(align = "center")
+			(bind marginRight "_size == SIZE.LARGE ? 7 : 6")
+			(textColor = "SC.Ui_styles.SERVICE_COLORS.RED")
+		)
+
+		(text = "'IDS_NOT_ENOUGH'")
+	)
+
+	(element PriceTag
+		_priceInfo			= "{ currency: _priceInfo.currency, finalPrice: _deficit }"
+		_size				= "_size"
+		_isDeficit			= "true"
+		_showDiscountTag 	= "false"
+	)
+)
+
+(def element PriceTagWithLabel (_priceInfo:dict, _label:str, _size:number = "null", _width:number = "null", _showDiscountTag:bool = "false") layout=true
+	(style
+		(flow = "horizontal")
+		(bind width "_width ? _width : 'auto'")
+	)
+
+	(tf
+		(bind class "	_size == SIZE.LARGE		?	'$TextDefault25NM':
+						_size == SIZE.MEDIUM	? 	'$TextDefault17NM'
+												:	'$TextDefaultNM'")
+
+		(style (bind width "_width ? _width : 'auto'"))
+		(bind text "_label")
+	)
+
+	(element PriceTag
+		_priceInfo			= "_priceInfo"
+		_size				= "_size"
+		_showDiscountTag 	= "_showDiscountTag"
+		
+		(style (bind marginLeft "_size == SIZE.LARGE ? 7 : 6"))
+	)
+)
+
+(def element PriceTagWithQuestion (_questionText:str, _priceInfo:dict = "null", _optionalPriceInfo:dict = "null", _isDeficit:bool = false) layout=true
+	(style (flow = "horizontal"))
+
+	(tf
+		(class $TextDefault25NM)
+		(style (alpha = "TA"))
+		(bind text "_isDeficit ? 'IDS_COST_COLON' : _questionText")
+	)
+
+	(block
+		(bind visible "_priceInfo")
+		(style (marginLeft = "9px"))
+		
+		(controller $Instance renderer='PriceTag'
+			(bind enabled "_priceInfo")
+			(args
+				_priceInfo			= "_priceInfo"
+				_size				= "SIZE.LARGE"
+				_showDiscountTag 	= "true"
+			)
+		)
+	)
+
+	(block
+		(bind visible "_priceInfo && _optionalPriceInfo")
+		(style (marginLeft = "7px"))
+		(tf
+			(class $TextDefault25NM)
+			(style (alpha = "TA"))
+			(text = "'IDS_AND'")
+		)
+	)
+
+	(block
+		(bind visible "_optionalPriceInfo")
+		(style (marginLeft = "7px"))
+
+		(controller $Instance renderer='PriceTag'
+			(bind enabled "_optionalPriceInfo")
+			(args
+				_priceInfo			= "_optionalPriceInfo"
+				_size				= "SIZE.LARGE"
+				_showDiscountTag 	= "true"
+			)
+		)
+	)
+
+	(block
+		(bind visible "(_priceInfo || _optionalPriceInfo) && !_isDeficit")
+		(tf
+			(class $TextDefault25NM)
+			(style (alpha = "TA"))
+			(text = "'IDS_QUESTION'")
+		)
+	)
+)
+
+(def element Currency (_currency:str, _size:number = "null") layout=true
+	(scope
+		(var iconNamePrefix:str = "	_size == SIZE.LARGE || _size == SIZE.MEDIUM	? '' : '_small'")
+		(var iconName:str = "_currency + iconNamePrefix")
+		(var iconSize:number = "_size == SIZE.LARGE || _size == SIZE.MEDIUM ? 26 : 16")
+	)
+	(block
+		(style
+			(bind width "iconSize")
+			(bind height "iconSize")
+			(bind backgroundImage "'url:../service_kit/currencies/icon_' + iconName + '.png'")
+		)
+	)
+)
+
+(def element DiscountTag (_size:number) layout=true
+	(scope
+		(var discountTagPrefix:str = "_size == SIZE.LARGE ? '_large' : ''")
+	)
+	
+	
+	
+	(block
+		(style
+			(bind width "_size == SIZE.LARGE ? 22 : 19")
+			(bind height "_size == SIZE.LARGE ? 20 : 17")
+			(bind backgroundImage "'url:../service_kit/icons/icon_discount' + discountTagPrefix + '.png'")
+		)
+	)
+)

@@ -1,0 +1,34 @@
+<battlestatus.xml>
+	<Message
+			event="VO_Detection_Enemy"
+			tag="Detection.Enemy"
+			node="queue"
+			priority="59.0000"
+			lifetime="5.0000" />
+	<Message
+			event="VO_Domination_Status"
+			tag="Announcement.DominationStatus"
+			node="queue"
+			priority="96.0000"
+			lifetime="7.0000" />
+	<Message
+			event="VO_Last_Hope"
+			tag="Announcement.LastHope"
+			node="queue"
+			priority="94.0000"
+			lifetime="5.0000" />
+	<Message
+			event="VO_Start_Battle"
+			tag="Announcement.StartBattle"
+			node="queue"
+			priority="100.0000"
+			lifetime="5.0000"
+			delay="3.0000" />
+	<Message
+			event="VO_Timer_5"
+			tag="Announcement.Timer5"
+			node="queue"
+			priority="93.0000"
+			lifetime="7.0000"
+			discardOtherMessages="true" />
+</battlestatus.xml>

@@ -1,0 +1,307 @@
+(def constant INTERACTIVE_ZONE_ICON_SIZE 38)
+(def constant INTERACTIVE_DROP_ZONE_ICON_SIZE 60)
+(def constant ZONE_TIMEOUT_TYPES {
+	NONE: 	1,
+	CIRCLE: 2,
+	SQUARE: 3
+})
+
+(def element InteractiveZoneTimeoutIndicator (_markerEntity:gfx, _indicatorType:number) layout=true
+	(scope
+		(var timeoutComponent:gfx = "_markerEntity.timeout" (event "_markerEntity.evAdded"))
+		(var timeoutTime:number = "timeoutComponent.time" (event "timeoutComponent.evTimeChanged"))
+		(var totalTime:number = "timeoutComponent.total")
+		(var timeoutIsRunning:bool = "timeoutComponent.running" (event "timeoutComponent.evRunningChanged"))
+
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+
+		(var timeLeft:number = "timeoutIsRunning ? ceil(timeoutTime - timerEntity.timer.currentServerTime) : 0" (event "timerEntity.timer.evFrequent"))
+
+		(var isActive:bool = "timeoutIsRunning && timeLeft > 0 && totalTime > 0")
+		(var arcRad:number = "floor(INTERACTIVE_ZONE_ICON_SIZE/2 - 1)")
+		(var arcProgress:number = "isActive > 0 ? 360 * ((totalTime - timeLeft) / totalTime) : 0")
+		(var distanceItemVisibility:bool = "false")
+
+		(var indicatorType:number = "_indicatorType")
+	)
+
+	(block
+		(bind visible "isActive")
+		(style 
+			(position = "absolute")
+		)
+
+		(block
+			(bind visible "distanceItemVisibility")
+			(style 
+					(position = "absolute")
+					(align = "center") 
+					(top = "-INTERACTIVE_ZONE_ICON_SIZE")
+					(width = 100%)
+			)
+
+			(tf
+				(class $TextDefaultBoldNM)
+				(class $TextColorHUDNeutral)
+				(bind text "countdownFormat(timeLeft, 0, true)")
+			)
+		)
+
+
+		(block
+			(bind visible "indicatorType == ZONE_TIMEOUT_TYPES.CIRCLE")
+			(style 
+				(position = "absolute")
+				(top = "50%")
+				(left = "50%")
+			)
+			
+			(block 
+				(style 
+					(position = "absolute")
+				)
+
+				(block
+					(style (alpha = 0.2))
+					(controller $Sector
+						(bind enabled "indicatorType == ZONE_TIMEOUT_TYPES.CIRCLE")
+						(bind color "0xFF000000")
+						(bind arc "360")
+						(bind radius "arcRad")
+						(bind innerRadius "arcRad - 2")
+					) 
+				)
+
+				(block
+					(controller $Sector
+						(bind enabled "indicatorType == ZONE_TIMEOUT_TYPES.CIRCLE")
+						(bind color "0xFFFFFFFF")
+						(bind arc "arcProgress")
+						(bind offset "-90")
+						(bind radius "arcRad")
+						(bind innerRadius "arcRad - 2")
+					) 
+				)
+			)
+		)
+
+			
+		(controller $Instance (renderer = 'CircleMaskProgressBar')
+			(bind enabled "indicatorType == ZONE_TIMEOUT_TYPES.SQUARE")
+			(args
+				_backgroundUrl="'url:../powerups/pb_square.png'"
+				_backgroundSize="34"
+				_arcRad="24"
+				_arcProgress = "arcProgress"
+			)
+		)	
+	)
+)
+
+(def element CircleMaskProgressBar (_backgroundUrl:str, _backgroundSize:number, _arcRad:number, _arcProgress:number) layout=true
+
+	(style (position = "absolute"))
+
+	(block
+		(style 
+			(position = "absolute")
+		)
+
+		(controller $Sector
+			(bind arc "_arcProgress")
+			(bind offset "-90")
+			(bind radius "_arcRad")
+		)
+		(isMask = true)
+	)
+	
+	(block
+		(style
+			(position = "absolute") 
+			(width = "_backgroundSize")
+			(height = "_backgroundSize")
+			(top = "-_backgroundSize/2")
+			(left = "-_backgroundSize/2")
+			(bind backgroundImage "_backgroundUrl")
+		)
+	)
+)
+
+
+(def element InteractiveResourceZoneIcon (_markerEntity:gfx) layout=true
+	(scope
+		
+		(var resourceZoneEntity:gfx = "_markerEntity")
+
+		(var resourceHolder:gfx = "resourceZoneEntity.resourceHolder" (event "resourceZoneEntity.evAdded"))
+		(var resourceName:str = "resourceHolder ? toLower(resourceHolder.resourceName + (resourceHolder.loading ? '_gathering' : '_unloading')) : null")
+	)
+
+	(block
+		(style
+			(backgroundSize = "autosize")
+			(bind backgroundImage "'url:../battle_hud/markers/zone_markers/' + resourceName + '.png'")
+		)
+	)
+)
+
+(def element InteractiveDropZoneIcon (_markerEntity:gfx) layout=true
+	(scope
+		(var dropComponent:gfx = "_markerEntity.drop" (event "_markerEntity.evAdded"))
+		(var isActive:bool = "dropComponent.isActive" (event "dropComponent.evIsActiveChanged"))
+		(var markerName:str = "isActive ? dropComponent.markerNameActive : dropComponent.markerNameInactive")
+	)
+
+	(block
+		(style
+			(backgroundSize = "autosize")
+			(bind backgroundImage "'url:../powerups/drops/icon_marker_' + markerName + '.png'")
+		)
+	)
+)
+
+(def element WorldInteractiveZoneMarker (_markerEntity:gfx) layout=true
+  	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'worldMarkerScale')
+		(macro GET_MARKER_ENTITY_COMPONENT 'distance')
+		(macro GET_MARKER_ENTITY_COMPONENT 'progress')
+		(macro GET_MARKER_ENTITY_COMPONENT 'interactiveZone')
+		(macro GET_MARKER_ENTITY_COMPONENT 'timeout')
+		(macro GET_MARKER_ENTITY_COMPONENT 'resourceHolder')		
+
+		
+		(macro GET_PREF 'altVisionMode' "'battle.altVision.mode'")
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var isTactical:bool = "cameraEntity.camera.isTactical" (event "cameraEntity.camera.evTacticalStateChanged"))
+		(var altVision:bool = "cameraEntity.camera.altVision" (event "cameraEntity.camera.evAltVisionChanged"))
+		(var isAdaptiveAltVisionMode:bool = "altVision || altVisionMode >= AltVisionMode.ADAPTIVE")
+		(var isFullAltVisionMode:bool = "altVision || altVisionMode >= AltVisionMode.ENABLED")
+		(var distanceIndex:number = "distanceComponent ? distanceComponent.distanceIndex : DistanceType.NEAR" (event "distanceComponent.evDistanceIndexChanged"))
+
+		(var distanceType:number = "isTactical					? DistanceType.TACTICAL :
+									isFullAltVisionMode			? DistanceType.NEAR
+																: distanceIndex")
+
+ 		(var markerScaleRaw:number = "worldMarkerScaleComponent ? worldMarkerScaleComponent.value : 1" (event "worldMarkerScaleComponent.evValueChanged"))
+		(var markerScale:number = "isFullAltVisionMode ? 1 : round(markerScaleRaw*10)/10") 
+
+		(var farAdaptiveAltVisionMode:bool = "isAdaptiveAltVisionMode && distanceType <= DistanceType.FAR")
+		(var distanceItemVisibility:bool = "(!(isIn(distanceType, [DistanceType.TACTICAL, DistanceType.FARTHEST])) || isFullAltVisionMode || !worldMarkerScaleComponent)")
+
+
+		(var type:number = "interactiveZoneComponent.type")
+
+		(var progressValue:number = "progressComponent.value" (event "progressComponent.evChanged"))
+		(var showProgressText:bool = "progressValue > 0 && progressComponent.max > 1")
+		(macro SCOPE_HIGHLIGHT_MARKER_ON_WORLD_MOUSE_OVER)
+	 	(event evShow)
+		(event evHide)
+	)
+
+	(dispatch evShow on=addedToStage)
+	(dispatch evHide (event "interactiveZoneComponent.evHide"))
+
+	(bind scaleX "markerScale")
+	(bind scaleY "markerScale")
+	(bind alpha "markerScale")
+
+	(block
+		(style (position = "absolute"))
+
+		(block
+			(macro EFFECT_HIGHLIGHT_MARKER_ON_MOUSE_OVER)
+			(style
+				(marginTop = "-50%") (marginLeft = "-50%")
+			)
+
+			(element TargetAnimationItem "_markerEntity"
+				(style
+					(position = "absolute")
+					(left = 50%)
+				)
+			)
+
+			(controller $Instance (renderer = 'InteractiveResourceZoneIcon')
+				(bind enabled "type == INTERACTIVE_ZONE_TYPES.RESOURCE_ZONE && resourceHolderComponent")
+				(args _markerEntity="_markerEntity")
+			)
+
+			(controller $Instance (renderer = 'InteractiveDropZoneIcon')
+				(bind enabled "type == INTERACTIVE_ZONE_TYPES.DROP_ZONE")
+				(args _markerEntity="_markerEntity")
+			)
+		)
+
+		(block
+			(macro EFFECT_HIGHLIGHT_MARKER_ON_MOUSE_OVER)
+			(style
+				(position = "absolute")
+			)
+
+			(controller $Instance (renderer = 'InteractiveZoneTimeoutIndicator')
+				(bind enabled "timeoutComponent && timeoutComponent.running"  (event "timeoutComponent.evRunningChanged"))
+				(args 	
+					_markerEntity="_markerEntity"
+					
+					
+					_indicatorType="ZONE_TIMEOUT_TYPES.CIRCLE"
+				)
+				(exprs
+					(scope
+						(bind distanceItemVisibility "distanceItemVisibility")
+					)
+				)
+			)
+		)
+
+		
+		(block
+			(style
+				(width = 0)
+				(align = "center|top")
+			)
+			(element DistanceItem "_markerEntity"
+				(bind visible "distanceItemVisibility")
+			)	
+		)
+
+		(block
+			(bind visible "showProgressText")
+
+			(style
+				(position = "absolute")
+				(marginLeft = "-50%")
+				(top = "-INTERACTIVE_ZONE_ICON_SIZE")
+			)
+
+			(tf
+				(class $TextDefaultBold13NM)
+				(class $TextColorHUDNeutral)
+
+				(style
+					(fontSize = 15)
+					(textAlign = "center")
+				)
+				(bind text "progressValue")
+			)
+		)
+
+		(controller $Animation
+			(bindcall  play
+				duration=0.3
+				from={alpha: 0, scaleX: 0, scaleY: 0}
+				to={alpha: 1, scaleX: 1, scaleY: 1}
+				easing="Easing.quint_in"
+				(event "evShow")
+			)
+			(bindcall  play
+				duration=0.3
+				from={alpha: 1, scaleX: 1, scaleY: 1}
+				to={alpha: 0, scaleX: 0, scaleY: 0}
+				easing="Easing.quint_in"
+				(event "evHide")
+			)
+		)
+	)
+)

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<constants>
+    <enum name="CLAN_ROLE" type="String">
+        <const name="EXECUTIVE_OFFICER" value="executive_officer"/>
+        <const name="PRIVATE" value="private"/>
+        <const name="OFFICER" value="officer"/>
+        <const name="COMMISSIONED_OFFICER" value="commissioned_officer"/>
+        <const name="RECRUITMENT_OFFICER" value="recruitment_officer"/>
+        <const name="COMMANDER" value="commander"/>
+
+        <range name="CAN_INVITE" values="EXECUTIVE_OFFICER, RECRUITMENT_OFFICER, COMMANDER"/>
+    </enum>
+
+    <enum name="CLAN_BATTLE_STAGE" type="String">
+        <const name="PROMOTION" value="promotion"/>
+        <const name="DEMOTION" value="demotion"/>
+        <const name="LEAGUE" value="league"/>
+    </enum>
+
+    <enum name="CLAN_BATTLE_PROGRESS" type="String">
+        <const name="VICTORY" value="victory"/>
+        <const name="DEFEAT" value="defeat"/>
+        <const name="DRAW" value="draw"/>
+        <const name="UNKNOWN" value="unknown"/>
+    </enum>
+
+    <enum name="CLAN_LEAGUE_COLORS" type="Hex">
+        <const name="HURRICANE" value="0xAB45E6"/> <!-- 0 -->
+        <const name="TYPHOON" value="0xE5124A"/> <!-- 1 -->
+        <const name="STORM" value="0xF1AE07"/> <!-- 2 -->
+        <const name="GALE" value="0x0644D9"/> <!-- 3 -->
+        <const name="SQUALL" value="0x00D8D0"/> <!-- 4 -->
+        <const name="DEFAULT" value="0xFFFFFF"/>
+    </enum>
+
+    <enum name="CLAN_MESSAGE_OF_THE_DAY_STATE" type="Integer">
+        <const name="DEFAULT"               value="0"/>
+        <const name="PRE_MODERATION"        value="1"/>
+        <const name="PRE_MODERATION_OTHER"  value="2"/>
+
+        <value_to_name/>
+    </enum>
+</constants>

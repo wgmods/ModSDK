@@ -1,0 +1,38 @@
+<WGA016_20mm_Madsen_M38_SW_dead.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Gun_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Gun_dead	</node>
+		<geometry>
+			<vertices>	Gun_deadShape.vertices	</vertices>
+			<primitive>	Gun_deadShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Gun1Dead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/WSD106_Vasteras/gun/WGA016_20mm_Madsen_M38_SW_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0185 0.0000 -0.0861	</min>
+		<max>	0.0183 0.1551 0.0815	</max>
+	</boundingBox>
+</WGA016_20mm_Madsen_M38_SW_dead.visual>

@@ -1,0 +1,910 @@
+(def element CamouflageItemStatic (_id:number, _amount:number="0", _isReward:bool="false", _params:dict="{}")
+	(scope
+		(var exteriorEntity:gfx = "$datahub.getPrimaryEntity(CC.exteriorConfig, _id)")
+		(var exteriorConfig:gfx = "exteriorEntity ? exteriorEntity.exteriorConfig : null")
+
+		(var isAvailableFakeColorSchemes:bool = "'colorsNum' in _params && _params.colorsNum")
+		(var fakeColorScheme:dict = "isAvailableFakeColorSchemes ? _params : null")
+
+		(var ownCamouflage:gfx = "exteriorEntity && exteriorEntity.ownCamouflage ? exteriorEntity.ownCamouflage : null")
+		(var camoColorSchemesDH:array = "ownCamouflage ? ownCamouflage.camoColorSchemes : []" (event "ownCamouflage.evUpdated"))
+		(var isLinkedToShip:bool = "ownCamouflage ? ownCamouflage.isLinkedToShip : false" (event "ownCamouflage.evUpdated"))
+
+		(var isAvailableCamoColorSchemes:bool = "camoColorSchemesDH.length > 0")
+		(var useRepaintedIcon:bool = "isAvailableCamoColorSchemes || isAvailableFakeColorSchemes")
+
+		(var isUnlinkedMSkin:bool = "	(exteriorConfig.type == SC.Exteriors.EXTERIOR_TYPE.MSKIN) &&
+										((_isReward && !('shipId' in _params)) || (!_isReward && !isLinkedToShip))")
+
+	)
+	(bind name "'ExteriorItemDock_' + exteriorConfig.name")
+
+	(controller $Instance renderer='CamouflageItemView'
+		(bind enabled "exteriorConfig")
+		(args
+			_camouflageId = "_id"
+			_camoName = "exteriorConfig.name"
+			_isReward = "_isReward"
+			_amount = "_amount"
+			_useRepaintedIcon = "useRepaintedIcon"
+			_fakeColorScheme = "fakeColorScheme"
+			_exteriorType = "exteriorConfig.type"
+			_isUnlinkedMSkin = "isUnlinkedMSkin"
+		)
+	)
+
+	(controller $Tooltip
+		(renderer = 'CamouflageTooltip')
+		(args
+			_id = "_id"
+			_isReward = "_isReward"
+			_amount = "_amount"
+			_fakeColorScheme = "fakeColorScheme"
+			_noMouseInstructions = "true"
+			_rewardShipId = "'shipId' in _params ? _params.shipId : null"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element CamouflageItemView (	_camouflageId:number, _camoName:str, _exteriorType:str, _amount:number="0", _useRepaintedIcon:bool="false",
+									_fakeColorScheme:dict="{}", _isUnlinkedMSkin:bool="false", _exteriorsInStorage:bool="false", _isReward:bool="false")	layout=true
+	(scope
+		(var isAmountVisible:bool = "(_amount > 0 && (_exteriorType == SC.Exteriors.EXTERIOR_TYPE.CAMOUFLAGE || _isUnlinkedMSkin)) || _amount < 0")
+		(var pathImageUrl:str = "_exteriorType == SC.Exteriors.EXTERIOR_TYPE.CAMOUFLAGE 	? 'url:../exteriors/camouflages/' + _camoName + '.png' :
+								_exteriorType == SC.Exteriors.EXTERIOR_TYPE.PERMOFLAGE		? 'url:../exteriors/permoflages/' + _camoName + '.png'
+																							: 'url:../exteriors/skins/' + _camoName + '.png'")
+	
+		(var isInfinityCounterIconVisible:bool = "_exteriorType != SC.Exteriors.EXTERIOR_TYPE.CAMOUFLAGE && !_isUnlinkedMSkin")
+	)
+	(bind name "'ExteriorWithAmount_' + _camoName")
+	(style (height = "60px") (width = "60px"))
+	
+	(block
+		(bind visible "!_useRepaintedIcon")
+		
+		(class $Fullsize)
+		(style (bind backgroundImage "pathImageUrl"))
+		(bind alpha "!_exteriorsInStorage && !_isReward ? 0.2 : 1")
+	)
+
+	(block
+		(style (width = "100%"))
+		(bind alpha "!_exteriorsInStorage && !_isReward ? 0.2 : 1")
+		(controller $Instance renderer='CamouflageRepaintedIcon'
+			(bind enabled "_useRepaintedIcon")
+			(args
+				_camouflageId = "_camouflageId"
+				_fakeColorScheme = "_fakeColorScheme"
+			)
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "bottom|right"))
+		(controller $Instance renderer='InfinityCounterIcon'
+			(bind enabled "isInfinityCounterIconVisible")
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "bottom|right"))
+		(controller $Instance renderer='ImageItemsCounter'
+			(bind enabled "isAmountVisible")
+			(args
+				_amount = "_amount"
+			)
+		)
+	)
+
+	(block
+		(style (position = "absolute"))
+		(controller $Instance renderer='LinkableItemIcon'
+			(bind enabled "_isUnlinkedMSkin")
+		)
+	)
+)
+
+(def element CamouflageTooltip (_id:number, _isReward:bool="false", _amount:number="0", _fakeColorScheme:dict="{}", _noMouseInstructions:bool="false", _rewardShipId:number="null")
+	(scope
+		(var shipEntityFromReward:gfx = "_rewardShipId ? $datahub.getPrimaryEntity(CC.ship, _rewardShipId) : null")
+		(var shipInfoFromReward:gfx =	 "shipEntityFromReward ? shipEntityFromReward.ship : null"	(event "shipEntityFromReward.ship.evUpdate")
+																									(event "shipEntityFromReward.ship.evCurrentSkinChanged")
+																									(event "shipEntityFromReward.ship.evFlagNameWithCrewChanged"))
+
+		(var ownShipInfoFromReward:gfx = "shipEntityFromReward ? shipEntityFromReward.ownShip : null"	(event "shipEntityFromReward.ship.evUpdate")
+																										(event "shipEntityFromReward.ship.evCurrentSkinChanged"))
+	
+		(var exteriorEntity:gfx = "$datahub.getPrimaryEntity(CC.exteriorConfig, _id)")
+		(var exteriorConfig:gfx = "exteriorEntity ? exteriorEntity.exteriorConfig : null")
+		(var hasOwnCamouflage:gfx = "exteriorEntity ? exteriorEntity.hasComponent(CC.ownCamouflage) : false")
+		(var isCamouflage:gfx = "exteriorConfig ? exteriorConfig.type == SC.Exteriors.EXTERIOR_TYPE.CAMOUFLAGE : false")
+		(var isPermoflage:gfx = "exteriorConfig ? exteriorConfig.type == SC.Exteriors.EXTERIOR_TYPE.PERMOFLAGE : false")
+		(var isTileflage:bool = "hasOwnCamouflage ? exteriorEntity.ownCamouflage.isTileflage : false")
+
+		(var exteriorPriceName:str =	"exteriorConfig && !isCamouflage	? _id :
+										hasOwnCamouflage					? 'CAMOUFLAGE_GROUP_' + exteriorEntity.ownCamouflage.camoGroup
+																			: ''")
+		
+		(var camouflagePriceEntity:gfx = "$datahub.getPrimaryEntity(CC.prices, exteriorPriceName + '_' + toString(SC.Common.PRICE_ACTION.BUY))")
+		(var camouflagePrice:dict = "camouflagePriceEntity ? camouflagePriceEntity.prices : null" (event "camouflagePriceEntity.Prices.evChanged"))
+		(var hasCamouflagePrice:bool = "!!camouflagePrice")
+		
+		(macro USER_PREF_DATA)
+		(var previewExteriorId:number = "userPrefs.previewExteriorId")
+		(var isPreviewedExterior:bool = "previewExteriorId == _id")
+		(var isAnotherExteriorPreviewed:bool = "previewExteriorId && !isPreviewedExterior")
+	
+		(macro PULL_CURRENT_SHIP_ID)
+		(var shipEntity:gfx = "shipId ? $datahub.getPrimaryEntity(CC.ship, shipId) : null")
+		(var shipInfo:gfx =	 "shipEntity ? shipEntity.ship : null"	(event "shipEntity.ship.evUpdate")
+																	(event "shipEntity.ship.evCurrentSkinChanged")
+																	(event "shipEntity.ship.evFlagNameWithCrewChanged"))
+
+		(var ownShipInfo:gfx = "shipEntity ? shipEntity.ownShip : null"	(event "shipEntity.ship.evUpdate")
+																		(event "shipEntity.ship.evCurrentSkinChanged"))
+
+		(var isNeedRepair:bool =	"ownShipInfo ? ownShipInfo.isNeedRepair : false"	(event "ownShipInfo.evUpdateDockState"))
+		(var isNeedShell:bool =		"ownShipInfo ? ownShipInfo.isNeedShell : false"		(event "ownShipInfo.evUpdateDockState"))
+		(var isLocked:bool =		"ownShipInfo ? ownShipInfo.isLocked : false"		(event "ownShipInfo.evUpdateLock"))
+		(var isInFormation:bool =	"ownShipInfo ? ownShipInfo.isInFormation : false"	(event "ownShipInfo.evUpdateLock"))
+
+		(var permoflageFirstBuyGoldDiscount:number = "ownShipInfo ? ownShipInfo.permoflageFirstBuyGoldDiscount : 0"	(event "ownShipInfo.evPermoflageFirstBuyGoldDiscountChanged"))
+
+		(var isFirstBuyDiscount:bool = "!isCamouflage && !isTileflage && permoflageFirstBuyGoldDiscount")
+		(var finalCamouflagePriceInfo:dict = "	isFirstBuyDiscount && hasCamouflagePrice	? {	currency: SC.Common.CURRENCIES.GOLD,
+																								finalPrice: camouflagePrice.basePrice - permoflageFirstBuyGoldDiscount } :
+												hasCamouflagePrice							?	camouflagePrice
+																							:	null")
+
+		(var exteriorEntityId:number = "exteriorEntity.id")
+
+		(var camoColorSchemes:array = "hasOwnCamouflage ? exteriorEntity.ownCamouflage.camoColorSchemes : []" (event "exteriorEntity.ownCamouflage.evUpdated"))
+		(var hasColorSchemeConfig:bool = "hasOwnCamouflage ? exteriorEntity.ownCamouflage.hasColorSchemeConfig : false" (event "exteriorEntity.ownCamouflage.evUpdated"))
+
+		(var isLinkedToShip:bool = "hasOwnCamouflage ? exteriorEntity.ownCamouflage.isLinkedToShip : false" (event "exteriorEntity.ownCamouflage.evUpdated"))
+		(var exteriorsInStorage:number = "hasOwnCamouflage ? exteriorEntity.countComponent.value : 0" (event "exteriorEntity.countComponent.evUpdate"))
+	
+		(var peculiarityEyeEntity:gfx = "exteriorConfig ? $datahub.getPrimaryEntity(CC.peculiarityEye, exteriorConfig.peculiarity) : null")
+		(var peculiarityEye:gfx = "peculiarityEyeEntity ? peculiarityEyeEntity.peculiarityEye : null")
+
+		(var isPeculiarityDisabled:bool = "exteriorConfig && exteriorConfig.peculiarity && peculiarityEye && !peculiarityEye.enabled" (event "peculiarityEye.evEnabledChanged"))
+		(var isUnlinkedMSkin:bool = "	(exteriorConfig.type == SC.Exteriors.EXTERIOR_TYPE.MSKIN) &&
+										((_isReward && !_rewardShipId) || (!_isReward && !isLinkedToShip))")
+		(var isLinkedMSkin:bool = "	(exteriorConfig.type == SC.Exteriors.EXTERIOR_TYPE.MSKIN) &&
+									((_isReward && _rewardShipId) || (!_isReward && isLinkedToShip))")
+		
+		
+		(var amount:number = "_isReward	? _amount : exteriorsInStorage")
+		(var isInstalled:bool = "!!exteriorEntity.installedCamouflage && !_isReward")
+		(var isExpired:bool = "isInstalled && amount == 0 && !_isReward")
+		(var isAmountVisible:bool = "amount > 0 && (isCamouflage || isUnlinkedMSkin)")
+		(var isNotInStorageVisible:bool = "!amount && isCamouflage && !isExpired")
+		
+	
+		(var canBeBought:bool = "exteriorConfig.canBuy && (isCamouflage || amount == 0)")
+		(var camoUnpurchasable:bool = "!exteriorConfig.canBuy && (isCamouflage || isTileflage)")
+
+		(var isPriceVisible:bool = "canBeBought && !_isReward && finalCamouflagePriceInfo")
+		(var isNotForSaleVisible:bool = "camoUnpurchasable && !_isReward")
+
+		(var isColorStatusVisible:bool = "hasColorSchemeConfig && !_isReward")
+		(var isExteriorRestrictionsVisible:bool = "isUnlinkedMSkin && !exteriorEntity.filteringGroup.isEmpty")
+
+		(var unifiedStatus:str = "	_isReward || isExpired	? SC.Ui_styles.UNIFIED_STATUS.DEFAULT :
+									isInstalled				? SC.Ui_styles.UNIFIED_STATUS.CHECK
+															: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+
+		(var isUnlinkedStatusVisible:bool = "isUnlinkedMSkin && amount > 0")
+		
+		
+		(var useRepaintedIcon:bool = "camoColorSchemes.length > 0 || _fakeColorScheme")
+
+		(var headerIconPath:str =	"isCamouflage	? ('url:../exteriors/camouflages/' + exteriorConfig.name + '.png') :
+									isPermoflage	? ('url:../exteriors/permoflages/' + exteriorConfig.name + '.png')
+													: ('url:../exteriors/skins/' + exteriorConfig.name + '.png')")
+
+		(var headerIconType:str = "useRepaintedIcon	?	SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.CAMO_REPAINT
+													:	SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.SIMPLE")
+		
+
+		
+		(var exteriorConfigNameUpper:str = "tr('IDS_' + toUpper(exteriorConfig.name))")
+		(var shipName:str = "_rewardShipId	? toUpper(tr(shipInfoFromReward.nameIDS))
+											: toUpper(tr(shipInfo.nameIDS))")
+
+		(var exteriorEntityRestrictions:gfx = "exteriorEntity && exteriorEntity.hasComponent(CC.filteringGroup) ? exteriorEntity.filteringGroup : null" (event "exteriorEntity.evAdded") (event "exteriorEntity.evRemoved"))
+		(var exteriorEntityLevelFiltersRoman:str ="exteriorEntityRestrictions ? exteriorEntityRestrictions.levelString : ''" (event "exteriorEntityRestrictions.evUpdate"))
+		(var hasLevelRestrictions:bool = "exteriorEntityLevelFiltersRoman.length > 0")
+
+		(var headerText:str = "	isLinkedMSkin || isPermoflage ||
+								exteriorConfig.type == SC.Exteriors.EXTERIOR_TYPE.SKIN	? subst('IDS_EXTERIOR_NAME_WITH_SHIP',  [], {	exteriorName: exteriorConfigNameUpper,
+																																shipName: shipName}) :
+								hasLevelRestrictions									? subst('IDS_EXTERIOR_NAME_WITH_LEVEL', [], {	exteriorName: exteriorConfigNameUpper,
+																																levelRange: exteriorEntityLevelFiltersRoman })
+																						: exteriorConfigNameUpper")
+
+		(var subheaderText:str = "'IDS_EXTERIOR_TYPE_' + SC.Exteriors.EXTERIOR_TYPE.VALUE_TO_NAME[exteriorConfig.type]")
+
+		(var additionalExteriorInfo:dict = "isCamouflage	?	null :
+											amount == 0 	?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.INFINITE,
+																	_text: 'IDS_PERMOFLAGE_AUTOREPLENISHMENT_BEFORE_PURCHASE_INFO'}
+															:	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.INFINITE,
+																	_text: 'IDS_PERMOFLAGE_AUTOREPLENISHMENT_AFTER_PURCHASE_INFO'}")
+
+		(var mouseInstructionText:str = "isPreviewedExterior							? 'IDS_MOUSE_INSTRUCTION_DISABLE_PREVIEW_CAMOUFLAGE' :
+											isInstalled &&	isAnotherExteriorPreviewed	? 'IDS_MOUSE_INSTRUCTION_PREVIEW_CAMOUFLAGE' :
+											isExpired 									? 'IDS_MOUSE_INSTRUCTION_DISABLE_PREINSTALL_CAMOUFLAGE' :
+											isInstalled									? 'IDS_MOUSE_INSTRUCTION_TAKE_AWAY_CAMOUFLAGE' :
+											isUnlinkedMSkin								? 'IDS_MOUSE_INSTRUCTION_PREVIEW_CAMOUFLAGE' :
+											amount > 0 || isLinkedToShip				? 'IDS_MOUSE_INSTRUCTION_INSTALL_CAMOUFLAGE'
+																						: 'IDS_MOUSE_INSTRUCTION_PREVIEW_CAMOUFLAGE'")
+
+		(var mouseInstruction:dict = "	_noMouseInstructions			?	null :
+										isInFormation					?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																				_text: 'IDS_SET_UNREADY_DIVISION_FIRST_TO_OPERATE_EXTERIORS' } :
+										isLocked						?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																				_text: 'IDS_LEAVE_BATTLE_FIRST_TO_OPERATE_EXTERIORS' } :
+										isNeedRepair || isNeedShell		?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																				_text: 'IDS_SERVICE_SHIP_TO_OPERATE_EXTERIORS' }
+																		:	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																				_text: mouseInstructionText }")
+	)
+	(style (hitTest = "false") (width = "320px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = "100%"))
+			(element TooltipSystemHeaderWithIconAndText
+				_imageUrl= "headerIconPath"
+				_imageWidth = "60"
+				_imageHeight = "60"
+				_unifiedStatus = "unifiedStatus"
+				_headerText = "headerText"
+				_subheaderText = "subheaderText"
+				_headerIconType = "headerIconType"
+				_data = "{camouflageId: _id, fakeColorScheme: _fakeColorScheme}"
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isExpired || isInstalled"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isExpired || isInstalled")
+				(args
+					_unifiedStatus = "isExpired ? SC.Ui_styles.UNIFIED_STATUS.ATTENTION : SC.Ui_styles.UNIFIED_STATUS.CHECK"
+					_text = "isExpired ? 'IDS_PREINSTALLED_CAMOUFLAGE' : 'IDS_INSTALLED'"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isAmountVisible || isNotInStorageVisible || isPriceVisible || isNotForSaleVisible"))
+		)
+		(element TOOLTIP_SYSTEM_ELEMENTS_GROUP
+			(bind visible "isAmountVisible || isNotInStorageVisible || isPriceVisible || isNotForSaleVisible")
+
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+				(bind visible "isAmountVisible")
+				(controller $Instance renderer='TooltipSystemCounterLine'
+					(bind enabled "isAmountVisible")
+					(args
+						_title = "_isReward ? 'IDS_COUNT' : 'IDS_IN_WAREHOUSE'"
+						_count = "amount"
+					)
+				)
+			)
+
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+				(bind visible "isNotInStorageVisible")
+				(controller $Instance renderer='TooltipSystemDescriptionText'
+					(bind enabled "isNotInStorageVisible")
+					(args
+						_descriptionText = "'IDS_OUT_OF_STOCK'"
+					)
+				)
+			)
+
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+				(bind visible "isPriceVisible")
+				(controller $Instance renderer='TooltipSystemPriceTagLine'
+					(bind enabled "isPriceVisible")
+					(args
+						_title = "'IDS_COST_COLON'"
+						_priceInfo = "finalCamouflagePriceInfo"
+					)
+				)
+			)
+
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+				(bind visible "isFirstBuyDiscount && isPriceVisible")
+				(controller $Instance renderer='TooltipSystemStatusLine'
+					(bind enabled "permoflageFirstBuyGoldDiscount")
+					(args
+						_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.SALE_AVAILABLE"
+						_text = "'IDS_PERMOFLAGE_FIRST_BUY_DISCOUNT'"
+					)
+				)
+			)
+
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+				(bind visible "isNotForSaleVisible")
+				(controller $Instance renderer='TooltipSystemDescriptionText'
+					(bind enabled "isNotForSaleVisible")
+					(args
+						_descriptionText = "'IDS_UNAVAILABLE_CAMOUFLAGE_FOR_PURCHASE'"
+					)
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isUnlinkedStatusVisible"))
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isUnlinkedStatusVisible")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.LINKED"
+					_text = "'IDS_MSKIN_NOT_LINKED'"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isPeculiarityDisabled"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isPeculiarityDisabled")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.HIDDEN"
+					_text = "tr(toUpper('IDS_CAMO_DESCR_HIDDEN_BY_PECULARITY_' + exteriorConfig.peculiarity))"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "additionalExteriorInfo"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "additionalExteriorInfo")
+				(args
+					_unifiedStatus = "additionalExteriorInfo._unifiedStatus"
+					_text = "additionalExteriorInfo._text"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isExteriorRestrictionsVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='EntityRestrictionBlock'
+				(bind enabled "isExteriorRestrictionsVisible")
+				(args
+					_restrictionsEntityId = "exteriorEntityId"
+					_restrictionsIDS = "'IDS_INSTALL_RESTRICTION_MSKIN'"
+					_excludedIDS = "'IDS_INSTALL_RESTRICTION_MSKIN_EXCLUDES'"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isColorStatusVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isColorStatusVisible")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.REPAINTED"
+					_text = "'IDS_ALTERNATIVE_COLOR_SCHEME'"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "mouseInstruction"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "mouseInstruction")
+				(args
+					_unifiedStatus = "mouseInstruction._unifiedStatus"
+					_text = "mouseInstruction._text"
+				)
+			)
+		)
+	)
+)
+
+(def element EntityRestrictionBlock (_restrictionsEntityId:number, _restrictionsIDS:str, _excludedIDS:str="''")
+	(style (width = "100%"))
+
+	(tf
+		(class $TextDefaultNM)
+		(style (width = "100%") (alpha = "TA"))
+		(bind text "_restrictionsIDS")
+	)
+
+	(block
+		(style (marginTop = "S"))
+		(element ShipRestrictions
+			_restrictionsEntityId = "_restrictionsEntityId"
+		)
+	)
+	(tf
+		(bind visible "_excludedIDS")
+		(class $TextDefaultNM)
+		(style (width = "100%") (alpha = "TA") (marginTop = "XXS"))
+		(bind text "_excludedIDS")
+	)
+)
+
+(def element LinkableItemIcon () layout=true
+	(style (width = "19px") (height = "19px") (padding = "1px"))
+	(block
+		(class $Fullsize)
+		(style (backgroundImage = "'url:../service_kit/icons/icon_linked.png'"))
+	)
+)
+
+(def element InfinityCounterIcon () layout=true
+	(style (width = "19px") (height = "19px") (padding = "1px"))
+	(block
+		(class $Fullsize)
+		(style (backgroundImage = "'url:../service_kit/icons/infinite_large.png'"))
+	)
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+
+
+
+
+		
+
+
+
+
+
+
+
+
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			
+
+
+
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+
+
+
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

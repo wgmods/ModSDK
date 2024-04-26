@@ -1,0 +1,564 @@
+(def macro DOGTAG_COMMON (_dogTagComponent:expression) 
+	(var enabled:bool =			"dogTagComponent ? dogTagComponent.enabled : true"									(event "dogTagComponent.evUpdate"))
+	(var gpName:str =			"dogTagComponent ? dogTagComponent.gpName : ''"										(event "dogTagComponent.evUpdate"))
+	(var categoryId:number =	"dogTagComponent ? dogTagComponent.categoryId : SC.Common.DOGTAG_ELEMENTS.SYMBOL"	(event "dogTagComponent.evUpdate"))
+	(var hasDescription:bool =	"dogTagComponent ? dogTagComponent.description : false"								(event "dogTagComponent.evUpdate"))
+)
+
+(def element DogTagComponentTooltip (_elementEntityId:number, _isNotSelf:bool=false, _canInstall:bool=false, _isRewardTooltip:bool=false, _isClickDisabled:bool=false, _isShowUB2Tooltip:bool=false) layout=true dispatch_size_change=true
+	(scope
+		(var dogTagEntity:gfx = "$datahub.getEntity(_elementEntityId)")
+		(var dogTagComponent:gfx = "dogTagEntity.dogTagItem ? dogTagEntity.dogTagItem : null")
+		(var categoryId:number =	"dogTagComponent ? dogTagComponent.categoryId : SC.Common.DOGTAG_ELEMENTS.SYMBOL" (event "dogTagComponent.evUpdate"))
+	)
+
+	(controller $Instance
+		(bind renderer "categoryId == SC.Common.DOGTAG_ELEMENTS.SYMBOL || categoryId == SC.Common.DOGTAG_ELEMENTS.PATCH				?	'DogTagSymbolTooltip':
+						categoryId == SC.Common.DOGTAG_ELEMENTS.EMBLEM																?	'DogTagEmblemTooltip' :
+						categoryId == SC.Common.DOGTAG_ELEMENTS.BG_SHAPE															?	'DogTagBgShapeTooltip' :
+						categoryId == SC.Common.DOGTAG_ELEMENTS.BG_COLOR || categoryId == SC.Common.DOGTAG_ELEMENTS.BG_BORDER_COLOR	?	'DogTagDollColorTooltip' :
+						categoryId == SC.Common.DOGTAG_ELEMENTS.BG_MATERIAL															?	'DogTagBgMaterialTooltip' :
+						null"
+		)
+
+		(args
+			_elementEntityId = "_elementEntityId"
+			_isNotSelf = "_isNotSelf"
+			_canInstall = "_canInstall"
+			_isRewardTooltip = "_isRewardTooltip"
+			_isClickDisabled = "_isClickDisabled"
+			_isShowUB2Tooltip = "_isShowUB2Tooltip"
+		)
+	)
+)
+
+(def element DogTagStatus (_statusVisible:bool, _unifiedStatus:str, _statusText:str)
+	(style (width = 100%))
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_statusVisible"))
+	)
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='TooltipSystemStatusLine'
+			(bind enabled "_statusVisible")
+			(args
+				_unifiedStatus = "_unifiedStatus"
+				_text = "_statusText"
+			)
+		)
+	)
+)
+
+(def element DogTagDescription (_hasDescription:bool, _gpName:str)
+	(style (width = 100%))
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_hasDescription"))
+	)
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='TooltipSystemDescriptionText'
+			(bind enabled "_hasDescription")
+			(args
+				_descriptionText = "tr(toUpper('IDS_DOGTAG_' + _gpName + '_DESCRIPTION'))"
+			)
+		)
+	)
+)
+
+(def element DogTagInstruction (_enabled:bool, _text:str)
+	(style (width = 100%))
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='TooltipSystemHorizontalDivider' 
+			(bind enabled "_enabled")
+		)
+	)
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='TooltipSystemStatusLine'
+			(bind enabled "_enabled")
+			(args
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+				_text = "_text"
+			)
+		)
+	)
+)
+
+(def element DogTagSymbolTooltip (_elementEntityId:number, _isNotSelf:bool=false, _canInstall:bool=false, _isRewardTooltip:bool=false, _isClickDisabled:bool=false, _isShowUB2Tooltip:bool=false) layout=true dispatch_size_change=true
+	(scope
+		(var dogTagEntity:gfx = "$datahub.getEntity(_elementEntityId)")
+		(var dogTagComponent:gfx = "dogTagEntity.dogTagItem ? dogTagEntity.dogTagItem : null")
+
+		(macro DOGTAG_COMMON "dogTagComponent")
+
+		
+		(var iconPath:str =	"'url:../dogTags/' + 'small/' + gpName + '.png'"	(event "dogTagComponent.evUpdate"))
+
+		
+		(macro COLOR_DIFF_TO_COLOR_TRANSFORM "'iconTransform'" "DOGTAG_ICON_BASE_COLOR" "DOGTAG_ICON_BASE_COLOR")
+
+		(var isDogTagComponentSaved:bool = "dogTagEntity && dogTagEntity.hasComponent(CC.dogTagComponentSaved)" (event "dogTagEntity.evAdded") (event "dogTagEntity.evRemoved"))
+	)
+
+	(style (width = 320px) (hitTest = false))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='DogTagComponentTooltipHeader'
+				(args
+					_id = "_elementEntityId"
+					_iconPath = "iconPath"
+					_categoryId = "categoryId"
+					_gpName = "gpName"
+					_clanTagVisible = "false"
+					_colorTransform = "iconTransform"
+				)
+			)
+		)
+
+		(element DogTagStatus
+			_statusVisible = "!_isNotSelf && (!enabled || (enabled && isDogTagComponentSaved))"
+			_unifiedStatus = "enabled && isDogTagComponentSaved ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+			_statusText = "enabled && isDogTagComponentSaved ? 'IDS_DOGTAG_COMPONENT_SET': 'IDS_DOGTAG_COMPONENT_NOT_AVAILABLE'"
+		)
+
+		(element DogTagDescription
+			_hasDescription = "hasDescription"
+			_gpName = "gpName"
+		)
+
+		(element DogTagInstruction
+			_text = "_isRewardTooltip	? 'IDS_DOGTAG_TOOLTIP_GO_TO_CONSTUCTOR'
+										: toUpper('IDS_SELECT_DOGTAG_COMPONENT_' + SC.Common.DOGTAG_ELEMENTS.VALUE_TO_NAME[categoryId])"
+			_enabled = "(!_isNotSelf && _canInstall == 'true' || _isRewardTooltip) && !_isClickDisabled"
+		)
+	)
+)
+
+(def element DogTagEmblemTooltip (_elementEntityId:number, _isNotSelf:bool=false, _canInstall:bool=false, _isRewardTooltip:bool=false, _isClickDisabled:bool=false, _isShowUB2Tooltip:bool=false) layout=true dispatch_size_change=true
+	(scope
+		(var dogTagEntity:gfx = "$datahub.getEntity(_elementEntityId)")
+		(var dogTagComponent:gfx = "dogTagEntity.dogTagItem ? dogTagEntity.dogTagItem : null")
+
+		(macro DOGTAG_COMMON "dogTagComponent")
+
+		
+		(var iconPath:str =	"'url:../dogTags/' + 'small/' + gpName + '.png'"	(event "dogTagComponent.evUpdate"))
+
+		
+		(var restriction:str =		"dogTagEntity.dogTagEmblem.restriction"					(event "dogTagComponent.evUpdate"))
+		(var data:dict =			"dogTagEntity.dogTagEmblem.data"						(event "dogTagComponent.evUpdate"))
+		(var progress:array =		"dogTagEntity.dogTagEmblem.progress"					(event "dogTagComponent.evUpdate"))
+		(var quest:str =			"dogTagEntity.dogTagEmblem.quest"						(event "dogTagComponent.evUpdate"))
+
+		(var isClanTagVisible:bool = " dogTagEntity.dogTagEmblem.clanTagVisible"			(event "dogTagComponent.evUpdate"))
+
+		
+		(macro COLOR_DIFF_TO_COLOR_TRANSFORM "'iconTransform'" "DOGTAG_ICON_BASE_COLOR" "DOGTAG_ICON_BASE_COLOR")
+
+		(var isDogTagComponentSaved:bool = "dogTagEntity && dogTagEntity.hasComponent(CC.dogTagComponentSaved)" (event "dogTagEntity.evAdded") (event "dogTagEntity.evRemoved"))
+
+		(var battleTypes:array = "data.battleTypes" (event "dogTagComponent.evUpdate"))
+		(var hasRestrictions:gfx = "dogTagEntity && (dogTagEntity.hasComponent(CC.filteringGroup) || dogTagEntity.hasComponent(CC.divisionRestrictions))" (event "dogTagEntity.evAdded") (event "dogTagEntity.evRemoved"))
+	)
+
+	(style (width = 320px) (hitTest = false))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='DogTagComponentTooltipHeader'
+				(args
+					_id = "_elementEntityId"
+					_iconPath = "iconPath"
+					_categoryId = "categoryId"
+					_gpName = "gpName"
+					_clanTagVisible = "isClanTagVisible"
+					_colorTransform = "iconTransform"
+				)
+			)
+		)
+
+		(element DogTagStatus
+			_statusVisible = "!_isNotSelf && (!enabled || (enabled && isDogTagComponentSaved))"
+			_unifiedStatus = "enabled && isDogTagComponentSaved ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+			_statusText = "enabled && isDogTagComponentSaved ? 'IDS_DOGTAG_COMPONENT_SET': 'IDS_DOGTAG_COMPONENT_NOT_AVAILABLE'"
+		)
+
+		(element DogTagDescription
+			_hasDescription = "hasDescription"
+			_gpName = "gpName"
+		)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "!_isRewardTooltip && quest"))
+		)
+		(block
+			(style (width = 100%))
+			(block
+				(style (width = 100%))
+				(controller $Instance renderer= 'TooltipSystemDescriptionText'
+					(bind enabled "!_isRewardTooltip && quest")
+					(args
+						_descriptionText = "quest"
+					)
+				)
+			)
+			(block
+				(style (width = "100%"))
+				
+				(controller $Repeat renderer='TooltipSystemProgressBarBlock'
+					(bind enabled "!enabled && !_isNotSelf")
+					(bind count "progress.length")
+					(args
+						_title = "tr(toUpper('IDS_DOGTAG_PARAM_' + progress[$index][0]))"
+						_currentValue = "progress[$index][2]"
+						_maxValue = "progress[$index][1]"
+						_unifiedStatus = "progress[$index][2] < progress[$index][1]	? SC.Ui_styles.SERVICE_COLORS.ORANGE 
+																					: SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+					)
+					(exprs
+						(style (marginTop = 9px)) 
+					)
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "restriction"))
+		)
+		
+		
+		(block
+			(bind visible "restriction")
+			(style (width = 100%))
+			(macro TOOLTIP_SYSTEM_INNER_PANEL_BACKGROUND)
+
+			(block
+				(style (width = 100%) (alpha = 0.7) (marginBottom = "3px"))
+				(controller $Instance renderer= 'TooltipSystemDescriptionText' (bind enabled "restriction")
+					(args
+						_descriptionText = "restriction"
+					)
+				)
+			)
+
+			
+			(hblock
+				(style (marginTop = "XS"))
+				(hblock
+					(controller $Repeat renderer='DogTagBattleTypeRestriction'
+						(bind count "battleTypes.length")
+						(args
+							_battleType = "battleTypes[$index]"
+						)
+					)
+				)
+				(block
+					(bind visible "battleTypes.length != 0")
+					(style (height = 21px) (marginRight = 3px))
+					(element VerticalDivider)
+				)
+
+				(block
+					(controller $Instance renderer='ShipRestrictions'
+						(bind enabled "hasRestrictions")
+						(args
+							_restrictionsEntityId = "dogTagEntity.id"
+							_withShipTypeCounters = false
+						)
+					)
+				)
+			)
+		)
+
+		(element DogTagInstruction
+			_text = "_isRewardTooltip	? 'IDS_DOGTAG_TOOLTIP_GO_TO_CONSTUCTOR' 
+										: toUpper('IDS_SELECT_DOGTAG_COMPONENT_' + SC.Common.DOGTAG_ELEMENTS.VALUE_TO_NAME[categoryId])"
+			_enabled = "(!_isNotSelf && _canInstall == 'true' || _isRewardTooltip) && !_isClickDisabled"
+		)
+	)
+)
+
+(def element DogTagBgShapeTooltip (_elementEntityId:number, _isNotSelf:bool=false, _canInstall:bool=false, _isRewardTooltip:bool=false, _isClickDisabled:bool=false, _isShowUB2Tooltip:bool=false) layout=true dispatch_size_change=true
+	(scope
+		(var dogTagEntity:gfx = "$datahub.getEntity(_elementEntityId)")
+		(var dogTagComponent:gfx = "dogTagEntity.dogTagItem ? dogTagEntity.dogTagItem : null")
+
+		(macro DOGTAG_COMMON "dogTagComponent")
+
+		(var isColorizable:bool =	"dogTagEntity.dogTagBackgroundShape.isColorizable"		(event "dogTagComponent.evUpdate"))
+
+		
+		(var textureStr:str =	"isColorizable ? '/PCNT001'	: ''"							(event "dogTagComponent.evUpdate"))
+		(var iconPath:str =	"'url:../dogTags/' + 'small/' + gpName + textureStr + '.png'"	(event "dogTagComponent.evUpdate"))
+
+		(var isClanTagVisible:bool = "dogTagEntity.dogTagBackgroundShape.clanTagVisible"	(event "dogTagComponent.evUpdate"))
+
+		
+		(macro COLOR_DIFF_TO_COLOR_TRANSFORM "'iconTransform'" "DOGTAG_ICON_BASE_COLOR" "DOGTAG_ICON_BASE_COLOR")
+
+		(var isDogTagComponentSaved:bool = "dogTagEntity && dogTagEntity.hasComponent(CC.dogTagComponentSaved)" (event "dogTagEntity.evAdded") (event "dogTagEntity.evRemoved"))
+	)
+
+	(style (width = 320px) (hitTest = false))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='DogTagComponentTooltipHeader'
+				(args
+					_id = "_elementEntityId"
+					_iconPath = "iconPath"
+					_categoryId = "categoryId"
+					_gpName = "gpName"
+					_clanTagVisible = "isClanTagVisible"
+					_colorTransform = "iconTransform"
+				)
+			)
+		)
+
+		(element DogTagStatus
+			_statusVisible = "!_isNotSelf && (!enabled || (enabled && isDogTagComponentSaved))"
+			_unifiedStatus = "enabled && isDogTagComponentSaved ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+			_statusText = "enabled && isDogTagComponentSaved ? 'IDS_DOGTAG_COMPONENT_SET': 'IDS_DOGTAG_COMPONENT_NOT_AVAILABLE'"
+		)
+
+		(element DogTagDescription
+			_hasDescription = "hasDescription"
+			_gpName = "gpName"
+		)
+
+		(element DogTagInstruction
+			_text = "_isRewardTooltip	? 'IDS_DOGTAG_TOOLTIP_GO_TO_CONSTUCTOR'
+										: toUpper('IDS_SELECT_DOGTAG_COMPONENT_' + SC.Common.DOGTAG_ELEMENTS.VALUE_TO_NAME[categoryId])"
+			_enabled = "(!_isNotSelf && _canInstall == 'true' || _isRewardTooltip) && !_isClickDisabled"
+		)
+	)
+)
+
+(def element DogTagDollColorTooltip (_elementEntityId:number, _isNotSelf:bool=false, _canInstall:bool=false, _isRewardTooltip:bool=false, _isClickDisabled:bool=false, _isShowUB2Tooltip:bool=false) layout=true dispatch_size_change=true
+	(scope
+		(var dogTagEntity:gfx = "$datahub.getEntity(_elementEntityId)")
+		(var dogTagComponent:gfx = "dogTagEntity.dogTagItem ? dogTagEntity.dogTagItem : null")
+
+		(macro DOGTAG_COMMON "dogTagComponent")
+
+		
+		(var dogTagIconPrefix:str = "dogTagEntity.dollBackgroundColor	? SC.Common.DOGTAG_ELEMENTS.NAMES.BG_COLOR
+																		: SC.Common.DOGTAG_ELEMENTS.NAMES.BG_BORDER_COLOR")
+
+		
+		(var iconPath:str =	"'url:../dogTags/' + 'preview/' + dogTagIconPrefix + '.png'"	(event "dogTagComponent.evUpdate"))
+
+		
+		(var iconColor:number = "dogTagEntity.dollBackgroundColor	? dogTagEntity.dollBackgroundColor.colorHEX
+																	: dogTagEntity.dollBorderColor.colorHEX")
+		(macro COLOR_DIFF_TO_COLOR_TRANSFORM "'iconTransform'" "DOGTAG_ICON_BASE_COLOR" "iconColor")
+
+		(var isDogTagComponentSaved:bool = "dogTagEntity && dogTagEntity.hasComponent(CC.dogTagComponentSaved)" (event "dogTagEntity.evAdded") (event "dogTagEntity.evRemoved"))
+	)
+
+	(style (width = 320px) (hitTest = false))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='DogTagComponentTooltipHeader'
+				(args
+					_id = "_elementEntityId"
+					_iconPath = "iconPath"
+					_categoryId = "categoryId"
+					_gpName = "gpName"
+					_clanTagVisible = "false"
+					_colorTransform = "iconTransform"
+				)
+			)
+		)
+
+		(element DogTagStatus
+			_statusVisible = "!_isNotSelf && (!enabled || (enabled && isDogTagComponentSaved))"
+			_unifiedStatus = "enabled && isDogTagComponentSaved ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+			_statusText = "enabled && isDogTagComponentSaved ? 'IDS_DOGTAG_COMPONENT_SET': 'IDS_DOGTAG_COMPONENT_NOT_AVAILABLE'"
+		)
+
+		(element DogTagDescription
+			_hasDescription = "hasDescription"
+			_gpName = "gpName"
+		)
+
+		(element DogTagInstruction
+			_text = "_isRewardTooltip	? 'IDS_DOGTAG_TOOLTIP_GO_TO_CONSTUCTOR'
+										: toUpper('IDS_SELECT_DOGTAG_COMPONENT_' + SC.Common.DOGTAG_ELEMENTS.VALUE_TO_NAME[categoryId])"
+			_enabled = "(!_isNotSelf && _canInstall == 'true' || _isRewardTooltip) && !_isClickDisabled"
+		)
+	)
+)
+
+(def element DogTagBgMaterialTooltip (_elementEntityId:number, _isNotSelf:bool=false, _canInstall:bool=false, _isRewardTooltip:bool=false, _isClickDisabled:bool=false, _isShowUB2Tooltip:bool=false) layout=true dispatch_size_change=true
+	(scope
+		(var dogTagEntity:gfx = "$datahub.getEntity(_elementEntityId)")
+		(var dogTagComponent:gfx = "dogTagEntity.dogTagItem ? dogTagEntity.dogTagItem : null")
+
+		(macro DOGTAG_COMMON "dogTagComponent")
+
+		
+		(var iconPath:str =	"'url:../dogTags/' + 'small/' + gpName + '.png'"	(event "dogTagComponent.evUpdate"))
+
+		
+		(macro COLOR_DIFF_TO_COLOR_TRANSFORM "'iconTransform'" "DOGTAG_ICON_BASE_COLOR" "DOGTAG_ICON_BASE_COLOR")
+
+		(var isDogTagComponentSaved:bool = "dogTagEntity && dogTagEntity.hasComponent(CC.dogTagComponentSaved)" (event "dogTagEntity.evAdded") (event "dogTagEntity.evRemoved"))
+	)
+
+	(style (width = 320px) (hitTest = false))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='DogTagComponentTooltipHeader'
+				(args
+					_id = "_elementEntityId"
+					_iconPath = "iconPath"
+					_categoryId = "categoryId"
+					_gpName = "gpName"
+					_clanTagVisible = "false"
+					_colorTransform = "iconTransform"
+				)
+			)
+		)
+
+		(element DogTagStatus
+			_statusVisible = "!_isNotSelf && (!enabled || (enabled && isDogTagComponentSaved))"
+			_unifiedStatus = "enabled && isDogTagComponentSaved ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+			_statusText = "enabled && isDogTagComponentSaved ? 'IDS_DOGTAG_COMPONENT_SET': 'IDS_DOGTAG_COMPONENT_NOT_AVAILABLE'"
+		)
+
+		(element DogTagDescription
+			_hasDescription = "hasDescription"
+			_gpName = "gpName"
+		)
+
+		(element DogTagInstruction
+			_text = "_isRewardTooltip	? 'IDS_DOGTAG_TOOLTIP_GO_TO_CONSTUCTOR'
+										: toUpper('IDS_SELECT_DOGTAG_COMPONENT_' + SC.Common.DOGTAG_ELEMENTS.VALUE_TO_NAME[categoryId])"
+			_enabled = "(!_isNotSelf && _canInstall == 'true' || _isRewardTooltip) && !_isClickDisabled"
+		)
+	)
+)
+
+(def element DogTagComponentTooltipHeader (_id:number, _iconPath:str, _categoryId:number, _gpName:str, _clanTagVisible:bool=true, _colorTransform:dict={}) layout=true
+	(scope
+		(macro PULL_SELF_PLAYER_SCOPE)
+		(var header:str = "tr(toUpper('IDS_DOGTAG_' + _gpName + '_NAME'))")
+		(var subHeader:str = "tr(toUpper('IDS_DOGTAG_COMPONENT_TOOLTIP_CATEGORY_' + _categoryId))")
+	)
+	(style (width = 100%) (minHeight = 80px) (flow = "horizontal") (align = "middle"))
+	(block
+		(style	(width = 80px) (height = 100%) (align = "top|center") (marginRight = "M"))
+
+		(block
+			(class $Fullsize)
+			(style (backgroundSize = "fill") (bind backgroundImage "_iconPath"))
+			(bind colorTransform "_colorTransform")
+		)
+		
+		(controller $Instance renderer='ClanTagForDogTag'
+			(bind enabled "_clanTagVisible")
+			(args
+				_dogTagEntityId = "_id"
+				_playerDbId = "selfPlayerDbId"
+				_dogTagSize = "DOG_TAG_SIZE.SMALL"
+			)
+		)
+	)
+
+	(element TooltipSystemHeaderSubheaderText
+		_headerText="header"
+		_subheaderText="subHeader"
+	)
+)
+
+(def element ClanTagForDogTag (_dogTagEntityId:number, _playerDbId:number, _dogTagSize:number="DOG_TAG_SIZE.SMALL") layout=true dispatch_size_change=true
+	(scope
+		(var playerEntity:gfx = "$datahub.getPrimaryEntity(CC.accountSimple, _playerDbId)")
+		(var clanId:number = "playerEntity && playerEntity.clanman ? playerEntity.clanman.clanId : null" (event "playerEntity.clanman.evClanIdChanged"))
+
+		(var clanEntity:gfx = "clanId ? $datahub.getPrimaryEntity(CC.clan, clanId) : null")
+		(var clanTag:str = "clanEntity && clanEntity.clan ? clanEntity.clan.tag : ''" (event "clanEntity.clan.evTagChanged"))
+
+		(var dogTagEntity:gfx = "_dogTagEntityId ? $datahub.getEntity(_dogTagEntityId) : null")
+		(var dogTagComponent:gfx = "dogTagEntity.dogTagBackgroundShape	?	dogTagEntity.dogTagBackgroundShape	:
+									dogTagEntity.dogTagSymbol			?	dogTagEntity.dogTagSymbol			:
+									dogTagEntity.dogTagEmblem			?	dogTagEntity.dogTagEmblem			
+																		:	null")
+
+		(var clanTagOffsetX:number = "dogTagComponent ? dogTagComponent.clanTagOffsetX	: 0" (event "dogTagComponent.evUpdate"))
+		(var clanTagOffsetY:number = "dogTagComponent ? dogTagComponent.clanTagOffsetY	: 0" (event "dogTagComponent.evUpdate"))
+		
+		(var clanTagFontColor:number = "dogTagComponent.clanTagFontColor ? dogTagComponent.clanTagFontColor
+																		: DOGTAG_ICON_BASE_COLOR"	(event "dogTagComponent.evUpdate"))
+
+		(macro COLOR_DIFF_TO_COLOR_TRANSFORM "'clanTagTransform'" "DOGTAG_ICON_BASE_COLOR" "clanTagFontColor")
+
+		(var clanTagStr:str = "clanTag ? '[' + clanTag + ']' : '^'")
+		(var clanTagUrl:str = "'img://embedded:DogTag?text=' + clanTagStr + '&font=' + _dogTagSize + '/WarHeliosCond_Textile'")
+	)
+	(style
+		(position = "absolute")
+		(bind left "clanTagOffsetX")
+		(bind top "clanTagOffsetY")
+	)
+	(block
+		(style
+			(position = "absolute")
+			(bind marginLeft "-50%")
+			(bind marginTop "-50%")
+			(bind backgroundImage "clanTagUrl")
+			(backgroundSize = "autosize")
+		)
+		(bind colorTransform "clanTagTransform")
+	)
+)
+
+(def element DogTagBattleTypeRestriction (_battleType:str) layout=true
+	(scope
+		(var battleTypeIcon:str = "	_battleType == 'PVP'				? SC.Common.BATTLE_TYPES.RANDOM_BATTLE :
+									_battleType == 'COOPERATIVE'		? SC.Common.BATTLE_TYPES.COOPERATIVE_BATTLE :
+									_battleType == 'RANKED'				? SC.Common.BATTLE_TYPES.RANKED_BATTLE :
+									_battleType == 'PVE'				? SC.Common.BATTLE_TYPES.PVE_BATTLE :
+									_battleType == 'PVE_PREMADE'		? 'PVEBattle_hard' :
+									_battleType == 'CLAN'				? SC.Common.BATTLE_TYPES.CLAN_BATTLE
+																		: SC.Common.BATTLE_TYPES.RANDOM_BATTLE")
+	)
+	(style
+		(marginRight = 6px)
+		(width = 23px)
+		(height = 23px)
+		(backgroundSize = "cover")
+		(bind backgroundImage "'url:../service_kit/battle_types/' + battleTypeIcon + '_tiny.png'")
+	)
+)

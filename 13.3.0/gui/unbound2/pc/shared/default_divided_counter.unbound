@@ -1,0 +1,75 @@
+(def constant DIVIDED_COUNTER_PROPERTIES "{	'$TextDefaultNM':		{	maxValueTextClass: '$TextDefaultNM',
+																		maxValueTopMargin: '0px',
+																		maxValueLeftMargin: 3,
+																		dividerLeftMargin: 4},
+											'$TextDefaultBoldNM':	{	maxValueTextClass: '$TextDefaultBold13NM',
+																		maxValueTopMargin: '2px',
+																		maxValueLeftMargin: 3},
+											'$TextDefaultBold17NM': {	maxValueTextClass: '$TextDefaultBoldNM',
+																		maxValueTopMargin: '1px',
+																		maxValueLeftMargin: 2},
+											'$TextDefaultBold19NM': {	maxValueTextClass: '$TextDefaultBold17NM',
+																		maxValueTopMargin: '1px',
+																		maxValueLeftMargin: 2},
+											'$TextDefaultBold21NM': {	maxValueTextClass: '$TextDefaultBold19NM',
+																		maxValueTopMargin: '2px',
+																		maxValueLeftMargin: 2}
+										}")
+	
+(def element DefaultDividedCounter (_curValueTextClass:str='$TextDefaultNM', _curValue:number="null", _curValueStr:str="null", _maxValue:number="null", _unifiedStatus:str = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT",
+									_doNotAlphaOnZeroCurValue:bool="false", _doNotHideOnZeroMaxValue:bool="false", _curValueTooltipText:str = "''", _maxValueTooltipText:str = "''") layout=true
+
+	(scope
+		(var isCurValueStr:bool = "_curValueStr != null")
+		(var curValue:number = "_curValue ? _curValue : 0")
+		(var maxValue:number = "_maxValue ? _maxValue : 0")
+	)
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "_unifiedStatus" "'textColor'" "'textAlpha'")
+	(bind visible "_doNotHideOnZeroMaxValue	|| maxValue > 0")
+
+	(style (flow = "horizontal"))
+	(bind alpha "	_doNotAlphaOnZeroCurValue			? 1 :
+					!isCurValueStr && curValue == 0	? 0.6
+														: 1")
+	(tf
+		(bind class "_curValueTextClass")
+		(style (alpha = "TA") (bind textColor "textColor"))
+		(bind text "isCurValueStr ? _curValueStr : formatSeparator(curValue)") 
+	)
+
+	(hblock
+		(bind visible "maxValue > 0")
+		(style (backgroundColor = "0x01FFFFFF") (alpha = "TC") (bind marginTop "DIVIDED_COUNTER_PROPERTIES[_curValueTextClass].maxValueTopMargin"))
+		
+		(controller $Tooltip
+			(renderer='SimpleStatusTooltip')
+			(args
+				_text = "_maxValueTooltipText"
+			)
+			(align="bottom|right")
+			(position="trackMouse")
+			(offset=[5, 25])
+			(macro SIMPLE_TOOLTIP_ANIMATION)
+
+			(bind enabled "_maxValueTooltipText.length > 0")
+		)
+		
+		(tf
+			(bind class "DIVIDED_COUNTER_PROPERTIES[_curValueTextClass].maxValueTextClass")
+			(style
+				(bind textColor "textColor")
+				(bind marginLeft "_curValueTextClass == '$TextDefaultNM'	?	DIVIDED_COUNTER_PROPERTIES[_curValueTextClass].dividerLeftMargin
+																			:	DIVIDED_COUNTER_PROPERTIES[_curValueTextClass].maxValueLeftMargin")
+			)
+			(text = "'/'")
+		)
+		(tf
+			(bind class "DIVIDED_COUNTER_PROPERTIES[_curValueTextClass].maxValueTextClass")
+			(style
+				(bind textColor "textColor")
+				(bind marginLeft "DIVIDED_COUNTER_PROPERTIES[_curValueTextClass].maxValueLeftMargin")
+			)
+			(bind text "formatSeparator(maxValue)")
+		)
+	)
+)

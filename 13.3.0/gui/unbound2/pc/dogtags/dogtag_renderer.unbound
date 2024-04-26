@@ -1,0 +1,236 @@
+(def element DogTagInHUDSpectator (_observedShipId:number)
+	(scope
+		(event evChangeCurrentDogTag)
+		(event evShow)
+
+		(var vehicleEntity:gfx = "$datahub.getPrimaryEntity(CC.vehicle, _observedShipId)")
+		(var vehicleComponent:gfx = "vehicleEntity ? vehicleEntity.accountSimple : null")
+		(var vehicleAvatarId:number = "vehicleComponent ? vehicleComponent.dbId : INVALID_PLAYER_AVATAR_ID")
+
+		(var selfAvatarEntity:gfx =  "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var selfAvatarComponent:gfx = "selfAvatarEntity ? selfAvatarEntity.accountSimple : null")
+		(var selfAvatarId:number = "selfAvatarComponent ? selfAvatarComponent.dbId : INVALID_PLAYER_AVATAR_ID")
+
+		(var observedPlayerDbId:number = "vehicleAvatarId != INVALID_PLAYER_AVATAR_ID ? vehicleAvatarId : null" (event "evChangeCurrentDogTag"))
+		(var vehicleAlreadySwitched:bool = "observedPlayerDbId != null" (event "evChangeCurrentDogTag"))
+	)
+	(bind name "'dogTagSpectator'")
+	(class $FullsizeAbsolute)
+
+	(dispatch evChangeCurrentDogTag (bind trigger "vehicleAvatarId"))
+	(dispatch evShow on='addedToStage')
+	(block
+		(style (width = "190px") (height = "190px"))
+		(controller $Animation
+			(bindcall play
+				from={alpha: 0}
+				to={alpha: 1}
+				duration=0.2
+				easing="Easing.sine_in"
+				watch=false
+				(event "evShow")
+			)
+		)
+		(block
+			(class $FullsizeAbsolute)
+			(controller $Instance renderer='PlayerDogTag'
+				(args
+					_playerId		= "vehicleAlreadySwitched ? observedPlayerDbId : selfAvatarId"
+					_size			= "DOG_TAG_SIZE.MEDIUM"
+				)
+			)
+		)
+	)
+)
+
+(def element PlayerDogTagContainer (_playerId:number, _size:number="DOG_TAG_SIZE.SMALL", _hitTest:bool=false)
+	(scope
+		(event evShow)
+	)
+	(bind name "'dogTagDock'")
+	(style (bind width "_size") (bind height "_size"))
+
+	(dispatch evShow on='addedToStage')
+	(block
+		(style (bind width "_size") (bind height "_size") (backgroundColor=0x01000000))
+		(controller $Animation
+			(bindcall play
+				from={alpha: 0}
+				to={alpha: 1}
+				duration=0.2
+				easing="Easing.sine_in"
+				watch=false
+				(event "evShow")
+			)
+		)
+		(block
+			(class $FullsizeAbsolute)
+			(controller $Instance renderer='PlayerDogTag'
+				(args
+					_playerId	= "_playerId"
+					_size		= "_size"
+					_hitTest	= "_hitTest"
+				)
+			)
+		)
+	)
+)
+
+(def element PlayerDogTag (_playerId:number, _size:number="DOG_TAG_SIZE.SMALL", _hitTest:bool=false)
+	(scope
+		(var accountEntity:gfx = "$datahub.getPrimaryEntity(CC.accountSimple, _playerId)")
+		(var dogTagViewComponent:gfx = "accountEntity ? accountEntity.dogTagView : null")
+		(var dogTagIdList:array = "dogTagViewComponent.components" (event "dogTagViewComponent.evComponentsChanged"))
+
+		(var isSelf:bool = "accountEntity ? accountEntity.accountSimple.isSelfPlayer : false")
+
+		(var dogTagEntitySymbol:gfx =			"$datahub.getPrimaryEntity(CC.dogTagItem, dogTagIdList[0])")
+		(var dogTagEntityBgShape:gfx =			"dogTagIdList.length > 1 ? $datahub.getPrimaryEntity(CC.dogTagItem, dogTagIdList[1]) : null")
+		(var dogTagEntityBgColor:gfx =			"dogTagIdList.length > 2 ? $datahub.getPrimaryEntity(CC.dogTagItem, dogTagIdList[2]) : null")
+		(var dogTagEntityBgBorderColor:gfx =	"dogTagIdList.length > 2 ? $datahub.getPrimaryEntity(CC.dogTagItem, dogTagIdList[3]) : null")
+		(var dogTagEntityBgMaterial:gfx =		"dogTagIdList.length > 2 ? $datahub.getPrimaryEntity(CC.dogTagItem, dogTagIdList[4]) : null")
+
+		(var dogTagSymbolComponent:gfx =		"dogTagEntitySymbol.dogTagSymbol	?	dogTagEntitySymbol.dogTagSymbol :
+												dogTagEntitySymbol.dogTagEmblem		?	dogTagEntitySymbol.dogTagEmblem :
+												dogTagEntitySymbol.dogTagPatch		?	dogTagEntitySymbol.dogTagPatch
+																		 			:	null")
+		(var dogTagBgShapeComponent:gfx =		"dogTagEntityBgShape				? dogTagEntityBgShape.dogTagBackgroundShape : null")
+		(var dogTagBgColorComponent:gfx =		"dogTagEntityBgColor				? dogTagEntityBgColor.dollBackgroundColor : null")
+		(var dogTagBgBorderColorComponent:gfx =	"dogTagEntityBgBorderColor			? dogTagEntityBgBorderColor.dollBorderColor : null")
+		(var dogTagBgMaterialComponent:gfx =	"dogTagEntityBgMaterial				? dogTagEntityBgMaterial.dollTexture	: null")
+
+		(var dogTagName:str = "dogTagSymbolComponent						? dogTagEntitySymbol.dogTagItem.gpName : null"				(event "dogTagSymbolComponent.evUpdate"))
+		(var dogTagBgShapeName:str = "dogTagBgShapeComponent				? dogTagEntityBgShape.dogTagItem.gpName : null"				(event "dogTagBgShapeComponent.evUpdate"))
+		(var isColorizableShape:bool = "dogTagBgShapeComponent				? dogTagBgShapeComponent.isColorizable : false"				(event "dogTagBgShapeComponent.evUpdate"))
+		(var symbolOffsetY:number = "dogTagBgShapeComponent					? _size / 100 * dogTagBgShapeComponent.symbolOffsetY : 0"	(event "dogTagBgShapeComponent.evUpdate"))
+		(var dogTagBgMaterialName:str = "dogTagBgMaterialComponent 			? dogTagEntityBgMaterial.dogTagItem.gpName : null"			(event "dogTagBgMaterialComponent.evUpdate"))
+		(var dogTagBgColorName:str = "dogTagBgColorComponent 				? dogTagEntityBgColor.dogTagItem.gpName: null"				(event "dogTagBgColorComponent.evUpdate"))
+		(var dogTagBgBorderColorName:str = "dogTagBgBorderColorComponent	? dogTagEntityBgBorderColor.dogTagItem.gpName: null"		(event "dogTagBgBorderColorComponent.evUpdate"))
+
+		(var dogTagSizeDir:str = "	_size == DOG_TAG_SIZE.SMALL		?	SC.Battle.DOG_TAG_SIZE.SMALL	:
+									_size == DOG_TAG_SIZE.MEDIUM	?	SC.Battle.DOG_TAG_SIZE.MEDIUM	:
+									_size == DOG_TAG_SIZE.BIG		?	SC.Battle.DOG_TAG_SIZE.BIG
+																	:	SC.Battle.DOG_TAG_SIZE.SMALL")
+
+		(var iconPath:str = "'url:../dogTags/' + dogTagSizeDir + '/'")
+		(var dogTagBgMaterialDir:str = "dogTagBgMaterialComponent && isColorizableShape ? '/' + dogTagBgMaterialName : ''")
+		(var bgShapePath:str = "iconPath + dogTagBgShapeName + dogTagBgMaterialDir + '.png'")
+		(var bgBorderPath:str = "iconPath + dogTagBgShapeName + '/border.png'")
+
+		(var dogtagBgColor:number = "dogTagBgColorComponent ? dogTagBgColorComponent.colorHEX : DOGTAG_ICON_BASE_COLOR")
+		(var dogtagBorderColor:number = "dogTagBgBorderColorComponent ? dogTagBgBorderColorComponent.colorHEX : DOGTAG_ICON_BASE_COLOR")
+		(var dogtagBaseColor:number = "dogTagBgMaterialComponent ? dogTagBgMaterialComponent.baseColorHEX : DOGTAG_ICON_BASE_COLOR")
+
+		(macro COLOR_DIFF_TO_COLOR_TRANSFORM "'bgTransform'" "dogtagBaseColor" "dogtagBgColor")
+		(macro COLOR_DIFF_TO_COLOR_TRANSFORM "'borderTransform'" "dogtagBaseColor" "dogtagBorderColor")
+
+		(var playerEntity:gfx = "$datahub.getPrimaryEntity(CC.accountSimple, _playerId)")
+		(var playerComponentClanman:gfx = "playerEntity && playerEntity.hasComponent(CC.clanman) ? playerEntity.clanman : null" (event "playerEntity.evAdded") (event "playerEntity.evRemoved"))
+		(var clanId:number = "playerComponentClanman	? playerComponentClanman.clanId 
+														: null" (event "playerComponentClanman.evClanIdChanged"))
+
+		(var clanEntity:gfx	= "$datahub.getPrimaryEntity(CC.clan, clanId)")
+		(var clanComponent:gfx = "clanEntity ? clanEntity.clan : null")
+		(var clanTag:str = "clanComponent ? clanComponent.tag : null" (event "clanComponent.evTagChanged"))
+
+		(var clanTagComponent:gfx = "dogTagSymbolComponent.clanTagVisible ? dogTagSymbolComponent : dogTagBgShapeComponent")
+		(var clanTagVisible:bool = "clanTagComponent ? clanTagComponent.clanTagVisible 
+													: false" 			(event "clanTagComponent.evUpdate"))
+
+		(var clanTagOffsetX:number = "clanTagComponent ? _size / 100 * clanTagComponent.clanTagOffsetX : 0" (event "clanTagComponent.evUpdate"))
+		(var clanTagOffsetY:number = "clanTagComponent ? _size / 100 * clanTagComponent.clanTagOffsetY : 0" (event "clanTagComponent.evUpdate"))
+		(var clanTagFontColor:number = "clanTagComponent && clanTagComponent.clanTagFontColor	? clanTagComponent.clanTagFontColor 
+																								: dogtagBorderColor" (event "clanTagComponent.evUpdate"))
+
+		(var clanTagStr:str = "clanTag ? '[' + clanTag + ']' : '^'")
+		(var clanTagUrl:str = "'img://embedded:DogTag?text=' + clanTagStr + '&font=' + dogTagSizeDir + '/WarHeliosCond_Textile'")
+
+		(macro COLOR_DIFF_TO_COLOR_TRANSFORM "'clanTagTransform'" "dogtagBaseColor" "clanTagFontColor")
+		
+		(macro PULL_NEW_CONTENT "'newDTEntity'" "'newDTComponent'" "'newDTCounter'" "SC.Common.CONTENT_CATEGORY.DOGTAGS")
+
+		(var hasNewDT:bool = "newDTCounter > 0")
+	)
+
+	(bind name "'playerDogTag'")
+
+	(class $FullsizeAbsolute)
+	
+	(block
+		(bind name "dogTagSizeDir + '/shape/' + dogTagBgShapeName + '/material/' + dogTagBgMaterialName")
+		(bind visible "dogTagBgShapeComponent")
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundSize = "fill")
+			(bind backgroundImage "bgShapePath")
+		)
+		(bind colorTransform "isColorizableShape && dogTagBgColorComponent ? bgTransform : {}")
+	)
+	(block
+		(bind name "dogTagSizeDir + '/borderColor/' + dogTagBgBorderColorName + '/backgroundColour/' + dogTagBgColorName")
+		(bind visible "dogTagBgBorderColorComponent")
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundSize = "fill")
+			(bind backgroundImage "bgBorderPath")
+		)
+		(bind colorTransform "isColorizableShape && dogTagBgBorderColorComponent ? borderTransform : {}")
+	)
+	
+	(block
+		(bind name "dogTagSizeDir + '/symbolName/' + dogTagName")
+		(bind visible "dogTagSymbolComponent")
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundSize = "fill")
+			(bind backgroundImage "iconPath + dogTagName + '.png'")
+			(bind top "symbolOffsetY")
+		)
+	)
+
+	
+	(block
+		(bind visible "clanTagVisible")
+		(class $FullsizeAbsolute)
+		(style
+			(position = "absolute")
+			(bind left "clanTagVisible ? clanTagOffsetX : 0")
+			(bind top "clanTagVisible ? clanTagOffsetY : 0")
+		)
+		(block
+			(style
+				(position = "absolute")
+				(bind marginLeft "-50%")
+				(bind marginTop "-50%")
+				(bind backgroundImage "clanTagUrl")
+				(backgroundSize = "autosize")
+			)
+			(bind colorTransform "clanTagTransform")
+		)
+	)
+
+	
+	(block
+		(bind visible "isSelf && hasNewDT && _hitTest")
+		(class $FullsizeAbsolute)
+		(style (align = "right") (alpha = "hasNewDT ? 1 : 0"))
+
+		(block
+			(element MarkerNewCounter
+				_newContentCounter = "newDTCounter"
+			)
+		)
+
+		(controller $Animation
+			(bindcall play
+				duration = 0.15
+				from	 = "{ alpha: hasNewDT ? 0 : 1, top: hasNewDT ? 5 : 0 }"
+				to		 = "{ alpha: hasNewDT ? 1 : 0, top: hasNewDT ? 0 : -15 }"
+				easing = "Easing.quad_in"
+				init=true
+				(bind trigger "hasNewDT")
+			)
+		)
+	)
+	
+)

@@ -1,0 +1,92 @@
+<AGM226_16in45_Mk1_dead_lod1.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	MP_AM1532_Gun_Deck_Dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_AM1544_RF_for_AGM226_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS100_YGBS_M_1_INDEX_2	</identifier>
+				<transform>
+					<row0>	1.1127 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.1115 -0.0522 0.0000	</row1>
+					<row2>	0.0000 0.0522 1.1115 0.0000	</row2>
+					<row3>	0.0693 0.0692 0.1419 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS100_YGBS_M_1_INDEX_3	</identifier>
+				<transform>
+					<row0>	1.1127 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.1127 -0.0073 0.0000	</row1>
+					<row2>	0.0000 0.0073 1.1127 0.0000	</row2>
+					<row3>	-0.0693 0.0692 0.1419 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_2	</identifier>
+				<transform>
+					<row0>	1.0794 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0793 -0.0098 0.0000	</row1>
+					<row2>	0.0000 0.0098 1.0793 0.0000	</row2>
+					<row3>	-0.0693 0.0784 1.0824 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_3	</identifier>
+				<transform>
+					<row0>	1.0794 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0781 -0.0518 0.0000	</row1>
+					<row2>	0.0000 0.0518 1.0781 0.0000	</row2>
+					<row3>	0.0693 0.1155 1.0824 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_dead_lod1Shape.vertices	</vertices>
+			<primitive>	Turret_dead_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ASB527_West_Virginia_1944/gun/AGM226_16in45_Mk1_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.3567 0.0000 -0.5498	</min>
+		<max>	0.3567 0.1881 1.0815	</max>
+	</boundingBox>
+</AGM226_16in45_Mk1_dead_lod1.visual>

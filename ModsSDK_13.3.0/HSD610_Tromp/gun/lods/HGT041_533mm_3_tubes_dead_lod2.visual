@@ -1,0 +1,38 @@
+<HGT041_533mm_3_tubes_dead_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	HGT041_533mm_3_tubes_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	HGT041_533mm_3_tubes_dead	</node>
+		<geometry>
+			<vertices>	HGT041_533mm_3_tubes_dead_lod2Shape.vertices	</vertices>
+			<primitive>	HGT041_533mm_3_tubes_dead_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/HSD610_Tromp/gun/HGT041_533mm_3_tubes_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0956 -0.0114 -0.2340	</min>
+		<max>	0.1258 0.1250 0.2687	</max>
+	</boundingBox>
+</HGT041_533mm_3_tubes_dead_lod2.visual>

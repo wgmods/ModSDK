@@ -1,0 +1,475 @@
+
+
+
+
+
+
+
+
+(def constant CT_NONE 	"{ redMultiplier:1,		greenMultiplier:1,		blueMultiplier:1 }")
+(def constant CT_YELLOW	"{ redMultiplier:1,		greenMultiplier:0.6,	blueMultiplier:0.2 }")
+(def constant CT_ORANGE	"{ redMultiplier:1,		greenMultiplier:0.4,	blueMultiplier:0 }")
+(def constant CT_RED 	"{ redMultiplier:1,		greenMultiplier:0.2,	blueMultiplier:0 }")
+(def constant CT_GREEN 	"{ redMultiplier:0.3,	greenMultiplier:0.92,	blueMultiplier:0.7 }")
+
+
+(def constant MAP_CARRIER_STATE_TO_CT "{
+	'0':	CT_NONE,
+	'1':	CT_YELLOW,
+	'2':	CT_YELLOW,
+	'4':	CT_YELLOW,
+	'8':	CT_ORANGE,
+	'16':	CT_RED,
+	'32':	CT_YELLOW,
+	'64':	CT_RED
+}")
+
+
+(def constant MAP_CARRIER_STATE_TO_IMAGE "{
+	'0':	'default',
+	'1':	'collision',
+	'2':	'detected_by_plane',
+	'4':	'detected_by_ship',
+	'8':	'damage',
+	'16':	'artillery_alert',
+	'32':	'torpedo_alert',
+	'64':	'minefield_alert',
+	'128':	'default'
+}")
+
+(def constant DANGER_LEVEL_TO_CT "[
+	CT_NONE,
+	CT_YELLOW,
+	CT_RED
+]")
+
+(def constant WAVE_HIT_POI_HIDE_DISTANCE 50)
+
+
+(def element POIIndicatorsContainer () layout=true
+	(scope
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+
+		(var avatar:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var healthComponent:gfx = "avatar.health")
+		(var isAlive:bool = "healthComponent ? healthComponent.isAlive : false" (event "healthComponent.evIsAliveChanged"))
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var cameraMode:number = "cameraEntity.camera.mode" (event "cameraEntity.camera.evModeChanged"))
+		(var isTactical:bool = "cameraEntity.camera.isTactical" (event "cameraEntity.camera.evTacticalStateChanged"))
+
+		(var poiCollection:gfx = "$datahub.getCollection(CC.pointOfInterest)")
+	)
+
+	(bind visible "isAlive && !(isTactical) && cameraMode != CameraMode.SHELLTRACKER")
+
+	(style
+		(bind width "stageWidth")
+		(bind height "stageHeight")
+		(position = "absolute")
+	)
+
+	(controller $Repeat renderer='POIIndicatorBase'
+		(bind count "poiCollection.items.length" watch=false (event "poiCollection.evAdded"))
+		(bindcall removeChildAt "$event[1]" (event "poiCollection.evRemoved"))
+	)
+)
+
+(def element POIIndicatorBase () layout=true
+	(scope
+		(var poiCollection:gfx = "$datahub.getCollection(CC.pointOfInterest)")
+		(var poiEntity:gfx = "poiCollection.items[$index]" watch=false)
+
+		(var pointOfInterest:gfx = "poiEntity.pointOfInterest")
+		(var poiType:number = "pointOfInterest.type")
+		(var isPositionValid:bool = "pointOfInterest.isPositionValid" (event "pointOfInterest.evIsPositionValidChanged"))
+		(var posX:number = "pointOfInterest.screenPosition.x" (event "evEnterFrame"))
+		(var posY:number = "pointOfInterest.screenPosition.y" (event "evEnterFrame"))
+
+		(var typeToChild:str = "poiType == SC.Battle.POI_TYPE.OWN_SHIP 					? 'OwnShipPOI' :
+								poiType == SC.Battle.POI_TYPE.DEPTH_CHARGE 				? 'DepthChargePOI' :
+								poiType == SC.Battle.POI_TYPE.WAVE_HIT 					? 'WaveHitPOI' :
+								poiType == SC.Battle.POI_TYPE.SHIP_WITH_DEPTH_CHARGES 	? 'EnemyShipPOI' :
+								poiType == SC.Battle.POI_TYPE.AIRSHIP					? 'AirshipPOI' :
+								poiType == SC.Battle.POI_TYPE.SEA_MINE					? 'SeaMinePOI'
+																						: 'StubPOI'")
+	)
+
+	(bind visible "isPositionValid")
+
+	(style
+		(bind left "posX")
+		(bind top "posY")
+		(position = "absolute")
+	)
+
+	(controller $Instance
+		(bind renderer "typeToChild")
+		(args _markerEntity="poiEntity")
+	)
+)
+
+(def element StubPOI (_markerEntity:gfx) layout=true)
+
+(def element EnemyShipPOI (_markerEntity:gfx) layout=true
+	(scope
+		(var pointOfInterest:gfx = "_markerEntity.pointOfInterest")
+		(var angle:number = "radToGrad(pointOfInterest.pointerYaw)" (event "evEnterFrame"))
+		(var inScreenBounds:bool = "pointOfInterest.inScreenBounds" (event "pointOfInterest.evInScreenBoundsChanged"))
+
+		(var simpleDanger:gfx = "_markerEntity.simpleDanger" (event "_markerEntity.evAdded"))
+		(var dist:str = "simpleDanger.dist" (event "simpleDanger.evChanged"))
+
+		(var isVisible:bool = "dist == DangerDistance.NEAR && !(inScreenBounds)")
+	)
+
+	(style
+		(position = "absolute")
+		(width = 0) (height = 0)
+		(align = "center|middle")
+	)
+
+	(visible = "isVisible")
+	(alpha = 0)
+
+	(controller $Animation
+		(bindcall play  duration=0.15
+						from="{alpha: 0, visible: false}"
+						to="{alpha: 1, visible: true}"
+						reverse="!(isVisible)"
+						(bind trigger "isVisible")
+		)
+	)
+
+	(element ShipMarkerIconSimple "_markerEntity"
+		(style
+			(width = "SHIP_ICON_SIZE.WIDTH")
+			(height = "SHIP_ICON_SIZE.HEIGHT")
+		)
+	)
+
+	
+	(element POIPointerArrow "true" "angle" 'url:../battle_hud/indicators/poi_arrow_small.png'
+		(style (position = "absolute"))
+	)
+)
+
+(def element WaveHitPOI (_markerEntity:gfx) layout=true
+	(scope
+		(event evShow)
+		(var pointOfInterest:gfx = "_markerEntity.pointOfInterest")
+		(var angle:number = "radToGrad(pointOfInterest.pointerYaw)" (event "evEnterFrame"))
+		(var isOffScreen:bool = "pointOfInterest.isOffScreen" (event "pointOfInterest.evIsOffScreenChanged"))
+		(var inScreenBounds:bool = "pointOfInterest.inScreenBounds" (event "pointOfInterest.evInScreenBoundsChanged"))
+		(var screenDistToPoint:number = "pointOfInterest.screenDistToPoint" (event "evEnterFrame"))
+
+		(var waveHit:gfx = "_markerEntity.waveHit")
+		(var isActive:bool = "waveHit.isActive" (event "waveHit.evIsActiveChanged"))
+
+		(var pointerArrowTexture:str = "isActive	? 'url:../battle_hud/indicators/poi_arrow.png'
+													: 'url:../battle_hud/indicators/poi_arrow_small.png'")
+	)
+
+	(dispatch evShow on='addedToStage')
+
+	(style
+		(position = "absolute")
+		(width = 0) (height = 0)
+		(align = "center|middle")
+	)
+
+	(alpha = 0)
+
+	(controller $Animation
+		(bindcall play	duration=0.15
+						from="{alpha: 0}"
+						to="{alpha: 1}"
+						(event "evShow")
+		)
+	)
+	
+	(element POIPointerArrow "isOffScreen && screenDistToPoint > WAVE_HIT_POI_HIDE_DISTANCE" "angle" "pointerArrowTexture")
+	(block
+		(bind visible "isActive")
+		(style
+			(position = "absolute")
+			(marginLeft = "-50%") (marginTop = "-50%")
+			(bind backgroundImage "'url:../battle_hud/markers/wave_hit/icon_marker_wave_hit_active.png'")
+			(backgroundSize = "autosize")
+		)
+	)
+)
+
+(def element DepthChargePOI (_markerEntity:gfx) layout=true
+	(scope
+		(event evShow)
+		(var pointOfInterest:gfx = "_markerEntity.pointOfInterest")
+		(var angle:number = "radToGrad(pointOfInterest.pointerYaw)" (event "evEnterFrame"))
+		(var isOffScreen:bool = "pointOfInterest.isOffScreen" (event "pointOfInterest.evIsOffScreenChanged"))
+		(var inScreenBounds:bool = "pointOfInterest.inScreenBounds" (event "pointOfInterest.evInScreenBoundsChanged"))
+
+		(var depthChargeComponent:gfx = "_markerEntity.depthCharge" (event "_markerEntity.evAdded"))
+		(var dangerLevel:number = "depthChargeComponent.dangerLevel" (event "depthChargeComponent.evDangerLevelChanged"))
+
+		(macro POI_VERTICAL_OFFSET "isOffScreen" "-10")
+
+		(var isVisible:bool = "dangerLevel > SC.Battle.DANGER_LEVEL.NORMAL && !(inScreenBounds)")
+	)
+
+	(dispatch evShow on='addedToStage')
+
+	(style
+		(bind top "currentOffsetY")
+		(position = "absolute")
+	)
+
+	(bind colorTransform "DANGER_LEVEL_TO_CT[dangerLevel]")
+
+	(visible = "isVisible")
+	(alpha = 0)
+
+	(controller $Animation
+		(bind enabled "isVisible")
+		(bindcall play	duration=0.15
+						from="{alpha: 0, visible: false}"
+						to="{alpha: 1, visible: true}"
+						(bind enabled "isVisible")
+						(event "evShow")
+		)
+		(bindcall play	duration=0.15
+						from="{alpha: 1}"
+						to="{alpha: 0}"
+						action="kill"
+						(event "depthChargeComponent.evBlowUp")
+		)
+	)
+	(controller $Animation
+		(bindcall play	duration=0.15
+						from="{alpha: 1, visible: true}"
+						to="{alpha: 0, visible: false}"
+						(bind enabled "!isVisible")
+		)
+	)
+
+	
+	(element POIPointerArrow "true" "angle" 'url:../battle_hud/indicators/poi_arrow_small.png')
+)
+
+(def element SeaMinePOI (_markerEntity:gfx) layout=true
+	(scope
+		(event evShow)
+		(var pointOfInterest:gfx = "_markerEntity.pointOfInterest")
+		(var angle:number = "radToGrad(pointOfInterest.pointerYaw)" (event "evEnterFrame"))
+		(var isOffScreen:bool = "pointOfInterest.isOffScreen" (event "pointOfInterest.evIsOffScreenChanged"))
+		(var inScreenBounds:bool = "pointOfInterest.inScreenBounds" (event "pointOfInterest.evInScreenBoundsChanged"))
+
+		(var dangerLevel:number = "SC.Battle.DANGER_LEVEL.CRITICAL")
+
+		(macro POI_VERTICAL_OFFSET "isOffScreen" "-10")
+
+		(var isVisible:bool = "dangerLevel > SC.Battle.DANGER_LEVEL.NORMAL && !(inScreenBounds)")
+	)
+
+	(dispatch evShow on='addedToStage')
+
+	(style
+		(bind top "currentOffsetY")
+		(position = "absolute")
+	)
+
+	(bind colorTransform "DANGER_LEVEL_TO_CT[dangerLevel]")
+
+	(visible = "isVisible")
+	(alpha = 0)
+
+	(controller $Animation
+		(bind enabled "isVisible")
+		(bindcall play	duration=0.15
+						from="{alpha: 0, visible: false}"
+						to="{alpha: 1, visible: true}"
+						(bind enabled "isVisible")
+						(event "evShow")
+		)
+		
+		
+		
+		
+		
+		
+	)
+	(controller $Animation
+		(bindcall play	duration=0.15
+						from="{alpha: 1, visible: true}"
+						to="{alpha: 0, visible: false}"
+						(bind enabled "!isVisible")
+		)
+	)
+
+	
+	(element POIPointerArrow "true" "angle" 'url:../battle_hud/indicators/poi_arrow_small.png')
+)
+
+(def element AirshipPOI (_markerEntity:gfx) layout=true
+	(scope
+		(var pointOfInterest:gfx = "_markerEntity.pointOfInterest")
+		(var relation:number = "_markerEntity.relation.value" (event "_markerEntity.relation.evChanged"))
+		(var isAlly:bool = "relation == SC.Battle.PLAYER_RELATION.ALLY")
+		(var angle:number = "radToGrad(pointOfInterest.pointerYaw)" (event "evEnterFrame"))
+		(var isOffScreen:bool = "pointOfInterest.isOffScreen" (event "pointOfInterest.evIsOffScreenChanged"))
+		(var screenDistToPoint:number = "pointOfInterest.screenDistToPoint" (event "evEnterFrame"))
+		(var inScreenBounds:bool = "pointOfInterest.inScreenBounds" (event "pointOfInterest.evInScreenBoundsChanged"))
+
+		(var isVisible:bool = "!inScreenBounds")
+
+		(event evShow)
+
+		(macro POI_VERTICAL_OFFSET "isOffScreen" "-55")
+
+		(var colorTransformIndex:gfx = "isAlly ? CT_GREEN : CT_RED")
+	)
+
+	(dispatch evShow on='addedToStage')
+
+	(bind visible "isVisible")
+	(style
+		(alpha = 0)
+		(bind top "currentOffsetY")
+		(position = "absolute")
+	)
+	(controller $Animation
+		(bindcall play  delay=4.0
+						duration=0.5
+						from="{alpha: 0}"
+						to="{alpha: 1}"
+						(event "evShow")
+		)
+	)
+
+	
+	(element POIPointerArrow "isOffScreen && screenDistToPoint > 10" "angle" 'url:../battle_hud/indicators/poi_arrow.png'
+		(bind colorTransform "colorTransformIndex")
+	)
+)
+
+
+(def macro POI_VERTICAL_OFFSET (_enabled:expression, _offset:expression)
+	(var offsetY:number = "_enabled ? 0 : _offset")
+	(var currentOffsetY:number = "offsetY" watch=false)
+	(controller $Animation
+		(bindcall play 	duration=0.15
+						delay=0.5
+						to="{ currentOffsetY: offsetY }"
+						action="killAll"
+						(bind enabled "!(_enabled)")
+						
+		)
+		(bindcall play 	duration=0.15
+						to="{ currentOffsetY: offsetY }"
+						action="killAll"
+						(bind enabled "_enabled")
+		)
+	)
+)
+
+(def element POIPointerArrow (_enabled:bool, _angle:number, _arrowAsset:str) layout=true
+	(bind visible "_enabled")
+	(style (bind rotation "_angle"))
+	(block
+		(style
+			(position = "absolute")
+			(marginLeft = "-50%") (marginTop = "-50%")
+			(bind backgroundImage "_arrowAsset")
+			(backgroundSize = "autosize")
+		)
+	)
+)
+
+(def element OwnShipPOI (_markerEntity:gfx) layout=true
+	(scope
+		(var pointOfInterest:gfx = "_markerEntity.pointOfInterest")
+		(var angle:number = "radToGrad(pointOfInterest.pointerYaw)" (event "evEnterFrame"))
+		(var isOffScreen:bool = "pointOfInterest.isOffScreen" (event "pointOfInterest.evIsOffScreenChanged"))
+		(var screenDistToPoint:number = "pointOfInterest.screenDistToPoint" (event "evEnterFrame"))
+
+		(var worldMarkerScale:gfx = "_markerEntity.worldMarkerScale" (event "_markerEntity.evAdded"))
+		(var scaleValue:number = "worldMarkerScale.value" (event "worldMarkerScale.evValueChanged"))
+
+		(macro GET_PREF 'altVisionMode' "'battle.altVision.mode'")
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var altVision:bool = "cameraEntity.camera.altVision" (event "cameraEntity.camera.evAltVisionChanged"))
+		(var isAltVisionMode:bool = "altVision || altVisionMode >= AltVisionMode.ENABLED")
+
+		
+		(var carrierStateComponent:gfx = "$datahub.getSingleComponent(CC.carrierState)")
+		(var carrierState:number = "carrierStateComponent.state" (event "carrierStateComponent.evStateChanged"))
+
+		(var icon:str = "MAP_CARRIER_STATE_TO_IMAGE[carrierState]")
+
+		(event evShow)
+
+		(macro POI_VERTICAL_OFFSET "isOffScreen" "-55")
+	)
+	
+	(dispatch evShow on='addedToStage')
+	(alpha = 0)
+
+	(controller $Animation
+		(bindcall play  delay=4.0
+						duration=0.5
+						from="{alpha: 0}"
+						to="{alpha: 1}"
+						(event "evShow")
+		)
+	)
+
+	(macro BIND_FAIR_SCALE "isAltVisionMode ? 1 : scaleValue")
+	(style
+		(bind top "currentOffsetY")
+		(position = "absolute")
+	)
+
+	
+	(element POIPointerArrow "isOffScreen && screenDistToPoint > 10" "angle" 'url:../battle_hud/indicators/poi_arrow.png'
+		(bind colorTransform "MAP_CARRIER_STATE_TO_CT[carrierState]")
+	)
+
+	
+	(block
+		(style (position = "absolute"))
+		(block
+			(alpha = 0)
+			(controller $Animation
+				(bindcall play 	duration=0.35
+								from="{alpha: 0.8, scaleX: 1, scaleY: 1}"
+								to="{alpha: 0, scaleX: 3.5, scaleY: 3.5}"
+								action="killAll"
+								watch=false
+								repeatCount="carrierState == SC.Battle.CARRIER_STATE.COLLISION					? 1 :
+												isIn(carrierState, [SC.Battle.CARRIER_STATE.SPOTTED_BY_PLANE, 
+																	SC.Battle.CARRIER_STATE.SPOTTED_BY_SHIP,
+																	SC.Battle.CARRIER_STATE.HEAVY_DAMAGE]) 		? 2
+																												: 3"
+								(event "carrierStateComponent.evStateAdded")
+				)
+			)
+			(controller $Sector
+				(color = 0xFFFFFF)
+				(arc = 360)
+				(radius = 20)
+			)
+		)
+	)
+
+	
+	(block
+		(style
+			(position = "absolute")
+			(marginLeft = "-50%") (marginTop = "-50%")
+			(bind backgroundImage "'url:../battle_hud/indicators/own_ship_state/' + icon + '.png'")
+			(backgroundSize = "autosize")
+		)
+	)
+)

@@ -1,0 +1,56 @@
+<WGA002_13mm_Hotchkiss_wz30_lod3.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Type93	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	HP_gunFire1	</identifier>
+				<transform>
+					<row0>	1.0000 -0.0016 0.0007 0.0000	</row0>
+					<row1>	0.0017 0.8660 -0.5000 0.0000	</row1>
+					<row2>	0.0002 0.5000 0.8660 0.0000	</row2>
+					<row3>	0.0051 0.0864 0.0752 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	HP_gunFire2	</identifier>
+				<transform>
+					<row0>	1.0000 -0.0016 0.0007 0.0000	</row0>
+					<row1>	0.0017 0.8660 -0.5000 0.0000	</row1>
+					<row2>	0.0002 0.5000 0.8660 0.0000	</row2>
+					<row3>	-0.0052 0.0864 0.0752 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Type93	</node>
+		<geometry>
+			<vertices>	Type93_lod3Shape.vertices	</vertices>
+			<primitive>	Type93_lod3Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_Gun	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/WSD207_Grom/gun/WGA002_13mm_Hotchkiss_wz30.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0163 0.0000 -0.0424	</min>
+		<max>	0.0162 0.0869 0.0749	</max>
+	</boundingBox>
+</WGA002_13mm_Hotchkiss_wz30_lod3.visual>

@@ -1,0 +1,56 @@
+<BGS091_4_5in_45_Mk5_twin_R_dead_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS101_YGCS_M_1_INDEX_2	</identifier>
+				<transform>
+					<row0>	0.3656 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.6751 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.4101 0.0000	</row2>
+					<row3>	-0.0272 0.0148 0.1891 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS101_YGCS_M_1_INDEX_3	</identifier>
+				<transform>
+					<row0>	0.3656 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.6751 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.4101 0.0000	</row2>
+					<row3>	0.0269 0.0148 0.1891 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_dead_lod2Shape.vertices	</vertices>
+			<primitive>	Turret_dead_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/BSA510_Malta/gun/BGS091_4_5in_45_Mk5_twin_R_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1997 -0.0115 -0.1998	</min>
+		<max>	0.1997 0.1298 0.3268	</max>
+	</boundingBox>
+</BGS091_4_5in_45_Mk5_twin_R_dead_lod2.visual>

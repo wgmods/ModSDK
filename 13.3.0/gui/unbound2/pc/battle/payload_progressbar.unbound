@@ -1,0 +1,512 @@
+(def constant PAYLOAD_OBJECT_PROGRESSBAR_WIDTH 220)
+(def constant PAYLOAD_OBJECT_PROGRESSBAR_HEIGHT 6)
+(def constant COUNT_OF_STICK 2)
+
+(def element PayloadProgressContainer()
+	(scope
+		(var payloadItemscollection:gfx = "$datahub.getCollection(CC.payload)")
+		(var payloadItemscollectionCount:number = "payloadItemscollection ? payloadItemscollection.items.length : 0" (event "payloadItemscollection.evAdded") (event "payloadItemscollection.evRemoved") (event "payloadItemscollection.evUpdated"))
+
+		(event evShowPayloadProgressContainer)
+	)
+
+	(style
+		(alpha = "0")
+	)
+
+	(dispatch evShowPayloadProgressContainer on=addedToStage)
+
+	(controller $Animation
+		(bindcall play to={alpha:1} from={alpha:0} duration=1.5 easing="Easing.quint_out" (bind enabled "payloadItemscollectionCount > 0") (event "evShowPayloadProgressContainer"))
+	)
+
+	(controller $Repeat renderer='PayloadProgressBar'
+		(bind count "payloadItemscollectionCount")
+	)
+)
+
+(def element PayloadProgressBar()
+	(scope
+		(var payloadItemscollection:gfx = "$datahub.getCollection(CC.payload).child('byRelation')")
+		(var payloadItemscollectionCount:number = "payloadItemscollection ? payloadItemscollection.items.length : 0" (event "payloadItemscollection.evAdded") (event "payloadItemscollection.evRemoved") (event "payloadItemscollection.evUpdated"))
+		(var payloadItemsEntity:gfx = "payloadItemscollection.items[$index]" (event "payloadItemscollection.evAdded") (event "payloadItemscollection.evMoved") (event "payloadItemscollection.evRemoved") (event "payloadItemscollection.evUpdated"))
+		(var value:number = "payloadItemsEntity.progress ? payloadItemsEntity.progress.value : 0" (event "payloadItemsEntity.progress.evChanged"))
+		(var relation:number = "payloadItemsEntity.relation ? payloadItemsEntity.relation.value : 0" (event "payloadItemsEntity.payload.evStateChanged"))
+		(var maxValue:number = "payloadItemsEntity.progress ? payloadItemsEntity.progress.max : 0" (event "payloadItemsEntity.progress.evChanged"))
+		(var state:number = "payloadItemsEntity ? payloadItemsEntity.payload.state : 0" (event "payloadItemsEntity.payload.evStateChanged"))
+		(var payloadObjectSpeed:number = "payloadItemsEntity ? payloadItemsEntity.payload.speed : 0" (event "payloadItemsEntity.payload.evSpeedChanged"))
+		(var currentSpeedMultiplier:number = "payloadItemsEntity ? payloadItemsEntity.payload.uiIndex : 0" (event "payloadItemsEntity.payload.evUiIndexChanged"))
+		(var numberOfSpeedMultipliers:number = "payloadItemsEntity && payloadItemsEntity.payload.maxUIIndex > 0 ? payloadItemsEntity.payload.maxUIIndex : 1")
+		(var payloadTargetId:number = "payloadItemsEntity && payloadItemsEntity.payload ? payloadItemsEntity.payload.targetId : 0")
+		(var endTime:number = "payloadItemsEntity ? payloadItemsEntity.countDown.endTime : 0"(event "payloadItemsEntity.countDown.evEndTimeChanged"))
+
+
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+		(var currentTime:number = "timerEntity.timer.currentTime" (event "timerEntity.timer.evFrequent"))
+		(var timeLeft:number = "payloadItemsEntity.countDown ? ceil(max(endTime - currentTime, 0)) : 0" watch=true (event "timerEntity.timer.evFrequent"))
+
+		(var calculatedValue:number = "maxValue != 0 && value != 0 ? (((value * 100) / maxValue) / 100) : 0" watch=true)
+		(var relationName:str = "toLower(SC.Battle.PLAYER_RELATION.VALUE_TO_NAME[relation])")
+
+		(var cartStopped:number = "SC.Battle.PULL_TARGET_STATES.CART_STOPPED")
+		(var cartBlocked:number = "SC.Battle.PULL_TARGET_STATES.CART_BLOCKED")
+		(var cartSlowed:number = "SC.Battle.PULL_TARGET_STATES.CART_SLOW_FORWARD")
+		(var cartNormal:number = "SC.Battle.PULL_TARGET_STATES.CART_NORMAL")
+		(var cartFastForward:number = "SC.Battle.PULL_TARGET_STATES.CART_FAST_FORWARD")
+
+		(macro ALT_VISION_SCOPE)
+
+		(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM_SCOPE)
+
+		(event evPayloadForceStartAllAnimations) 
+
+		(event evSpeedTipMouseOver)
+		(event evSpeedTipMouseOut)
+
+		
+		
+		
+
+		
+		
+		
+		
+
+		
+		
+		
+	)
+
+	(dispatch evPayloadForceStartAllAnimations on=addedToStage)
+
+	(style
+		(width = "PAYLOAD_OBJECT_PROGRESSBAR_WIDTH")
+		(height = "PAYLOAD_OBJECT_PROGRESSBAR_HEIGHT")
+		(flow = "horizontal")
+		(marginTop = "$index > 0 ? 18 : 0")
+	)
+
+	(block 
+		(class $MiddleAlignedAbsolutely)
+		(class $MiddleVAligned)
+		(style
+			(bind width "PAYLOAD_OBJECT_PROGRESSBAR_WIDTH + 10")
+			(bind height "PAYLOAD_OBJECT_PROGRESSBAR_HEIGHT + 14")
+			(backgroundColor = "0x01000000")
+		)
+		(bindcall externalCall 'direct.action' "['convoyMission.blinkPathByMission', [payloadItemsEntity.scenarioMissionParticipant.index]]" init=false watch=false on='mouseOver')
+		(bindcall externalCall 'direct.action' "['convoyMission.blinkPathByMission', [payloadItemsEntity.scenarioMissionParticipant.index]]" delay =0.1 init=false watch=false on='mouseOut')
+	)
+
+	
+	(block
+		(style
+			(position = "absolute")
+			(left = "100%")
+			(marginTop = "-3")
+			(marginLeft = "11")
+		)
+		(tf
+			(class $TextDefaultBoldNM)
+			(style (position = "absolute"))
+			(bind text "countdownFormat(timeLeft, 0, true, true)")
+  			(controller $Animation
+				(bindcall play to={alpha:0, left:15} from={alpha:1, left:0} duration=0.2 easing="Easing.cubic_out" (bind enabled "timeLeft < 1 && endTime > 0"))
+			)
+		)
+		(tf
+			(class $TextDefaultBoldNM)
+			(style (alpha = 0) (position = "absolute"))
+			(text = "'IDS_FINISH'")
+			(controller $Animation
+				(bindcall play to={alpha:1, left:0} from={alpha:0, left:-15} duration=0.35 delay=0.15 easing="Easing.cubic_out" (bind enabled "timeLeft < 1 && endTime > 0"))
+			)
+		)
+	)
+
+	
+	(hblock
+		(style
+			(position = "absolute")
+			(right = "100%")
+			(marginTop = "-5px")
+			(marginRight = "10")
+		)
+
+		(hblock
+			(bind visible "isAdaptiveAltVisionMode")
+			(style
+				(marginTop = "2")
+				(marginRight = "XS")
+				(marginRight = "S")
+			)
+			(tf
+				(style
+					(marginRight = "XS")
+				)
+				(class $TextDefaultBoldNM)
+				(bind text "formatFloatingPoint(payloadObjectSpeed, 1)")
+			)
+			(tf
+				(style
+					(alpha = "TC")
+				)
+				(class $TextDefaultNM)
+				(text = 'kts')
+			)
+		)
+
+		(hblock
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
+			
+			
+
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
+			(controller $Repeat renderer='PayloadSpeedIndicator'
+				(bind count "numberOfSpeedMultipliers - 1")
+				(args
+					_currentSpeedMultiplier="currentSpeedMultiplier - 1"
+					_relation="relation"
+				)
+			)
+
+		)
+	)
+
+	(block 
+		(class $MiddleAlignedAbsolutely)
+		(class $MiddleVAligned)
+		(style
+			(hitTest = "false")
+			(position = "absolute")
+			(height = "PAYLOAD_OBJECT_PROGRESSBAR_HEIGHT + 2")
+			(width = "PAYLOAD_OBJECT_PROGRESSBAR_WIDTH + 2")
+			(backgroundImage = "'url:../battle_hud/markers/convoy_airships/progressbar_frame.png'")
+			(scale9grid = 3)
+		)
+	)
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	(block 
+		(bind colorTransform "TWO_TEAMS_COLOR_TRANSFORMS[relationName]")
+		(style
+			(hitTest = "false")
+			(marginTop = "1px")
+			(marginLeft = "1px")
+			(bind width "(PAYLOAD_OBJECT_PROGRESSBAR_WIDTH * calculatedValue)-2")
+			(height = "PAYLOAD_OBJECT_PROGRESSBAR_HEIGHT - 2")
+			(backgroundImage = "'url:../battle_hud/markers/convoy_airships/progressbar_filling.png'")
+			(scale9grid = [3, 1, 3, 1])
+		)
+	)
+
+	(hblock 
+		(style
+			(hitTest = "false")
+			(position = "absolute")
+		)
+		(controller $Repeat count="COUNT_OF_STICK" layout=true
+			(exprs
+				(block
+					(style
+						(marginTop = "1px") (marginLeft = "PAYLOAD_OBJECT_PROGRESSBAR_WIDTH / (COUNT_OF_STICK + 1)")
+						(width = "1px") (height = "PAYLOAD_OBJECT_PROGRESSBAR_HEIGHT - 2")
+						(backgroundColor = "0xFF000000")
+						(alpha = "0.2")
+					)
+				)
+			)
+		)
+	)
+
+	(hblock 
+		(bind visible "(PAYLOAD_OBJECT_PROGRESSBAR_WIDTH * calculatedValue) > 11")
+		(style
+			(hitTest = "false")
+			(marginTop = "1px")
+			(position = "absolute")
+			(alpha = "0")
+		)
+		(controller $Animation
+			(bindcall play to={alpha:1} from={alpha:0} duration=0.15 easing="Easing.line" repeatCount=1 (bind enabled "state == cartSlowed") (event "evPayloadForceStartAllAnimations") )
+			(bindcall play to={alpha:0} from={alpha:1} duration=0.15 easing="Easing.line" repeatCount=1 (bind enabled "state != cartSlowed") (event "evPayloadForceStartAllAnimations") )
+		)
+		(block
+			(style
+				(width = "11px")
+				(bind backgroundImage "'url:../battle_hud/markers/convoy_airships/cart_slow_forward_animation_' + relationName + '.png'")
+			)
+			(controller $Animation
+				(bindcall play to={alpha:0} from={alpha:1} duration=0.66 easing="Easing.line" repeatCount=-1 (bind enabled "state == cartSlowed") (event "evPayloadForceStartAllAnimations"))
+			)
+		)
+		(block
+			(style
+				(bind width "(PAYLOAD_OBJECT_PROGRESSBAR_WIDTH * calculatedValue) - 7")
+				(backgroundRepeatX = true)
+				(bind backgroundImage "'url:../battle_hud/markers/convoy_airships/cart_slow_forward_animation_' + relationName + '.png'")
+			)
+			(controller $Animation
+				(bindcall play to={marginLeft:-11} from={marginLeft:0} duration=0.66 easing="Easing.line" repeatCount=-1 (bind enabled "state == cartSlowed") (event "evPayloadForceStartAllAnimations"))
+			)
+		)
+	)
+
+	(block 
+		(style
+			
+			(marginTop = "-4px")
+			(marginLeft = "-8px")
+			(width = "14")
+			(height = "14")
+			(backgroundSize = "fill")
+			(pivotX = "50%")
+			(pivotY = "50%")
+		)
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(backgroundSize = "fill")
+				(bind backgroundImage "'svg:../battle_hud/markers/convoy_airships/marker_' + relationName + '.svg'")
+			)
+		)
+
+		
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+
+
+		
+		
+		
+
+		
+		
+
+		
+		
+		
+		
+	)
+)
+
+(def element PayloadSpeedIndicator (_currentSpeedMultiplier:number, _relation:number) layout=true
+	(scope
+		(var prevSpeedValue:number = "_currentSpeedMultiplier" watch=false)
+		(var isRaised:bool = "prevSpeedValue < _currentSpeedMultiplier" watch=true)
+		(var isLowered:bool = "prevSpeedValue > _currentSpeedMultiplier" watch=true)
+		(var isLowestSpeed:bool = "_currentSpeedMultiplier == -1" watch=true)
+		(var isAlly:bool = "_relation == SC.Battle.PLAYER_RELATION.ALLY")
+
+		(controller $Animation
+			(bindcall play from={} to="{prevSpeedValue: _currentSpeedMultiplier }" duration=0.15 easing="Easing.line" repeatCount=1 (bind enabled "isRaised || isLowered") )
+		)
+	)
+
+	(style
+		(zindex = "0")
+		(width = "7px")
+		(height = "14px")
+		(marginTop = "1px")
+		(hitTest = "false")
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(bind backgroundImage "'svg:../battle_hud/markers/convoy_airships/speed_icon_empty.svg'")
+		)
+	)
+	(block
+		(style
+			(alpha = "_currentSpeedMultiplier >= $index ? 1 : 0")
+			(position = "absolute")
+			(width = "100%")
+			(height = "100%")
+			(pivotY = "50%")
+			(pivotX = "50%")
+			(marginTop = "50%")
+			(marginLeft = "50%")
+		)
+		(block
+			(style
+				(position = "absolute")
+				(bind backgroundImage "'svg:../battle_hud/markers/convoy_airships/speed_icon_full.svg'")
+			)
+		)
+		(controller $Animation
+			(bindcall play
+				keyframes =
+				"[
+					{
+						frame:0,
+						to:{alpha:0, left: -10, scaleX: 4.5, scaleY: 0.5}
+					},
+					{
+						frame:10,
+						to:{alpha:1, left: 0, scaleX: 3.0, scaleY: 2.5}
+					},
+					{
+						frame:16,
+						to:{alpha:1, left: 0, scaleX: 3.0, scaleY: 3.0}
+					},
+					{
+						frame:20,
+						to:{alpha:1, left: 0, scaleX: 3.0, scaleY: 3.0}
+					},
+					{
+						frame:23,
+						to:{alpha:1, left: 0, scaleX: 1, scaleY: 1}
+					}
+				]"
+				easing="Easing.line"
+				repeatCount=1
+				(bind enabled "isRaised && $index > prevSpeedValue && $index <= _currentSpeedMultiplier")
+			)
+			(bindcall play from={alpha:1, left: 0, scaleX: 1, scaleY: 1} to={alpha:0, left: -0, scaleX: 5.5, scaleY: 5.5} duration=0.3 easing="Easing.line" repeatCount=1 (bind enabled "isLowered && $index <= prevSpeedValue && $index > _currentSpeedMultiplier") )
+		)
+	)
+)
+
+(def element TooltipPayloadDescription (_index:number, _numberOfSpeedMultipliers:number) layout=true
+	(scope
+		(var payloadItemscollection:gfx = "$datahub.getCollection(CC.payload)")
+		(var payloadItemsEntity:gfx = "payloadItemscollection.items[_index]" (event "payloadItemscollection.evAdded") (event "payloadItemscollection.evMoved") (event "payloadItemscollection.evRemoved") (event "payloadItemscollection.evUpdated"))
+	)
+	(style
+		(width = "400")
+		(hitTest = false)
+	)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER _width ="100%"
+		(controller $Repeat renderer = 'TooltipPayloadDescriptionListElement'
+			(args 
+				_numberOfSpeedMultipliers="_numberOfSpeedMultipliers"
+			)
+			(bind count "_numberOfSpeedMultipliers")
+		)
+	)
+)
+
+(def element TooltipPayloadDescriptionListElement (_text:str, _numberOfSpeedMultipliers:number) layout=true
+	(scope
+		(var rowIndex:number = "$index")
+
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var gameModeId:number = "battleDataEntity.battleInfo.gameModeId")
+		(var gameModeName:str = "SC.Battle.GAME_MODE.VALUE_TO_NAME[gameModeId]")
+	)
+	(style
+		(width = "100%")
+		(flow = "horizontal")
+		(bind marginTop "$index > 0 ? S : 0")
+		(marginBottom = "XS")
+	)
+	(hblock
+		(style
+			(marginRight = "S")
+		)
+		(controller $Repeat renderer = 'TooltipPayloadDescriptionImage'
+			(args
+				_rowIndex="rowIndex"
+			)
+			(bind count "_numberOfSpeedMultipliers-1")
+		)
+	)
+
+	(tf
+		(style
+			(alpha = "TC")
+			(maxWidth = "340px")
+			(bind leading "-3")
+		)
+		(class $TextDefaultNM)
+		(bind text "'IDS_PAYLOAD_SPEED_DESCRIPTION_' + gameModeName + '_' + $index")
+	)
+)
+(def element TooltipPayloadDescriptionImage (_rowIndex:number) layout=true
+	(style
+		(width = "7px")
+		(height = "14px")
+		(backgroundImage = "'svg:../battle_hud/markers/convoy_airships/speed_icon_empty.svg'")
+	)
+
+	(block
+		(bind visible "$index < _rowIndex")
+		(style
+			(width = "100%")
+			(height = "100%")
+			(backgroundImage = "'svg:../battle_hud/markers/convoy_airships/speed_icon_full.svg'")
+		)
+	)
+)

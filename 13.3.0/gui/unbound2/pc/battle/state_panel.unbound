@@ -1,0 +1,316 @@
+(def constant MODULE_ICON_WIDTH 44)
+(def constant MODULE_ICON_HEIGHT 44)
+
+(def macro STATE_PANEL_CONTAINER_ANIMATION (_width:expression, _enabled:expression)
+	(controller $Animation
+		(bindcall play duration=0.25 from="{widthAnimated: 0}" to="{widthAnimated: _width}" (bind enabled "_enabled"))
+		(bindcall play duration=0.25 delay=0.1 to="{widthAnimated: 0}" action="killAll" (bind enabled "!_enabled"))
+	)
+)
+
+(def macro STATE_PANEL_APPEAR_DISAPPEAR_ANIMATION (_enabled:expression)
+	(controller $Animation
+		(bindcall play duration=0.3 from={alpha:0, scaleX: 3, scaleY: 3, visible:false} to={alpha:1, scaleX: 1, scaleY: 1, visible:true} easing="Easing.cubic_in" (bind enabled "_enabled"))
+		(bindcall play duration=0.3 to={alpha:0, scaleX: 0, scaleY: 0, visible:false} easing="Easing.cubic_in" (bind enabled "!_enabled"))
+	)
+)
+
+(def element StatePanel () layout=true
+	(scope
+		(macro IS_ON_PLANE)
+		(var aircarrier:gfx = "ownCarrierEntity.aircarrier")
+		(var squadronCameraMode:str = "aircarrier.squadronCameraMode" (event "aircarrier.evSquadronCameraModeChanged"))
+		(var isLastLookSquadronCamera:bool = "squadronCameraMode == SquadronCameraModes.SQUADRON_DEAD || squadronCameraMode == SquadronCameraModes.LAST_SQUADRON_ATTACKED")
+
+		(var statesCollection:gfx = "$datahub.getCollection(CC.state).getChildByPath('shipParamsChanged.forStatusPanel.sorted')")
+	)
+
+	(bind visible "!isOnPlane && !isLastLookSquadronCamera")
+	
+	(style
+		(width = 600)
+		(height = 44)
+		(align = "center")
+		(flow="horizontal")
+		(bind hitTest "!isOnPlane")
+	)
+
+	(controller $Repeat renderer='ModifierState'
+		(bind count "statesCollection.items.length")
+		(bindcall removeChildAt "$event[1]" (event "statesCollection.evRemoved"))
+		(bindcall addChildAt "$event[1]" (event "statesCollection.evAdded"))
+		(args "statesCollection")
+	)
+)
+
+(def element ModifierState (_collection:gfx) layout = true
+	(scope
+		(var userPrefsComponent:gfx = "$datahub.getSingleComponent(CC.userPrefs)")
+		(var userPrefs:dict = "userPrefsComponent.userPrefs" (event "userPrefsComponent.evUserPrefsChanged"))
+		(macro GET_PREF 'altVisionMode' "'battle.altVision.mode'")
+		(macro GET_PREF 'alwaysShowModifiersTimers' "'ui.alwaysShowModifiersTimers'")
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var isAltVision:bool = "cameraEntity.camera.altVision" (event "cameraEntity.camera.evAltVisionChanged"))
+
+		(var stateEntity:gfx = "_collection.items[$index]" watch=false)
+		(var stateComponent:gfx = "stateEntity.state")
+		(var timeToLiveComponent:gfx = "stateEntity.timeToLive" (event "stateEntity.evAdded"))
+		(var isRemoving:bool = "timeToLiveComponent ? timeToLiveComponent.isRemoving : false" (event "timeToLiveComponent.evRemove") (event "timeToLiveComponent.evCancelRemoving"))
+
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+		(var countDownComponent:gfx = "stateEntity.countDown" (event "stateEntity.evAdded"))
+		(var remainTime:number =	"countDownComponent	? countDownComponent.endTime - timerEntity.timer.currentTime
+														: 0" (event "timerEntity.timer.evFrequent") (event "countDownComponent.evEndTimeChanged"))
+
+		(var progressComponent:gfx = "stateEntity.progress" (event "stateEntity.evAdded"))
+		(var currentCount:number = "progressComponent ? progressComponent.value : 0" (event "progressComponent.evChanged"))
+
+		(var isInfinite:bool = "!countDownComponent || countDownComponent.duration == -1")
+		(var isProgressBarVisible:bool = "!isInfinite && (remainTime > 0 && remainTime < 3600) && !isRemoving")
+		(var progress:number = 	"isProgressBarVisible ? min(remainTime / countDownComponent.duration, 1) : 0")
+
+		(var isNegative:bool = "stateEntity.shipModifier ? stateEntity.shipModifier.isNegative : false")
+
+		(var showTimer:bool = "isProgressBarVisible && (isAltVision || alwaysShowModifiersTimers)")
+
+		(macro HUMAN_READABLE_COUNTDOWN_SCOPE "isProgressBarVisible ? remainTime : 0")
+
+		(var fullElementWidth:number = "MODULE_ICON_WIDTH + 4")
+
+		(var backgroundImagePath:str = "	!isProgressBarVisible																		? 'url:../battle_hud/state_panel/empty_state.png' :
+											stateComponent.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_SPECIAL_MODULES		? 'url:../battle_hud/state_panel/special/track_'+ stateComponent.id +'.png' :
+											stateComponent.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_NOT_SPECIAL_MODULES	? 'url:../battle_hud/state_panel/special/track_'+ stateComponent.id +'.png' :
+											stateComponent.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_MODULES				? 'url:../battle_hud/state_panel/modules/track.png' :
+											stateComponent.type == SC.Battle.ENTITY_STATES.EMERGENCY_SURFACING							? 'url:../battle_hud/state_panel/special/track_emergency_surfacing.png'
+																																		: 'url:../battle_hud/state_panel/events/track.png'")
+
+		(var progressBarImagePath:str = "	!isProgressBarVisible																		? 'url:../battle_hud/state_panel/empty_state.png' :
+											stateComponent.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_SPECIAL_MODULES		? 'url:../battle_hud/state_panel/special/bar_'+ stateComponent.id +'.png' :
+											stateComponent.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_NOT_SPECIAL_MODULES	? 'url:../battle_hud/state_panel/special/bar_'+ stateComponent.id +'.png' :
+											stateComponent.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_MODULES				? 'url:../battle_hud/state_panel/modules/bar.png' :
+											stateComponent.type == SC.Battle.ENTITY_STATES.EMERGENCY_SURFACING							? 'url:../battle_hud/state_panel/special/bar_emergency_surfacing.png' :
+											isNegative																					? 'url:../battle_hud/state_panel/events/bar_debuff.png'
+																																		: 'url:../battle_hud/state_panel/events/bar.png'")
+
+		(var iconImagePath:str = "	stateComponent.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_SPECIAL_MODULES		?	'url:../battle_hud/state_panel/special/icon_' + stateComponent.id + '.png' :
+									stateComponent.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_NOT_SPECIAL_MODULES	?	'url:../battle_hud/state_panel/special/icon_' + stateComponent.id + '.png' :
+									stateComponent.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_MODULES				?	'url:../battle_hud/state_panel/modules/' + stateComponent.id + '.png' :
+									stateComponent.type == SC.Battle.ENTITY_STATES.EMERGENCY_SURFACING							?	'url:../battle_hud/state_panel/special/icon_emergency_surfacing.png' :
+									stateComponent.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_DEPTH					?	'url:../battle_hud/state_panel/events/depth_' + stateComponent.id + '.png' :
+									stateComponent.type == SC.Battle.ENTITY_STATES.REPAIR										?	'url:../battle_hud/state_panel/events/trigger_regen.png' :
+									stateComponent.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_CONSUMABLE_LOCKER		?	'url:../battle_hud/state_panel/special/consumables_block.png'
+																																:	'url:../battle_hud/state_panel/events/' + stateComponent.id + '.png'")
+
+		(var maskTopOffset:number = "	SC.Battle.DAMAGE_MODULES[toUpper(stateComponent.id)] == SC.Battle.DAMAGE_MODULES.BURN		? 28 :
+										SC.Battle.DAMAGE_MODULES[toUpper(stateComponent.id)] == SC.Battle.DAMAGE_MODULES.FLOOD		? 16 :
+										SC.Battle.DAMAGE_MODULES[toUpper(stateComponent.id)] == SC.Battle.DAMAGE_MODULES.WAVED		? 16 :
+										SC.Battle.DAMAGE_MODULES[toUpper(stateComponent.id)] == SC.Battle.DAMAGE_MODULES.ACID		? 28 :
+										SC.Battle.DAMAGE_MODULES[toUpper(stateComponent.id)] == SC.Battle.DAMAGE_MODULES.OIL_LEAK	? 16 :
+										SC.Battle.DAMAGE_MODULES[toUpper(stateComponent.id)] == SC.Battle.DAMAGE_MODULES.WILD_FIRE	? 28 :
+										stateComponent.type == SC.Battle.ENTITY_STATES.EMERGENCY_SURFACING							? 16
+																																	: 22")
+
+		(var widthAnimated:number = "isRemoving ? 0 : fullElementWidth" watch=false)
+		
+		(controller $Animation
+			(play duration=0.25 from="{widthAnimated: 0}" to="{widthAnimated: fullElementWidth}")
+			(bindcall play duration=0.25 to="{widthAnimated: fullElementWidth}" action="kill" (event "timeToLiveComponent.evCancelRemoving"))
+			(bindcall play duration=0.25 delay=0.1 to="{widthAnimated: 0}" (event "timeToLiveComponent.evRemove"))
+		)
+	)
+
+	(style
+		(bind width "widthAnimated")
+		(bind height "MODULE_ICON_HEIGHT")
+	)
+
+	(controller $Tooltip (renderer = 'ShipStateAttributesTooltip')
+		(args _stateEntity="stateEntity")
+		(align="top|center")
+		(position="border")
+		(offset=[0, 0])
+		(screenBoundsOffset={left:10, top:10, right:10, bottom:10})
+		(macro SIMPLE_TOOLTIP_ANIMATION)
+	)
+	
+	(block
+		(style
+			(position = "absolute")
+			(bind left "widthAnimated/2")
+			(top = "MODULE_ICON_HEIGHT/2")
+		)
+
+		(alpha = "isRemoving ? 0 : 1")
+
+		(controller $Animation
+			(play	duration=0.3
+					from={alpha:0, scaleX: 3, scaleY: 3, visible:false}
+					to={alpha:1, scaleX: 1, scaleY: 1, visible:true}
+					easing="Easing.cubic_in")
+
+			(bindcall play	duration=0.3
+							to={alpha:1, scaleX: 1, scaleY: 1, visible:true}
+							action="kill"
+							easing="Easing.cubic_in"
+							(event "timeToLiveComponent.evCancelRemoving"))
+					
+			(bindcall play	duration=0.3
+							to={alpha:0, scaleX: 0, scaleY: 0, visible:false}
+							easing="Easing.cubic_in"
+							(event "timeToLiveComponent.evRemove"))
+		)
+		(block
+			(style (position = "absolute"))
+
+			(controller $Instance renderer='StateProgressIndicator' layout=false
+				(args	_progress = "progress"
+						_backgroundImagePath = "backgroundImagePath"
+						_progressBarImagePath = "progressBarImagePath"
+						_iconImagePath = "iconImagePath"
+						_maskTopOffset = "maskTopOffset"
+						_count = "currentCount"
+				)
+			)
+
+			(bind alpha "alwaysShowModifiersTimers 	? 1 :
+						showTimer					? 0.6
+													: 1")
+		)
+		
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(bind align "alwaysShowModifiersTimers ? right|top : center|middle")
+			)
+
+			(alpha = "showTimer ? 1 : 0" )
+			(visible = "showTimer ? 1 : 0")
+
+			(controller $Animation
+				(bindcall play 	duration=0.15
+								from="{alpha: 0, top: 10, visible: false}"
+								to="{alpha: 1, top: 0, visible: true}"
+								reverse="!(showTimer)"
+								(bind trigger "showTimer")
+								(bind enabled "!alwaysShowModifiersTimers")
+				)
+			)
+			(block
+				(style
+					(bind marginTop "alwaysShowModifiersTimers		? -20 : 0")
+					(bind marginRight "alwaysShowModifiersTimers	? -20 : 0")
+				)
+				(tf
+					(bind class "alwaysShowModifiersTimers ? '$TextDefault21NM' : '$TextDefault25NM'")
+					(class $FontDropShadowFilterStrong)
+					(alpha = "TA")
+					(bind text "countdownText")
+				)
+			)
+		)
+	)
+)
+
+(def element StateProgressIndicator (	_progress:number,
+										_backgroundImagePath:str = 'url:../battle_hud/state_panel/empty_state.png',
+										_progressBarImagePath:str = 'url:../battle_hud/state_panel/empty_state.png',
+										_iconImagePath:str = 'url:../battle_hud/state_panel/empty_state.png',
+										_maskTopOffset:number = 0,
+										_count:number = 0)
+	(scope
+		
+		
+		
+		
+		(event evInc)
+		(event evDec)
+		(event evChanged)
+		(var curProgress:number = "_progress * 360")
+		(var countTest:number = "_count" watch=false)
+		(bind countTest "_count" watch=false (event "evInc") (event "evDec"))
+	)
+	(dispatch evInc (bind enabled "_count > countTest") (event "evChanged"))
+	(dispatch evDec (bind enabled "_count < countTest") (event "evChanged"))
+	(dispatch evChanged (bind trigger "_count"))
+
+	
+	(controller $Animation
+		(bindcall play duration=0.15 delay=0.00 from={scaleX:1, scaleY:1} to={scaleX:1.8, scaleY:1.8} (event "evInc"))
+		(bindcall play duration=0.15 delay=0.15 from={scaleX:1.8, scaleY:1.8} to={scaleX:0.8, scaleY:0.8} (event "evInc"))
+		(bindcall play duration=0.10 delay=0.30 from={scaleX:0.8, scaleY:0.8} to={scaleX:1.1, scaleY:1.1} (event "evInc"))
+		(bindcall play duration=0.15 delay=0.40 from={scaleX:1.1, scaleY:1.1} to={scaleX:1, scaleY:1} (event "evInc"))
+		(bind enabled "countTest > 1")
+	)
+	(controller $Animation
+		(bindcall play duration=0.15 delay=0.00 from={scaleX:1, scaleY:1} to={scaleX:0.5, scaleY:0.5} (event "evDec"))
+		(bindcall play duration=0.15 delay=0.15 from={scaleX:0.5, scaleY:0.5} to={scaleX:1.2, scaleY:1.2} (event "evDec"))
+		(bindcall play duration=0.10 delay=0.30 from={scaleX:1.2, scaleY:1.2} to={scaleX:0.9, scaleY:0.9} (event "evDec"))
+		(bindcall play duration=0.15 delay=0.40 from={scaleX:0.9, scaleY:0.9} to={scaleX:1, scaleY:1} (event "evDec"))
+		(bind enabled "_count > 1")
+	)
+	(style
+		(width = 0) (height = 0)
+		(align = "center|middle")
+	)
+
+	(block
+		(style
+			(width = 44)
+			(height = 44)
+			(bind backgroundImage "_backgroundImagePath")
+		)
+		
+		(block
+			(style
+				(align = "center")
+				(width = 44)
+				(height = 44)
+				(position = "absolute")
+				(bind backgroundImage "_progressBarImagePath")
+			)
+			(block
+				(style
+					(alpha = 0.6)
+					(bind marginTop "_maskTopOffset")
+				)
+				(isMask = true)
+				(controller $Sector
+					(bind arc "curProgress")
+					(bind radius "32")
+					(bind color "0x000000")
+					(bind offset -90)
+				)
+			)
+		)
+		
+		(block
+			(style
+				(position = "absolute")
+				(width = 44)
+				(height = 44)
+				(bind backgroundImage "_iconImagePath")
+			)
+		)
+		
+		
+		(block
+			(bind visible "_count > 1")
+
+			(style
+				(position = "absolute")
+				(backgroundColor = 0xAF000000)
+				(bottom = "0")
+				(right = "0")
+				(height = "16px")
+				(bind width "_count > 9 ? '18px' : '11px'")
+				(align = "middle|center")
+			)
+			(tf
+				(class $TextDefaultBoldNM)
+				(alpha = "TA")
+				(bind text "_count")
+			)
+		)
+	)
+)

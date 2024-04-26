@@ -1,0 +1,319 @@
+(def constant APPEAR_CONTAINER_WIDTH 290)
+(def constant APPEAR_ITEM_MARGIN 36)
+(def constant ACHIEVEMENT_CAPTION_WIDTH 270)
+
+(def macro RIBBON_APPEAR_ITEM_ANIMATION ()
+	(controller $Animation
+		(play	duration=0.35
+				easing="Easing.cubic_out"
+				from="{alpha: 0, scaleX: 0, scaleY: 0, marginTop: 0}"
+				to="{alpha: 1, scaleX: 1, scaleY: 1, marginTop: 0}"
+		)
+	)
+)
+
+(def macro RIBBON_APPEAR_ITEM_HIDE_ANIMATION ()
+	(controller $Animation
+		(bindcall play	duration=0.45
+						easing="Easing.cubic_out"
+						from="{alpha: 1, marginBottom: 0}"
+						to="{alpha: 0, marginBottom: 20}"
+						watch=false
+						(event "evBeforeRemove")
+		)
+	)
+)
+
+
+
+(def element RibbonsAppearContainer () layout=true
+	(scope
+		(var tempRibbonsCollection:gfx = "$datahub.getCollection(CC.tempRibbon)")
+	)
+
+	(style (width = "APPEAR_CONTAINER_WIDTH"))
+
+	(block
+		(controller $Repeat renderer='RibbonAppearItemContainer'
+			(bind count "tempRibbonsCollection.items.length" watch=false (event "tempRibbonsCollection.evAdded"))
+			(bindcall removeChildAt "$event[1]" (event "tempRibbonsCollection.evRemoved"))
+		)
+	)
+)
+
+
+(def element RibbonAppearItemContainer () layout=true
+	(scope
+		(event evBeforeRemove)
+
+		(var tmpRibbons:gfx = "$datahub.getCollection(CC.tempRibbon)")
+		(var tempRibbonEntity:gfx = "tmpRibbons.items[$index]" watch=false)
+		(var positionIndex:number = "tempRibbonEntity.tempRibbon.positionIndex - 1" (event "tempRibbonEntity.tempRibbon.evPositionIndexChanged"))
+
+		(var ribbonEntity:gfx = "$datahub.getEntity(tempRibbonEntity.tempRibbon.entityId)")
+		(var isAchievement:bool = "ribbonEntity.hasComponent(CC.achievement)")
+
+		(var itemPosition:number = "positionIndex * (ACHIEVEMENT_ICON_SIZE + APPEAR_ITEM_MARGIN)")
+	)
+
+	(dispatch evBeforeRemove args="{}" dir="EventDirection.DOWN" (event "tempRibbonEntity.shortLifeObject.evBeforeRemove"))
+
+	(style
+		(position = "absolute")
+		(width = "APPEAR_CONTAINER_WIDTH")
+		(align = "right")
+	)
+
+	(controller $Animation
+		(bindcall play	duration=0.25
+						easing="Easing.cubic_out"
+						to="{bottom: itemPosition}"
+		)
+	)
+
+	(controller $Instance (renderer = 'RibbonAppearItemWrapper')
+		(bind enabled "!(isAchievement)")
+		(args "ribbonEntity.id")
+	)
+
+	(controller $Instance (renderer = 'AchievementAppearItemWrapper')
+		(bind enabled "isAchievement")
+		(args "ribbonEntity.id")
+	)
+)
+
+
+(def element RibbonAppearItemWrapper (_entityId:number) layout=true
+	(scope
+		(var ribbonEntity:gfx = "$datahub.getEntity(_entityId)")
+		(var count:number = "ribbonEntity.incomeRibbon.tempCount" (event "ribbonEntity.incomeRibbon.evTempCountChanged"))
+		(var hasSubRibbons:bool = "ribbonEntity.children.list.length > 1")
+	)
+
+	(hblock
+		(bind visible "hasSubRibbons")
+		(controller $Repeat renderer='SubRibbonAppearItem'
+			(bind count "hasSubRibbons ? ribbonEntity.children.list.length : 0")
+			(args "ribbonEntity.children.list[$index]")
+		)
+	)
+
+	
+	(block
+		(controller $Instance (renderer = 'RibbonAppearItem')
+			(bind enabled "!(hasSubRibbons)")
+			(args "_entityId")
+		)
+	)
+)
+
+
+(def element AchievementAppearItemWrapper (_entityId:number) layout=true
+	(scope
+		(event evBeforeRemove)
+
+		(var ribbonEntity:gfx = "$datahub.getEntity(_entityId)")
+		(var count:number = "ribbonEntity.incomeRibbon.tempCount" (event "ribbonEntity.incomeRibbon.evTempCountChanged"))
+	)
+
+	(style
+		(width = "ACHIEVEMENT_ICON_SIZE")
+		(height = "ACHIEVEMENT_ICON_SIZE")
+		(align = "center|middle")
+		(marginRight = 36)
+	)
+
+	(macro RIBBON_APPEAR_ITEM_HIDE_ANIMATION)
+	
+	(block
+		(style
+			(width = 0) (height = 0)
+			(align = "center|middle")
+		)
+
+		(macro RIBBON_APPEAR_ITEM_ANIMATION)
+
+		(block
+			
+			(element AchievementBattleIcon "ribbonEntity.achievementInfo.name")
+
+			
+			(block
+				(style
+					(position = "absolute")
+					(bottom = "XS") (right = "0")
+				)
+				(controller $Instance (renderer = 'RibbonCounter')
+					(bind enabled "count > 1")
+					(args "count")
+				)
+			)
+
+			
+			(block
+				(style
+					(position = "absolute")
+					(top = "ACHIEVEMENT_ICON_SIZE + XS")
+					(hcenter = 0)
+				)
+
+				(controller $Instance (renderer = 'RibbonCaption')
+					(args "ribbonEntity.achievementInfo.nameIDS" "ACHIEVEMENT_CAPTION_WIDTH / 2")
+				)
+			)
+		)
+	)
+)
+
+
+(def element RibbonAppearItem (_entityId:number) layout=true
+	(scope
+		(event evBeforeRemove)
+
+		(var ribbonEntity:gfx = "$datahub.getEntity(_entityId)")
+
+		(var incomeRibbon:gfx = "ribbonEntity.incomeRibbon")
+		(var count:number = "incomeRibbon ? incomeRibbon.tempCount : 0" (event "incomeRibbon.evTempCountChanged"))
+		(var ribbonIds:str = "'IDS_RIBBON_' + ribbonEntity.ribbonInfo.ids")
+	)
+
+	(style
+		(width = "RIBBON_ICON_WIDTH")
+		(height = "RIBBON_ICON_HEIGHT")
+		(align = "center|middle")
+	)
+
+	(macro RIBBON_APPEAR_ITEM_HIDE_ANIMATION)
+
+	(block
+		(style
+			(width = 0) (height = 0)
+			(align = "center|middle")
+		)
+
+		(macro RIBBON_APPEAR_ITEM_ANIMATION)
+
+		(block
+			
+			(element RibbonIcon "ribbonEntity.ribbonInfo.iconName")
+
+			
+			(block
+				(style
+					(position = "absolute")
+					(bottom = "XS") (right = "XS")
+				)
+				(controller $Instance (renderer = 'RibbonCounter')
+					(args "count" true)
+				)
+			)
+
+			
+			(block
+				(style
+					(position = "absolute")
+					(top = "RIBBON_ICON_HEIGHT + XS")
+					(hcenter = 0)
+				)
+
+				(controller $Instance (renderer = 'RibbonCaption')
+					(args "ribbonIds" "RIBBON_ICON_WIDTH")
+				)
+			)
+		)
+	)
+)
+
+
+(def element SubRibbonAppearItem (_entityId:number) layout=true
+	(scope
+		(event evShow)
+		(event evBeforeRemove)
+
+		(var subRibbonEntity:gfx = "$datahub.getEntity(_entityId)")
+
+		(var incomeRibbon:gfx = "subRibbonEntity.incomeRibbon" (event "subRibbonEntity.evAdded"))
+		(var count:number = "incomeRibbon ? incomeRibbon.tempCount : 0" (event "incomeRibbon.evTempCountChanged"))
+		(var ribbonIds:str = "'IDS_RIBBON_' + subRibbonEntity.ribbonInfo.ids")
+	)
+
+	(dispatch evShow on='addedToStage')
+
+	(style
+		(width = "SUBRIBBON_ICON_WIDTH")
+		(height = "RIBBON_ICON_HEIGHT")
+	)
+
+	(block
+		(style (align = "center|middle"))
+		(class $FullsizeAbsolute)
+
+		(controller $Animation
+			(bindcall play	duration=0.45
+							easing="Easing.cubic_out"
+							from="{alpha: 1, bottom: 0}"
+							to="{alpha: 0, bottom: count > 0 ? 20 : 0}"
+							watch=false
+							(event "evBeforeRemove")
+			)
+		)
+
+		
+		(element SubRibbonIcon "subRibbonEntity.ribbonInfo.iconName"
+			(style
+				(position = "absolute")
+			)
+			(alpha = 0.5)
+		)
+
+		
+		(block
+			(style
+				(width = 0) (height = 0)
+				(align = "center|middle")
+			)
+
+			(controller $Animation
+				(bindcall play	duration=0.35
+								from="{scaleX: 0, scaleY: 0}"
+								to="{scaleX: 1, scaleY: 1}"
+								(bind enabled "count > 0")
+								(event "evShow")
+				)
+			)
+
+			(block
+				(controller $Instance (renderer = 'SubRibbonIcon')
+					(bind enabled "count > 0")
+					(args "subRibbonEntity.ribbonInfo.iconName")
+				)	
+			)
+		)
+
+		
+		(block
+			(style
+				(position = "absolute")
+				(bottom = "XS") (right = "XS")
+			)
+			(controller $Instance (renderer = 'RibbonCounter')
+				(bind enabled "count > 0")
+				(args "count")
+			)
+		)
+
+		
+		(block
+			(style
+				(position = "absolute")
+				(top = "RIBBON_ICON_HEIGHT + XS")
+				(hcenter = 0)
+			)
+			(controller $Instance (renderer = 'RibbonCaption')
+				(bind enabled "count > 0")
+				(args "ribbonIds" "SUBRIBBON_ICON_WIDTH")
+			)
+		)
+	)	
+)
+

@@ -1,0 +1,1590 @@
+(def constant RENDER_REWARD_ITEMS	{	'Exterior':			'GiftboxRewardExterior',
+										'Modernization':	'RewardModernizationItem',
+										'Ability':			'RewardResourceItem',
+										'Ship':				'RewardShip',
+										'Resource':			'RewardResourceItem',
+										'ResourceCoeff':	'RewardResourceItem',
+										'Crew':				'RewardCrew',
+										'Unit':				'RewardResourceUnit',
+										'Reward':			'UnsupportedReward',
+										'Token':			'RewardTokenItem',
+										'Exchange':			'RewardResourceItem',
+										'Achievement':		'RewardAchievementItem',
+										'Lootbox':			'RewardLootboxItem',
+										'Collection':		'RewardResourceItem',
+										'Unlock':			'RewardCollectionCrewItem',
+										'DogTag':			'RewardDogTagItem',
+										'SSETask':			'RewardSSEItem',
+										'PortalReward':		'RewardPortalSSEItem',
+										'MysteryReward':	'RewardMysterySSEItem' })
+
+(def constant RENDER_REWARD_STATIC_ITEMS	{	'Flags':		'SignalItemStatic',
+												'Camoboost':	'EconomicBoostItemStatic',
+												'Multiboost':	'EconomicBoostItemStatic',
+												'Globalboost':	'EconomicBoostItemStatic',
+												'Camouflage':	'CamouflageItemStatic',
+												'Permoflage':	'CamouflageItemStatic',
+												'Skin':			'CamouflageItemStatic',
+												'MSkin':		'CamouflageItemStatic',
+												'Ensign':		'EnsignItemStatic' })
+
+(def constant RENDER_REWARD_TOOLTIP_ITEMS	{	'Exterior':			'RewardContainerTooltipItemExterior',
+												'Modernization':	'RewardContainerTooltipItemModenization',
+												'Ship':				'RewardContainerTooltipItemShip',
+												'Resource':			'RewardContainerTooltipItemWithSpecialIcon',
+												'ResourceCoeff':	'RewardContainerTooltipItemWithSpecialIcon',
+												'Crew':				'RewardContainerTooltipItemCrew',
+												'Unit':				'RewardUnitTooltipItem',
+												'Reward':			'UnsupportedReward',
+												'Token':			'TokenRewardTooltipItem',
+												'Exchange':			'RewardPersonalExchangeRatesTooltipItem',
+												'Lootbox':			'LootboxRewardTooltipItem',
+												'Collection':		'RewardCollectionCardTooltipItem',
+												'Unlock':			'RewardCollectionCrewTooltipItem',
+												'DogTag':			'RewardDogTagTooltipItem',
+												'SSETask':			'RewardSseTooltipItem',
+												'PortalReward':		'RewardPortalSSETooltipItem',
+												'MysteryReward':	'RewardMysteryTooltipItem',
+												'CampaignStar':		'RewardCampaignStarTooltipItem',
+												'Achievement':		'RewardAchievementTooltipItem' })
+
+(def constant RENDER_REWARD_RESOURCE_ITEMS	{	'exp': 'RewardResources',
+												'gold': 'RewardResources',
+												'steel': 'RewardResources',
+												'coal': 'RewardResources',
+												'molybdenum': 'RewardResources',
+												'brass': 'RewardResources',
+												'saltpeter': 'RewardResources',
+												'eventum_1': 'RewardResources',
+												'eventum_2': 'RewardResources',
+												'eventum_3': 'RewardResources',
+												'eventum_4': 'RewardResources',
+												'eventum_5': 'RewardResources',
+												'eventum_6': 'RewardResources',
+												'eventum_7': 'RewardResources',
+												'eventum_8': 'RewardResources',
+												'eventum_9': 'RewardResources',
+												'eventum_10': 'RewardResources',
+												'eventum_11': 'RewardResources',
+												'eventum_12': 'RewardResources',
+												'eventum_13': 'RewardResources',
+												'eventum_14': 'RewardResources',
+												'eventum_cn': 'RewardResources',
+												'clientum_1': 'RewardResources',
+												'clientum_2': 'RewardResources',
+												'santium': 'RewardResources',
+												'dockyardum_1': 'RewardResources',
+												'dockyardum_2': 'RewardResources',
+												'freeXP': 'RewardResources',
+												'credits': 'RewardResources',
+												'eliteXP': 'RewardResources',
+												'accPoints': 'RewardResources',
+												'crewXP': 'RewardResources',
+												'clanResource': 'RewardResources',
+												'barCapacity': 'RewardResourceBarCapacity',
+												'premium': 'RewardResourcePremium',
+												'wows_premium': 'RewardResourcePremium',
+												'slots': 'RewardResourceSlot',
+												'expCoeff': 'RewardResourcesCoeff',
+												'freexpCoeff': 'RewardResourcesCoeff',
+												'creditsCoeff': 'RewardResourcesCoeff',
+												'accPointsCoeff': 'RewardResourcesCoeff',
+												'crewPointsCoeff': 'RewardResourcesCoeff',
+												'Ability': 'RewardModernizationItem',
+												'Modernization': 'RewardModernizationItem',
+												'creditsGold': 'RewardPersonalExchangeRates',
+												'xpFreeExp': 'RewardPersonalExchangeRates',
+												'goldMoney': 'RewardPersonalExchangeRates',
+												'CollectionCard': 'RewardCollectionItem',
+												'CollectionAlbum': 'RewardCollectionItem',
+												'paragonXP': 'RewardResources',
+												'recruitment_points': 'RewardResources',
+												'snowflake': 'RewardResources',
+												'bpPoints': 'RewardResources',
+												'strategic_points': 'RewardResources' })
+
+(def constant RENDER_REWARD_EXTERIOR_ITEMS	{	'Flags':		'SignalItemStatic',
+												'Camoboost':	'EconomicBoostItemStatic',
+												'Multiboost':	'EconomicBoostItemStatic',
+												'Globalboost':	'EconomicBoostItemStatic',
+												'Camouflage':	'CamouflageItemStatic',
+												'Permoflage':	'CamouflageItemStatic',
+												'Skin':			'CamouflageItemStatic',
+												'MSkin':		'CamouflageItemStatic',
+												'Ensign':		'EnsignItemStatic' })
+
+(def element RewardItem (_reward:dict, _disableWarning:bool = "false", _isBattlePassSmallShipView:bool = "false", _isClickDisabled:bool = "false", _isReceived:bool = "false", _isUnavailable:bool = "false") layout=true dispatch_size_change=true
+	(scope
+		(var isPRMP:bool = "_reward && 'isPRMP' in _reward ? _reward.isPRMP : false")
+		(var rewardItem:dict = "_reward	?	{   id:			_reward.id,
+												amount:		_reward.amount,
+												name:		_reward.name,
+												type:		_reward.type,
+												subtype:	_reward.subtype,
+												params:		_reward.params,
+												isPRMP:		_reward.isPRMP }
+										:	null")
+		
+		(var type:str = "_reward ? _reward.type : null")
+		(var selectedRenderRewardItem:str = "type ? RENDER_REWARD_ITEMS[type] : ''")
+		(var isAvailableForRender:bool = "selectedRenderRewardItem && rewardItem")
+	)
+	(style (marginLeft = 5px) (marginRight = 5px) (marginBottom = 5px) (height = 80px))
+
+	(block
+		(bind alpha "_isReceived || _isUnavailable ? 0.5 : 1")
+		(controller $Instance
+			(bind enabled "isAvailableForRender")
+			(bind renderer "selectedRenderRewardItem")
+			(args
+				_rewardItem = "rewardItem"
+				_withTooltip = "true"
+				_disableWarning = "_disableWarning"
+				_isClickDisabled = "_isClickDisabled"
+				_isBattlePassSmallShipView = "_isBattlePassSmallShipView"
+			)
+		)
+	)
+
+	(block
+		(bind visible "!isPRMP || _isReceived")
+		(class $MiddleAlignedAbsolutely)
+		(style
+			(width = 48px) (height = 48px) (top = 16px) (hitTest = false)
+			(backgroundImage = "'url:../reward_categories/icon_check.png'")
+		)
+	)
+)
+
+(def element RewardSSEItem (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isClickDisabled:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(event onClick)
+		(var sseEntity:gfx = "$datahub.getEntity(_rewardItem.params.sseEntityId)")
+		(var isPersistent:bool = "!!sseEntity.sseCorePersistent")
+		(var sseCategoryId:number = "isPersistent ? sseEntity.sseCorePersistent.tag : sseEntity.sseCore.tag")
+		(var sseId:number = "isPersistent ? sseEntity.sseCorePersistent.id : sseEntity.sseCore.id")
+	)
+	(dispatch onClick on='leftClick')
+
+	
+	(bindcall externalCall "'inputMapping.onAction'" "['SSEProxyCommonUSS.selectTag', { tagId: sseCategoryId, skipDone: false }]" init=false watch=false (event "onClick"))
+	(bindcall externalCall "'inputMapping.onAction'" "['SSEProxyCommonUSS.selectItem', { itemId: sseId }]" init=false watch=false (event "onClick"))
+	
+	(bindcall externalCall "'inputMapping.onAction'" "['moveFromRewards', { }]" init=false watch=false (event "onClick"))
+	(bindcall externalCall "'inputMapping.onAction'" "['navigateTo', { route: SC.Ui_windows.ROUTE.SSE }]" init=false watch=false (event "onClick"))
+
+	(mc icon_sse
+		(style (width = 70px) (height = 54px))
+		(bindcall gotoAndStop "'personalTasksBonus'" init=true)
+	)
+
+	
+)
+
+(def element GiftboxRewardExterior (_rewardItem:dict, _withTooltip:bool = false, _disableWarning:bool = false, _isClickDisabled:bool = false, _isBattlePassSmallShipView:bool = false) layout=true
+	(scope
+		(macro FEATURES "14")
+		(macro FEATURES "15")
+
+		(var exteriorEntity:gfx = "$datahub.getPrimaryEntity(CC.exteriorConfig, _rewardItem.id)")
+		(var exteriorConfig:gfx = "exteriorEntity ? exteriorEntity.exteriorConfig : null")
+
+		(var isPermoflage:bool = "exteriorConfig.type == SC.Ui_common.REWARD_EXTERIOR_TYPE.CAMOUFLAGE && exteriorConfig.isPermanent")
+		(var isFlagsUnavailable:bool = "feature_14 == 'locked' && exteriorConfig.type == SC.Ui_common.REWARD_EXTERIOR_TYPE.FLAGS")
+		(var isCamouflageUnavailable:bool = "feature_15 == 'locked' && exteriorConfig.type == SC.Ui_common.REWARD_EXTERIOR_TYPE.CAMOUFLAGE")
+
+		(var selectedRenderRewardItem:str = "_rewardItem.subtype in RENDER_REWARD_STATIC_ITEMS ? RENDER_REWARD_STATIC_ITEMS[_rewardItem.subtype] : null")
+	)
+	(style (marginTop = 9px) (marginRight = 8px) (marginLeft = 8px))
+	(bindcall externalCall "'inputMapping.onAction'" "['goToReward', { type: _rewardItem.type, subtype: _rewardItem.subtype }]" init=false watch=false on=click (bind enabled "!(isFlagsUnavailable || isCamouflageUnavailable || _rewardItem.isPRMP || isPermoflage)"))
+
+	(block
+		(controller $Instance
+			(bind renderer "selectedRenderRewardItem")
+			(bind enabled "selectedRenderRewardItem")
+			(args
+				_id = "_rewardItem.id"
+				_amount = "_rewardItem.amount"
+				_isReward = "true"
+				_params = "_rewardItem.params"
+			)
+		)
+	)
+)
+
+
+(def element RewardContainerTooltipItem (_reward:dict, _disableWarning:bool = false, _isBattlePassSmallShipView:bool = false) layout=true dispatch_size_change=true
+	(scope
+		(var rewardItem:dict = "_reward	?	{   id:			_reward.id,
+												amount:		_reward.amount,
+												name:		_reward.name,
+												type:		_reward.type,
+												subtype:	_reward.subtype,
+												params:		_reward.params,
+												isPRMP:		true }
+										:	null")
+		(var withTooltip:bool =	"'withTooltip' in _reward ? _reward.withTooltip	: false")
+		(var type:str =			"_reward ? _reward.type : null")
+
+		(var selectedRenderRewardItem:str = "type in RENDER_REWARD_TOOLTIP_ITEMS ? RENDER_REWARD_TOOLTIP_ITEMS[type] : ''")
+		(var isAvailableForRender:bool = "selectedRenderRewardItem && rewardItem")
+	)
+	(style (width = 100%) (paddingTop = "S") (paddingBottom = "S"))
+
+	(controller $Instance
+		(bind renderer "selectedRenderRewardItem")
+		(bind enabled "isAvailableForRender")
+		(args
+			_rewardItem = "rewardItem"
+			_withTooltip = "withTooltip"
+			_disableWarning = "_disableWarning"
+			_isBattlePassSmallShipView = "_isBattlePassSmallShipView"
+		)
+	)
+)
+
+
+
+(def element RewardAchievementTooltipItem (_rewardItem:dict, _withTooltip:bool = false, _disableWarning:bool = false, _isBattlePassSmallShipView:bool = false) layout=true
+	(scope
+		(var achievementEntity:gfx = "$datahub.getPrimaryEntity(CC.achievement, _rewardItem.id)")
+		(var achievementInfo:gfx = "achievementEntity ? achievementEntity.achievementInfo : null")
+		(var typeIDS:str = "achievementInfo ? toUpper('IDS_ACHIEVEMENT_TYPE_' + achievementInfo.uiType) : ''")
+	)
+	(style (width = "100%"))
+
+	(element TooltipSystemHeaderWithIconAndText
+		_imageUrl =			"'url:../achievements/icon_achievement_' + achievementInfo.name + '.png'"
+		_imageWidth =		80
+		_imageHeight =		80
+		_unifiedStatus =	"SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		_headerText =		"achievementInfo.nameIDS"
+		_headerIconType =	"SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.SIMPLE"
+		_subheaderText =	"typeIDS"
+	)
+)
+
+(def element UnsupportedReward (_rewardItem:dict, _withTooltip:bool = false, _disableWarning:bool = false, _isBattlePassSmallShipView:bool = false) layout=true
+	(tf
+		(class $TextHeaderBold)
+		(style (textColor = "SC.Ui_styles.SERVICE_COLORS.ORANGE") (marginBottom = 5px))
+		(bind text "'REWARD: ' + _rewardItem.type + '- IS NOT SUPPORTED'")
+	)
+)
+
+(def element TokenRewardTooltipItem (_rewardItem:dict, _withTooltip:bool = false, _disableWarning:bool = false, _isBattlePassSmallShipView:bool = false) layout=true dispatch_size_change=true
+	(style (width = 100%) (minHeight = 80px) (flow = "horizontal") (align = "middle"))
+
+	(block
+		(style (height = 100%) (align = "top") (marginRight = "M"))
+		(element RewardTokenItem
+			_rewardItem =	"_rewardItem"
+			_withTooltip =	"_withTooltip"
+		)
+	)
+
+	(element RewardTooltipItemText
+		_title = "'IDS_' + toUpper(_rewardItem.name) + '_TOKEN'"
+		_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+	)
+)
+
+
+(def element LootboxRewardTooltipItem (_rewardItem:dict, _withTooltip:bool = false, _disableWarning:bool = false, _isBattlePassSmallShipView:bool = false) layout=true
+	(scope
+		(macro FEATURES "21")
+		(var warningText:str = "!_disableWarning && (feature_21 == 'locked') ? 'IDS_LOW_ACCESS_LEVEL' : ''")
+		(var iconPath:str = "'url:../reward_icons/' + _rewardItem.subtype + '.png'")
+		(var amount:number = "_rewardItem.amount")
+	)
+	(style (width = 100%) (minHeight = 80) (flow = "horizontal") (align = "middle"))
+	(block
+		(style (height = 100%) (align = "top") (marginRight = "M"))
+		(element IconWithAmount
+			_width =	80
+			_height =	80
+			_iconPath = "iconPath"
+			_amount = "amount"
+		)
+	)
+
+	(element RewardTooltipItemText
+		_title =	"'IDS_REWARD_LOOTBOX_' + toUpper(_rewardItem.subtype) + '_TITLE'"
+		_warning =	"warningText"
+	)
+)
+
+(def element RewardPortalSSETooltipItem () layout=true
+	(style (width = 100%))
+	(controller $Instance renderer='TooltipSystemHeaderWithIconAndText'
+		(args
+			_imageUrl =			"'url:../reward_icons/PortalReward.png'"
+			_imageWidth =		80
+			_imageHeight =		80
+			_headerText =		"'IDS_REWARD_PORTALREWARD_TITLE'"
+			_unifiedStatus =	"SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		)
+	)
+)
+
+(def element RewardMysteryTooltipItem () layout=true
+	(style (width = 100%))
+	(element TooltipSystemHeaderWithIconAndText
+		_imageUrl =			'url:../reward_icons/MysteryReward.png'
+		_imageWidth =		80
+		_imageHeight =		80
+		_headerText =		'IDS_REWARD_MYSTERYREWARD_TITLE'
+		_unifiedStatus =	"SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+	)
+)
+
+(def element RewardContainerTooltipItemShip (_rewardItem:dict, _withTooltip:bool = false, _disableWarning:bool = false, _isBattlePassSmallShipView:bool = false) layout=true
+	(scope
+		(var shipEntity:gfx =	"$datahub.getPrimaryEntity(CC.ship, _rewardItem.id)")
+		(var shipInfo:gfx =		"shipEntity ? shipEntity.ship : null"	(event "shipEntity.ship.evUpdate")
+																		(event "shipEntity.ship.evCurrentSkinChanged"))
+	
+		(var rentDuration:number = "'rentDuration' in _rewardItem.params ? _rewardItem.params.rentDuration : null")
+		(var rentUntil:number = "'rentUntil' in _rewardItem.params ? _rewardItem.params.rentUntil : null")
+		(var isRentShip:bool = "rentDuration || rentUntil")
+	)
+	(style (width = 100%) (flow = "horizontal") (align = "middle"))
+
+	(element RewardShip
+		_rewardItem =	"_rewardItem"
+		_isRentHidden =	"isRentShip"
+	)
+)
+
+(def element RewardContainerTooltipItemCrew (_rewardItem:dict, _withTooltip:bool = false, _disableWarning:bool = false, _isBattlePassSmallShipView:bool = false) layout=true
+	(style (width = 100%) (minHeight = 74px) (flow = "horizontal") (align = "middle"))
+	(block
+		(style (height = 100%) (align = "top") (marginRight = "M"))
+
+		(element CrewStereotype
+			_crewHistoryId = "_rewardItem.params.primaryKey"
+			_size = "SIZE.SMALL"
+		)
+	)
+	(block
+		(style (width = 100%))
+		(element CrewNameWithIcon
+			_crewHistoryId = "_rewardItem.params.primaryKey"
+
+			(style (width = 100%))
+		)
+		(block
+			(style (width = 100%) (marginTop = "SXS"))
+			(controller $Instance renderer='ShipLineItemNM'
+				(bind enabled "_rewardItem.params.specializationID")
+				(args
+					_shipId = "_rewardItem.params.specializationID"
+					_withFlag = "true"
+				)
+			)
+		)
+	)
+)
+
+
+(def element RewardContainerTooltipItemWithSpecialIcon (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(style (width = 100%) (minHeight = 80px) (flow = "horizontal") (align = "middle"))
+
+	(block
+		(style (width = 80px) (height = 100%) (align = "top|center") (marginRight = "M"))
+
+		(element RewardResourceItem
+			_rewardItem = "_rewardItem"
+			_withTooltip = "_withTooltip"
+		)
+	)
+
+	(element RewardTooltipItemText
+		_title = "'IDS_REWARD_' + toUpper(_rewardItem.subtype) + '_TITLE'"
+	)
+)
+
+
+(def element RewardContainerTooltipItemExterior (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var exteriorEntity:gfx = "$datahub.getPrimaryEntity(CC.exteriorConfig, _rewardItem.id)")
+		(var exteriorConfig:gfx = "exteriorEntity ? exteriorEntity.exteriorConfig : null")
+
+		(var signalEntity:gfx = "$datahub.getPrimaryEntity(CC.signal, _rewardItem.id)")
+		(var ensignEntity:gfx = "$datahub.getPrimaryEntity(CC.ensign, _rewardItem.id)")
+		(var ecoBoostEntity:gfx = "$datahub.getPrimaryEntity(CC.ecoBoost, _rewardItem.id)")
+
+		(var shipEntity:gfx = "$datahub.getPrimaryEntity(CC.ship, _rewardItem.params.shipId)")
+		(var shipInfo:gfx = "shipEntity ? shipEntity.ship : null")
+
+		(var itemName:str = "	exteriorEntity	? toUpper('IDS_' + exteriorConfig.name) :
+								signalEntity	? toUpper('IDS_' + signalEntity.signal.name) :
+								ensignEntity	? toUpper('IDS_' + ensignEntity.ensign.name) :
+								ecoBoostEntity	? _rewardItem.subtype != 'Multiboost'	? toUpper('IDS_' + ecoBoostEntity.ecoBoost.name)
+																						: 'IDS_MULTIBOOST_TITLE'
+												: ''")
+
+		(var exteriorFilteringGroup:gfx = "exteriorEntity ? exteriorEntity.filteringGroup : null")
+		(var ecoboostFilteringGroup:gfx = "ecoBoostEntity ? ecoBoostEntity.filteringGroup : null")
+
+		
+		(var exteriorLevelFiltersRoman:str ="exteriorFilteringGroup ? exteriorFilteringGroup.levelString : ''" (event "exteriorFilteringGroup.evUpdate"))
+		(var doesExteriorHasLevelRestrictions:bool = "exteriorLevelFiltersRoman.length > 0")
+
+		(var ecoboostLevelFiltersRoman:str ="ecoboostFilteringGroup ? ecoboostFilteringGroup.levelString : ''" (event "ecoboostFilteringGroup.evUpdate"))
+		(var doesEcoBoostHasLevelRestrictions:bool = "ecoboostLevelFiltersRoman.length > 0")
+
+		(var hasLevelRestrictions:bool = "doesExteriorHasLevelRestrictions || doesEcoBoostHasLevelRestrictions")
+
+		(var ecoBoostRarity:number = "ecoBoostEntity ? ecoBoostEntity.ecoBoost.rarity : 0")
+
+		(var basicTitleWithShipName:str = "_rewardItem.subtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.MULTIBOOST	? 'IDS_MULTIBOOST_WITH_SHIP_TITLE'
+																												: 'IDS_EXTERIOR_NAME_WITH_SHIP'")
+		(var basicTitleWithShipLevel:str = "_rewardItem.subtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.MULTIBOOST	? 'IDS_MULTIBOOST_WITH_LEVEL_TITLE'
+																												: 'IDS_EXTERIOR_NAME_WITH_LEVEL'")
+
+		(var romanLevel:str = "doesExteriorHasLevelRestrictions	? exteriorLevelFiltersRoman
+																: ecoboostLevelFiltersRoman")
+
+		(var title:str = "	_rewardItem.subtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.GLOBALBOOST	? 'IDS_GLOBALBOOST_TITLE' :
+							_rewardItem.params.shipId != null										? subst(basicTitleWithShipName, [], {exteriorName: tr(itemName), shipName: toUpper(tr(shipInfo.nameIDS))}) :
+							hasLevelRestrictions													? subst(basicTitleWithShipLevel, [], {exteriorName: tr(itemName), levelRange: romanLevel})
+																									: tr(itemName)")
+		
+		(var description:str = "_rewardItem.subtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.FLAGS					? 'IDS_EXTERIOR_TYPE_FLAGS' :
+								(_rewardItem.subtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.CAMOUFLAGE	||
+								_rewardItem.subtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.PERMOFLAGE		||
+								_rewardItem.subtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.SKIN			||
+								_rewardItem.subtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.MSKIN)					? tr('IDS_EXTERIOR_TYPE_' + _rewardItem.subtype) :
+								_rewardItem.subtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.ENSIGN					? ensignEntity.ensign.group	? 'IDS_ENSIGN_GROUP_SUBTYPE_' + ensignEntity.ensign.group
+																																			: 'IDS_SEASON_ENSIGN' :
+								_rewardItem.subtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.CAMOBOOST				? tr('IDS_ECONOMIC_BOOST_TYPE_EXPENDABLE_' + ecoBoostRarity) :
+								_rewardItem.subtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.MULTIBOOST		||
+								_rewardItem.subtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.GLOBALBOOST			? 'IDS_ECONOMIC_BOOST_TYPE_MULTIBOOST'
+																												: itemName + '_DESCRIPTION'")
+		(var selectedRenderItem:str = "_rewardItem && _rewardItem.subtype in RENDER_REWARD_EXTERIOR_ITEMS ? RENDER_REWARD_EXTERIOR_ITEMS[_rewardItem.subtype] : ''")
+	)
+	(style (width = 100%) (minHeight = 60px) (flow = "horizontal") (align = "middle"))
+
+	(block
+		(style (height = 100%) (width = 80px) (align = "top|center") (marginRight = "M"))
+		(controller $Instance
+			(bind enabled "selectedRenderItem")
+			(bind renderer "selectedRenderItem")
+			(args
+				_id = "_rewardItem.id"
+				_amount = "_rewardItem.amount"
+				_isReward = true
+				_params = "_rewardItem.params"
+			)
+		)
+	)
+
+	(element RewardTooltipItemText
+		_title = "title"
+		_description = "description"
+	)
+)
+
+(def element RewardContainerTooltipItemModenization (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var title:str= "'IDS_TITLE_' + toUpper(_rewardItem.params.item.title)")
+		(var description:str = "'IDS_MODERNIZATION_' + _rewardItem.params.item.type")
+	)
+
+	(style (width = 100%) (minHeight = 60px) (flow = "horizontal") (align = "middle"))
+
+	(block
+		(style (width = 80px) (height = 100%) (align = "top|center") (marginRight = "M"))
+
+		(element RewardResourceItem
+			_rewardItem = "_rewardItem"
+		)
+	)
+
+	(element RewardTooltipItemText
+		_title = "title"
+		_description = "description"
+	)
+)
+
+(def element RewardCollectionCardTooltipItem (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var title:str = "'IDS_' + _rewardItem.params.item.title")
+		(var collectionNameQuotes:str = "tr(toUpper('IDS_' + _rewardItem.params.collectionName + '_QUOTES'))")
+		(var description:str = "_rewardItem.params.collectionName	? subst('IDS_COLLECTION_NAME', [], { _collectionName: collectionNameQuotes })
+																	: 'IDS_ITEM_TYPE_COLLECTION'")
+	)
+	(style (width = 100%) (minHeight = 80px) (flow = "horizontal") (align = "middle"))
+
+	(block
+		(style (width = 80px) (height = 100%) (align = "top|center") (marginRight = "M"))
+
+		(element RewardCollectionItem
+			_rewardItem = "_rewardItem"
+		)
+	)
+	
+	(element RewardTooltipItemText
+		_title =	"tr(toUpper(title))"
+		_description = "description"
+	)
+)
+
+(def element RewardTooltipItemText (_title:str, _description:str = "''", _warning:str = "null", _unifiedStatus:str = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT") layout=true
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "_unifiedStatus" "'textColor'" "'textAlpha'")
+	(style (width = 100%))
+
+	(tf
+		(class $TextDefaultBold17NM)
+		(style (width = 100%) (leading = -4) (bind alpha "textAlpha") (bind textColor "textColor"))
+		(bind text "_title")
+	)
+
+	(tf
+		(bind visible "_description")
+		(class $TextDefaultNM)
+		(style	(width = 100%)
+				(marginTop = "S")
+				(leading = -2)
+				(bind alpha "textColor == SC.Ui_styles.SERVICE_COLORS.WHITE ? TC : 1")
+				(bind textColor "textColor"))
+		(bind text "_description")
+	)
+
+	(tf
+		(bind visible "_warning")
+		(class $TextDefaultNM)
+		(style (width = 100%) (marginTop = "S") (leading = -2) (textColor = "SC.Ui_styles.SERVICE_COLORS.ORANGE"))
+		(bind text "_warning")
+	)
+)
+
+(def element IconWithAmount (_iconPath:str, _amount:number = 0, _width:number = 0, _height:number = 0) layout=true
+	(style
+		(bind width "_width ? _width : 60")
+		(bind height "_height ? _height : 60")
+		(align = "right|bottom")
+		(backgroundSize = "fill")
+		(bind backgroundImage "_iconPath")
+	)
+	
+	(controller $Instance renderer='ImageItemsCounter'
+		(bind enabled "_amount != 0")
+		(args
+			_amount = "_amount"
+		)
+	)
+)
+
+(def element RewardCollectionItem (_rewardItem:dict) layout=true
+	(scope
+		(event onClick)
+		(var iconPath:str = "_rewardItem ? 'url:' +  _rewardItem.params.item.iconPath : ''")
+		(var isDuplicate:bool = "_rewardItem ? _rewardItem.params.isDuplicate : false")
+		(var amount:number = "_rewardItem ? _rewardItem.amount : 0")
+	)
+	(dispatch onClick on=click)
+	(bindcall externalCall "'inputMapping.onAction'" "['moveFromRewards', { }]" init=false watch=false (event "onClick"))
+	(bindcall externalCall "'inputMapping.onAction'" "['goToReward', { type: 'Lootbox', subtype: _rewardItem.params.collectionName, subAlbum: _rewardItem.params.subAlbum  }]" init=false watch=false (event "onClick"))
+
+	(style
+		(width = 80px)
+		(height = 80px)
+		(align = "right|bottom")
+		(bind backgroundImage "iconPath")
+		(backgroundSize = "cover")
+	)
+
+	(controller $Instance renderer='ImageItemsCounter'
+		(bind enabled "amount > 1")
+		(args
+			_amount = "amount"
+		)
+	)
+
+	(block
+		(bind visible "isDuplicate")
+		(style (position = "absolute") (top = 50%) (left = 50%) (alpha = 1.2) (hitTest = false))
+
+		(mc icon_issued_small
+			(style (bind rotation "-3"))
+			(.item
+				(.item
+					(bind text "toUpper(tr('IDS_DUPLICATE_STAMP'))")
+				)
+			)
+			(bindcall gotoAndStop "'issued'" init=true)
+		)
+	)
+)
+
+
+
+(def element RewardResourceItem (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isClickDisabled:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var selectedRenderRewardResourceItem:str = "_rewardItem.subtype in RENDER_REWARD_RESOURCE_ITEMS ? RENDER_REWARD_RESOURCE_ITEMS[_rewardItem.subtype] : null")
+	)
+	(bindcall externalCall "!(_rewardItem.isPRMP || !(_rewardItem.type == 'Ability')) ? 'inputMapping.onAction' : ''" "['goToReward', { type: _rewardItem.type, subtype: _rewardItem.subtype }]" init=false watch=false on='leftClick')
+
+	(controller $Instance
+		(bind renderer "selectedRenderRewardResourceItem")
+		(bind enabled "selectedRenderRewardResourceItem")
+		(args
+			_rewardItem = "_rewardItem"
+		)
+	)
+
+	(controller $Tooltip
+		(bind enabled "_withTooltip")
+		(renderer='RewardResourcesTooltip')
+		(args
+			_rewardItem = "_rewardItem"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+	)
+)
+
+(def element RewardDogTagItem (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isClickDisabled:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var dogTagEntity:gfx =	"$datahub.getPrimaryEntity(CC.dogTagItem, _rewardItem.id)")
+		(var gpName:str = "dogTagEntity ? dogTagEntity.dogTagItem.gpName : ''" (event "dogTagEntity.dogTagItem.evUpdate"))
+		(var isColorizableShape:bool = "dogTagEntity.dogTagBackgroundShape ? dogTagEntity.dogTagBackgroundShape.isColorizable : false" (event "dogTagEntity.dogTagBackgroundShape.evUpdate"))
+
+		(var iconPath:str = "'url:../dogTags/small/' + gpName +  (isColorizableShape ? '/PCNT001' : '') + '.png'")
+	)
+	(bindcall externalCall "!_isClickDisabled ? 'inputMapping.onAction' : ''" "['moveFromRewards', { }]" init=false watch=false on='leftClick')
+	(bindcall externalCall "!_isClickDisabled ? 'inputMapping.onRequest' : ''" "['modalDogTag', { }]" init=false watch=false on='leftClick')
+
+	(element IconWithAmount
+		_width =	80
+		_height =	80
+		_iconPath = "iconPath"
+	)
+
+	(block
+		(bind visible "_rewardItem.params.isDuplicate")
+		(style (position = "absolute") (top = 50%) (left = 50%) (alpha = 0.9) (hitTest = false))
+		(mc icon_issued
+			(style
+				(bind scaleX "0.6")
+				(bind scaleY "0.6")
+				(bind rotation "-3")
+			)
+
+			(.item
+				(.item
+					(bind text "toUpper(tr('IDS_DUPLICATE_STAMP'))")
+				)
+			)
+			(bindcall gotoAndStop "'issued'" init=true)
+		)
+	)
+	(controller $Tooltip
+		(bind enabled "_withTooltip")
+		(renderer='DogTagComponentTooltip')
+		(args
+			_elementEntityId = "_rewardItem.id"
+			_isNotSelf = true
+			_isRewardTooltip = true
+			_isClickDisabled = "_isClickDisabled"
+		)
+		(cache = false)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+	)
+)
+
+(def element RewardDogTagTooltipItem (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isClickDisabled:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var dogTagEntity:gfx =	"$datahub.getPrimaryEntity(CC.dogTagItem, _rewardItem.id)")
+		(var gpName:str = "dogTagEntity.dogTagItem.gpName" (event "dogTagEntity.dogTagItem.evUpdate"))
+		(var categoryId:number = "dogTagEntity.dogTagItem.categoryId" (event "dogTagEntity.dogTagItem.evUpdate"))
+
+		(var title:str = "tr(toUpper('IDS_DOGTAG_' + gpName + '_NAME'))")
+		(var description:str = "tr('IDS_DOGTAG_COMPONENT_TOOLTIP_CATEGORY_' + categoryId)")
+	)
+
+	(style (width = 100%) (minHeight = 80px) (flow = "horizontal") (align = "middle"))
+
+	(block
+		(style (height = 100%) (align = "top") (marginRight = "M"))
+
+		(element RewardDogTagItem
+			_rewardItem =		"_rewardItem"
+			_isNoTooltip =		"true"
+			_isClickDisabled =	"_isClickDisabled"
+		)
+	)
+
+	(element RewardTooltipItemText
+		_title =	"title"
+		_description = "description"
+	)
+)
+
+
+(def element RewardModernizationItem (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isClickDisabled:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var iconPath:str = "'url:' + _rewardItem.params.item.iconPath")
+		(var amount:number = "_rewardItem.amount")
+	)
+
+	(element IconWithAmount
+		_iconPath = "iconPath"
+		_amount = "amount"
+	)
+
+	(controller $Tooltip
+		(bind enabled "_withTooltip")
+		(renderer='RewardModernizationTooltip')
+		(args
+			_rewardItem = "_rewardItem"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+	)
+)
+
+
+(def element RewardTokenItem (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isClickDisabled:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(style	(width = 80px) (height = 80px) (backgroundSize = "cover")
+			(bind backgroundImage "'url:../tokens/' + _rewardItem.name + '.png'"))
+
+	(bindcall externalCall "'inputMapping.onAction'" "['navigateTo', { route: SC.Ui_windows.ROUTE.CAMPAIGNS_CHOOSE_CAMPAIGN }]" init=false watch=false on=click)
+
+	(controller $Tooltip
+		(bind enabled "_withTooltip")
+		(renderer='RewardResourcesTooltip')
+		(args
+			_rewardItem = "_rewardItem"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+	)
+)
+
+
+
+(def element RewardLootboxItem (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isClickDisabled:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var iconPath:str = "_rewardItem ? 'url:../reward_icons/' + _rewardItem.subtype + '.png' : ''")
+		(var amount:number = "_rewardItem ? _rewardItem.amount : 0")
+	)
+
+	(element IconWithAmount
+		_width = "80"
+		_height = "80"
+		_iconPath = "iconPath"
+		_amount = "amount"
+	)
+
+	(controller $Tooltip
+		(bind enabled "_withTooltip")
+		(renderer='RewardResourcesTooltip')
+		(args
+			_rewardItem = "_rewardItem"
+			_disableWarning = "_disableWarning"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+	)
+)
+
+(def element RewardPortalSSEItem (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isClickDisabled:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var iconPath:str = "_rewardItem ? 'url:../reward_icons/' + _rewardItem.subtype + '.png' : ''")
+		(var amount:number = "_rewardItem ? _rewardItem.amount : 0")
+	)
+
+	(element IconWithAmount
+		_width = "80"
+		_height = "80"
+		_iconPath = "iconPath"
+		_amount = "amount"
+	)
+
+	(controller $Tooltip
+		(renderer='RewardPortalSSETooltip')
+		(bind enabled "_withTooltip")
+		(args
+			_rewardItem = "_rewardItem"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element RewardMysterySSEItem (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isClickDisabled:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var iconPath:str = "'url:../reward_icons/' + _rewardItem.subtype + '.png'")
+		(var amount:number = "_rewardItem.amount")
+	)
+
+	(element IconWithAmount
+		_width = "80"
+		_height = "80"
+		_iconPath = "iconPath"
+		_amount = "amount"
+	)
+
+	(controller $Tooltip
+		(renderer='RewardMysterySSETooltip')
+		(bind enabled "_withTooltip")
+		(args
+			_rewardItem = "_rewardItem"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element RewardShip (_rewardItem:dict, _isRentHidden:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var shipEntity:gfx =	"$datahub.getPrimaryEntity(CC.ship, _rewardItem.id)")
+		(var shipInfo:gfx =		"shipEntity ? shipEntity.ship : null"	(event "shipEntity.ship.evUpdate")
+																		(event "shipEntity.ship.evCurrentSkinChanged"))
+	
+		(var rentDuration:number = "_rewardItem.params.rentDuration")
+		(var rentUntil:number = "_rewardItem.params.rentUntil")
+		(var isRentShip:bool = "rentDuration || rentUntil")
+
+		(var isFarming:bool = "shipInfo ? shipInfo.isFarming : false")
+		(var uiSpecial:bool = "shipInfo ? shipInfo.uiSpecial : false")
+		(var shipGroup:str = "shipInfo ? shipInfo.group : ''")
+		(var flagName:str = "shipInfo ? shipInfo.flagName : ''")
+		(var pathPreview:str = "'url:' + (shipInfo ? shipInfo.pathPreview : '')")
+
+		(var shipProfitabilitySuffix:str = "uiSpecial	? SC.Common.SHIP_SPECIAL_FILTER_TYPE.SPECIAL :
+											isFarming	? SC.Common.SHIP_SPECIAL_FILTER_TYPE.PREMIUM
+														: SC.Common.SHIP_SPECIAL_FILTER_TYPE.ELITE")
+
+		(var shipName:str = "shipInfo ? toUpper(tr(shipInfo.nameIDS)) : ''")
+	)
+	(bindcall externalCall "'inputMapping.onAction'" "['selectShipForManagement', { shipId: _rewardItem.id }]" init=false watch=false on=click (bind enabled "_rewardItem.isPRMP"))
+
+	(block
+		(bind visible "_isBattlePassSmallShipView") 
+		(style (width = 80px) (height = 80px) (bind backgroundImage "'url:../reward_icons/ship_' + shipProfitabilitySuffix + '.png'"))
+
+		(controller $Tooltip
+			(renderer='ShipExtendedTooltip')
+			(args
+				_shipId = "_rewardItem.id"
+				_inRewards = "true"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+
+		(block
+			(bind visible "isRentShip && !_isRentHidden")
+			(style
+				(position = "absolute") (left = 4px) (bottom = 7px) (hitTest = false)
+				(width = 21px) (height = 21px) (backgroundImage = "'url:../service_kit/icons/icon_rent_white.png'")
+			)
+		)
+	)
+
+	(block
+		(bind visible "!_isBattlePassSmallShipView")
+		(style (width = 143px) (height = 80px)) 
+		
+		(controller $Tooltip
+			(renderer='ShipExtendedTooltip')
+			(args
+				_shipId = "_rewardItem.id"
+				_inRewards = true
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+		
+		
+		(block
+			(class $FullsizeAbsolute)
+			(style (alpha = 0.6) (hitTest = false))
+			(element NationFlagsBig
+				_width =		'100%'
+				_height =		'100%'
+				_shipCountry =	"flagName"
+			)
+		)
+
+		
+		(block
+			(style
+				(position = "absolute")
+				(align = "center|middle")
+				(width = 143px)
+				(height = 84px)
+				(top = "-XXS")
+				(backgroundSize = "fill")
+				(bind backgroundImage "pathPreview")
+				(hitTest = false)
+			)
+		)
+
+		
+		(block
+			(style (position = "absolute") (right = "XXS") (top = "S"))
+
+			(controller $Instance renderer='RentTimer'
+				(bind enabled "isRentShip")
+				(args
+					_rentUntil = "rentUntil"
+					_rentDuration = "rentDuration"
+					_shipGroup = "shipGroup"
+					_forceShow = true
+				)
+			)
+		)
+
+		
+		(block
+			(style (marginLeft = "S") (marginTop = "S"))
+
+			(controller $Instance renderer='ShipLineItemNM'
+				(args
+					_shipId = "_rewardItem.id"
+					_withFlag = false
+					_hideName = true
+					_largeLevelPadding = false
+					_fontClass = "'$TextDefaultBold13NM'"
+				)
+			)
+		)
+		
+		(block
+			(style (position = "absolute") (bottom = "-S") (right = "XXS") (hitTest = false))
+
+			(tf
+				(class $TextDefaultBold)
+				(style
+					(letterSpacing = 0)
+					(bind textColor "isFarming || uiSpecial ? SC.Ui_styles.SERVICE_COLORS.YELLOW : SC.Ui_styles.SERVICE_COLORS.WHITE")
+				)
+				(bind text "shipName")
+			)
+		)
+	)
+)
+
+
+(def element RewardResources (_rewardItem:dict) layout=true
+	(scope
+		(var currency:str = "_rewardItem.subtype == 'clanResource'	?	SC.Common.CURRENCIES.CLAN_RESOURCE
+																	:	_rewardItem.subtype")
+	)
+	(style
+		(width = 80px)
+		(height = 80px)
+		(align = "right|bottom")
+		(bind backgroundImage "'url:../reward_icons/' + _rewardItem.subtype + '.png'")
+	)
+	(controller $Instance renderer='ImageCurrencyCounter'
+		(bind enabled "_rewardItem.amount > 0")
+		(args
+			_priceInfo = "{finalPrice: _rewardItem.amount, currency: currency}"
+		)
+	)
+)
+
+(def element RewardResourceBarCapacity (_rewardItem:dict) layout=true
+	(style
+		(width = 80px)
+		(height = 80px)
+		(align = "right|bottom")
+		(bind backgroundImage "'url:../reward_icons/' + _rewardItem.subtype + '.png'")
+	)
+
+	(controller $Instance renderer='ImageItemsCounter'
+		(bind enabled "_rewardItem.amount > 0")
+		(args
+			_amount = "_rewardItem.amount"
+		)
+	)
+)
+
+(def element RewardCrew (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isClickDisabled:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(element CrewStereotype
+		_crewHistoryId = "_rewardItem.params.primaryKey"
+		_showRentIcon = "true"
+		_size = "SIZE.SMALL"
+	)
+)
+
+(def element RewardResourceSlot (_rewardItem:dict) layout=true
+	(style
+		(width = 80px)
+		(height = 80px)
+		(align = "right|bottom")
+		(bind backgroundImage "'url:../reward_icons/' + _rewardItem.subtype + '.png'")
+	)
+
+	(controller $Instance renderer='ImageItemsCounter'
+		(bind enabled "_rewardItem.amount > 0")
+		(args
+			_amount = "_rewardItem.amount"
+		)
+	)
+)
+
+(def element RewardResourcePremium (_rewardItem:dict) layout=true
+	(style
+		(width = 80px)
+		(height = 80px)
+		(align = "right|bottom")
+		(bind backgroundImage "'url:../reward_icons/' + _rewardItem.subtype + '.png'")
+	)
+	(controller $Instance renderer='ImageTextCounter'
+		(bind enabled "_rewardItem.amount != 0")
+		(args
+			_text = "formatTime(_rewardItem.amount, 'HIGHESTDAYS', '', true)"
+			_textColor = "SC.Ui_styles.SERVICE_COLORS.YELLOW"
+		)
+	)
+)
+
+
+(def element RewardResourcesCoeff (_rewardItem:dict) layout=true
+	(style
+		(width = 80px)
+		(height = 80px)
+		(align = "right|bottom")
+		(bind backgroundImage "'url:../reward_icons/' + _rewardItem.subtype + '.png'")
+	)
+
+	(element ImageTextCounter _text = "toString(_rewardItem.amount)")
+)
+
+(def element RewardPersonalExchangeRates (_rewardItem:dict) layout=true
+	(style (width = 80px) (height = 80px) (bind backgroundImage "'url:../reward_icons/' + _rewardItem.subtype + '.png'"))
+)
+
+(def element RewardPersonalExchangeRatesTooltipItem (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(style (flow = "horizontal"))
+	(block
+		(style (width = 80px) (height = 80px) (bind backgroundImage "'url:../reward_icons/' + _rewardItem.subtype + '.png'"))
+	)
+	(tf
+		(style (marginTop = 3px))
+		(class $TextHeaderBold)
+		(bind text "'IDS_PRMP_ITEM_' + toUpper(tr(_rewardItem.subtype))")
+	)
+)
+
+
+(def element RewardResourcesTooltip (_rewardItem:dict, _disableWarning:bool = false) layout=true
+	(scope
+		(var mouseInstructionText:str = "	_rewardItem.subtype == 'CollectionCard'	?	'IDS_GO_TO_COLLECTION_SCREEN':
+											_rewardItem.type == 'Token' &&
+											_rewardItem.subtype == 'Campaign'		?	'IDS_GO_TO_CAMPAIGNS_MOUSE_INSTRUCTION'
+																					: null")
+		(var isAmountVisible:bool = "(	_rewardItem.type == 'Ability' ||
+										_rewardItem.subtype == 'slots' ||
+										_rewardItem.subtype == 'barCapacity') && (!_rewardItem.isPRMP)")
+	)
+	(style (hitTest = false) (width = 340px))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+
+		(block
+			(style (width = "100%") (paddingTop = "-S") (paddingBottom = "-S"))
+			
+			(element RewardContainerTooltipItem
+				_reward = "_rewardItem"
+				_disableWarning = "_disableWarning"
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isAmountVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "isAmountVisible")
+				(args
+					_descriptionText = "subst('IDS_REWARD_EARNED_COLON', [], {_count: toString(_rewardItem.amount)})"
+				)
+			)
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "mouseInstructionText"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "mouseInstructionText")
+				(args
+					_text = "mouseInstructionText"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+				)
+			)
+		)
+	)
+)
+
+
+(def element RewardModernizationTooltip (_rewardItem:dict) layout=true
+	(scope
+		(var descriptionText:str = "tr('IDS_DESC_' + toUpper(_rewardItem.params.item.description))")
+		(var isDescriptionVisible:str = "descriptionText != ' '")
+		(var amountText:str = "subst('IDS_REWARD_EARNED_MODERNIZATION', [], {_count: toString(_rewardItem.amount)})")
+	)
+	(style (hitTest = "false") (width = "340px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		
+		(element RewardContainerTooltipItem
+			_reward = "_rewardItem"
+			(style (marginTop = 6px) (marginBottom = 9px) (marginLeft = 12px) (marginRight = 12px))
+		)
+
+		
+		(block
+			(bind visible "!_rewardItem.isPRMP")
+			(style (width = 100%))
+			(element TooltipSystemHorizontalDivider)
+
+			(tf
+				(class $InfoBlockIndent)
+				(class $TextDefault)
+				(bind text "amountText")
+			)
+		)
+
+		
+		(block
+			(bind visible "isDescriptionVisible")
+			(style (width = 100%))
+			(element TooltipSystemHorizontalDivider)
+
+			(tf
+				(class $InfoBlockIndent)
+				(class $TextDefault)
+				(bind text "descriptionText")
+			)
+		)
+	)
+)
+
+(def element RewardCollectionCrewItem (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isClickDisabled:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var rewardShipClasses:array = "_rewardItem.params.shipClasses")
+		(var rewardUnlockIconPath:str = "rewardShipClasses.length > 0	?	('url:../reward_icons/reward_unlocks/reward_' + toLower(tr(_rewardItem.name)) + '_' + toLower(tr(rewardShipClasses[0])) + '.png')
+																		:	('url:../reward_icons/reward_unlocks/reward_' + toLower(tr(_rewardItem.name)) + '.png')")
+		
+	)
+	(style (width = 60px) (height = 60px) (backgroundSize = "cover") (bind backgroundImage "rewardUnlockIconPath"))
+
+	(controller $Tooltip
+		(bind enabled "_withTooltip")
+		(renderer='RewardCollectionCrewTooltip')
+		(args
+			_rewardItem = "_rewardItem"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+	)
+)
+
+(def element RewardCampaignStarTooltipItem (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var taskId:number = "_rewardItem.params.taskId")
+		(var taskEntity:gfx = "$datahub.getPrimaryEntity(CC.campaignTaskParams, taskId)")
+		(var missionEntity:gfx = "$datahub.getPrimaryEntity(CC.campaignMissionParams, taskEntity.campaignTaskParams.missionID)")
+		(var campaignMissionParams:gfx = "missionEntity ? missionEntity.campaignMissionParams : null")
+		(var uiNumber:str = "campaignMissionParams.uiNumber")
+
+		(var campaignEntity:gfx = "$datahub.getPrimaryEntity(CC.campaignParams, campaignMissionParams.campaignID)")
+		(var campaignParams:gfx = "campaignEntity ? campaignEntity.campaignParams : null")
+		(var campaignName:str = "campaignParams.name")
+		(var campaignNameIDS:str = "'IDS_' + campaignName + '_TITLE'")
+		(var subheaderText:str = "tr(subst('IDS_CAMPAIGN_STARS_DESCRIPTION', [], { _campaignName: tr(campaignNameIDS), _missionNumber: uiNumber }))")
+
+		(var iconPath:str = "'url:../reward_icons/campaign_star.png'")
+		(var amount:number = "_rewardItem.amount")
+	)
+	(style (width = 100%) (minHeight = 80px) (flow = "horizontal") (align = "middle"))
+	(block
+		(style (width = 80px) (height = 100%) (align = "top|center") (marginRight = "M"))
+
+		(element IconWithAmount
+			_width =	80
+			_height =	80
+			_iconPath = "iconPath"
+			_amount = "amount"
+		)
+	)
+
+	(element RewardTooltipItemText
+		_title =	"'IDS_REWARD_CAMPAIGNSTAR_TITLE'"
+		_description = "subheaderText"
+	)
+)
+
+(def element RewardCollectionCrewTooltipItem (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var title:str = "	tr('IDS_REWARD_' + toUpper(tr(_rewardItem.name)) +
+							(!_rewardItem.params.nation == ''	? '_' + toUpper(tr(_rewardItem.params.nation))
+																: ''))")
+		
+		(var description:str = "	tr('IDS_REWARD_' + toUpper(tr(_rewardItem.name)) +
+									(!_rewardItem.params.nation == '' 		? '_' + toUpper(tr(_rewardItem.params.nation))
+																			: '') +
+									(_rewardItem.params.shipClasses.length > 0	? '_' + toUpper(tr(_rewardItem.params.shipClasses[0]))
+																				: '')
+									+ '_DESCRIPTION')")
+		
+	)
+
+	(style (width = 100%) (minHeight = 60px) (flow = "horizontal") (align = "middle"))
+
+	(block
+		(style (width = 80px) (height = 100%) (align = "top|center") (marginRight = "M"))
+
+		(element RewardCollectionCrewItem
+			_rewardItem = "_rewardItem"
+		)
+	)
+
+	(element RewardTooltipItemText
+		_title =	"title"
+		_description = "description"
+	)
+)
+
+(def element RewardCollectionCrewTooltip (_rewardItem:dict) layout=true
+	(scope
+		(var rewardNation:str =			"_rewardItem.params.nation")
+		(var rewardshipClasses:array =	"_rewardItem.params.shipClasses")
+		(var crewFirstNameIDS:str =		"_rewardItem.params.firstNameIDS")
+	)
+	(style (hitTest = "false") (width = "340px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		
+		(element RewardContainerTooltipItem _reward = "_rewardItem"
+			(style (marginTop = 12px) (marginLeft = 12px))
+		)
+
+		
+		(element TooltipSystemHorizontalDivider)
+		(block
+			(bind visible "crewFirstNameIDS != ''")
+			(class $InfoBlockIndent)
+			(element CrewCommanderBlock _crewHistoryId = "_rewardItem.params.item.id")
+		)
+
+		
+		(block
+			(bind visible "(rewardshipClasses.length > 0) || (rewardNation != '')")
+			(style (width = "100%"))
+			(macro TOOLTIP_SYSTEM_INNER_PANEL_BACKGROUND)
+			(element RewardShipAndNationRestriction _rewardshipClasses = "rewardshipClasses" _rewardNation = "rewardNation")
+		)
+	)
+)
+
+(def element CrewCommanderBlock (_crewHistoryId:number) layout=true
+	(style	(flow = "horizontal") (hitTest = false) (width = 100%) (minHeight = 74px) (align = "middle")
+			(paddingLeft = 14px) (paddingRight = 14px) (paddingTop = "S") (paddingBottom = "S"))
+
+	(block
+		(style (height = "100%") (align = "top") (marginRight = "M"))
+		(element CrewStereotype _crewHistoryId = "_crewHistoryId" _size = "SIZE.SMALL")
+	)
+
+	(block
+		(style (width = 100%) (marginBottom = "S"))
+		(element CrewNameWithIcon _crewHistoryId = "_crewHistoryId")
+	)
+)
+
+(def element RewardSseTooltipItem (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var title:str = "_rewardItem.subtype == SC.Ui_styles.SSE_TYPES.CHALLENGE ? 'IDS_PERSONAL_CHALLENGE' : 'IDS_PERSONAL_BATTLE_TASK'")
+	)
+	(style (width = 100%) (minHeight = 80px) (flow = "horizontal") (align = "middle"))
+
+	(block
+		(style (width = 80px) (height = 100%) (align = "top") (marginRight = "M"))
+		(element RewardCollectionSseItem _path = "'url:../reward_icons/sse.png'")
+	)
+
+	(block
+		(style (width = 100%))
+		(element RewardTooltipItemText _title = "title" _unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK")
+	)
+)
+
+(def element RewardCollectionSseItem (_path:str) layout=true
+	(style (width = 80px) (height = 80px) (bind backgroundImage "_path"))
+)
+
+(def element RewardResourceUnit (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isClickDisabled:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var iconPath:str = "	_rewardItem.params.item.uiState			?	'url:../modules/icon_module' + _rewardItem.params.item.type + _rewardItem.params.item.uiState + '.png' :
+								_rewardItem.params.item.moduleIconName	?	'url:../modules/event/' + _rewardItem.params.item.type + '/icon_module_' + _rewardItem.params.item.moduleIconName + '.png'
+																		:	'url:../modules/icon_module' + _rewardItem.params.item.type + '.png'")
+		(var amount:number = "_rewardItem.amount")
+	)
+
+	(bindcall externalCall "'inputMapping.onAction'" "['goToReward', { type: _rewardItem.type, subtype: _rewardItem.subtype }]" init=false watch=false on=click)
+
+	(element IconWithAmount
+		_iconPath = "iconPath"
+		_amount = "amount"
+	)
+	
+	(controller $Tooltip
+		(bind enabled "_withTooltip")
+		(renderer='RewardUnitTooltip')
+		(args
+			_rewardItem = "_rewardItem"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+	)
+)
+
+(def element RewardUnitTooltip (_rewardItem:dict) layout=true
+	(scope
+		(var iconPath:str = "	_rewardItem.params.item.uiState			?	'url:../modules/icon_module' + _rewardItem.params.item.type + _rewardItem.params.item.uiState + '.png' :
+								_rewardItem.params.item.moduleIconName	?	'url:../modules/event/' + _rewardItem.params.item.type + '/icon_module_' + _rewardItem.params.item.moduleIconName + '.png'
+																		:	'url:../modules/icon_module' + _rewardItem.params.item.type + '.png'")
+		(var headerText:str = "toUpper('IDS_'+ _rewardItem.params.item.name)")
+		(var descriptionText:str = "toUpper('IDS_'+ _rewardItem.params.item.name + '_DESC')")
+		(var subheaderText:str = "toUpper('IDS_MODULE_TYPE' + _rewardItem.params.item.type)")
+	)
+	(style (hitTest = "false") (width = "340px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = 100%) (marginBottom = 9px))
+			
+			(block
+				(style (width = 100%) (marginTop = 6px) (marginBottom = 9px) (marginLeft = 16px) (marginRight = 16px))
+
+				(element TooltipSystemHeaderWithIconAndText
+					_imageUrl =			"iconPath"
+					_imageWidth =		60
+					_imageHeight =		60
+					_headerText =		"headerText"
+					_subheaderText =	"subheaderText"
+				)
+
+				(element TooltipSystemHorizontalDivider)
+				(element TooltipSystemDescriptionText _descriptionText = "descriptionText")
+			)
+
+			
+			(block
+				(bind visible "!_rewardItem.isPRMP")
+				(style (width = "100%"))
+				(element TooltipSystemHorizontalDivider)
+
+				(tf
+					(style (marginLeft = 12px) (marginBottom = 9px) (marginTop = 9px))
+					(class $TextDefault)
+					(bind text "tr('IDS_EARNED')+ tr('IDS_COLON') + ' '+ _rewardItem.amount")
+				)
+			)
+		)
+	)
+)
+
+(def element RewardUnitTooltipItem (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var iconPath:str = "	_rewardItem.params.item.uiState			?	'url:../modules/icon_module' + _rewardItem.params.item.type + _rewardItem.params.item.uiState + '.png' :
+								_rewardItem.params.item.moduleIconName	?	'url:../modules/event/' + _rewardItem.params.item.type + '/icon_module_' + _rewardItem.params.item.moduleIconName + '.png'
+																		:	'url:../modules/icon_module' + _rewardItem.params.item.type + '.png'")
+
+		(var headerText:str = "toUpper('IDS_'+ _rewardItem.params.item.name)")
+		(var subheaderText:str = "toUpper('IDS_MODULE_TYPE' + _rewardItem.params.item.type)")
+	)
+	(style (width = 100%) (minHeight = 60px) (flow = "horizontal") (align = "middle"))
+
+	(block
+		(style (width = 80px) (height = 100%) (align = "top|center") (marginRight = "M"))
+
+		(element IconWithAmount
+			_width =	60
+			_height =	60
+			_iconPath = "iconPath"
+			_amount = "_rewardItem.amount"
+		)
+	)
+	
+	(element RewardTooltipItemText
+		_title =	"headerText"
+		_description = "subheaderText"
+	)
+)
+
+(def element RewardShipAndNationRestriction (_rewardshipClasses:array, _rewardNation:str) layout=true
+	(class $InfoBlockIndent)
+	(style (height = 25px) (flow = "horizontal") (align = "middle"))
+	(block
+		(bind visible "_rewardshipClasses.length > 0")
+		(style (align = "middle"))
+
+		(hblock
+			(controller $Repeat renderer='ShipIcon'
+				(bind count "_rewardshipClasses.length")
+				(args
+					_shipType =	"_rewardshipClasses[$index]"
+				)
+			)
+		)
+	)
+
+	(element TooltipSystemVerticalDivider
+		(bind visible "_rewardshipClasses.length > 0")
+		(style (height = 100%) (marginLeft = 5px) (marginRight = 5px))
+	)
+
+	(block
+		(controller $Instance renderer='NationFlagsTiny'
+			(bind enabled "_rewardNation != ''")
+			(args
+				_shipCountry = "_rewardNation"
+			)
+		)
+	)
+)
+
+(def element RewardPortalSSETooltip (_rewardItem:dict) layout=true
+	(style (hitTest = "false") (width = "340px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_imageUrl =			'url:../reward_icons/PortalReward.png'
+			_imageWidth =		80
+			_imageHeight =		80
+			_headerText =		'IDS_REWARD_PORTALREWARD_TITLE'
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemDescriptionText _descriptionText = 'IDS_REWARD_PORTALREWARD_DESCRIPTION')
+	)
+)
+
+(def element RewardMysterySSETooltip (_rewardItem:dict) layout=true
+	(style (hitTest = "false") (width = "340px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_imageUrl =			'url:../reward_icons/MysteryReward.png'
+			_imageWidth =		80
+			_imageHeight =		80
+			_headerText =		'IDS_REWARD_MYSTERYREWARD_TITLE'
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemDescriptionText _descriptionText = 'IDS_REWARD_MYSTERYREWARD_DESCRIPTION')
+	)
+)
+
+(def element RewardAchievementItem (_rewardItem:dict, _withTooltip:bool = "false", _disableWarning:bool = "false", _isClickDisabled:bool = "false", _isBattlePassSmallShipView:bool = "false") layout=true
+	(scope
+		(var achievementEntity:gfx = "$datahub.getPrimaryEntity(CC.achievement, _rewardItem.id)")
+		(var achievementInfo:gfx = "achievementEntity ? achievementEntity.achievementInfo : null")
+		(var achievementPath:str = "achievementInfo ? 'url:../achievements/icon_achievement_' + achievementInfo.name + '.png' : ''")
+	)
+	(style
+		(width = 80)
+		(height = 80)
+		(bind backgroundImage "achievementPath")
+	)
+)
+
+(def element RewardContainerTooltip (_rewards:array, _tooltipHeader:str, _isReceived:bool=false) layout=true
+	(scope
+		(var unifiedStatusSubheader:str = "_isReceived ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+	)
+	(style (hitTest = "false") (width = "340px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "_tooltipHeader"
+			_unifiedStatus = "unifiedStatusSubheader"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "_isReceived")
+				(args
+					_text = 'IDS_TOOLTIP_REWARD_TAKEN'
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_isReceived"))
+		)
+		(block
+			(style (width = "100%") (paddingTop = "-S") (paddingBottom = "-S"))
+
+			(controller $Repeat renderer = 'RewardContainerTooltipItem'
+				(bind count "_rewards.length")
+				(args
+					_reward = "$datahub.getEntity(_rewards[$index]).rewardComponent"
+				)
+			)
+		)
+	)
+)
+
+(def element RewardItemAdapter (_entityId:number, _isUnavailable:bool=false, _isReceived:bool=false) layout=true
+	(scope
+		(var rewardEntity:gfx = "$datahub.getEntity(_entityId)")
+		(var rewardComponent:gfx = "rewardEntity.rewardComponent")
+		(var rewardItem:dict = "{	id:			rewardEntity ? rewardComponent.id : null,
+									amount:		rewardEntity ? rewardComponent.amount : null,
+									name:		rewardEntity ? rewardComponent.name : null,
+									type:		rewardEntity ? rewardComponent.type : null,
+									subtype:	rewardEntity ? rewardComponent.subtype : null,
+									params:		rewardEntity ? rewardComponent.params : null,
+									reasons:	rewardEntity ? rewardComponent.reasons : null,
+									isPRMP:		rewardEntity ? rewardComponent.isPRMP : null}")
+	)
+	(style (marginRight ="S") (marginTop = "S"))
+	(element RewardItem _reward="rewardItem" _isUnavailable="_isUnavailable" _isReceived="_isReceived")
+)
+
+(def element RewardContainerTooltipItemAdapter (_entityId:number) layout=true
+	(scope
+		(var rewardEntity:gfx = "$datahub.getEntity(_entityId)")
+		(var rewardComponent:gfx = "rewardEntity.rewardComponent")
+		(var rewardItem:dict = "{	id:			rewardEntity ? rewardComponent.id : null,
+									amount:		rewardEntity ? rewardComponent.amount : null,
+									name:		rewardEntity ? rewardComponent.name : null,
+									type:		rewardEntity ? rewardComponent.type : null,
+									subtype:	rewardEntity ? rewardComponent.subtype : null,
+									params:		rewardEntity ? rewardComponent.params : null,
+									reasons:	rewardEntity ? rewardComponent.reasons : null,
+									isPRMP:		rewardEntity ? rewardComponent.isPRMP : null}")
+	)
+	(style (width = 100%) (marginRight ="S") (marginTop = "S"))
+	(element RewardContainerTooltipItem _reward = "rewardItem")
+)
+
+(def element RewardCategory(_rewardCategory:str, _isReceived:bool, _isSmall:bool=false) layout=true dispatch_size_change=true
+	(style
+		(bind width "_isSmall ? 32px : 48px")
+		(bind height "_isSmall ? 32px : 48px")
+		(bind backgroundImage "'url:../reward_categories/' + _rewardCategory + (_isSmall ? '_small' : '') + (_isReceived ? '_received' : '') + '.png'")
+	)
+)

@@ -1,0 +1,247 @@
+(def element SeasonShipRestrictionsTooltip (_limitedShips:array, _excludedShips:array, _selfPreBattleId:number, _selfTeamId:number) layout=true
+	(scope
+		(var maxShipsInTooltip:number = "4")
+		(var preBattleEntity:gfx = "$datahub.getPrimaryEntity(CC.preBattle, _selfPreBattleId)")
+		(var preBattleComponent:gfx = "preBattleEntity ? preBattleEntity.preBattle : null")
+		(var shipIdsCount:number = "preBattleComponent ? preBattleComponent.shipIdsCount : 0" (event "preBattleComponent.evShipClassesCountChanged"))
+
+		(var isLimitedShipsVisible:bool = "_limitedShips.length > 0")
+		(var isExcludedShipsVisible:bool = "_excludedShips.length > 0")
+
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE)
+	)
+	(style (width = 300px) (hitTest = false))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_SEASON_RESTRICTIONS_TOOLTIP_HEADER'
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isLimitedShipsVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemSeasonShipsRestrictionBlock'
+				(bind enabled "isLimitedShipsVisible")
+				(args
+					_hasCounter = true
+					_maxShipsInTooltip = "maxShipsInTooltip"
+					_shipsArray = "_limitedShips"
+					_headerText = 'IDS_LIMITED_SHIPS_HEADER'
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isExcludedShipsVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemSeasonShipsRestrictionBlock'
+				(bind enabled "isExcludedShipsVisible")
+				(args
+					_hasCounter = false
+					_maxShipsInTooltip = "maxShipsInTooltip"
+					_shipsArray = "_excludedShips"
+					_headerText = 'IDS_EXCLUDED_SHIPS_HEADER'
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.NEGATIVE"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+			_text =	'IDS_HINT_LEFT_CLICK_FOR_FURTHER_INFO'
+		)
+	)
+)
+
+(def element SeasonShipsRestrictionBlock (_hasCounter:bool, _maxShipsInTooltip:number, _headerText:str, _shipsArray:array =[], _unifiedStatus:str="SC.Ui_styles.UNIFIED_STATUS.DEFAULT")  layout=true
+	(scope
+		(var shipsRemain:number = "_shipsArray.length - _maxShipsInTooltip")
+		(var repeatCount:number = "shipsRemain > 0 ? _maxShipsInTooltip : _shipsArray.length")
+	)
+	(style (width = 100%))
+	(element StatusLine
+		_unifiedStatus = "_unifiedStatus"
+		_text = "_headerText"
+		_width = "100%"
+	)
+	(block
+		(style (width = 100%) (marginTop = 14px))
+		(controller $Repeat renderer='SeasonShipRestriction'
+			(bind count "repeatCount")
+			(args
+				_hasCounter = "_hasCounter"
+				_shipsArray = "_shipsArray"
+			)
+		)
+	)
+	(block
+		(bind visible "shipsRemain > 0")
+		(style (width = 100%) (marginTop = "M"))
+		(tf
+			(class $TextDefaultNM)
+			(style (width = 100%) (alpha = "TC"))
+			(bind text "subst('IDS_SHIPS_RESTRICTIONS_REMAIN', [], { shipsRemain: toString(shipsRemain) }, shipsRemain)")
+		)
+	)
+)
+
+(def element SeasonShipRestriction (_hasCounter:bool, _shipsArray:array) layout=true
+	(scope
+		(var data:array = "_shipsArray[$index]")
+		(var shipsIds:array = "_hasCounter ? data[0] : [data]")
+	)
+	(style (width = 100%) (flow = "horizontal") (marginTop = 6px) (marginRight = XXS))
+
+	(htile
+		(style (width = 100%))
+		(controller $Repeat renderer='SeasonShipRestrictionLine'
+			(bind count "shipsIds.length")
+			(args
+				_length = "shipsIds.length"
+				_entityId = "shipsIds[$index]"
+			)
+		)
+	)
+	(block
+		
+		
+		(controller $Instance renderer='TemporaryCounter'
+			(bind enabled "_hasCounter")
+			(args
+				_count = "data[1]"
+			)
+		)
+	)
+)
+
+(def element TemporaryCounter (_count:number) layout=true
+	(tf
+		(style (alpha = "TA"))
+		(class $TextDefaultBoldNM)
+		(bind text "toString(_count)")
+	)
+)
+
+(def element SeasonShipRestrictionLine (_length:number, _entityId:number) layout=true
+	(scope
+		(var filterEntity:gfx = "$datahub.getEntity(_entityId)")
+		(var shipId:number = "filterEntity.shipFilterItem.field" (event "filterEntity.shipFilterItem.evUpdate"))
+		(macro PULL_SHIP_SCOPE "shipId" "'shipEntity'" "'shipInfo'")
+
+		(var textCommaColor:str = "shipInfo.isFarming || shipInfo.uiSpecial	? SC.Ui_styles.SERVICE_COLORS.YELLOW
+																			: SC.Ui_styles.SERVICE_COLORS.WHITE")
+
+		(var textCommaAlpha:number = "textCommaColor == SC.Ui_styles.SERVICE_COLORS.YELLOW	? 1
+																							: TA")
+		(var isCommaShown:bool = "_length - 1 != $index")
+	)
+	(style (maxWidth = 100%) (flow = "horizontal") (marginBottom = "M") (marginRight = "SXS"))
+	(block
+		(style (backgroundColor = 0x01000000))
+		(element ShipLineItemNM
+			_shipId = "shipId"
+		)
+
+		(controller $Tooltip
+			(renderer = 'ShipExtendedTooltip')
+			(args
+				_shipId = "shipId"
+			)
+			(macro SHIP_TREE_TOOLTIP_BEHAVIOUR "shipId" "0")
+		)
+	)
+	(tf
+		(bind visible "isCommaShown")
+		(class $TextDefaultBoldNM)
+		(style (marginLeft = "XS") (bind textColor "textCommaColor"))
+		(bind alpha "textCommaAlpha")
+		(text = ',')
+	)
+)
+
+(def element SeasonShipRestrictionsInfotip (_limitedShips:array, _excludedShips:array, _selfPreBattleId:number, selfTeamId:number) layout=true
+	(scope
+		(var isLimitedShipsVisible:bool = "_limitedShips.length > 0")
+		(var isExcludedShipsVisible:bool = "_excludedShips.length > 0")
+
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE)
+	)
+	(macro HIDE_UI_ON_SHIPOVERVIEW)
+	(style (width = 300px) (height = 400px))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP "true")
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(style (height = 100%))
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_SEASON_RESTRICTIONS_TOOLTIP_HEADER'
+		)
+		(element TooltipSystemHorizontalDivider)
+
+		(scrollArea
+			(style
+				(width = "100%")
+				(height = "100%")
+				
+			)
+			(verticalSlider='DefaultScrollBarV')
+			(hscrollPolicy='off')
+			(vscrollPolicy='auto')
+			(scrollPerItem = "true")
+
+			(wheelScrollSpeed = "1.0")
+			(wheelScrollAcceleration = "0.9")
+			(maxScrollingAnimatedDistance = "150")
+
+			(activeControlsAlpha = "1")
+			(inactiveControlsAlpha = "0.5")
+			(animationDuration = "0.2")
+			(animationEasing = "Easing.cubic_out")
+
+			(content
+				(style (width = 265))
+
+				(block
+					(style (width = 100%))
+					(controller $Instance renderer='TooltipSystemSeasonShipsRestrictionBlock'
+						(bind enabled "isLimitedShipsVisible")
+						(args
+							_hasCounter = true
+							_shipsArray = "_limitedShips"
+							_headerText = 'IDS_LIMITED_SHIPS_HEADER'
+							_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+						)
+					)
+				)
+
+				(block
+					(style (width = "100%"))
+					(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isLimitedShipsVisible && isExcludedShipsVisible"))
+				)
+
+				(block
+					(style (width = 100%) (marginBottom = "SXS") (bind marginTop "isExcludedShipsVisible && !isLimitedShipsVisible ? M : 0"))
+
+					(controller $Instance renderer='TooltipSystemSeasonShipsRestrictionBlock'
+						(bind enabled "isExcludedShipsVisible")
+						(args
+							_hasCounter = false
+							_shipsArray = "_excludedShips"
+							_headerText = 'IDS_EXCLUDED_SHIPS_HEADER'
+							_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+						)
+					)
+				)
+			)
+		)
+	)
+)

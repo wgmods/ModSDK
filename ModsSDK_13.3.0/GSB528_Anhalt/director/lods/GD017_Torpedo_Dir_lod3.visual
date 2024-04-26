@@ -1,0 +1,38 @@
+<GD017_Torpedo_Dir_lod3.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	GD017_Torpedo_Dir	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	GD017_Torpedo_Dir	</node>
+		<geometry>
+			<vertices>	GD017_Torpedo_Dir_lod3Shape.vertices	</vertices>
+			<primitive>	GD017_Torpedo_Dir_lod3Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Misc	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/GSB528_Anhalt/director/GD017_Torpedo_Dir.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0300 -0.0004 -0.0171	</min>
+		<max>	0.0296 0.1031 0.0177	</max>
+	</boundingBox>
+</GD017_Torpedo_Dir_lod3.visual>

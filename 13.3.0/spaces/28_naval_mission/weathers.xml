@@ -1,0 +1,27 @@
+<weathers.xml>
+	<!-- Статичный -->
+	<scheme>
+		<startWeight> 70 </startWeight>
+		<step>
+			<param>PCOW001_Sunny</param>
+			<duration>
+				<min> 1200 </min>
+				<max> 1200 </max>
+			</duration>
+			<transition> 1200 </transition>
+		</step>
+	</scheme>
+	
+	<!-- Статичный -->
+	<scheme>
+		<startWeight> 30 </startWeight>
+		<step>
+			<param>PCOW005_Evening</param>
+			<duration>
+				<min> 1200 </min>
+				<max> 1200 </max>
+			</duration>
+			<transition> 1200 </transition>
+		</step>
+	</scheme>
+</weathers.xml>

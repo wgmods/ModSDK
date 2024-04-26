@@ -1,0 +1,56 @@
+<JGB107_Depth_Charge_Thrower_450mm_lod3.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Depth_Charge_Thrower	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	HP_gunFire1	</identifier>
+				<transform>
+					<row0>	0.0000 0.0000 -1.0000 0.0000	</row0>
+					<row1>	-0.7986 0.6018 0.0000 0.0000	</row1>
+					<row2>	0.6018 0.7986 0.0000 0.0000	</row2>
+					<row3>	0.0383 0.0676 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	HP_gunFire2	</identifier>
+				<transform>
+					<row0>	0.0000 0.0000 1.0000 0.0000	</row0>
+					<row1>	0.7966 0.6045 0.0000 0.0000	</row1>
+					<row2>	-0.6045 0.7966 0.0000 0.0000	</row2>
+					<row3>	-0.0382 0.0675 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Depth_Charge_Thrower	</node>
+		<geometry>
+			<vertices>	Depth_Charge_Thrower_lod3Shape.vertices	</vertices>
+			<primitive>	Depth_Charge_Thrower_lod3Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_Gun	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSD510_Hayate/gun/JM391_Depth_Charge_Thrower.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0466 -0.0037 -0.0199	</min>
+		<max>	0.0466 0.0897 0.0297	</max>
+	</boundingBox>
+</JGB107_Depth_Charge_Thrower_450mm_lod3.visual>

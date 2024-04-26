@@ -1,0 +1,154 @@
+(def constant CIRCLE_EFFECT_COUNT 3)
+
+(def constant WORLD_ATTENTION_DOT_RADIUS 3)
+(def constant WORLD_ATTENTION_EFFECT_SIZE 18)
+
+(def constant MAP_ATTENTION_DOT_RADIUS 2)
+(def constant MAP_ATTENTION_EFFECT_SIZE 18)
+
+(def constant MARKER_CONFIG_MAP {
+	'world'		: {effectSize: "WORLD_ATTENTION_EFFECT_SIZE", dotSize: "WORLD_ATTENTION_DOT_RADIUS"},
+	'minimap'	: {effectSize: "MAP_ATTENTION_EFFECT_SIZE", dotSize: "MAP_ATTENTION_DOT_RADIUS"}
+})
+
+
+(def macro AttentionMarker (_markerEntity:expression, _markerType:str) layout=true
+	(scope
+		(event evShow)
+		(macro GET_MARKER_ENTITY_COMPONENT  'timeToLive')
+		(macro SHIP_MARKER_ICON_DATA "_markerEntity.minimapAttentionPoint.avatarId")
+		(var relationValue:number = "relationComponent.value")
+		(var isReversedAnim:bool = "relationComponent.value != SC.Battle.PLAYER_RELATION.SELF")
+		(var fxAssetPostfix:str = "isReversedAnim ? '_in' : ''")
+		(var fxAnimEasing:number = "isReversedAnim ? Easing.quad_out : Easing.quad_out")
+		(var fxScale:number = "isReversedAnim ? 1.5 : 1")
+
+		(var markerAnim:bool = "false")
+
+		(var lifeTime:number = "timeToLiveComponent ? timeToLiveComponent.lifeTime : 1")
+		(var deathTime:number = "timeToLiveComponent ? timeToLiveComponent.deathTime : 1")
+		(var repeatCount:number = "lifeTime / (SHORT_ATTENTION_DURATION / 2)")
+
+		(var dotAlpha:number = "0" watch=false)
+		(var dotRadius:number = "MARKER_CONFIG_MAP[_markerType].dotSize" watch=false)
+		(controller $Animation
+			(bindcall play	duration="SHORT_ATTENTION_DURATION / CIRCLE_EFFECT_COUNT"
+							from="{dotRadius: 0, dotAlpha: 0}"
+							to="{dotRadius: MARKER_CONFIG_MAP[_markerType].dotSize, dotAlpha: 1}"
+							action="append"
+							(event "evShow")
+			)
+			(bindcall play	delay="lifeTime + deathTime - SHORT_ATTENTION_DURATION"
+							duration="deathTime"
+							to="{dotAlpha: 0}"
+							action="append"
+			)
+		)
+
+		(var markerColorTransform:dict = 
+			"	isSelf				? TWO_TEAMS_COLOR_TRANSFORMS['white'] :
+				tkStatus			? TWO_TEAMS_COLOR_TRANSFORMS['teamkiller'] :
+				isInSameDivision	? TWO_TEAMS_COLOR_TRANSFORMS['division'] :
+				isAlly				? TWO_TEAMS_COLOR_TRANSFORMS['ally']
+									: TWO_TEAMS_COLOR_TRANSFORMS['white']
+		")
+	)
+	(dispatch evShow on='addedToStage')
+	(macro AttentionCircleFX "dotRadius" "MARKER_CONFIG_MAP[_markerType].effectSize" "SHORT_ATTENTION_DURATION" "isReversedAnim")
+	(block
+		(bind colorTransform "markerColorTransform")
+		(block
+			(style (position = "absolute"))
+			(bind alpha "dotAlpha")
+			(controller $Sector
+				(bind arc "360")
+				(bind radius "dotRadius")
+				(color = "0xFFFFFFFF")
+			)
+		)
+	)
+)
+
+(def macro AttentionCircleFX (_beginRadius:expression, _endRadius:expression, _duration:expression, _isReversed:expression) layout=true
+	(scope
+		(var customRad:number = "_isReversed ? _beginRadius : _endRadius" watch=false)
+		(var customAlpha:number = "0")
+
+		(var customRad_second:number = "_isReversed ? _beginRadius : _endRadius" watch=false)
+		(var customAlpha_second:number = "0")
+
+		(controller $Animation
+			(play
+				duration = "_duration"
+				repeatCount=4
+				from = "{ customRad: 0}"
+				to = "{ customRad: _endRadius}"
+				easing = "Easing.line"
+				watch=false
+				reverse = "_isReversed"
+			)
+			(play
+				duration = "_duration"
+				repeatCount=4
+				from = "{ customAlpha: 1}"
+				to = "{ customAlpha: 0}"
+				easing = "Easing.line"
+				watch=false
+				reverse = "_isReversed"
+			)
+		)
+		
+		(controller $Animation
+			(play
+				duration = "_duration"
+				delay = "_duration/2"
+				repeatCount=3
+				from = "{ customRad_second: 0}"
+				to = "{ customRad_second: _endRadius}"
+				easing = "Easing.line"
+				watch=false
+				reverse = "_isReversed"
+			)
+			(play
+				duration = "_duration"
+				delay = "_duration/2"
+				repeatCount=3
+				from = "{ customAlpha_second: 1}"
+				to = "{ customAlpha_second: 0}"
+				easing = "Easing.line"
+				watch=false
+				reverse = "_isReversed"
+			)
+		)
+	)
+
+
+	(block
+		(bind colorTransform "markerColorTransform")
+		(style (position = "absolute"))
+		(alpha = 0)
+		(bind alpha "customAlpha") 
+		(controller $Sector
+			(arc="360")
+			(radius = 0)
+			(bind radius "customRad")
+			(bind colors "[0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF]")
+			(alphas="[0, 0.5, 0]")
+			(ratios="[175, 215, 255]")
+		)
+	)
+	(block
+		(bind colorTransform "markerColorTransform")
+		(style (position = "absolute"))
+		(alpha = 0)
+		(bind alpha "customAlpha_second") 
+		(controller $Sector
+			(arc="360")
+			(radius = 0)
+			(bind radius "customRad_second")
+			(bind colors "[0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF]")
+			(alphas="[0, 0.75, 0]")
+			(ratios="[175, 215, 255]")
+		)
+	)
+)

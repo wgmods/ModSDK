@@ -1,0 +1,70 @@
+<RGB147_Depth_Charge_Thrower_BMB2_lod1.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	RGB147	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	HP_gunFire1	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.7071 -0.7071 0.0000	</row1>
+					<row2>	0.0000 0.7071 0.7071 0.0000	</row2>
+					<row3>	0.0000 0.0251 -0.0188 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	RGB147_wire	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	RGB147	</node>
+		<geometry>
+			<vertices>	RGB147_lod1Shape.vertices	</vertices>
+			<primitive>	RGB147_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/RSD111_Zorky/gun/RGB147_Depth_Charge_Thrower_BMB2.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	RGB147_wire	</node>
+		<geometry>
+			<vertices>	RGB147_wire_lod1Shape.vertices	</vertices>
+			<primitive>	RGB147_wire_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPWIRE_PBS_Gun	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/RSD111_Zorky/gun/RGB147_Depth_Charge_Thrower_BMB2_wire.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0218 0.0000 -0.0511	</min>
+		<max>	0.0218 0.0936 0.0533	</max>
+	</boundingBox>
+</RGB147_Depth_Charge_Thrower_BMB2_lod1.visual>

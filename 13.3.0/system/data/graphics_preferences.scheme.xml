@@ -1,0 +1,502 @@
+<graphics_preferences.scheme.xml>
+  <scheme xmlns:common="system/data/common_preferences.scheme.xml">
+
+    <constraints>
+      <graphics>
+        <quality>
+          <HL>
+            <HIGH description="High" localization="IDS_HIGH"/>
+            <LOW description="Low" localization="IDS_LOW"/>
+          </HL>
+
+          <HML>
+            <HIGH description="High quality" localization="IDS_HIGH"/>
+            <MEDIUM description="Medium quality" localization="IDS_MEDIUM"/>
+            <LOW description="Low quality" localization="IDS_LOW"/>
+          </HML>
+
+          <HMLO>
+            <HIGH description="High" localization="IDS_HIGH"/>
+            <MEDIUM description="Medium" localization="IDS_MEDIUM"/>
+            <LOW description="Low" localization="IDS_LOW"/>
+            <OFF description="Off" localization="IDS_OFF"/>
+          </HMLO>
+
+          <VHHMLO>
+            <VERY_HIGH description="Very High" localization="IDS_VERYHIGH"/>
+            <HIGH description="High" localization="IDS_HIGH"/>
+            <MEDIUM description="Medium" localization="IDS_MEDIUM"/>
+            <LOW description="Low" localization="IDS_LOW"/>
+            <OFF description="Off" localization="IDS_OFF"/>
+          </VHHMLO>
+        </quality>
+
+        <lod>
+          <FAR description="Far" localization="IDS_MAXIMUM">1.0</FAR>
+          <MEDIUM description="Medium" localization="IDS_MEDIUM">0.75</MEDIUM>
+          <NEAR description="Near" localization="IDS_MINIMUM">0.5</NEAR>
+        </lod>
+      </graphics>
+    </constraints>
+
+    <graphics>
+      <preset localization="IDS_GRAPHICS_PRESET_SETTINGS">USER
+        <constraints>
+          <MAXIMUM localization="IDS_MAXIMUM"> MAXIMUM </MAXIMUM>
+          <VERYHIGH localization="IDS_VERYHIGH"> VERYHIGH </VERYHIGH>
+          <HIGH localization="IDS_HIGH"> HIGH </HIGH>
+          <MEDIUM localization="IDS_MEDIUM"> MEDIUM </MEDIUM>
+          <LOW localization="IDS_LOW"> LOW </LOW>
+          <MINIMUM localization="IDS_MINIMUM"> MINIMUM </MINIMUM>
+          <USER localization="IDS_GRAPHICS_PRESET_USER"> USER </USER>
+        </constraints>
+      </preset>
+
+      <armor>
+        <!-- ARMOR_SYSTEM_QUALITY -->
+        <quality key="ARMOR_SYSTEM_QUALITY" description="Armor system quality" constraints="graphics.quality.HML">HIGH</quality>
+      </armor>
+
+      <camera>
+        <!-- FAR_PLANE -->
+        <farPlane key="FAR_PLANE" description="Far Plane" localization="IDS_FAR_PLANE" constraints="graphics.lod">FAR</farPlane>
+      </camera>
+
+      <decals>
+        <!-- DECALS_QUALITY -->
+        <quality key="DECALS_QUALITY" description="Decals quality">OFF
+          <constraints>
+            <HIGH description="High" localization="IDS_HIGH">1.0</HIGH>
+            <MEDIUM description="Medium" localization="IDS_MEDIUM">0.6</MEDIUM>
+            <LOW description="Low" localization="IDS_LOW">0.4</LOW>
+            <OFF description="Off" localization="IDS_OFF">0.0</OFF>
+          </constraints>
+        </quality>
+      </decals>
+
+      <flags>
+        <!-- FLAGS_QUALITY -->
+        <quality key="FLAGS_QUALITY" description="Flags quality" localization="IDS_FLAGS_QUALITY" constraints="graphics.quality.HML">HIGH</quality>
+      </flags>
+
+      <fog storage="remote">
+        <alpha type="Float" min="0.0" max="1.0">0.0
+          <constraints type="interval" min="0.0" max="1.0"/>
+        </alpha>
+      </fog>
+
+      <forest>
+        <!-- FOREST_QUALITY -->
+        <quality key="FOREST_QUALITY" description="Forest quality" localization="IDS_FOREST_QUALITY">HIGH
+          <constraints>
+            <VERY_HIGH description="Very High" localization="IDS_VERYHIGH">
+              <primaryLodProfile meshEnd="3.0" imposterStart="2.0" imposterEnd="600.0" fadeStart="480.0"/>
+              <underwaterLodProfile meshEnd="6.0" imposterStart="5.0" imposterEnd="50.0" fadeStart="48.0"/>
+              <binocularLimit mesh="5.0" imposter="4.0"/>
+              <atlas width="4096" height="2048" texelDensity="1000.0"/>				
+              <shading quality="2"/>
+            </VERY_HIGH>
+            <HIGH description="High" localization="IDS_HIGH">
+              <primaryLodProfile meshEnd="3.0" imposterStart="2.0" imposterEnd="540.0" fadeStart="400.0"/>
+              <underwaterLodProfile meshEnd="5.0" imposterStart="4.0" imposterEnd="50.0" fadeStart="48.0"/>
+              <binocularLimit mesh="4.0" imposter="3.0"/>
+              <atlas width="2048" height="2048" texelDensity="700.0"/>				
+              <shading quality="1"/> 
+            </HIGH>
+            <MEDIUM description="Medium" localization="IDS_MEDIUM">
+              <primaryLodProfile meshEnd="2.0" imposterStart="1.0" imposterEnd="300.0" fadeStart="200.0"/>
+              <underwaterLodProfile meshEnd="4.0" imposterStart="3.0" imposterEnd="50.0" fadeStart="48.0"/>
+              <binocularLimit mesh="4.0" imposter="3.0"/>
+              <atlas width="2048" height="1024" texelDensity="475.0"/>				
+              <shading quality="1"/>   
+            </MEDIUM>
+            <LOW description="Low" localization="IDS_LOW">
+				<primaryLodProfile meshEnd="0.0" imposterStart="0.0" imposterEnd="180.0" fadeStart="0.0"/>
+				<underwaterLodProfile meshEnd="0.0" imposterStart="0.0" imposterEnd="0.0" fadeStart="0.0"/>
+				<binocularLimit mesh="0.0" imposter="1.0"/>
+				<atlas width="1024" height="1024" texelDensity="400.0"/>				
+				<shading quality="0"/>    
+            </LOW>
+            <OFF description="Off" localization="IDS_OFF" enabled="false">
+              <primaryLodProfile meshEnd="0.0" imposterStart="0.0" imposterEnd="0.0" fadeStart="0.0"/>
+              <underwaterLodProfile meshEnd="0.0" imposterStart="0.0" imposterEnd="0.0" fadeStart="0.0"/>
+              <binocularLimit mesh="7.0" imposter="6.0"/>
+              <atlas width="0" height="0" texelDensity="0.0"/>				
+              <shading quality="0"/>	  
+            </OFF>
+          </constraints>
+        </quality>
+      </forest>
+
+      <gameLogic>
+        <!-- GAMELOGIC_PRESET -->
+        <preset key="GAMELOGIC_PRESET" description="Game logic preset" localization="IDS_GAMELOGIC_PRESET" constraints="common:OnOff">ON</preset>
+        <misc>
+          <!-- MISC_SETTING -->
+          <quality key="MISC_SETTING" description="Misc models loading">LOW
+            <constraints>
+              <HIGH description="All" localization="IDS_HIGH"/>
+              <MEDIUM description="Necessary &amp; optional" localization="IDS_MEDIUM"/>
+              <LOW description="Only necessary" localization="IDS_LOW"/>
+            </constraints>
+          </quality>
+        </misc>
+      </gameLogic>
+
+      <GUI>
+        <!-- LOW_QUALITY_GUI -->
+        <quality key="LOW_QUALITY_GUI" description="Low GUI quality" localization="IDS_LOW_QUALITY_GUI" constraints="common:OnOff">ON</quality>
+        <!-- USE_GUI_EFFECTS -->
+        <effects key="USE_GUI_EFFECTS" description="UI/GL Fullscreen effects switch" localization="IDS_USE_GUI_EFFECTS" constraints="common:OnOff">OFF</effects>
+        <blur key="BLUR_ENABLED" description="Blur" constraints="common:OnOff">ON</blur>
+        <contrast key="CONTRAST_UI" description="Contrast" localization="IDS_OPTIONS_CONTRAST_UI" constraints="common:OnOff">OFF</contrast>
+      </GUI>
+
+      <lighting>
+        <!-- LIGHTING_QUALITY -->
+        <quality key="LIGHTING_QUALITY" description="Lighting quality">MEDIUM
+          <constraints>
+            <HIGH description="High" localization="IDS_HIGH"/>
+            <MEDIUM description="Medium" localization="IDS_MEDIUM"/>
+          </constraints>
+        </quality>
+        <dynamic>
+          <quality key="DYNAMIC_LIGHTING" description="Dynamic lighting quality" localization="IDS_DYNAMIC_LIGHTING" constraints="graphics.quality.HMLO">MEDIUM</quality>
+        </dynamic>
+      </lighting>
+
+      <msaa>
+        <!-- MSAA_MODE -->
+        <quality key="MSAA_MODE" description="MSAA Mode" localization="IDS_MSAA_MODE">OFF
+          <constraints>
+            <SAMPLES_8 description="8X" localization="8X"/>
+            <SAMPLES_4 description="4X" localization="4X"/>
+            <SAMPLES_2 description="2X" localization="2X"/>
+            <OFF description="Off" localization="IDS_OFF"/>
+          </constraints>
+        </quality>
+      </msaa>
+
+      <object>
+        <!-- OBJECT_LOD -->
+        <lod key="OBJECT_LOD" description="Object Level of Detail" localization="IDS_OBJECT_LOD">HIGH
+          <constraints>
+            <MAX description="Max" localization="IDS_MAXIMUM">
+              <primaryLodProfile
+                modelBias="1.0"
+                gameObjectBias="1.0"
+                landscapeBias="1.0"
+                reflectionBiasMult="0.3"
+                nonGameObjectsZoomLodMinInfluence="0.5"
+              />
+            </MAX>
+            <VERY_HIGH description="Very High" localization="IDS_VERYHIGH">
+              <primaryLodProfile
+                modelBias="0.75"
+                gameObjectBias="1.0"
+                landscapeBias="0.8"
+                reflectionBiasMult="0.3"
+                nonGameObjectsZoomLodMinInfluence="0.4"
+              />
+            </VERY_HIGH>
+            <HIGH description="High" localization="IDS_HIGH">
+              <primaryLodProfile
+                modelBias="0.75"
+                gameObjectBias="1.0"
+                landscapeBias="0.8"
+                reflectionBiasMult="0.3"
+                nonGameObjectsZoomLodMinInfluence="0.4"
+              />
+            </HIGH>
+            <MEDIUM description="Medium" localization="IDS_MEDIUM">
+              <primaryLodProfile
+                modelBias="0.5"
+                gameObjectBias="0.66"
+                landscapeBias="0.66"
+                reflectionBiasMult="0.4"
+                nonGameObjectsZoomLodMinInfluence="0.3"
+              />
+            </MEDIUM>
+            <LOW description="Low" localization="IDS_LOW">
+              <primaryLodProfile
+                modelBias="0.3"
+                gameObjectBias="0.4"
+                landscapeBias="0.4"
+                reflectionBiasMult="0.5"
+                nonGameObjectsZoomLodMinInfluence="0.1"
+              />
+            </LOW>
+          </constraints>
+        </lod>
+      </object>
+
+      <particle>
+        <!-- PARTICLE_QUALITY -->
+        <quality key="PARTICLE_QUALITY" description="Particle Quality" localization="IDS_PARTICLE_QUALITY" constraints="graphics.quality.HML">HIGH</quality>
+
+        <shadow>
+          <!-- PARTICLES_SHADOWS_QUALITY -->
+          <quality key="PARTICLES_SHADOWS_QUALITY" description="Particles shadows quality" constraints="graphics.quality.HMLO">OFF</quality>
+        </shadow>
+
+        <preset key="PARTICLES_PRESET" description="Particles preset" localization="IDS_PARTICLES_PRESET" constraints="graphics.quality.HL">HIGH</preset>
+      </particle>
+
+      <postFX>
+        <!-- POST_PROCESSING -->
+        <quality key="POST_PROCESSING" description="PostFX quality" localization="IDS_POST_PROCESSING" constraints="graphics.quality.VHHMLO">VERY_HIGH</quality>
+
+        <fxaa>
+          <!-- FXAA_QUALITY -->
+          <quality key="FXAA_QUALITY" description="Smoothing" localization="IDS_SMOOTHING" constraints="graphics.quality.HMLO">OFF</quality>
+        </fxaa>
+
+        <!-- TXAA -->
+        <txaa key="TXAA" description="Temporal antialising" localization="IDS_TXAA" constraints="common:OnOff">OFF</txaa>
+
+        <!-- FIDELITY_FX_CAS -->
+        <fidelityFX_CAS key="FIDELITY_FX_CAS" description="FidelityFX CAS Upscale" localization="IDS_FIDELITY_FX_CAS" constraints="common:OnOff">OFF</fidelityFX_CAS>
+
+        <colorblind>
+          <!-- COLORBLIND_MODE -->
+          <mode key="COLORBLIND_MODE" description="Colorblind mode">OFF
+            <constraints>
+              <OFF description="Off" localization="IDS_COLORBLIND_MODE_OFF"/>
+              <DEUTERANOPIA description="Deuteranopia" localization="IDS_DEUTERANOPIA"/>
+              <PROTANOPIA description="Protanopia" localization="IDS_PROTANOPIA"/>
+              <TRITANOPIA description="Tritanopia" localization="IDS_TRITANOPIA"/>
+            </constraints>
+          </mode>
+		  <!-- colorblind.intensity is stored in BigWorld.videoSettings(), not in UserPreferences -->
+		  <intensity type="Float" min="0.0" max="1.0">1.0
+			<constraints type="interval" min="0.0" max="1.0"/><!-- [WWSD-201221] copy of common:slider -->
+		  </intensity>
+        </colorblind>
+      </postFX>
+
+      <sea>
+        <simulation>
+          <!-- SEA_SIMULATION_QUALITY -->
+          <quality key="SEA_SIMULATION_QUALITY" description="Sea simulation quality" localization="IDS_SEA_SIMULATION_QUALITY">LOW
+            <constraints>
+              <MAX description="Max" localization="IDS_MAXIMUM"/>
+              <VERY_HIGH description="Very High" localization="IDS_VERYHIGH"/>
+              <HIGH description="High" localization="IDS_HIGH"/>
+              <MEDIUM description="Medium" localization="IDS_MEDIUM"/>
+              <LOW description="Low" localization="IDS_LOW"/>
+              <VERY_LOW description="Very Low" localization="IDS_VERYLOW"/>
+            </constraints>
+          </quality>
+        </simulation>
+        <reflection>
+          <!-- SEA_REFLECTION_QUALITY -->
+          <quality key="SEA_REFLECTION_QUALITY" description="Reflections Quality" localization="IDS_SEA_REFLECTION_QUALITY">OFF
+            <constraints>
+              <VERY_HIGH description="Very high" localization="IDS_VERYHIGH">
+                <reflection textureScale="1.0" maxDistance="135.0"/>
+                <msaa number="4"/>
+                <fov normal="105.0" zoomIn="90.0"/>
+                <draw playerOnly="False" terrain="True" statics="True" dynamics="True" particles="True"/>
+                <density>
+                  <scale>
+                    <!-- Index of y is in sea.reflection.screenSpace.quality.density.scale.index  -->
+                    <y type="Vector">0.5449 0.6049</y>
+                  </scale>
+                </density>
+              </VERY_HIGH>
+              <HIGH description="High" localization="IDS_HIGH">
+                <reflection textureScale="0.5" maxDistance="100.0"/>
+                <msaa number="2"/>
+                <fov normal="100.0" zoomIn="75.0"/>
+                <draw playerOnly="True" terrain="True" statics="True" dynamics="True" particles="True"/>
+                <density>
+                  <scale>
+                    <!-- Index of y is in sea.reflection.screenSpace.quality.density.scale.index  -->
+                    <y type="Vector">0.561 0.636</y>
+                  </scale>
+                </density>
+              </HIGH>
+              <MEDIUM description="Medium" localization="IDS_MEDIUM">
+                <reflection textureScale="0.25" maxDistance="33.0"/>
+                <msaa number="2"/>
+                <fov normal="95.0" zoomIn="60.0"/>
+                <draw playerOnly="True" terrain="True" statics="False" dynamics="True" particles="True"/>
+                <density>
+                  <scale>
+                    <!-- Index of y is in sea.reflection.screenSpace.quality.density.scale.index  -->
+                    <y type="Vector">0.632 0.722</y>
+                  </scale>
+                </density>
+              </MEDIUM>
+              <LOW description="Low" localization="IDS_LOW">
+                <reflection textureScale="0.125" maxDistance="17.0"/>
+                <msaa number="2"/>
+                <fov normal="85.0" zoomIn="50.0"/>
+                <draw playerOnly="True" terrain="False" statics="False" dynamics="False" particles="True"/>
+                <density>
+                  <scale>
+                    <!-- Index of y is in sea.reflection.screenSpace.quality.density.scale.index  -->
+                    <y type="Vector">0.794 0.914</y>
+                  </scale>
+                </density>
+              </LOW>
+              <OFF description="Off" localization="IDS_OFF">
+                <reflection textureScale="0.125" maxDistance="0.0"/>
+                <msaa number="1"/>
+                <fov normal="85.0" zoomIn="50.0"/>
+                <draw playerOnly="True" terrain="False" statics="False" dynamics="False" particles="False"/>
+              </OFF>
+            </constraints>
+          </quality>
+
+          <screenSpace>
+            <!-- SCREENSPACE_REFLECTIONS -->
+            <quality key="SCREENSPACE_REFLECTIONS" description="Screen space reflections" localization="IDS_SCREENSPACE_REFLECTIONS">OFF
+              <constraints>
+                <HIGH description="High" localization="IDS_HIGH">
+                  <density>
+                    <!-- index is index of vector in sea.reflection.quality.density.scale.y -->
+                    <scale x="1.225" index="1"/>
+                  </density>
+                </HIGH>
+                <MEDIUM description="Medium" localization="IDS_MEDIUM">
+                  <density>
+                    <!-- index is index of vector in sea.reflection.quality.density.scale.y -->
+                    <scale x="1.225" index="1"/>
+                  </density>
+                </MEDIUM>
+                <LOW description="Low" localization="IDS_LOW">
+                  <density>
+                    <!-- index is index of vector in sea.reflection.quality.density.scale.y -->
+                    <scale x="1.03" index="0"/>
+                  </density>
+                </LOW>
+                <OFF description="Off" localization="IDS_OFF">
+                  <density>
+                    <!-- index is index of vector in sea.reflection.quality.density.scale.y -->
+                    <scale x="1.03" index="0"/>
+                  </density>
+                </OFF>
+              </constraints>
+            </quality>
+          </screenSpace>
+        </reflection>
+      </sea>
+
+      <shadow>
+        <!-- SHADOWS_QUALITY -->
+        <quality key="SHADOWS_QUALITY" description="Shadows quality" localization="IDS_SHADOWS_QUALITY">OFF
+          <constraints>
+            <MAX description="Max" localization="IDS_MAXIMUM">
+              <dynamic resolution="4096" shadowDistance="80.0" contactHardeningDistance="1.0" filterQuality="0" maxBinocularDistMult="1.5" minOffScreenDist = "20.0" >
+                <split count="4" lambda="0.90" stableStartIndex="2"/>
+              </dynamic>
+            </MAX>
+            <VERY_HIGH description="Very high" localization="IDS_VERYHIGH">
+                <dynamic resolution="3072" shadowDistance="65.0" contactHardeningDistance="1.0" filterQuality="1" maxBinocularDistMult="1.3" minOffScreenDist = "20.0" >
+                <split count="4" lambda="0.87" stableStartIndex="2"/>
+              </dynamic>
+            </VERY_HIGH>
+            <HIGH description="High" localization="IDS_HIGH">
+              <dynamic resolution="2048" shadowDistance="40.0" contactHardeningDistance="1.0" filterQuality="2" maxBinocularDistMult="1.2" minOffScreenDist = "20.0" >
+                <split count="4" lambda="0.80" stableStartIndex="2"/>
+              </dynamic>
+            </HIGH>
+            <MEDIUM description="Medium" localization="IDS_MEDIUM">
+              <dynamic resolution="1024" shadowDistance="18.0" contactHardeningDistance="1.0" filterQuality="3" maxBinocularDistMult="1.1" minOffScreenDist = "10.0" >
+                <split count="3" lambda="0.50" stableStartIndex="1"/>
+              </dynamic>
+            </MEDIUM>
+            <LOW description="Low" localization="IDS_LOW">
+              <dynamic resolution="1024" shadowDistance="10.0" contactHardeningDistance="1.0" filterQuality="4" maxBinocularDistMult="1.0" minOffScreenDist = "10.0" >
+                <split count="2" lambda="0.50" stableStartIndex="0"/>
+              </dynamic>
+            </LOW>
+            <OFF description="Off" localization="IDS_OFF">
+              <dynamic enabled="false" resolution="1">
+                <split number="1"/>
+              </dynamic>
+            </OFF>
+          </constraints>
+        </quality>
+      </shadow>
+
+      <sound>
+        <!-- SOUND_PRESET -->
+        <quality key="SOUND_PRESET" description="Sound preset" localization="IDS_SOUND_PRESET">LOW
+          <constraints>
+            <MAX description="Ultra" localization="IDS_ULTRA"/>
+            <HIGH description="High" localization="IDS_HIGH"/>
+            <LOW description="Low" localization="IDS_LOW"/>
+          </constraints>
+        </quality>
+      </sound>
+
+      <texture>
+        <!-- TEXTURE_QUALITY -->
+        <quality key="TEXTURE_QUALITY" description="Texture Quality" localization="IDS_TEXTURE_QUALITY">HIGH
+          <constraints>
+            <HIGH description="High" localization="IDS_HIGH">
+              <streaming fxBudgetMB="300" geometryBudgetMB="600" disregardQuality="1.0"/>
+              <mipsSkip type="Vector">0 0 0 0</mipsSkip>
+            </HIGH>
+            <MEDIUM description="Medium" localization="IDS_MEDIUM">
+              <streaming fxBudgetMB="150" geometryBudgetMB="320" disregardQuality="0.95"/>
+              <mipsSkip type="Vector">0 1 1 0</mipsSkip>
+            </MEDIUM>
+            <LOW description="Low" localization="IDS_LOW">
+              <streaming fxBudgetMB="50" geometryBudgetMB="200" disregardQuality="0.92"/>
+              <mipsSkip type="Vector">0 2 1 1</mipsSkip>
+            </LOW>
+          </constraints>
+        </quality>
+
+        <!-- TEXTURE_FILTERING -->
+        <filtering key="TEXTURE_FILTERING" description="Texture Filtering" localization="IDS_TEXTURE_FILTERING">ANISOTROPIC_16X
+          <constraints>
+            <ANISOTROPIC_16X description="Anisotropic (16x)" localization="IDS_TEXTURE_FILTERING_ANISOTROPIC_16X">
+              <filtering mip="LINEAR" minMag="ANISOTROPIC" maxAnisotropy="16"/>
+            </ANISOTROPIC_16X>
+            <ANISOTROPIC_8X description="Anisotropic (8x)" localization="IDS_TEXTURE_FILTERING_ANISOTROPIC_8X">
+              <filtering mip="LINEAR" minMag="ANISOTROPIC" maxAnisotropy="8"/>
+            </ANISOTROPIC_8X>
+            <ANISOTROPIC_4X description="Anisotropic (4x)" localization="IDS_TEXTURE_FILTERING_ANISOTROPIC_4X">
+              <filtering mip="LINEAR" minMag="ANISOTROPIC" maxAnisotropy="4"/>
+            </ANISOTROPIC_4X>
+            <ANISOTROPIC_2X description="Anisotropic (2x)" localization="IDS_TEXTURE_FILTERING_ANISOTROPIC_2X">
+              <filtering mip="LINEAR" minMag="ANISOTROPIC" maxAnisotropy="2"/>
+            </ANISOTROPIC_2X>
+            <TRILINEAR description="Trilinear" localization="IDS_TEXTURE_FILTERING_TRILINEAR">
+              <filtering mip="LINEAR" minMag="LINEAR" maxAnisotropy="1"/>
+            </TRILINEAR>
+            <BILINEAR description="Bilinear" localization="IDS_TEXTURE_FILTERING_BILINEAR">
+              <filtering mip="POINT" minMag="LINEAR" maxAnisotropy="1"/>
+            </BILINEAR>
+            <POINT description="Point" localization="IDS_TEXTURE_FILTERING_POINT">
+              <filtering mip="POINT" minMag="POINT" maxAnisotropy="1"/>
+            </POINT>
+          </constraints>
+        </filtering>
+      </texture>
+
+      <!-- WEB_BROWSER_HARDWARE_ACCELERATION -->
+      <browser>
+        <hardwareAcceleration key="WEB_BROWSER_HARDWARE_ACCELERATION" description="Web browser hardware acceleration" localization="IDS_WEB_BROWSER_HARDWARE_ACCELERATION">ON
+          <constraints>
+            <OFF description="Off" localization="IDS_OFF"/>
+            <ON description="On" localization="IDS_ON"/>
+          </constraints>
+        </hardwareAcceleration>
+        <forceHardwareAcceleration type="Boolean">False</forceHardwareAcceleration>
+      </browser>
+
+        <!-- Options from device preferences, they are stored in BigWorld.videoSettings() -->
+      <tripleBuffering type="Boolean">False</tripleBuffering>
+      <vsync type="Boolean">False</vsync>
+      <gamma type="Float" min="0.7" max="1.8">1.0<!-- must be sync with BigWorld.videoSettings().userGammaRange -->
+        <constraints type="interval" min="0.7" max="1.8"/><!-- [WWSD-201221] copypasted arguments -->
+      </gamma>
+	  
+    </graphics>
+  </scheme>
+</graphics_preferences.scheme.xml>

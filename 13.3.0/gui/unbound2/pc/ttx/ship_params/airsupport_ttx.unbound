@@ -1,0 +1,54 @@
+(def macro AirSupport_Parameters_Common (shipTTX:expression, squadronTTX:expression)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_AIR_SUPPORT_RELOAD_TIME'
+											_value = "shipTTX.airSupport.reloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_AIR_SUPPORT_NUM_SQUADRONS'
+											_value = "shipTTX.airSupport.numSquadrons"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_AIR_SUPPORT_NUM_PLANES_IN_CHARGE'
+											_value = "squadronTTX.numAttackers
+			")
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_AIR_SUPPORT_PLANE_MAX_HEALTH'
+											_value = "squadronTTX.health"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAX_DIST'
+											_value = "shipTTX.airSupport.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+		)
+	)
+	(macro TTX_INSTANCE 'BombAPTTX' "squadronTTX.bombAP")
+	(macro TTX_INSTANCE 'BombHETTX' "squadronTTX.bombHE")
+	(macro TTX_INSTANCE 'BombDWTTX' "squadronTTX.bombDW")
+)
+
+
+(def element AirSupportTTX (shipTTX:gfx) layout=true
+	(scope
+		(var airSupportTTX:gfx = "shipTTX.airSupport")
+	)
+	(class $ParametersPanel)
+	(class $TTXSecondaryPanel)
+	(element ShipParameter_Number	_title = "airSupportTTX.bomber	? tr('IDS_SHIP_PARAM_AIR_SUPPORT_SQUADRONS_' + airSupportTTX.type) + 
+																	NEW_LINE + tr('IDS_' + airSupportTTX.bomber.name)
+																	: ''"
+									_value = "airSupportTTX.numSquadrons"
+									_valueConfig = "VALUE_CONFIG.ATTACKERS_COUNT"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro TTX_TOOLTIP 'AirSupportTooltipTTX' "airSupportTTX.bomber")
+	)
+)
+
+(def element AirSupportTooltipTTX (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW	_title = "'IDS_SHIP_PARAM_AIR_SUPPORT_SQUADRONS_' + shipTTX.airSupport.type"
+								_descr = "'IDS_TOOLTIP_AIR_SUPPORT_SQUADRONS_' + shipTTX.airSupport.type"
+		)
+		(element TooltipSystemHorizontalDivider)
+		(macro AirSupport_Parameters_Common "shipTTX" "squadronTTX")
+	)
+)

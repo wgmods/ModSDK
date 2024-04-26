@@ -1,0 +1,433 @@
+(def element CrewTooltip (_targetShipId:number="0", _noContextMenuInstruction:bool="false", _crewId:number="0", _crewHistoryId:number="0", _noMouseInstruction:bool="false", _fromDock:bool="false", _isShowUB2Tooltip:bool=false) layout=true dispatch_size_change=true
+	(scope
+		(var dockEntity:gfx = "$datahub.getSingleEntity(CC.dockDataMarker)")
+		(var crewsSingleton:gfx = "dockEntity.crewData" (event "dockEntity.crewData.evUpdate"))
+		(var canDisassignCrew:gfx = "crewsSingleton.canDisassignCrew" (event "crewsSingleton.evUpdate"))
+
+		(var crewEntity:gfx = "$datahub.getPrimaryEntity(CC.crew, _crewId)")
+		(var crewHistoryEntity:gfx = "$datahub.getPrimaryEntity(CC.crewHistoryInfo, _crewHistoryId)")
+		(var isCrewHistory:bool = "crewHistoryEntity != null")
+
+		(var crewInfo:gfx = "crewEntity ? crewEntity.crew : null")
+
+		(var crewHistoryInfo:gfx = "crewHistoryEntity ? crewHistoryEntity.crewHistoryInfo : null")
+		(var crew:gfx = "isCrewHistory ? crewHistoryInfo : crewInfo")
+
+		(var rentDuration:number = "isCrewHistory ? crew.rentDuration : 0")
+		(var rentUntil:number = "isCrewHistory ? crew.rentUntil : 0")
+
+		(var isDisabledBarracks:bool =		"crew && !crew.canMove"			(event "crew.evChanged"))
+		(var isDisabledCrewFire:bool =		"crew && !crew.canDismiss"		(event "crew.evChanged"))
+		(var isDisabledLearnSkills:bool =	"crew && !crew.canLearnSkills"	(event "crew.evChanged"))
+		(var isDisabledCrewLevelUp:bool =	"crew && !crew.canLevelUp"		(event "crew.evChanged"))
+		(var hasCrewRestrictions:bool =		"isDisabledBarracks && isDisabledCrewFire && isDisabledCrewLevelUp && isDisabledLearnSkills")
+
+		(var timeRentTimeStamp:number =	"_crewId ? crewEntity.crew.timeRent : null" (event "crewEntity.crew.evTimeRentChanged"))
+		(var isRental:bool =			"timeRentTimeStamp > 0 || rentDuration > 0")
+
+		(var dismissDelay:number =	"!isCrewHistory ? crew.dismissDelay : 0" (event "crew.evDismissDelayChanged"))
+
+		(var isDismissing:bool =	"dismissDelay > 0")
+		(var isElite:bool =	"crew ? crew.isElite : false" (event "crew.evLevelUp"))
+
+		(var targetOwnShipEntity:gfx =	"$datahub.getPrimaryEntity(CC.ownShip, _targetShipId)")
+		(var targetShipInfo:gfx =		"targetOwnShipEntity ? targetOwnShipEntity.ship : null"	(event "targetOwnShipEntity.ship.evUpdate"))
+		(var targetOwnShipInfo:gfx =	"targetOwnShipEntity ? targetOwnShipEntity.ownShip : null"	(event "targetOwnShipEntity.ownShip.evUpdate"))
+
+		
+		(var curShipId:number = 		"crew.shipID" (event "crew.evShipChanged"))
+		(var crewOwnShipEntity:gfx =	"$datahub.getPrimaryEntity(CC.ownShip, curShipId)")
+		(var crewOwnShipComponent:gfx =	"crewOwnShipEntity ? crewOwnShipEntity.ownShip : null")
+		(var crewOwnShipInfo:gfx =		"crewOwnShipEntity ? crewOwnShipEntity.ship : null"		(event "crewOwnShipEntity.ship.evUpdate"))
+
+		(var isFromBarracks:bool = "curShipId == 0")
+		(var isFromBarracksStatusVisible:bool = "isFromBarracks && !isDismissing")
+
+		(var isPenaltiesActive:bool = "crew.isPenaltiesActive" (event "crew.evIsPenaltiesActiveChanged"))
+		(var isShowAdoptationPenalty:bool = "isPenaltiesActive && !_targetShipId && !isFromBarracks")
+
+		(var crewShipIsLocked:bool =		"crewOwnShipComponent ? crewOwnShipComponent.isLocked : false"				(event "crewOwnShipComponent.evUpdateLock"))
+		(var crewShipInFormation:bool =		"crewOwnShipComponent ? crewOwnShipComponent.isInFormation : false"			(event "crewOwnShipComponent.evUpdateLock"))
+		(var targetShipIsLocked:bool =		"targetOwnShipInfo ? targetOwnShipInfo.isLocked : false"					(event "targetOwnShipInfo.evUpdateLock"))
+		(var targetShipInFormation:bool =	"targetOwnShipInfo ? targetOwnShipEntity.ownShip.isInFormation : false"		(event "targetOwnShipInfo.evUpdateLock"))
+		(var targetCrewId:number =			"targetOwnShipInfo ? targetOwnShipInfo.crewId : null"						(event "targetOwnShipInfo.evCrewChanged"))
+		
+		
+		(var hasSpaceToAssignCrew:bool =	"isFromBarracks ||
+											canDisassignCrew ||
+											(!canDisassignCrew && targetCrewId == 0)")
+		
+		(var activeVanities:gfx = "$datahub.getCollection(CC.crewVanity).getChildByPath('activeVanities.byCrewId.' + _crewId)")
+		(var isTalentsAndVanitiesVisible:bool = "crewInfo && activeVanities && (activeVanities.items.length + crewInfo.uniqueSkillSet.length > 0)")
+
+		(var targetCrewEntity:gfx = "$datahub.getPrimaryEntity(CC.crew, targetCrewId)")
+		(var canMove:bool = "crew && crew.canMove" (event "crew.evChanged"))
+		(var isDisabledAssign:bool = "targetCrewId == 0	?	crew && !canMove
+														:	crew && (!canMove || (targetCrewEntity && !targetCrewEntity.crew.canMove))" (event "targetCrewEntity.crew.evChanged"))
+
+		(var specializationID:number = 		"crew.specializationID" (event "crew.evChanged"))
+		(var specializationShipEntity:gfx =	"$datahub.getPrimaryEntity(CC.ship, specializationID)")
+		(var specializationShipInfo:gfx =	"specializationShipEntity ? specializationShipEntity.ship : null"	(event "specializationShipEntity.ship.evUpdate"))
+
+		(var isCrewCompatibleShipBySpecialList:bool =	"indexOf(targetShipInfo.fullName, 		crew.shipsToSeat) > -1"			(event "crew.evChanged"))
+		(var isCrewCompatibleShipByNation:bool =		"indexOf(targetShipInfo.nation,			crew.nationsToSeat) > -1"		(event "crew.evChanged"))
+		(var isCrewCompatibleShipByPeculiarity:bool =	"indexOf(targetShipInfo.peculiarity,	crew.peculiaritiesToSeat) > -1"	(event "crew.evChanged"))
+		(var isCrewCompatibleShipByGroup:bool =			"indexOf(targetShipInfo.group,			crew.shipGroups) > -1"			(event "crew.evChanged"))
+
+		(var isCrewUncompatibleForTargetShip:bool =		"	!_targetShipId		?	false :
+															isDisabledAssign	?	true :
+															isRental			? 	specializationID != _targetShipId
+																				: 	!(	isCrewCompatibleShipBySpecialList ||
+																						isCrewCompatibleShipByNation ||
+																						isCrewCompatibleShipByPeculiarity ||
+																						isCrewCompatibleShipByGroup)")
+
+		
+		(var classificationId:number = "crew.classificationId")
+		(var headerUnifiedStatus:str =	"classificationId == SC.Common.COMMANDER_CLASSIFICATIONS.UNIQUE	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+																										: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+
+		(var subheaderText:str =	"crew.hasRank	? toUpper(crew.rankIDS)
+													: 'IDS_CREW_RANK_COMMON'" (event "crew.evLevelUp"))
+
+		(var shipSubtype:str =	"	_targetShipId 	? targetShipInfo.subtype :
+									curShipId		? crewOwnShipInfo.subtype
+													: specializationShipInfo.subtype")
+		
+
+		(var crewSpecialStatus:dict = "	classificationId == SC.Common.COMMANDER_CLASSIFICATIONS.UNIQUE		?	 {	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.UNIQUE_CREW,
+																													text: 'IDS_UNIQUE_CREW_STATUS'} :
+										classificationId == SC.Common.COMMANDER_CLASSIFICATIONS.ADVANCED	?	 {	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ADVANCED_CREW,
+																													text: 'IDS_ADVANCED_CREW_STATUS'}
+																											: null")
+
+		
+		(var isInAdaptation:bool = "crewEntity && crewEntity.hasComponent(CC.retraining)" (event "crewEntity.evAdded") (event "crewEntity.evRemoved"))
+		(var crewRetraining:gfx = "isInAdaptation ? crewEntity.retraining : null")
+
+		(var skillMatrixId:number = "crew.skillMatrixId" (event "crew.evChanged"))
+		(var isXpBarVisible:bool = "crew && !isElite && !isInAdaptation && skillMatrixId")
+
+		(var curXpValue:number = "	isInAdaptation	? crewRetraining.adaptationExperienceEarned
+													: crew.experience" (event "crewRetraining.evRetrainingUpdated") (event "crew.evExpChanged"))
+		
+		(var maxXpValue:number = "	isInAdaptation	? crewRetraining.adaptationExperiencePenalty
+													: crew.experienceToRichNextLevel" (event "crewRetraining.evRetrainingUpdated") (event "crew.evLevelUp"))
+
+		(var xpBarUnifiedStatus:str = "	isInAdaptation	? SC.Ui_styles.UNIFIED_STATUS.ATTENTION
+														: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+
+		(var progressBarColor:str = "	isInAdaptation	? SC.Ui_styles.SERVICE_COLORS.ORANGE
+														: SC.Ui_styles.SERVICE_COLORS.YELLOW")
+
+		(var progressBarBlockTitle:str = "isInAdaptation	? 'IDS_CREW_IN_ADAPTATION_TO_SELECT_SHIP'
+															: 'IDS_CURRENCY_CREWXP'")
+		
+		(var isUnique:bool = "crew.isUnique" (event "crew.evChanged"))
+		(var isAvailableOneStatusVisible:bool = "isUnique && classificationId == SC.Common.COMMANDER_CLASSIFICATIONS.SPECIAL")
+		
+
+		
+		(var isAssignedToVisible:bool = "!!_targetShipId && !isFromBarracks")
+		(var isCrewPanelSpecializationAdoptationBlockVisible:bool = "specializationID != curShipId || isInAdaptation")
+
+		(var isNeedRetrainStatusVisible:bool = "_targetShipId &&
+												!isDisabledAssign &&
+												specializationID != _targetShipId &&
+												!(	targetShipInfo.isWithoutCrewPenalty ||
+													isRental ||
+													isCrewUncompatibleForTargetShip ||
+													isDismissing)")
+
+		(var contextMenuMouseInstruction:dict = "	_noMouseInstruction ||
+													_noContextMenuInstruction ||
+													hasCrewRestrictions ||
+													isDismissing ||
+													!skillMatrixId				? null
+																				: {	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_RIGHT,
+																					text:	'IDS_HINT_RIGHT_CLICK_FOR_CONTEXT_MENU'}")
+
+		(var mouseInstruction:dict = "	_noMouseInstruction					?	null :
+										_fromDock							?	{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																					text:	'IDS_MOUSE_INSTRUCTION_CREW_TOOLTIP_GO_TO_SKILLS'} :
+										isDismissing						?	{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																					text:	'IDS_ASSIGN_CREW_DENY_REASON_CREW_DEMOBILIZATION'} :																							
+										targetShipInFormation				?	{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																					text:	'IDS_ASSIGN_CREW_DENY_REASON_TARGET_SHIP_IN_FORMATION'} :
+										targetShipIsLocked					?	{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																					text:	'IDS_ASSIGN_CREW_DENY_REASON_TARGET_SHIP_IN_BATTLE'} :
+										crewShipInFormation					?	{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																					text:	'IDS_ASSIGN_CREW_DENY_REASON_CURRENT_SHIP_IN_FORMATION'} :
+										crewShipIsLocked 					?	{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																					text:	'IDS_ASSIGN_CREW_DENY_REASON_CURRENT_SHIP_IN_BATTLE'} :
+										!hasSpaceToAssignCrew				?	{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																					text:	'IDS_ASSIGN_NEW_CREW_DISABLE_REASON_FULL_BARRACKS'} :
+										!isCrewUncompatibleForTargetShip	?	{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																					text:	'IDS_MOUSE_INSTRUCTION_CREW_TOOLTIP_ASSIGN'}
+																			:	null")
+	
+		(var fullName:str = "crew.fullName" (event "crew.evChanged"))
+	)
+	(name = 'crew_tooltip')
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (hitTest = "false") (width = "336px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_headerText =		"crew.fullName"
+			_imageHeight = 		"70"
+			_subheaderText =	"subheaderText"
+			_unifiedStatus =	"headerUnifiedStatus"
+			_headerIconType = 	"SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.CREW"
+			_data =				"{	crewId:			_crewId,
+									crewHistoryId:	_crewHistoryId,
+									shipSubtype:	shipSubtype	}"
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isCrewUncompatibleForTargetShip"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isCrewUncompatibleForTargetShip")
+				(args
+					_unifiedStatus =	"SC.Ui_styles.UNIFIED_STATUS.NEGATIVE"
+					_text =				"isRental || isDisabledAssign	?	'IDS_TOOLTIP_STATUS_NEED_CHOOSE_OTHER_SHIP_FOR_CREW' : 'IDS_TOOLTIP_STATUS_NEED_CHOOSE_OTHER_SHIP'"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isRental"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemTimeLeftStatusLine'
+				(bind enabled "isRental")
+				(args
+					_timeLeftTimeStamp =	"timeRentTimeStamp"
+					_daysLeft =				"rentDuration"
+					_substTextIDS =			"rentDuration ? 'IDS_RENT_STATUS_FOR' : 'IDS_RENT_STATUS_TIME_LEFT'"
+					_zeroTimeTextIDS =		"'IDS_RENT_STATUS_TIME_IS_UP'"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "rentUntil"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemDueDateStatusLine'
+				(bind enabled "rentUntil")
+				(args
+					_dueDateTimeStamp =	"rentUntil"
+					_substTextIDS =		"'IDS_RENT_STATUS_DUE_DATE'"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "crewSpecialStatus"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "crewSpecialStatus")
+				(args
+					_unifiedStatus =	"crewSpecialStatus.unifiedStatus"
+					_text =				"crewSpecialStatus.text"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isAvailableOneStatusVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isAvailableOneStatusVisible")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.INFO"
+					_text = "'IDS_TOOLTIP_STATUS_UNIQUE_CREW_STATUS'"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isNeedRetrainStatusVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isNeedRetrainStatusVisible")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.RETRAINING"
+					_text = "'IDS_TOOLTIP_STATUS_NEED_RETRAINING_TO_ASSIGN'"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isDismissing"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemTimeLeftStatusLine'
+				(bind enabled "isDismissing")
+				(args
+					_timeLeftTimeStamp =	"dismissDelay"
+					_substTextIDS =			"'IDS_TILL_CREW_DEMOBILIZATION_TOOLTIP'"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isXpBarVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemProgressBarBlock'
+				(bind enabled "isXpBarVisible")
+				(args
+					_title = "progressBarBlockTitle"
+					_currentValue = "curXpValue"
+					_maxValue = "maxXpValue"
+					_barColor = "progressBarColor"
+					_unifiedStatus = "xpBarUnifiedStatus"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isCrewPanelSpecializationAdoptationBlockVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='CrewPanelSpecializationAdoptationBlock'
+				(bind enabled "isCrewPanelSpecializationAdoptationBlockVisible")
+				(args
+					_crewId = "_crewId"
+					_crewHistoryId = "_crewHistoryId"
+					_isShipVisible = "true"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isShowAdoptationPenalty"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isShowAdoptationPenalty")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+					_text = "'IDS_CREW_STATUS_SKILLS_PENALTY_DUE_ADAPTATION'"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isFromBarracksStatusVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isFromBarracksStatusVisible")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+					_text = "'IDS_CREW_IN_BARRACKS'"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isAssignedToVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemShipWithTitle'
+				(bind enabled "isAssignedToVisible")
+				(args
+					_title = "'IDS_CREW_ASSIGNED_TO_SELECT_SHIP'"
+					_shipId = "curShipId"
+					_withFlag = "true"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isTalentsAndVanitiesVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemCrewVanityAndTalents'
+				(bind enabled "isTalentsAndVanitiesVisible")
+				(args
+					_crewId = "_crewId"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "skillMatrixId"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemCrewSkills'
+				(bind enabled "skillMatrixId")
+				(args
+					_crewId = "_crewId"
+					_shipSubtype = "shipSubtype"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "contextMenuMouseInstruction"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "contextMenuMouseInstruction")
+				(args
+					_unifiedStatus = "contextMenuMouseInstruction.unifiedStatus"
+					_text = "contextMenuMouseInstruction.text"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "mouseInstruction"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "mouseInstruction")
+				(args
+					_unifiedStatus = "mouseInstruction.unifiedStatus"
+					_text = "mouseInstruction.text"
+				)
+			)
+		)
+	)
+)

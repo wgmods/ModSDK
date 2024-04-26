@@ -1,0 +1,94 @@
+(def constant HYDROPHONE_ZONE_MINIMAP_RADIUS_END 16)
+(def constant HYDROPHONE_ZONE_MINIMAP_ANIM_DURATION 1)
+
+(def element MapHydrophoneZoneMarker (_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'submarineHydrophoneZone')
+		
+		(var endRadius:number = "HYDROPHONE_ZONE_MINIMAP_RADIUS_END" watch=false)
+		(var duration:number = "HYDROPHONE_ZONE_MINIMAP_ANIM_DURATION" watch=false)
+
+		(var customRad:number = "endRadius" watch=false)
+		(var customAlpha:number = "0")
+
+		(var customRad_second:number = "endRadius" watch=false)
+		(var customAlpha_second:number = "0")
+
+		(controller $Animation
+			(play
+				duration = "duration"
+				repeatCount=6
+				from = "{ customRad: 0}"
+				to = "{ customRad: endRadius}"
+				easing = "Easing.line"
+				watch=false
+			)
+			(play
+				duration = "duration"
+				repeatCount=6
+				from = "{ customAlpha: 1}"
+				to = "{ customAlpha: 0}"
+				easing = "Easing.line"
+				watch=false
+			)
+		)
+		
+		(controller $Animation
+			(play
+				duration = "duration"
+				delay = "duration/2"
+				repeatCount=5
+				from = "{ customRad_second: 0}"
+				to = "{ customRad_second: endRadius}"
+				easing = "Easing.line"
+				watch=false
+			)
+			(play
+				duration = "duration"
+				delay = "duration/2"
+				repeatCount=5
+				from = "{ customAlpha_second: 1}"
+				to = "{ customAlpha_second: 0}"
+				easing = "Easing.line"
+				watch=false
+			)
+		)
+	)
+	(macro BIND_FAIR_SCALE "_itemScale / _mapScale")
+
+	(controller $Animation
+		(bindcall play	duration="0.15"
+						from="{alpha: 1}"
+						to="{alpha: 0}"
+						action="kill"
+						(event "submarineHydrophoneZoneComponent.evHide")
+		)
+	)
+
+	(block
+		(style (position = "absolute"))
+		(alpha = 0)
+		(bind alpha "customAlpha") 
+		(controller $Sector
+			(arc="360")
+			(radius = 0)
+			(bind radius "customRad")
+			(bind colors "[0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF]")
+			(alphas="[0, 0.5, 0]")
+			(ratios="[175, 215, 255]")
+		)
+	)
+	(block
+		(style (position = "absolute"))
+		(alpha = 0)
+		(bind alpha "customAlpha_second") 
+		(controller $Sector
+			(arc="360")
+			(radius = 0)
+			(bind radius "customRad_second")
+			(bind colors "[0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF]")
+			(alphas="[0, 0.75, 0]")
+			(ratios="[175, 215, 255]")
+		)
+	)	
+)

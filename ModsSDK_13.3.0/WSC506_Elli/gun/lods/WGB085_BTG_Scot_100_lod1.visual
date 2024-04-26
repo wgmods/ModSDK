@@ -1,0 +1,47 @@
+<WGB085_BTG_Scot_100_lod1.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	WGB085_BTG_Scot_100	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	HP_gunFire1	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.7071 -0.7071 0.0000	</row1>
+					<row2>	0.0000 0.7071 0.7071 0.0000	</row2>
+					<row3>	0.0000 0.0722 0.0274 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	WGB085_BTG_Scot_100	</node>
+		<geometry>
+			<vertices>	WGB085_BTG_Scot_100_lod1Shape.vertices	</vertices>
+			<primitive>	WGB085_BTG_Scot_100_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/WSC506_Elli/gun/WGB085_BTG_Scot_100.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0364 0.0000 -0.0561	</min>
+		<max>	0.0364 0.0948 0.0624	</max>
+	</boundingBox>
+</WGB085_BTG_Scot_100_lod1.visual>

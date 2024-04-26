@@ -1,0 +1,30 @@
+<weathers.xml>
+	<!-- Статичный -->
+	<scheme>
+		<startWeight> 10 </startWeight>
+		<step>
+			<param>PCOW001_Sunny</param>
+			<duration>
+				<min> 300 </min>
+				<max> 300 </max>
+			</duration>
+			<transition> 60 </transition>
+		</step>
+		<step>
+			<param>PCOW024_Rain_Logic_12km</param>
+			<duration>
+				<min> 360 </min>
+				<max> 360 </max>
+			</duration>
+			<transition> 120 </transition>
+		</step>
+		<step>
+			<param>PCOW001_Sunny</param>
+			<duration>
+				<min> 6000 </min>
+				<max> 6000 </max>
+			</duration>
+			<transition> 120 </transition>
+		</step>
+	</scheme>
+</weathers.xml>

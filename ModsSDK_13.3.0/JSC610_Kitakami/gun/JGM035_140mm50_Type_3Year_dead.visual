@@ -1,0 +1,65 @@
+<JGM035_140mm50_Type_3Year_dead.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS100_YGBS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.4800 0.0040 0.0000 0.0000	</row0>
+					<row1>	-0.0040 0.4800 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.4800 0.0000	</row2>
+					<row3>	0.0000 0.0972 -0.0160 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS101_YGCS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.4285 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.7014 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.3604 0.0000	</row2>
+					<row3>	0.0000 0.0479 0.1571 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.4700 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.4700 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.4700 0.0000	</row2>
+					<row3>	0.0000 0.0972 0.3295 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_deadShape.vertices	</vertices>
+			<primitive>	Turret_deadShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSC610_Kitakami/gun/JGM035_140mm50_Type_3Year_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1063 -0.0062 -0.1718	</min>
+		<max>	0.0955 0.1944 0.3609	</max>
+	</boundingBox>
+</JGM035_140mm50_Type_3Year_dead.visual>

@@ -1,0 +1,74 @@
+<GGS075_105mm_SKC_33_dead_lod1.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS100_YGBS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.2780 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.2780 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.2780 0.0000	</row2>
+					<row3>	-0.0220 0.1260 0.1309 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS100_YGBS_M_1_INDEX_3	</identifier>
+				<transform>
+					<row0>	0.2777 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.2777 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.2777 0.0000	</row2>
+					<row3>	0.0220 0.1298 0.1309 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.2780 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.2780 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.2780 0.0000	</row2>
+					<row3>	-0.0220 0.1260 0.3264 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_3	</identifier>
+				<transform>
+					<row0>	0.2780 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.2779 0.0064 0.0000	</row1>
+					<row2>	0.0000 -0.0064 0.2779 0.0000	</row2>
+					<row3>	0.0220 0.1260 0.3264 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_dead_lod1Shape.vertices	</vertices>
+			<primitive>	Turret_dead_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/GSC706_HSF_Graf_Spee/gun/GGS003_105_mm_SKC_33_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1245 -0.0013 -0.1709	</min>
+		<max>	0.1254 0.1687 0.3264	</max>
+	</boundingBox>
+</GGS075_105mm_SKC_33_dead_lod1.visual>

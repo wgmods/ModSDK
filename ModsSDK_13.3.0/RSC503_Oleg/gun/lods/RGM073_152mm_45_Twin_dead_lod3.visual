@@ -1,0 +1,38 @@
+<RGM073_152mm_45_Twin_dead_lod3.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	RGM073_152mm_45_Twin_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	RGM073_152mm_45_Twin_dead	</node>
+		<geometry>
+			<vertices>	RGM073_152mm_45_Twin_dead_lod3_Shape.vertices	</vertices>
+			<primitive>	RGM073_152mm_45_Twin_dead_lod3_Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/RSC503_Oleg/gun/RGM073_152mm_45_Twin_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1388 -0.0002 -0.1890	</min>
+		<max>	0.1388 0.1920 0.3953	</max>
+	</boundingBox>
+</RGM073_152mm_45_Twin_dead_lod3.visual>

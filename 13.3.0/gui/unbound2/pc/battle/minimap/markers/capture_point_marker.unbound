@@ -1,0 +1,62 @@
+(def constant CAPTURE_POINTS_SETTINGS
+	{
+		NEUTRAL: {
+			STROKE_COLOR: 0xFFFFFF,
+			COLORS: [0xFFFFFF, 0xFFFFFF, 0xFFFFFF],
+			ALPHAS: [0.18, 0.13, 0.08],
+			RATIOS: [0, 128, 255]
+		},
+		ALLY: {
+			STROKE_COLOR: 0x4CE8AA,
+			COLORS: [0x4CE8AA, 0x4CE8AA, 0x4CE8AA],
+			ALPHAS: [0.39, 0.26, 0.21],
+			RATIOS: [0, 128, 255]
+		},
+		ENEMY: {
+			STROKE_COLOR: 0xFF3300,
+			COLORS: [0xFF3300, 0xFF3300, 0xFF3300],
+			ALPHAS: [0.39, 0.26, 0.21],
+			RATIOS: [0, 128, 255]
+		}
+	}
+)
+
+(def element MapCapturePointMarker (_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number) layout=true
+	(scope
+		(var circleRadius:number = "_markerEntity.circle.radius" (event "_markerEntity.circle.evRadiusChanged"))
+		(var circleInnerRadius:number = "_markerEntity.circle.innerRadius" (event "_markerEntity.circle.evInnerRadiusChanged"))
+		(macro VAR_RELATION "_markerEntity")
+		(macro SCOPE_HIGHLIGHT_MARKER_ON_MAP_MOUSE_OVER "_markerEntity")
+	)
+
+	(macro BIND_FAIR_SCALE "_itemScale / _mapScale")
+
+	
+	
+	(block
+		(style (position = "absolute"))
+		(controller $Sector
+			(bind arc "360")
+			(bind colors "CAPTURE_POINTS_SETTINGS[toUpper(relation)].COLORS")
+			(bind alphas "CAPTURE_POINTS_SETTINGS[toUpper(relation)].ALPHAS")
+			(bind ratios "CAPTURE_POINTS_SETTINGS[toUpper(relation)].RATIOS")
+			(bind radius "circleRadius * _scaleRatio")
+			(bind innerRadius "circleInnerRadius * _scaleRatio")
+
+			(bind lineThickness "1")
+			(bind lineAlpha "0.6")
+			(bind lineColor "CAPTURE_POINTS_SETTINGS[toUpper(relation)].STROKE_COLOR")
+		)
+	) 
+	
+
+	(element CapturePointIndicator "_markerEntity"
+		(style
+			(hitTest = false)
+			(marginLeft = "-50%") (marginTop = "-50%")
+			(pivotX = "50%") (pivotY = "50%")
+			(scaleX = "0.6") (scaleY = "0.6")
+		)
+		(macro EFFECT_HIGHLIGHT_MARKER_ON_MOUSE_OVER)
+	)
+)

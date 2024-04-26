@@ -1,0 +1,294 @@
+
+(def constant SHOOT_RANGE_COLOR 0x999999)
+(def constant VISIBILITY_RANGE_COLOR 0x6EE1F7)
+(def constant AA_RANGE_COLOR 0xF0A522)
+(def constant ATBA_RANGE_COLOR 0xA9C272)
+(def constant RLS_RANGE_COLOR 0x00DDFF)
+
+(def constant SHIP_NAMES_COLORS 
+	{
+		DEAD: 0xCCCCCC,
+		DIVISION: "SC.Ui_styles.SERVICE_COLORS.YELLOW",
+		ALLY: "SC.Ui_styles.SERVICE_COLORS.GREEN",
+		ENEMY: 0xFE4D2A,
+		TEAMKILLER: "SC.Ui_styles.SERVICE_COLORS.PINK",
+		LAST_VIS: 0xFE4D2A
+	}
+)
+
+(def element MapShipMarkerHolder(_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number) layout=true
+	(scope
+		(var diplomacyRelationComponent:gfx = "_markerEntity.diplomacyRelation" (event "_markerEntity.evAdded") (event "_markerEntity.evRemoved"))
+	)
+
+	(controller $Instance 
+		(bind renderer "diplomacyRelationComponent != null	? 'DiplomacyMapShipMarker'
+															: 'MapShipMarker'")
+		(args
+			_markerEntity = "_markerEntity"
+			_mapScale = "_mapScale"
+			_itemScale = "_itemScale"
+			_scaleRatio = "_scaleRatio"
+		) 
+	)
+)
+
+(def element MapShipMarker (_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number) layout=true
+	(scope
+		(var isPlayerAvatar:bool = "_markerEntity.hasComponent(CC.playerAvatar)")
+		(var isAlive:bool = "_markerEntity.health ? _markerEntity.health.isAlive : false" (event "_markerEntity.health.evIsAliveChanged"))
+
+		(var target:gfx = "_markerEntity.target" (event "_markerEntity.evAdded") (event "_markerEntity.evRemoved"))
+		(var targetFlags:number = "target ? target.flags : 0" (event "target.evChanged"))
+		(var isTargetLocked:bool = "(targetFlags & LOCKABLE_WEAPONS) > 0")
+
+		(var mapVisible:bool = "_markerEntity.visibility ? _markerEntity.visibility.mapVisible : false" (event "_markerEntity.visibility.evChanged"))
+		(var worldVisible:bool = "_markerEntity.visibility ? _markerEntity.visibility.visible : false" (event "_markerEntity.visibility.evChanged"))
+
+		(var markerYaw:number = "radToGrad(_markerEntity.mapPosition.yaw)" (event "evEnterFrame"))
+		(var markerScale:number = "_itemScale / _mapScale")
+
+		(macro SCOPE_IS_BATTLE_IN_PROGRESS "'isBattleInProgress'")
+
+		(var minimapEntity:gfx = "$datahub.getSingleEntity(CC.minimap)")
+		(var minimapComponent:gfx = "minimapEntity.minimap")
+		(var angleToRotate:number = "minimapComponent ? minimapComponent.rotationAngleDeg : 0" (event "minimapComponent.evRotationAngleDegChanged"))
+
+		(var rangesAlphaComponent:gfx = "$datahub.getPrimaryEntity(CC.minimapOption, SC.Battle.MINIMAP_OPTION.rangesAlpha).minimapOption")
+		(var rangesAlpha:number = "rangesAlphaComponent.value * 0.01" (event "rangesAlphaComponent.evValueChanged"))
+		
+		(var shipNamesDisplayEnabledComponent:gfx = "$datahub.getPrimaryEntity(CC.minimapOption, SC.Battle.MINIMAP_OPTION.shipNamesDisplayEnabled).minimapOption")
+		(var shipNamesDisplayEnabled:bool = "shipNamesDisplayEnabledComponent.value > 0" (event "shipNamesDisplayEnabledComponent.evValueChanged"))
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var altVision:bool = "cameraEntity.camera ? cameraEntity.camera.altVision : false" (event "cameraEntity.camera.evAltVisionChanged"))
+		(macro SCOPE_HIGHLIGHT_MARKER_ON_MAP_MOUSE_OVER "_markerEntity")
+
+		(var relationComponent:gfx = "_markerEntity ? _markerEntity.relation : null")
+		(var isAlly:bool = "relationComponent && relationComponent.value == SC.Battle.PLAYER_RELATION.ALLY" (event "relationComponent.evChanged"))
+		(var isSelf:bool = "relationComponent && relationComponent.value == SC.Battle.PLAYER_RELATION.SELF" (event "relationComponent.evChanged"))
+	)
+
+	(block
+		(style
+			(position = "absolute")
+		)
+		(controller $Instance (renderer = 'MapMarkerDirectionalLine')
+			(bind enabled "(isPlayerAvatar || isTargetLocked) && isAlive && mapVisible && isBattleInProgress")
+			(exprs
+				(style
+					(bind rotation "markerYaw")
+					(bind alpha "rangesAlpha")
+				)
+			)
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+		)
+		(controller $Instance (renderer = 'MapMarkerRanges')
+			(bind enabled "isPlayerAvatar && isAlive")
+			(args entity="_markerEntity" mapScale="_mapScale")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+		)
+
+		(macro EFFECT_HIGHLIGHT_MARKER_ON_MOUSE_OVER)
+		(element MapMarkerShipIcon
+			_markerEntity="_markerEntity"
+			(style (bind rotation "markerYaw"))
+			(macro BIND_FAIR_SCALE "markerScale")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(pivotY = -8)
+			(bind rotation "-(angleToRotate)")
+		)
+		(block
+			(controller $Instance (renderer = 'MapMarkerShipName')
+				(bind enabled "!(isPlayerAvatar) && isAlive && (shipNamesDisplayEnabled || altVision)")
+				(args _markerEntity="_markerEntity")
+			)
+		)
+		(macro BIND_FAIR_SCALE "markerScale")
+	)
+)
+
+(def element MapMarkerDirectionalLine () layout=true
+	(style
+		(position = "absolute")
+		(backgroundImage = "'symbol:minimap_direction_line'")
+	)
+)
+
+
+(def element MapMarkerShipIcon (_markerEntity:gfx) layout=true
+	(scope
+		(macro SHIP_MARKER_ICON_DATA "_markerEntity.id")
+
+		(var aircarrier:gfx = "$datahub.getSingleComponent(CC.aircarrier)")
+		(var activeSquadron:number = "aircarrier ? aircarrier.activeSquadron : ActiveSquadron.NONE" (event "aircarrier.evStateChanged"))
+		(var squadronCameraMode:bool = "activeSquadron != ActiveSquadron.NONE")
+
+		(macro SCOPE_IS_BATTLE_IN_PROGRESS "'isBattleInProgress'")
+
+		(var visibilityPostfix:str = "mapVisible && !(worldVisible) && isBattleInProgress ? '_invisible' : ''")
+
+		(var markerColorTransform:dict =
+			"	!isAlive						? TWO_TEAMS_COLOR_TRANSFORMS['white'] :
+				!mapVisible && !worldVisible	? TWO_TEAMS_COLOR_TRANSFORMS['white'] :
+				isSelf							? TWO_TEAMS_COLOR_TRANSFORMS['white'] :
+				isInSameDivision				? TWO_TEAMS_COLOR_TRANSFORMS['division'] :
+				tkStatus && isAlly				? TWO_TEAMS_COLOR_TRANSFORMS['teamkiller'] :
+				isAlly							? TWO_TEAMS_COLOR_TRANSFORMS['ally'] :
+				isMultyTeamEnabled				? MULTI_TEAMS_COLOR_TRANSFORMS[teamId]
+												: TWO_TEAMS_COLOR_TRANSFORMS['enemy']
+		")
+
+		(var markerIcon:str = 
+			"isAlive	? !mapVisible && !worldVisible	? shipType + '_last_visible'
+														: isSelf	? squadronCameraMode	? 'self_alive_' + shipType
+																							: 'self_alive'
+																	: shipType + visibilityPostfix
+						: isSelf	? squadronCameraMode	? 'self_dead_' + shipType
+															: 'self_dead'
+									: shipType + '_dead'")
+	)
+	(bind colorTransform "markerColorTransform")
+	(bind name "worldVisible ? 'map_marker_ship_' + (_markerEntity.avatar ? _markerEntity.avatar.id : 0) : ''")
+	(style (bind backgroundImage "shipType ? 'swf:../fla/minimap/minimap.swf:minimap_' + toLower(markerIcon) : ''"))
+)
+
+(def element MapMarkerShipName (_markerEntity:gfx) layout=true
+	(scope
+		(macro SHIP_MARKER_ICON_DATA "_markerEntity.id")
+		(var shipName:str = "avatarComponent ? avatarComponent.ship.ref.ship.nameUpper : ''")
+
+		(var colorPresetName:str = "isInSameDivision	?	'division'	
+														:	tkStatus && isAlly	?	'teamkiller' 
+																				: toLower(SC.Battle.PLAYER_RELATION.VALUE_TO_NAME[relationComponent.value])")
+	)
+
+	(style (width = 100%) (align = "center"))
+	(tf
+		(class $TextDefaultBold9NM)
+		(bind class "isMultyTeamEnabled && !isAlly	? MULTI_TEAMS_COLOR_CLASSES[teamId]
+													: TWO_TEAMS_FONT_COLOR_CLASSES[colorPresetName]")
+		(class $FontEnableReadability)
+		(bind text "shipName")
+	)
+)
+
+(def element DiplomacyMapShipMarker (_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number) layout=true
+	(scope
+		(var isPlayerAvatar:bool = "_markerEntity && _markerEntity.hasComponent(CC.playerAvatar)")
+		(var healthComponent:gfx = "_markerEntity ? _markerEntity.health : null")
+		(var isAlive:bool = "healthComponent.isAlive" (event "healthComponent.evIsAliveChanged"))
+
+		(var target:gfx = "_markerEntity ? _markerEntity.target : null" (event "_markerEntity.evAdded") (event "_markerEntity.evRemoved"))
+		(var targetFlags:number = "target ? target.flags : 0" (event "target.evChanged"))
+		(var isTargetLocked:bool = "target && (targetFlags & LOCKABLE_WEAPONS) > 0")
+
+		(var visibilityComponent:gfx = "_markerEntity ? _markerEntity.visibility : null")
+		(var mapVisible:bool = "visibilityComponent && visibilityComponent.mapVisible" (event "visibilityComponent.evChanged"))
+
+		(var markerYaw:number = "_markerEntity && _markerEntity.hasComponent(CC.mapPosition) ? radToGrad(_markerEntity.mapPosition.yaw) : 0" (event "evEnterFrame"))
+		(var markerScale:number = "_mapScale != 0 ? _itemScale / _mapScale : 0")
+
+		(var minimapEntity:gfx = "$datahub.getSingleEntity(CC.minimap)")
+		(var minimapComponent:gfx = "minimapEntity.minimap")
+		(var angleToRotate:number = "minimapComponent ? minimapComponent.rotationAngleDeg : 0" (event "minimapComponent.evRotationAngleDegChanged"))
+
+		(var rangesAlphaComponent:gfx = "$datahub.getPrimaryEntity(CC.minimapOption, SC.Battle.MINIMAP_OPTION.rangesAlpha).minimapOption")
+		(var rangesAlpha:number = "rangesAlphaComponent.value * 0.01" (event "rangesAlphaComponent.evValueChanged"))
+		
+		(var shipNamesDisplayEnabledComponent:gfx = "$datahub.getPrimaryEntity(CC.minimapOption, SC.Battle.MINIMAP_OPTION.shipNamesDisplayEnabled).minimapOption")
+		(var shipNamesDisplayEnabled:bool = "shipNamesDisplayEnabledComponent.value > 0" (event "shipNamesDisplayEnabledComponent.evValueChanged"))
+
+		(var cameraComponent:gfx = "$datahub.getSingleComponent(CC.camera)")
+		(var altVision:bool = "cameraComponent && cameraComponent.altVision" (event "cameraComponent.evAltVisionChanged"))
+	)
+
+	(block
+		(style (position = "absolute"))
+		(controller $Instance (renderer = 'MapMarkerDirectionalLine') 
+			(bind enabled "(isPlayerAvatar || isTargetLocked) && isAlive && mapVisible")
+			(exprs
+				(style
+					(bind rotation "markerYaw")
+				)
+				(bind alpha "rangesAlpha")
+			)
+		)
+	)
+
+	(block
+		(style (position = "absolute"))
+		(controller $Instance (renderer = 'MapMarkerRanges') 
+			(bind enabled "isPlayerAvatar && isAlive")
+			(args entity="_markerEntity" mapScale="_mapScale")
+		)
+	)
+
+	(block
+		(style (position = "absolute"))
+		(controller $Instance (renderer = 'DiplomacyMapMarkerShipIcon')
+			(bind enabled "isAlive")
+			(args _markerEntity="_markerEntity")
+			(exprs
+				(style
+					(bind rotation "markerYaw")
+				)
+				(macro BIND_FAIR_SCALE "markerScale")
+			)
+		)
+	)
+
+	(block
+		(style (position = "absolute"))
+		(controller $Instance (renderer = 'MapMarkerShipName')
+			(bind enabled "!(isPlayerAvatar) && isAlive && (shipNamesDisplayEnabled || altVision)")
+			(args _markerEntity="_markerEntity")
+			(exprs
+				(style (bind rotation "-(angleToRotate)"))
+				(macro BIND_FAIR_SCALE "markerScale")
+			)
+		)
+	)
+)
+
+(def element DiplomacyMapMarkerShipIcon (_markerEntity:gfx) layout=true
+	(scope
+		(macro SHIP_MARKER_ICON_DATA "_markerEntity.id")
+		(var diplomacyRelationComponent:gfx = "entity.diplomacyRelation")
+		(var diplomacyRelation:number = "diplomacyRelationComponent.value" (event "diplomacyRelationComponent.evChanged"))
+
+		(var diplomacyRelationSuffix:str = "	diplomacyRelation == SC.Battle.DIPLOMACY_RELATIONS.SELF 	? 'self' :
+												diplomacyRelation == SC.Battle.DIPLOMACY_RELATIONS.ALLY 	? 'ally' :
+												diplomacyRelation == SC.Battle.DIPLOMACY_RELATIONS.NEUTRAL 	? 'neutral' 
+																											: 'enemy'")
+		(var visibilityPostfix:str = "!(worldVisible) ? '_invis' : ''")
+		
+		(var alivePostfix:str = "isAlive ? '_alive' : '_dead'")
+		(var isBot:bool = "!entity || entity.hasComponent(CC.bot) || (entity.hasComponent(CC.avatar) && entity.avatar.isBot)")
+		(var botPostfix:str = "diplomacyRelation == SC.Battle.DIPLOMACY_RELATIONS.ENEMY && isBot ? '_bot' : ''")
+		(var markerIcon:str = "'symbol:minimap_diplomacy_relation' + (isAlive ? '_' + diplomacyRelationSuffix + botPostfix + alivePostfix + visibilityPostfix
+																		: botPostfix + alivePostfix)")
+	)
+
+	(block
+		(style 
+			(bind backgroundImage "markerIcon")
+		)
+		(bind alpha "worldVisible ? 1 : 0.7")
+	)
+)

@@ -1,0 +1,141 @@
+(def css $HintBody ()
+	(flow = "horizontal")
+	(align = "middle")
+)
+
+(def css $HintContainer ()
+	(paddingTop = "M") (paddingBottom = "M")
+	(paddingLeft = "M") (paddingRight = "M")
+	(backgroundSize = "fill")
+	(backgroundImage = "'url:../battle_hud/shared/tips_bg.png'")
+	(scale9grid = 12)
+)
+
+(def constant TEXT_OFFSET 8)
+(def constant HOTKEYS_DIVIDER '/')
+
+(def constant TUTORIAL_HINTS_TYPE_TO_KEYS_RENDERER [
+	'KeysHintBody',
+	'WASDHintBody'
+])
+
+
+(def element TutorialContextHintsContainer () layout=true
+	(scope
+		(var avatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var healthComponent:gfx = "avatarEntity.health")
+		(var isAlive:bool = "healthComponent ? healthComponent.isAlive : false" (event "healthComponent.evIsAliveChanged"))
+
+		(var hintsCollection:gfx = "$datahub.getCollection(CC.tutorialContextHint)")
+		(var item:gfx = "hintsCollection.items[0]" (event "hintsCollection.evAdded") (event "hintsCollection.evRemoved"))
+
+		(var isHintTypeEnabled:bool = "item != null")
+	)
+
+	(block
+		(style (marginLeft = -50%))
+		(controller $Instance renderer='TutorialContextHint'
+			(bind enabled "isAlive && isHintTypeEnabled")
+			(args _entityId="item.id")
+			(bindcall recreate (bind trigger "item"))
+		)
+	)
+)
+
+(def element TutorialContextHint (_entityId:number) layout=true
+	(scope
+		(var item:gfx = "$datahub.getEntity(_entityId)")
+		(var tutorialContextHint:gfx = "item.tutorialContextHint" (event "item.evAdded"))
+		(var keys:array = "tutorialContextHint.keys")
+		(var messageIDS:str = "tr(tutorialContextHint.messageIDS)")
+
+		(var timeToLive:gfx = "item.timeToLive" (event "item.evAdded"))
+
+		(var rendererName:str = "TUTORIAL_HINTS_TYPE_TO_KEYS_RENDERER[tutorialContextHint ? tutorialContextHint.type : 0]")
+
+	)
+	(class $HintContainer)
+	(alpha = 0)	
+	(controller $Instance (bind renderer "rendererName")
+		(args "keys" "messageIDS")
+	)
+	
+	(controller $Animation
+		(bindcall play  duration=0.35
+						from="{ alpha: 0, marginTop: 20 }"
+						to="{ alpha: 1, marginTop: 0 }"
+						action="killAll"
+						(bind enabled "_entityId != 0")
+						(event "tutorialContextHint.evShow")
+		)
+		(bindcall play  duration="timeToLive.deathTime"
+						to="{ alpha: 0, marginTop: -20 }"
+						action="killAll"
+						(event "timeToLive.evRemove")
+		)
+	)
+)
+
+(def element WASDHintBody (_keys:array, _messageIDS:str)
+	(class $HintBody)	
+	(element KeysHintBody
+		_keys="[_keys[0], _keys[1]]"
+		_messageIDS="tr('IDS_FIRST_BATTLE_PROMPT_FASTER_SLOWER')"
+		(style
+			(marginRight = "L")
+		)
+	)	
+	(element KeysHintBody
+		_keys="[_keys[2], _keys[3]]"
+		_messageIDS="tr('IDS_FIRST_BATTLE_PROMPT_LEFT_RIGHT')"
+	)
+)
+
+(def element KeysHintBody (_keys:array, _messageIDS:str) layout=true
+	(class $HintBody)
+	
+	(hblock
+		(style
+			(align = "middle") (marginTop = -6) (marginBottom = -6) (bind marginRight "_keys.length ? TEXT_OFFSET : 0")
+		)
+		(controller $Repeat renderer='TutorialContextHintHotkeyContainer'
+			(bind count "_keys.length")
+			(args _commandId="_keys[$index]" _needDelimiter="$index != 0")
+		)
+	)
+
+	
+	(tf
+		(style
+			(textAlign = "center")
+			(maxWidth = 560)
+		)
+		(class $TextDefaultBold19NM)
+		(bindcall substitute imageOffset=6 sourceText="_messageIDS" postfix='' toggle=false init=true)
+	)
+)
+
+(def element TutorialContextHintHotkeyContainer (_commandId:number, _needDelimiter:bool) layout=true
+	(scope
+		(var command:gfx = "$datahub.getPrimaryEntity(CC.commandMappingCommand, _commandId)")
+		(var isHintCompleted:bool = false)
+		(bind isHintCompleted "true" watch=false init=false (event "command.commandMappingCommand.evCall"))
+	)
+	(style
+		(flow = "horizontal")
+		(align = "middle")
+	)
+	(tf
+		(style
+			(marginLeft = "XS") (marginRight = "XS")
+		)
+		(bind visible "_needDelimiter")
+		(class $TextHUD24Bold)
+		(text = "HOTKEYS_DIVIDER")
+	)
+	(element HotkeyIndicator
+			_commandId = "_commandId"
+			_size = "SIZE.LARGE"
+			_toggled = "isHintCompleted"
+	)
+)

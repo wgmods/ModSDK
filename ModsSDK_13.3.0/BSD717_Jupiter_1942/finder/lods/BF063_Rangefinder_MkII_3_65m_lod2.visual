@@ -1,0 +1,61 @@
+<BF063_Rangefinder_MkII_3_65m_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	BF063_Rangefinder_MkII_3_65m	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	BF063_Rangefinder_MkII_3_65m_wire	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	BF063_Rangefinder_MkII_3_65m	</node>
+		<geometry>
+			<vertices>	BF063_Rangefinder_MkII_3_65m_lod2Shape.vertices	</vertices>
+			<primitive>	BF063_Rangefinder_MkII_3_65m_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/BSD717_Jupiter_1942/finder/BF063_Rangefinder_MkII_3_65m.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	BF063_Rangefinder_MkII_3_65m_wire	</node>
+		<geometry>
+			<vertices>	BF063_Rangefinder_MkII_3_65m_wire_lod2Shape.vertices	</vertices>
+			<primitive>	BF063_Rangefinder_MkII_3_65m_wire_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPWIRE_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/BSD717_Jupiter_1942/finder/BF063_Rangefinder_MkII_3_65m_wire.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1341 0.0000 -0.0827	</min>
+		<max>	0.1341 0.1757 0.0931	</max>
+	</boundingBox>
+</BF063_Rangefinder_MkII_3_65m_lod2.visual>

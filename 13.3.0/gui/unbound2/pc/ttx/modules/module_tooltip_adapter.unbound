@@ -1,0 +1,50 @@
+(def constant STUB_VALUE "{value:0, delta:0}")
+
+(def constant MODULE_DESCRIPTOR_TO_RENDERER {
+	'_Artillery'		: 'ModuleArtillery_Parameters',
+	'_Suo'				: 'ModuleSuo_Parameters',
+	'_Hull'				: 'ModuleHull_Parameters',
+	'_Engine'			: 'ModuleEngine_Parameters',
+	'_Sonar'			: 'ModuleSonar_Parameters',
+	'_Torpedoes'		: 'ModuleTorpedoes_Parameters',
+	'_Fighter'			: 'ModuleFighter_Parameters',
+	'_DiveBomber'		: 'ModuleDiveBomber_Parameters',
+	'_TorpedoBomber'	: 'ModuleTorpedoBomber_Parameters',
+	'_SkipBomber'		: 'ModuleSkipBomber_Parameters'
+})
+
+(def css $TooltipModuleParamsContainer ()
+	(width = 100%) (paddingLeft = "M") (paddingRight = "M")
+)
+
+(def layout ModuleParametersAdapter (_ttxDescriptor:str) dispatch_size_change=true
+	(scope
+		(var rendererName:str = "_ttxDescriptor in MODULE_DESCRIPTOR_TO_RENDERER	?	MODULE_DESCRIPTOR_TO_RENDERER[_ttxDescriptor] + 'ForDock'
+																					:	'DefaultParametersForTooltip'")
+		(var comparison:gfx = "$datahub.getSingleEntity(CC.comparison).comparison")
+		(var tooltipTTX:gfx = "comparison ? comparison.tooltipTTX : null" (event "comparison.evTooltipTTXChanged"))
+		(var hasIntegralDiff:gfx = "comparison ? comparison.hasTooltipIntegralDiff : null" (event "comparison.evTooltipTTXChanged"))
+	)
+	(bind visible "tooltipTTX != null")
+	(style (width = 320) (paddingLeft = "-M") (paddingRight = "M"))
+	(block
+		(class $TooltipModuleParamsContainer)
+		(controller $Instance
+			(bind enabled "tooltipTTX != null")
+			(bind renderer "rendererName")
+			(args "tooltipTTX" "hasIntegralDiff")
+		)
+	)
+)
+
+(def element ModuleIntegralParams (shipTTX:gfx, shipTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element TooltipSystemHorizontalDivider)
+	(element TooltipSystemStatusLine	_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+										_text = 'IDS_AFTER_MOUNT'
+		(style (marginBottom = "SXS"))
+	)
+	(element ShipTTXSimple _shipTTX="shipTTX" _showOnlyDiff="true"
+		(style (paddingLeft = "-M") (paddingRight = "-M") (paddingBottom = "-SXS"))
+	)
+)

@@ -1,0 +1,207 @@
+(def constant BUILDING_TYPE_TO_ICON {
+	'CoastalArtillery': 'icon_ground_artillery',
+	'Complex': 'icon_ground_artillery',
+	'AntiAircraft': 'icon_ground_air_defence',
+	'SensorTower': 'icon_ground_radar',
+	'Military': 'icon_ground_supply',
+	'RayTower': 'icon_ground_tower',
+	'AirBase': 'icon_ground_airbase',
+	'SpaceStation': 'icon_ground_station',
+	'Generator': 'icon_ground_generator'
+})
+
+(def constant BUILDING_ICON_SIZE {
+	width: 20,
+	height: 15
+})
+
+(def element BuildingMarkerIconItem (_markerEntity:gfx) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'building')
+		(macro GET_MARKER_ENTITY_COMPONENT 'health')
+		(macro GET_MARKER_ENTITY_COMPONENT 'relation')
+
+		(var buildingType:str = "buildingComponent ? BUILDING_TYPE_TO_ICON[buildingComponent.type] : 'icon_ground_supply'")
+		(var isSuppressed:bool = "buildingComponent && buildingComponent.isSuppressed" (event "buildingComponent.evSuppressionChanged"))
+		(var suppressedPostfix:str = "isSuppressed ? '_suppressed_' : '_'")
+
+		(var isAlive:bool = "healthComponent && healthComponent.isAlive" (event "healthComponent.evIsAliveChanged"))
+		(var relationValue:number = "relationComponent ? relationComponent.value : -1" (event "relationComponent.evChanged"))
+		(var relationPostfix:str = "isAlive ? suppressedPostfix + SC.Battle.PLAYER_RELATION.VALUE_TO_NAME[relationValue]
+											: '_dead'")
+
+		(var markerIcon:str = "'url:../battle_hud/markers/building_icons/normal/' + toLower(buildingType + relationPostfix) + '.png'")
+	)
+
+	(class $WorldMarkerItemMargins)
+	(style
+		(width = "BUILDING_ICON_SIZE.width")
+		(height = "BUILDING_ICON_SIZE.height")
+		(align = "center|middle")
+	)
+
+	(block
+		(style
+			(bind backgroundImage "markerIcon")
+			(backgroundSize = "autosize")
+		)
+
+		
+		(block
+			(alpha = "isSuppressed ? 1 : 0")
+			(style
+				(width = 12) (height = 18)
+				(position = "absolute")
+				(left = "-M")
+				(backgroundImage = 'url:../battle_hud/markers/building_icons/icon_repair.png')
+			)
+			(controller $Animation
+				(bindcall play	duration="0.15"
+								from="{alpha: 0, top: 10}"
+								to="{alpha: 1, top: 0}"
+								action="killAll"
+								reverse="!(isSuppressed)"
+								(bind trigger "isSuppressed")
+				)
+			)
+		)
+	)
+)
+
+
+(def element BuildingNameItem (_markerEntity:gfx) layout=true
+	(scope
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'building')
+		(var buildingName:str = "buildingComponent 	? buildingComponent.name	? tr(buildingComponent.name)
+																				: buildingComponent.typeIDS
+													: ''")
+	)
+	(element SimpleMarkerTextItem "toUpper(buildingName)")
+)
+
+(def layout WorldBuildingMarker (_markerEntity:gfx)
+	(scope
+		(event evMarkerShow)
+		(event evMarkerHide)
+
+		
+		(var timer:gfx = "$datahub.getSingleComponent(CC.timer)")
+		(macro GET_MARKER_ENTITY_COMPONENT 'building')
+		(macro GET_MARKER_ENTITY_COMPONENT 'distance')
+		(macro GET_MARKER_ENTITY_COMPONENT 'health')
+		(macro GET_MARKER_ENTITY_COMPONENT 'relation')
+		(macro GET_MARKER_ENTITY_COMPONENT 'target')
+		(macro GET_MARKER_ENTITY_COMPONENT 'dissolve')
+		(macro GET_MARKER_ENTITY_COMPONENT 'scenarioTag')
+
+		
+		(macro ALT_VISION_SCOPE)
+
+		
+		(var targetFlags:number = "targetComponent ? targetComponent.flags : 0" (event "targetComponent.evChanged") (event "targetComponent.evFlagsChanged"))
+		(var isTargetLocked:bool = "(targetFlags & LOCKABLE_WEAPONS) > 0")
+		(var distanceIndex:number = "distanceComponent ? distanceComponent.distanceIndex : DistanceType.NEAR" (event "distanceComponent.evDistanceIndexChanged"))
+		(var isSuppressed:bool = "buildingComponent && buildingComponent.isSuppressed" (event "buildingComponent.evSuppressionChanged"))
+
+		
+		(var isAlive:bool = "healthComponent && healthComponent.isAlive" (event "healthComponent.evIsAliveChanged"))
+		(var distanceType:number = "isTactical								? DistanceType.TACTICAL :
+									isTargetLocked || isFullAltVisionMode	? DistanceType.NEAR
+																			: distanceIndex")
+
+		(var distanceItemVisibility:bool = "!(isIn(distanceType, [DistanceType.TACTICAL, DistanceType.FARTHEST])) || isAdaptiveAltVisionMode")
+		
+		(var healthBarItemLarge:bool = "isAdaptiveAltVisionMode && distanceType <= DistanceType.FAR")
+		(var healthBarItemVisible:bool = "(isAdaptiveAltVisionMode && distanceType <= DistanceType.FARTHEST) || (distanceType == DistanceType.NEAR) || (isTargetLocked && distanceType != DistanceType.TACTICAL)")
+
+		(var farthestAdaptiveAltVisionMode:bool = "isAdaptiveAltVisionMode && distanceType <= DistanceType.FARTHEST")
+		(var buildingNameItemVisibility:bool = "distanceType != DistanceType.TACTICAL && farthestAdaptiveAltVisionMode")
+		(macro SCOPE_HIGHLIGHT_MARKER_ON_WORLD_MOUSE_OVER)
+	)
+
+	(dispatch evMarkerShow args="{}" on='addedToStage')
+
+	(style
+		(width = 0) (height = 0)
+		(bind align "isTactical ? center|middle
+								: center|bottom")
+	)
+	
+	(controller $Animation
+		(macro MARKER_DISSOLVE_BINDCALL_ANIMATION "true")
+	)
+
+	
+	(block
+		(style
+			(width = 0) (zindex = 0)
+			(align = "center|bottom")
+			(bind position "isTactical ? absolute : flow")
+			(bind bottom "isTactical ? BUILDING_ICON_SIZE.height / 2 : 0")
+		)
+
+		(block
+			(element PriorityItem "_markerEntity")
+			(element TargetAnimationItem "_markerEntity"
+				(style
+					(position = "absolute")
+					(top = 0) (left = 50%)
+				)
+			)
+			(controller $Instance renderer='ScenarioTagItem'
+				(bind enabled "scenarioTagComponent != null")
+				(args _markerEntity="_markerEntity")
+				(exprs
+					(style
+						(position = "absolute")
+						(top = -28)
+					)
+				)
+			)
+		)
+
+		(element BuildingNameItem "_markerEntity"
+			(bind visible "buildingNameItemVisibility")
+		)
+	)
+
+	
+	(block
+		(macro EFFECT_HIGHLIGHT_MARKER_ON_MOUSE_OVER)
+		(element BuildingMarkerIconItem "_markerEntity"
+			(macro BIND_SCALE "distanceType == DistanceType.FARTHEST ? 0.7 : 1")
+		)
+		(element TargetLockItem "_markerEntity"
+			(style
+				(position = "absolute")
+				(left = 50%) (top = 50%)
+			)
+			(macro BIND_FAIR_SCALE "isTactical ? 0.7 : 1")
+		)
+	)
+
+	
+	(element MarkerHealthBarItem
+		_markerEntity="_markerEntity"
+		_isLarge="healthBarItemLarge"
+		_isSuppressed="isSuppressed"
+
+		(bind visible "healthBarItemVisible")
+		(bind scaleX "distanceType == DistanceType.FARTHEST ? 0.8 : 1")
+		(bind scaleY "distanceType == DistanceType.FARTHEST ? 0.7 : 1")
+	)
+
+	
+	(block
+		(style
+			(width = 0)
+			(align = "center|top")
+			(bind position "isTactical ? absolute : flow")
+			(bind top "isTactical ? BUILDING_ICON_SIZE.height / 2 : 0")
+		)
+		(element DistanceItem "_markerEntity"
+			(bind visible "distanceItemVisibility")
+		)	
+	)
+)

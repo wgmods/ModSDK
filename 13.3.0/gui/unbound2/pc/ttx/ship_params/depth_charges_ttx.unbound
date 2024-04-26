@@ -1,0 +1,26 @@
+(def element DepthChargesTTX (shipTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(class $TTXSecondaryPanel)
+
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_DEPTH_CHARGE_MAX_BOMB_DAMAGE'
+									_value = "shipTTX.depthCharges.damage"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_DEPTH_CHARGE_MAX_BOMB_DAMAGE' 'IDS_TOOLTIP_DEPTH_CHARGE_MAX_BOMB_DAMAGE')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_DEPTH_CHARGE_MAX_PACKS'
+									_value = "shipTTX.depthCharges.numCharges"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_DEPTH_CHARGE_MAX_PACKS' 'IDS_TOOLTIP_DEPTH_CHARGE_MAX_PACKS')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_DEPTH_CHARGE_NUM_BOMBS_IN_PACK'
+									_value = "shipTTX.depthCharges.numBombs"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_DEPTH_CHARGE_NUM_BOMBS_IN_PACK' 'IDS_TOOLTIP_DEPTH_CHARGE_NUM_BOMBS_IN_PACK')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_DEPTH_CHARGE_RELOAD_TIME'
+									_value = "shipTTX.depthCharges.reloadTime"
+									_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_DEPTH_CHARGE_RELOAD_TIME' 'IDS_TOOLTIP_DEPTH_CHARGE_RELOAD_TIME')
+	)
+)

@@ -1,0 +1,193 @@
+<ui_preferences.scheme.xml>
+	<scheme xmlns:common="system/data/common_preferences.scheme.xml">
+		<constraints>
+			<ui>
+				<training>
+					<BASE>0</BASE>
+					<MONEY>1</MONEY>
+					<GOLD>2</GOLD>
+				</training>
+				<retraining>
+					<NO>0</NO>
+					<FREE>1</FREE>
+					<GOLD>2</GOLD>
+					<XP>3</XP>
+				</retraining>
+				<firing>
+					<TO_OPS>0</TO_OPS>
+					<BASE>1</BASE>
+					<MONEY>2</MONEY>
+					<GOLD>3</GOLD>
+				</firing>
+			</ui>
+		</constraints>
+		
+		<ui storage="local">
+			<size>
+			<!-- [WWSD-201221] copypasted constraints
+				<contactsAndChannelsHeight type="Integer" constraints="common:positive"> 350 </contactsAndChannelsHeight>
+				<notificationsInboxHeight type="Integer" constraints="common:positive"> 350 </notificationsInboxHeight>
+				<formationWidgetHeight type="Integer" constraints="common:positive"> 410 </formationWidgetHeight>
+				<divisionPlayersListWidth type="Integer" constraints="common:positive"> 280 </divisionPlayersListWidth>
+			-->
+				<contactsAndChannelsHeight type="Integer" min="0.0"> 350
+					<constraints type="interval" min="0.0"/><!-- [WWSD-201221] copy of common:positive -->
+				</contactsAndChannelsHeight>
+				<notificationsInboxHeight type="Integer" min="0.0"> 350
+					<constraints type="interval" min="0.0"/><!-- [WWSD-201221] copy of common:positive -->
+				</notificationsInboxHeight>
+				<formationWidgetHeight type="Integer" min="0.0"> 410
+					<constraints type="interval" min="0.0"/><!-- [WWSD-201221] copy of common:positive -->
+				</formationWidgetHeight>
+				<divisionPlayersListWidth type="Integer" min="0.0"> 280
+					<constraints type="interval" min="0.0"/><!-- [WWSD-201221] copy of common:positive -->
+				</divisionPlayersListWidth>
+			</size>
+			
+			<carousel>
+				<isSmallView type="Boolean">False</isSmallView>
+				<hideShips type="Boolean">False</hideShips>
+				<rowCountIndex type="Integer">0
+					<constraints  type="interval" min="0" max="2"/>
+				</rowCountIndex>
+			</carousel>
+			
+			<mouse>
+				<sensivity type="Float" localization="IDS_OPTIONS_MOUSE_SENSITIVITY" min="0.0" max="1.0">0.65
+					<constraints type="interval" min="0.0" max="1.0"/><!-- [WWSD-201221] copy of common:slider -->
+				</sensivity>
+				<wheelSensivity type="Float" localization="IDS_OPTIONS_WHEEL_SENSITIVITY" min="0.0" max="1.0">0.65
+					<constraints type="interval" min="0.0" max="1.0"/><!-- [WWSD-201221] copy of common:slider -->
+				</wheelSensivity>
+			</mouse>
+			
+			<shipStats>
+				<sortIndex> WINRATE
+					<constraints>
+						<WINRATE>0</WINRATE>
+						<BATTLES>1</BATTLES>
+						<LEVEL>2</LEVEL>
+						<NATION>3</NATION>
+						<TYPE>4</TYPE>
+					</constraints>
+				</sortIndex>
+				<sortReverse type="Boolean">False</sortReverse>
+			</shipStats>
+			
+			<operations>
+				<difficulty> NORMAL
+					<constraints>
+						<NORMAL>0</NORMAL>
+						<HARD>1</HARD>
+					</constraints>
+				</difficulty>
+			<!-- [WWSD-201221] copypasted constraints
+				<selectedId type="Integer" constraints="common:positive"> 0 </selectedId>
+			-->
+				<selectedId type="Integer" min="0.0"> 0
+					<constraints type="interval" min="0.0"/><!-- [WWSD-201221] copy of common:positive -->
+				</selectedId>
+				<enterMM type="Boolean">True</enterMM>
+			</operations>
+			
+			<trainingInfotip>
+				<tabInset type="Integer"> 0 
+					<constraints  type="interval" min="0" max="1"/>
+				</tabInset>
+				<bot>
+				<!-- [WWSD-201221] copypasted constraints
+					<shipId type="Integer" constraints="common:positive"> 0 </shipId>
+				-->
+					<shipId type="Integer" min="0.0"> 0
+						<constraints type="interval" min="0.0"/><!-- [WWSD-201221] copy of common:positive -->
+					</shipId>
+					<canMove type="Boolean">False</canMove>
+					<canShoot type="Boolean">False</canShoot>
+					<AILevel> MEDIUM
+						<constraints>
+							<EASY>3</EASY>
+							<MEDIUM>6</MEDIUM>
+							<HARD>11</HARD>
+						</constraints>
+					</AILevel>
+				</bot>
+			</trainingInfotip>
+			
+			<crewOption>
+				<hire type="Integer" constraints="ui.training"> GOLD </hire>
+				<purchase type="Integer" constraints="ui.training"> BASE </purchase>
+				<assign type="Integer" constraints="ui.retraining"> GOLD </assign>
+				<retrain type="Integer" constraints="ui.retraining"> GOLD </retrain>
+				<firing type="Integer" constraints="ui.firing"> BASE </firing>
+			</crewOption>
+			
+			<PBSEconomicsExpand>
+				<creditsTakenTillDamage type="Boolean">False</creditsTakenTillDamage>
+				<creditsBattleTasks type="Boolean">False</creditsBattleTasks>
+				<creditsModifiers type="Boolean">False</creditsModifiers>
+				<creditsSpentPerBattle type="Boolean">False</creditsSpentPerBattle>
+				<expTakenTillDamage type="Boolean">False</expTakenTillDamage>
+				<expBattleTasks type="Boolean">False</expBattleTasks>
+				<expModifiers type="Boolean">False</expModifiers>
+				<crewXPTakenTillDamage type="Boolean">False</crewXPTakenTillDamage>
+				<crewXPBattleTasks type="Boolean">False</crewXPBattleTasks>
+				<crewXPModifiers type="Boolean">False</crewXPModifiers>
+			</PBSEconomicsExpand>
+			
+			<achievements>
+				<sortOrder> DEFAULT
+				<constraints>
+						<DEFAULT>0</DEFAULT>
+						<DATE>1</DATE>
+						<AMOUNT>2</AMOUNT>
+					</constraints>
+				</sortOrder>
+				<groupExpand type="Object" subtype="Set"/>
+			</achievements>
+			
+			<selectedLootboxType> CREDITS
+				<constraints>
+					<UNKNOWN>0</UNKNOWN>
+					<CREDITS>1</CREDITS>
+					<SIGNALS>2</SIGNALS>
+					<RESOURCES>3</RESOURCES>
+					<CAMOUFLAGES>4</CAMOUFLAGES>
+					<LUCKY>5</LUCKY>
+				</constraints>
+			</selectedLootboxType>
+			
+			<commentWantToDivision type="String"></commentWantToDivision>
+			<preferedEventIndex type="String"></preferedEventIndex>
+			<trainingRoomMapGPName type="String">i01_tutorial</trainingRoomMapGPName>
+			
+			<showPerformance type="Boolean" localization="IDS_SHOW_PERFORMANCE">False</showPerformance>
+			<showOwnShipInCompare type="Boolean">False</showOwnShipInCompare>
+			<showAssistedDamage type="Boolean" localization="IDS_ASSISTED_DAMAGE_COUNTER">False</showAssistedDamage>
+			<showBlockedDamage type="Boolean" localization="IDS_BLOCKED_DAMAGE_COUNTER">False</showBlockedDamage>
+			<showAdditionalDamageCounters type="Boolean" localization="IDS_ADDITIONAL_DAMAGE_COUNTERS">True</showAdditionalDamageCounters>
+			<showPortClock type="Boolean" localization="IDS_PORT_CLOCK">False</showPortClock>
+			<alwaysShowModifiersTimers type="Boolean" localization="IDS_OPTIONS_ALWAYS_SHOW_MODIFIERS_TIMERS">False</alwaysShowModifiersTimers>
+			<showLoginRewardsOnDockEnter type="Boolean">True</showLoginRewardsOnDockEnter>
+			
+			<hidePlaybackTutorial type="Boolean">False</hidePlaybackTutorial>
+			<skipVideo type="Boolean" localization="IDS_SKIP_VIDEO">False</skipVideo>
+			
+			<premShownCommon type="Boolean">False</premShownCommon>
+			<premShownWOWS type="Boolean">False</premShownWOWS>
+			<shipPanelExpanded type="Boolean">True</shipPanelExpanded>
+			
+			<enableLanguageBar type="Integer" localization="IDS_SHOW_IMELANGBAR">-1
+				<constraints  type="interval" min="-1" max="1"/>
+			</enableLanguageBar>
+			<enableBattleChat type="Boolean" localization="IDS_ENABLE_BATTLE_CHAT">True</enableBattleChat>
+			<allowSpecialTypeScenarios type="Boolean">True</allowSpecialTypeScenarios>
+			<navalFlagAccordeonExpanded type="Boolean">False</navalFlagAccordeonExpanded>
+			<isEconomicsExpanded type="Boolean">True</isEconomicsExpanded>
+			<isCurrenciesPanelExpanded type="Boolean">True</isCurrenciesPanelExpanded>
+			
+			<webBrowser>
+				<acceptLangList type="String"></acceptLangList>
+			</webBrowser>
+		</ui>
+	</scheme>
+</ui_preferences.scheme.xml>

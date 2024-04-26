@@ -1,0 +1,92 @@
+(def constant SoundEvent "{
+	OVER: 'over',
+	OUT: 'out',
+	PRESS: 'press',
+	CLICK: 'click',
+	CHANGE: 'change'
+}")
+
+
+
+
+
+
+
+
+
+
+
+(def macro MOUSE_HANDLER_SCOPE (_prefix:expression="''")
+	(event name="_prefix + 'evClicked'")								
+
+	(event name="_prefix + 'evRollOver'")
+	(event name="_prefix + 'evRollOut'")
+	(event name="_prefix + 'evMouseDown'")
+	(event name="_prefix + 'evStageMouseUp'")
+
+	(var name="_prefix + 'rollOver'" type=bool value="$event.isOver" init=false watch=false (event "$scope[_prefix + 'evRollOver']") (event "$scope[_prefix + 'evRollOut']"))
+	(var name="_prefix + 'mouseDown'" type=bool value="$event.isDown" init=false watch=false (event "$scope[_prefix + 'evMouseDown']") (event "$scope[_prefix + 'evStageMouseUp']"))
+)
+
+
+
+
+
+
+
+
+
+
+(def macro MOUSE_EVENTS_DISPATCHER (_prefix:expression="''")
+	(dispatch "_prefix + 'evClicked'" on='click')						
+
+	(dispatch "_prefix + 'evRollOver'" on='rollOver' args="{isOver: true}")
+	(dispatch "_prefix + 'evRollOut'" on='rollOut' args="{isOver: false}")
+	(dispatch "_prefix + 'evMouseDown'" on='mouseDown' args="{isDown: true}")
+	(dispatch "_prefix + 'evStageMouseUp'" on='stageMouseUp' args="{isDown: false}")
+)
+
+(def macro MOUSE_HANDLER (_enabled:expression=true, _prefix:expression="''", _dispatchedEv:expression='', _dispatchParams:expression={}, _methods:expression=[], _soundSet:expression='')
+	(block
+		(bind visible "_enabled")
+		(class $FullsizeAbsolute)
+		(style (backgroundColor = "0x01000000"))
+
+		(macro MOUSE_EVENTS_DISPATCHER "_prefix")
+		(macro SOUND_HANDLER "_soundSet" "_prefix")
+		(macro CLICK_HANDLER
+			_prefix = "_prefix"
+			_dispatchedEv = "_dispatchedEv"
+			_dispatchParams = "_dispatchParams"
+			_methods = "_methods"
+		)
+	)
+)
+
+(def macro SOUND_HANDLER (_soundSet:expression='', _prefix:expression='')
+	(bindcall externalCall 'sound.playSetSoundDirect' "[_soundSet, SoundEvent.OVER]" init=false watch=false (event "$scope[_prefix + 'evRollOver']"))
+	(bindcall externalCall 'sound.playSetSoundDirect' "[_soundSet, SoundEvent.OUT]" init=false watch=false (event "$scope[_prefix + 'evRollOut']"))
+	(bindcall externalCall 'sound.playSetSoundDirect' "[_soundSet, SoundEvent.PRESS]" init=false watch=false (event "$scope[_prefix + 'evMouseDown']"))
+	(bindcall externalCall 'sound.playSetSoundDirect' "[_soundSet, SoundEvent.CLICK]" init=false watch=false on='click')
+)
+
+(def macro CLICK_HANDLER (_prefix:expression='', _dispatchedEv:expression='', _dispatchParams:expression=null, _methods:expression=null)
+	(dispatch "_dispatchedEv" args="_dispatchParams ? _dispatchParams : null" dir="EventDirection.UP" (event "$scope[_prefix + 'evClicked']"))
+	(macro MOUSE_LMB_EXTERNAL_CALL_REPEAT "_prefix" "_methods")
+)
+
+(def macro MOUSE_LMB_EXTERNAL_CALL (externalMethod:str, methodArgs:expression, enabled:expression = "true")
+	(bindcall externalCall "$event.buttonIdx == MouseButtons.LEFT && enabled ? externalMethod : ''" "methodArgs" init=false watch=false on='click')
+)
+
+(def macro MOUSE_LMB_EXTERNAL_CALL_REPEAT (_prefix:expression, _methods:expression)
+	(controller $Repeat
+		(bind enabled "_methods")
+		(bind count "_methods.length")
+		(exprs
+			(bindcall externalCall	"$event.buttonIdx == MouseButtons.LEFT ? _methods[$index].type : ''"
+									"[_methods[$index].name, _methods[$index].args]"
+									init=false watch=false (event "$scope[_prefix + 'evClicked']"))
+		)
+	)
+)

@@ -1,0 +1,53 @@
+(def element ModalWindowEventOutdated () dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(style (align = "center|middle"))
+
+	(block
+		(style (width = "DEFAULT_MODAL_WINDOW_WIDTH"))
+
+		(block
+			(style (width = 100%))
+			
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+				(style (width = 100%))
+
+				(element ModalWindowShortHeader
+					_header = 'IDS_WINDOW_HEADER_EVENT'
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+				(style (width = 100%))
+
+				(tf
+					(class $MWCommonInfoText)
+					(style (marginTop = "MS") (marginBottom = "LS"))
+					(text = 'IDS_INACTUAL_INFO')
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%) (align = "center"))
+
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 3)
+
+				(element DefaultButton
+					_width = 129
+					_name = 'btn_close'
+					_enabled = true
+					_label = 'IDS_CLOSE_BTN'
+				)
+			)
+		)
+	)
+)

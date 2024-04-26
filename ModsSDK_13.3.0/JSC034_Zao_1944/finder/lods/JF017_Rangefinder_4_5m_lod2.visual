@@ -1,0 +1,97 @@
+<JF017_Rangefinder_4_5m_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Rangefinder_4_5	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Director_Type_95_Mod1	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS201_YDCS_M_2	</identifier>
+				<transform>
+					<row0>	0.7569 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.7569 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.7569 0.0000	</row2>
+					<row3>	-0.0108 0.0877 -0.0764 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS202_YDCS_M_3	</identifier>
+				<transform>
+					<row0>	-1.5393 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.5393 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 -1.5393 0.0000	</row2>
+					<row3>	0.0000 0.0137 0.0762 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS206_YDSS_S_1	</identifier>
+				<transform>
+					<row0>	0.0000 1.4045 0.0000 0.0000	</row0>
+					<row1>	-0.8454 0.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.4045 0.0000	</row2>
+					<row3>	-0.0730 0.0488 -0.0136 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS206_YDSS_S_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.0000 1.4045 0.0000 0.0000	</row0>
+					<row1>	0.8454 0.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 -1.4045 0.0000	</row2>
+					<row3>	0.0730 0.0488 -0.0136 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Director_Type_95_Mod1	</node>
+		<geometry>
+			<vertices>	Director_Type_95_Mod1_lodShape2.vertices	</vertices>
+			<primitive>	Director_Type_95_Mod1_lodShape2.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Misc	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSC034_Zao_1944/finder/JD022_Director_Type_95_Mod1.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Rangefinder_4_5	</node>
+		<geometry>
+			<vertices>	Rangefinder_4_5_lod2Shape.vertices	</vertices>
+			<primitive>	Rangefinder_4_5_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSC034_Zao_1944/finder/JF017_Rangefinder_4_5m.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1683 -0.0322 -0.0987	</min>
+		<max>	0.1683 0.1161 0.1050	</max>
+	</boundingBox>
+</JF017_Rangefinder_4_5m_lod2.visual>

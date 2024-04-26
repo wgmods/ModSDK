@@ -1,0 +1,202 @@
+(def element EnsignItemStatic (_id:number, _amount:number="0", _isReward:bool="false", _params:dict="{}") layout=true
+	(scope
+		(var ensignEntity:gfx = "$datahub.getPrimaryEntity(CC.ensign, _id)")
+		(var ensign:gfx = "ensignEntity ? ensignEntity.ensign : null")
+		(var urlPath:str = "ensign ? 'url:../exteriors/ensigns/' + ensignEntity.ensign.name + '.png' : ''")
+	)
+	(bind name "'EnsignItem_' + ensign.name")
+	(style (width = "60px") (height = "60px") (bind backgroundImage "urlPath"))
+
+	(controller $Tooltip
+		(renderer = 'EnsignTooltip')
+		(args
+			_ensignId = "_id"
+			_noMouseInstructions = "true"
+			_isReward = "_isReward"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element EnsignTooltip (_ensignId:number, _noMouseInstructions:bool = "false", _isReward:bool = "false")
+	(scope
+		(macro PULL_CURRENT_SHIP_ID)
+		(var shipEntity:gfx =	"$datahub.getPrimaryEntity(CC.ship, shipId)")
+		(var shipInfo:gfx =		"shipEntity ? shipEntity.ship : null"	(event "shipEntity.ship.evUpdate")
+																		(event "shipEntity.ship.evCurrentSkinChanged")
+																		(event "shipEntity.ship.evFlagNameWithCrewChanged"))
+		
+		(var ownShipInfo:gfx =	"shipEntity ? shipEntity.ownShip	: null"		(event "shipEntity.ship.evCurrentSkinChanged")
+																				(event "shipEntity.ship.evUpdate"))
+
+		(var ensignEntity:gfx =	"$datahub.getPrimaryEntity(CC.ensign, _ensignId)")
+		(var ensignComponent:gfx =	"ensignEntity ? ensignEntity.ensign : null")
+		(var bonusEnsigns:array = " [ 'PCEE330', 'PCEE268', 'PCEE014', 'PCEE316', 'PCEE100', 'PCEE064', 'PCEE025', 'PCEE016', 'PCEE022', 'PCEE063', 'PCEE019', 'PCEE259', 'PCEE186' ]")
+
+		(var isBonusEnsign:bool = "ensignComponent ? isIn(ensignComponent.index, bonusEnsigns) : false")
+
+		(var isLocked:bool =		"ownShipInfo ? ownShipInfo.isLocked : false"		(event "ownShipInfo.evUpdateLock"))
+		(var isInFormation:bool =	"ownShipInfo ? ownShipInfo.isInFormation : false"	(event "ownShipInfo.evUpdateLock"))
+		(var isNeedRepair:bool =	"ownShipInfo ? ownShipInfo.isNeedRepair : false"	(event "ownShipInfo.evUpdateDockState"))
+		(var isNeedShell:bool =		"ownShipInfo ? ownShipInfo.isNeedShell : false"		(event "ownShipInfo.evUpdateDockState"))
+
+		(var ensignCanUse:bool = "ensignComponent ? ensignComponent.canUse : false")
+		(var ensignNameUpper:str = "ensignComponent ? toUpper(ensignComponent.name) : ''")
+		(var isInstalledDH:bool = "ensignComponent ? ensignComponent.isInstalled : false")
+		(var isInstalled:bool = "isInstalledDH && !_isReward")
+
+		(var unifiedStatus:str = "isInstalled ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+		(var isEnsignNotAchieved:bool = "!ensignCanUse && !_isReward")
+
+		(var headerIconPath:str = "ensignComponent ? 'url:../exteriors/ensigns/' + ensignEntity.ensign.name + '.png' : ''")
+		(var headerText:str = "tr('IDS_' + ensignNameUpper)")
+		(var subheaderText:str = "ensignComponent && ensignComponent.group	? ('IDS_ENSIGN_GROUP_SUBTYPE_' + ensignComponent.group)
+																			: 'IDS_SEASON_ENSIGN'")
+
+		(var ensignDescription:str = "tr('IDS_' + ensignNameUpper + '_DESCRIPTION')")
+		(var ensignDescriptionVisible:bool = "ensignDescription != ' '")
+
+		(var ensignExtraDescription:str = "tr('IDS_' + ensignNameUpper + '_EXTRA_DESCRIPTION')")
+		(var ensignExtraDescriptionVisible:bool = "ensignComponent ? ensignComponent.needExtraDescription : false")
+
+		(var mouseInstructionText:str = "	isInstalled						? 'IDS_MOUSE_INSTRUCTION_TAKE_AWAY_ENSIGN' :
+											!isInstalled && ensignCanUse	? 'IDS_MOUSE_INSTRUCTION_INSTALL_ENSIGN'
+																			: ''")
+
+		(var mouseInstruction:dict = "	_noMouseInstructions			? null :
+										isInFormation					? {	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																			_text: 'IDS_SET_UNREADY_DIVISION_FIRST_TO_OPERATE_EXTERIORS'} :
+										isLocked						? {	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																			_text: 'IDS_LEAVE_BATTLE_FIRST_TO_OPERATE_EXTERIORS'} :
+										isNeedRepair || isNeedShell		? {	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																			_text: 'IDS_SERVICE_SHIP_TO_OPERATE_EXTERIORS'} :
+										mouseInstructionText			? {	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																			_text:	mouseInstructionText}
+																		: null")
+	)
+	(style (hitTest = "false") (width = "320px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+
+		(block
+			(style (width = "100%"))
+
+			(controller $Instance renderer='TooltipSystemHeaderWithIconAndText'
+				(args
+					_imageUrl= "headerIconPath"
+					_imageWidth = "60"
+					_imageHeight = "60"
+					_unifiedStatus = "unifiedStatus"
+					_headerText = "headerText"
+					_subheaderText = "subheaderText"
+					_iconAmount = "0"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isInstalled"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isInstalled")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+					_text = "'IDS_INSTALLED'"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isBonusEnsign"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isBonusEnsign")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.INFO"
+					_text = "'IDS_FLAG_BOOST_MOVED_INTO_GLOBALBOOST_INFO'"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isEnsignNotAchieved"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isEnsignNotAchieved")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+					_text = "'IDS_NOT_ACHIEVED'"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isEnsignNotAchieved"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isEnsignNotAchieved")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.INFO"
+					_text = "'IDS_INSTRUCTION_ACHIEVE_SEASON_FLAG'"
+				)
+			)
+		)
+
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "ensignDescriptionVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "ensignDescriptionVisible")
+				(args
+					_descriptionText = "ensignDescription"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "ensignExtraDescriptionVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "ensignExtraDescriptionVisible")
+				(args
+					_descriptionText = "ensignExtraDescription"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "mouseInstruction"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "mouseInstruction")
+				(args
+					_unifiedStatus = "mouseInstruction._unifiedStatus"
+					_text = "mouseInstruction._text"
+				)
+			)
+		)
+	)
+)

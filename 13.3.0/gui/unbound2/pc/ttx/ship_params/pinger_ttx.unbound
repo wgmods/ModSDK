@@ -1,0 +1,41 @@
+(def element PingerTTX (shipTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(class $TTXSecondaryPanel)
+
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_SHOT_DELAY'
+									_value = "shipTTX.pinger.reloadTime"
+									_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_WAVE_SHOT_DELAY' 'IDS_TOOLTIP_WAVE_SHOT_DELAY')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_DURATION_FIRST'
+									_value = "shipTTX.pinger.duration1"
+									_valueConfig = "VALUE_CONFIG.SECONDS"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_WAVE_DURATION_FIRST' 'IDS_TOOLTIP_WAVE_DURATION_FIRST_HIT')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_DURATION_SECOND'
+									_value = "shipTTX.pinger.duration2"
+									_valueConfig = "VALUE_CONFIG.SECONDS"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_WAVE_DURATION_SECOND' 'IDS_TOOLTIP_WAVE_DURATION_SECOND_HIT')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_SPEED'
+									_value = "shipTTX.pinger.speed"
+									_valueConfig = "VALUE_CONFIG.METER_SECOND"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_WAVE_SPEED' 'IDS_TOOLTIP_WAVE_SPEED')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_WIDTH'
+									_value = "shipTTX.pinger.width"
+									_valueConfig = "VALUE_CONFIG.METER"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_WAVE_WIDTH' 'IDS_TOOLTIP_WAVE_WIDTH')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_MAX_DIST'
+									_value = "shipTTX.pinger.maxDist"
+									_valueConfig = "VALUE_CONFIG.KILOMETER"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_WAVE_MAX_DIST' 'IDS_TOOLTIP_WAVE_MAX_DIST')
+	)
+)

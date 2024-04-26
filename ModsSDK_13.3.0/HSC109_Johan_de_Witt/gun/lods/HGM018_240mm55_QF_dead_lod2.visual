@@ -1,0 +1,110 @@
+<HGM018_240mm55_QF_dead_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	MP_HM415_Gun_Deck_Dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS101_YGCS_M_1_INDEX_4	</identifier>
+				<transform>
+					<row0>	0.8439 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.8439 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.8439 0.0000	</row2>
+					<row3>	0.0000 0.0164 0.3224 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS101_YGCS_M_1_INDEX_5	</identifier>
+				<transform>
+					<row0>	0.8439 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.8439 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.8439 0.0000	</row2>
+					<row3>	0.1566 0.0164 0.3224 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_4	</identifier>
+				<transform>
+					<row0>	0.6617 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.6523 -0.1116 0.0000	</row1>
+					<row2>	0.0000 0.1116 0.6523 0.0000	</row2>
+					<row3>	-0.1566 0.1681 0.7648 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_5	</identifier>
+				<transform>
+					<row0>	0.6617 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.6611 0.0279 0.0000	</row1>
+					<row2>	0.0000 -0.0279 0.6611 0.0000	</row2>
+					<row3>	0.0000 0.0327 0.7733 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_6	</identifier>
+				<transform>
+					<row0>	0.6617 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.6617 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.6617 0.0000	</row2>
+					<row3>	0.1566 0.0607 0.7739 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS106_YGLL_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.8886 0.0000 -0.1231 0.0000	</row0>
+					<row1>	0.0000 0.8970 0.0000 0.0000	</row1>
+					<row2>	0.1231 0.0000 0.8886 0.0000	</row2>
+					<row3>	-0.2808 0.0707 0.0405 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS107_YGLR_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.8886 0.0000 0.1231 0.0000	</row0>
+					<row1>	0.0000 0.8970 0.0000 0.0000	</row1>
+					<row2>	-0.1231 0.0000 0.8886 0.0000	</row2>
+					<row3>	0.2808 0.0707 0.0405 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_dead_lod2Shape.vertices	</vertices>
+			<primitive>	Turret_dead_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/HSC109_Johan_de_Witt/gun/HGM018_240mm55_QF_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.3886 0.0000 -0.4716	</min>
+		<max>	0.3886 0.2022 0.7739	</max>
+	</boundingBox>
+</HGM018_240mm55_QF_dead_lod2.visual>

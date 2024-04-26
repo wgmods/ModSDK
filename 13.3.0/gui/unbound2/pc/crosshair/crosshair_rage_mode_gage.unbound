@@ -1,0 +1,218 @@
+(def constant RAGE_PROGRESS_CONTAINER_WIDTH "88px")
+(def constant RAGE_PROGRESS_CONTAINER_HEIGHT "43px")
+
+(def constant ARC_PROGRESS_ANGLE "180")
+
+
+(def constant RAGE_MODE_CT_NONE {
+	redMultiplier:1,	greenMultiplier:1,	blueMultiplier:1,	alphaMultiplier:1,
+	redOffset:0,		greenOffset:0,		blueOffset:0,		alphaOffset:0
+})
+
+(def constant RAGE_MODE_CT_GREEN {
+	redMultiplier:1,	greenMultiplier:1,	blueMultiplier:1,	alphaMultiplier:1,
+	redOffset:-179,		greenOffset:-22,	blueOffset:-84,		alphaOffset:0
+})
+
+(def constant RAGE_MODE_CT_ORANGE {
+	redMultiplier:1,	greenMultiplier:1,	blueMultiplier:1,	alphaMultiplier:1,
+	redOffset:0,		greenOffset:-102,	blueOffset:-204,	alphaOffset:0
+})
+
+(def constant RAGE_MODE_CT_GREEN_CHARGED {
+	redMultiplier:1,	greenMultiplier:1,	blueMultiplier:1,	alphaMultiplier:0.5,
+	redOffset:-179,		greenOffset:-22,	blueOffset:-84,		alphaOffset:0
+})
+
+(def element RageModeFill (_colorTransform:dict="RAGE_MODE_CT_NONE", _visibleArcAngle:number=120, _visibleArcOffset:number="ARC_PROGRESS_ANGLE") layout=true
+	(style
+		(width = 100%)
+		(height = 100%)
+		(position = "absolute")
+		(bind backgroundImage "'url:../battle_hud/crosshair/rage_mode/rageMode_bar_white.png'")
+	)
+	(bind colorTransform "_colorTransform")
+	(block
+		(isMask = true)
+		(class $MiddleAlignedAbsolutely)
+		(style (top = 1px))
+		(controller $Sector
+			(bind offset "_visibleArcOffset")
+			(bind arc "_visibleArcAngle")
+			(bind radius "43")
+			(bind innerRadius "16")
+			(bind color "0xFF000000")
+		)
+	)
+)
+
+(def element CrosshairRageModeGage (_rageModeStateEntity:gfx) layout=true
+	(scope
+		(var rageModeStateComponent:gfx = "_rageModeStateEntity && _rageModeStateEntity.hasComponent(CC.rageModeState) ? _rageModeStateEntity.rageModeState : null" (event "_rageModeStateEntity.evAdded") (event "_rageModeStateEntity.evRemoved"))
+		(var currentRageModeState:number = "rageModeStateComponent ? rageModeStateComponent.state : SC.Battle.RAGE_MODE_STATE.IDLE" (event "rageModeStateComponent.evStateChanged"))
+
+		(var isActive:bool = "currentRageModeState == SC.Battle.RAGE_MODE_STATE.ACTIVE")
+		(var isCharged:bool = "currentRageModeState == SC.Battle.RAGE_MODE_STATE.CHARGED")
+		(var isIdle:bool = "currentRageModeState == SC.Battle.RAGE_MODE_STATE.IDLE")
+		
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+		(var countdown:gfx = "_rageModeStateEntity && _rageModeStateEntity.hasComponent(CC.countDown) ? _rageModeStateEntity.countDown : null" (event "_rageModeStateEntity.evAdded") (event "_rageModeStateEntity.evRemoved"))
+		(var remainTime:number = "countdown ? countdown.endTime - timerEntity.timer.currentTime : 1" (event "timerEntity.timer.evFrequent") (event "countdown.evEndTimeChanged"))
+		
+		(var decrementCount:number	= 	"rageModeStateComponent ? rageModeStateComponent.decrementCount : 1")
+		(var decrementPeriod:number = 	"rageModeStateComponent ? rageModeStateComponent.decrementPeriod : 1")
+		(var decrementPeriodLong:number = "decrementPeriod*3")
+		(var currentProgress:number = 		"rageModeStateComponent ? rageModeStateComponent.currentProgress : 0" (event "rageModeStateComponent.evCurrentProgressChanged"))
+
+		
+		(var isDecayOn:bool = "	currentRageModeState == SC.Battle.RAGE_MODE_STATE.DECAYING
+								|| (currentRageModeState == SC.Battle.RAGE_MODE_STATE.DECAY_DELAY && remainTime < decrementPeriodLong)")
+		
+		(var isDecreasing:bool = "false")
+		(bind isDecreasing "true"	watch=false init=false (event "rageModeStateComponent.evCurrentProgressDecreased"))
+		(bind isDecreasing "false"	watch=false init=false (event "rageModeStateComponent.evCurrentProgressIncreased"))
+
+		(var blinkAnimDuration:number = "	remainTime < decrementPeriod/2		? 0.5	:
+											remainTime < decrementPeriod		? 1		:
+											remainTime < decrementPeriodLong	? 4		:
+											4")
+		
+		(event onIncreaseTweenEnd)
+		(var currentProgressWhite:number = "currentProgress" watch=false)
+		(controller $Animation
+			(bind enabled "!isDecreasing")
+			(bindcall play	duration = "HEALTH_BAR_TWEEN_DURATION"
+							action = "killAll"
+							watch = false
+							easing = "Easing.quad_in"
+							to = "{ currentProgressWhite: currentProgress }"
+							(event "rageModeStateComponent.evCurrentProgressChanged")
+			)
+			(dispatch onIncreaseTweenEnd args="{}" on=evAnimEnded)
+		)
+		(controller $Animation
+			(bind enabled "isDecreasing")
+			(bindcall play	duration = "HEALTH_BAR_TWEEN_DURATION"
+							action = "killAll"
+							watch = false
+							easing = "Easing.quad_in"
+							to = "{ currentProgressWhite: currentProgress }"
+							(event "rageModeStateComponent.evCurrentProgressChanged")
+			)
+		)
+
+		(var currentProgressColored:number = "currentProgress" watch=false)
+		(bind currentProgressColored "currentProgress" init=false watch=false (bind enabled "isDecreasing") (event "rageModeStateComponent.evCurrentProgressChanged"))
+		(controller $Animation
+			(bind enabled "!isDecreasing")
+			(bindcall play	duration = "HEALTH_BAR_TWEEN_DURATION"
+							action = "killAll"
+							watch = false
+							easing = "Easing.quad_in"
+							to = "{currentProgressColored: currentProgress }"
+							(event "onIncreaseTweenEnd")
+			)
+		)
+
+		(var fillColorTransform:dict = "isCharged	? RAGE_MODE_CT_GREEN_CHARGED :
+										isActive	? RAGE_MODE_CT_GREEN
+													: RAGE_MODE_CT_ORANGE")
+
+		(var visibleArcAngleColored:number = "(-ARC_PROGRESS_ANGLE) * currentProgressColored * 0.01")
+		
+		(var visibleArcAngleWhite:number = "(-ARC_PROGRESS_ANGLE) * currentProgressWhite * 0.01 - visibleArcAngleColored")
+		(var visibleArcOffsetWhite:number = "ARC_PROGRESS_ANGLE + visibleArcAngleColored")
+
+		(var visibleArcAngleWarning:number = "(-ARC_PROGRESS_ANGLE) * decrementCount * 0.01")
+		(var visibleArcOffsetWarning:number = "ARC_PROGRESS_ANGLE + (-ARC_PROGRESS_ANGLE) * ((currentProgress - decrementCount) * 0.01)")
+	)
+
+	(style
+		(width = "RAGE_PROGRESS_CONTAINER_WIDTH")
+		(height = "RAGE_PROGRESS_CONTAINER_HEIGHT")
+		(bind backgroundImage "'url:../battle_hud/crosshair/rage_mode/rageMode_track.png'")
+	)
+	
+	(element RageModeFill	_visibleArcAngle="visibleArcAngleWhite"
+							_visibleArcOffset="visibleArcOffsetWhite")
+
+	
+	(element RageModeFill	_colorTransform="fillColorTransform"
+							_visibleArcAngle="isActive ? -ARC_PROGRESS_ANGLE : visibleArcAngleColored")
+	
+	
+	(element RageModeFill	_visibleArcAngle="visibleArcAngleWarning"
+							_visibleArcOffset="visibleArcOffsetWarning"
+		(bind visible "isDecayOn && currentProgressWhite == currentProgressColored")
+		(alpha = 0)
+		(controller $Animation
+			(bindcall play keyframes="[
+					{percent:50, to:{alpha:1}},
+					{percent:100, to:{alpha:0}}
+				]"
+				repeatCount = "-1"
+				duration = "blinkAnimDuration"
+				action = "killAll"
+				(bind enabled "isDecayOn")
+			)
+		)
+	)
+	
+	(block
+		(alpha = 0)
+		(bind alpha "1" watch=false init=false (bind enabled "isActive") (event "rageModeStateComponent.evStateChanged"))
+		(controller $Animation
+			(bindcall play duration="0.375"
+				to="{alpha: 0}"
+				(bind enabled "isIdle")
+			)
+		)
+		(style
+			(position = "absolute")
+			(align = "middle")
+		)
+		
+		(block
+			(controller $Animation
+				(bindcall play duration="0.25"
+							from="{alpha: 1, scaleX:1, scaleY:1}"
+							to="{alpha: 0.5, scaleX:1.2, scaleY:1.2}"
+							(bind trigger "isActive")
+				)
+				(bindcall play duration="0.125"
+							delay="0.25"
+							from="{alpha: 0.5}"
+							to="{alpha: 0}"
+							(bind trigger "isActive")
+				)
+			)
+			(colorTransform = "RAGE_MODE_CT_GREEN")
+			(style
+				(pivotX = "44px")
+				(backgroundImage = "'url:../battle_hud/crosshair/rage_mode/rageMode_bar_white.png'")
+			)
+		)
+		
+		(block
+			(controller $Animation
+				(bindcall play duration="0.25"
+							delay="0.25"
+							from="{alpha: 1, scaleX:1, scaleY:1}"
+							to="{alpha: 0.2, scaleX:1.15, scaleY:1.15}"
+							(bind enabled "isActive")
+				)
+				(bindcall play duration="0.125"
+							delay="0.5"
+							from="{alpha: 0.2, scaleX:1.15, scaleY:1.15}"
+							to="{alpha: 0, scaleX:1, scaleY:1}"
+							(bind enabled "isActive")
+				)
+			)
+			(colorTransform = "RAGE_MODE_CT_GREEN")
+			(style
+				(pivotX = "44px")
+				(backgroundImage = "'url:../battle_hud/crosshair/rage_mode/rageMode_bar_white.png'")
+			)
+		)
+	)
+)

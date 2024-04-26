@@ -1,0 +1,61 @@
+<FD002_OPL_8_metre_SRF_330mm.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	FD002_OPL_8_metre_SRF_330mm	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	FD002_OPL_8_metre_SRF_330mm_wire	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	FD002_OPL_8_metre_SRF_330mm	</node>
+		<geometry>
+			<vertices>	FD002_OPL_8_metre_SRF_330mmShape.vertices	</vertices>
+			<primitive>	FD002_OPL_8_metre_SRF_330mmShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/FSC509_Carnot/director/FD002_OPL_8_metre_SRF_330mm.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	FD002_OPL_8_metre_SRF_330mm_wire	</node>
+		<geometry>
+			<vertices>	FD002_OPL_8_metre_SRF_330mm_wireShape.vertices	</vertices>
+			<primitive>	FD002_OPL_8_metre_SRF_330mm_wireShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPWIRE_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/FSC509_Carnot/director/FD002_OPL_8_metre_SRF_330mm_wire.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.2899 -0.0007 -0.2216	</min>
+		<max>	0.2899 0.2967 0.2216	</max>
+	</boundingBox>
+</FD002_OPL_8_metre_SRF_330mm.visual>

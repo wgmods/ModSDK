@@ -1,0 +1,84 @@
+(def element CrewPanelSpecializationAdoptationBlock (_crewId:number, _crewHistoryId:number, _isShipVisible:bool="false") layout=true
+	(scope
+		(var crewEntity:gfx = "$datahub.getPrimaryEntity(_crewId ? CC.crew : CC.crewHistoryInfo, _crewId ? _crewId : _crewHistoryId)")
+		(var crew:gfx = "_crewId ? crewEntity.crew : crewEntity.crewHistoryInfo")
+
+		(var curShipId:number = "crew.shipID" (event "crew.evShipChanged"))
+
+		(var isInAdaptation:bool = "crewEntity && crewEntity.hasComponent(CC.retraining)" (event "crewEntity.evAdded") (event "crewEntity.evRemoved"))
+
+		(var label:str = "isInAdaptation	?	_isShipVisible	? 'IDS_CREW_IN_ADAPTATION_TO_ANOTHER_SHIP'
+																: 'IDS_CREW_IN_ADAPTATION_TO_SELECT_SHIP'
+											:	'IDS_CREW_SPECIALIZATION_TO_SELECT_SHIP'")									
+
+		(var unifiedStatus:str = "isInAdaptation	?	SC.Ui_styles.UNIFIED_STATUS.ATTENTION
+													:	SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+		
+	)
+	(style (width = "100%"))
+	
+	(block
+		(style (width = "100%"))
+
+		(controller $Instance renderer='ShipWithLabel'
+			(bind enabled "crew.specializationID != curShipId || isInAdaptation")
+			(args
+				_shipId = "_isShipVisible ? crew.specializationID : null"
+				_unifiedStatus = "unifiedStatus"
+				_label = "label"
+			)
+		)
+
+		(controller $Tooltip
+			(renderer='CrewSpecializationAdoptationTooltip')
+			(args
+				_isInAdaptation = "isInAdaptation"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+			(align="top|right")
+		)
+	)
+	
+	(block
+		(bind visible "isInAdaptation")
+		(style (width = "100%") (marginTop = "S"))
+
+		(controller $Instance renderer='CrewExperienceBar'
+			(bind enabled "isInAdaptation")
+			(args
+				_crewId = "_crewId"
+			)
+		)
+	)
+)
+
+(def element CrewSpecializationAdoptationTooltip (_isInAdaptation:bool) layout=true
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(style (hitTest = "false") (width = "320px"))
+	
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemSecondaryHeaderText
+			_headerText = "_isInAdaptation ? 'IDS_TOOLTIP_DESC_CREW_IN_ADAPTATION_HEADER' : 'IDS_TOOLTIP_CREW_SPECIALIZATION_HEADER'"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemDescriptionText
+			_descriptionText = "_isInAdaptation ? 'IDS_TOOLTIP_DESC_CREW_IN_ADAPTATION_DESC_ONE' : 'IDS_TOOLTIP_DESC_CREW_SPECIALIZATION_TO_SELECT_SHIP'"
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_isInAdaptation"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "_isInAdaptation")
+				(args
+					_descriptionText = "'IDS_TOOLTIP_DESC_CREW_IN_ADAPTATION_DESC_TWO'"
+				)
+			)
+		)
+	)
+
+)

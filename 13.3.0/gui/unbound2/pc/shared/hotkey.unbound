@@ -1,0 +1,286 @@
+(def css $HotkeyTextReadability ()
+	(extends $DropShadowDisabler)
+	(extends $FontColorBlack)
+	(extends $FontEnableReadability)
+)
+
+(def css $HotkeyText ()
+	(extends $TextDefaultBoldNM)
+	(extends $HotkeyTextReadability)
+	(fontSize = 16)
+)
+
+(def css $HotkeyTextSmall ()
+	(extends $TextDefaultBold13NM)
+	(extends $HotkeyTextReadability)
+	(marginTextTop = -5px)
+)
+
+(def css $HotkeyTextWhite ()
+	(extends $HotkeyText)
+	(extends $FontColorWhite)
+)
+
+(def constant NOT_LOCALIZE_KEYS
+	{	F1: true,
+		F2: true,
+		F3: true,
+		F4: true,
+		F5: true,
+		F6: true,
+		F7: true,
+		F8: true,
+		F9: true,
+		F10: true,
+		F11: true,
+		F12: true
+	}
+)
+
+(def constant HOTKEY_SIZE	[	16,
+								20,
+								24
+							])
+
+(def constant HOTKEY_SCALE_ANIMATION_SIZE	[	8,
+												10,
+												12
+											])
+
+(def constant HOTKEY_FONTS	[	'$HotkeyTextSmall',
+								'$HotkeyText',
+								'$HotkeyText'
+							])
+
+(def constant HotkeyState {
+	INVALID: -1,
+	DEFAULT: 0,
+	WARNING: 1,
+	CRITICAL: 2,
+	POSITIVE: 3
+})
+
+(def constant MOUSE_LEFT_CLICK 256)
+(def constant MOUSE_RIGHT_CLICK 257)
+(def constant MOUSE_MIDDLE_CLICK 258)
+
+(def element HotkeyBackground (_hotkeyState:number) layout=true
+	(class $FullsizeAbsolute)
+	(style
+		(bind backgroundImage "'url:../service_kit/hotkeys/background_' + (	_hotkeyState == HotkeyState.DEFAULT		? 'white' :
+																			_hotkeyState == HotkeyState.WARNING		? 'orange' :
+																			_hotkeyState == HotkeyState.CRITICAL	? 'red'
+																													: 'green') + '.png'")
+		(scale9grid = 5)
+	)
+)
+
+(def element MouseKeyIndicator (_keyCode:number, _size:number="SIZE.MEDIUM") layout=true
+	(style
+		(width = "HOTKEY_SIZE[_size]")
+		(height = "HOTKEY_SIZE[_size]")
+		(bind backgroundImage "	_keyCode == MOUSE_LEFT_CLICK	?	'url:../service_kit/mouse_buttons/icon_mouse_left_click.png'	:
+								_keyCode == MOUSE_RIGHT_CLICK	?	'url:../service_kit/mouse_buttons/icon_mouse_right_click.png'	:
+								_keyCode == MOUSE_MIDDLE_CLICK	?	'url:../service_kit/mouse_buttons/icon_mouse_scroll.png'		:
+																	''")
+		(backgroundSize = "cover")
+	)
+)
+
+(def layout HotkeyIndicator (	_commandId:number, _size:number="SIZE.MEDIUM",
+								_fxOnDown:bool=true, _active:bool=false, _toggled:bool=false,
+								_overwriteState:number="HotkeyState.INVALID",
+								_isOnSettingsScreen:bool=false, _isForceIndex:bool=false, _forceShownIndex:number=0)
+	(scope
+		(var command:gfx = "$datahub.getPrimaryEntity(CC.commandMappingCommand, _commandId)")
+		(var commandName:str = "command.commandMappingCommandName.commandName")
+		(var isCmdDown:bool = "command ? command.commandMappingCommand.isDown : null" (event "command.commandMappingCommand.evIsDownChanged"))
+
+		(macro GET_PREF 'commandKeyMain' "'commands.' + commandName + '.VALUE1.KEY'")
+		(var cmdMappingKeyIndex:number = "	_isForceIndex	? _forceShownIndex :
+											commandKeyMain	? 0
+															: 1")
+
+		(var keyEntity:gfx = "$datahub.getPrimaryCompositeEntity(CC.commandMappingKeyIndex, cmdMappingKeyIndex, _commandId)" (event "command.commandKeyList.evChanged"))
+
+		(var commandMappingComponent:gfx = "keyEntity ? keyEntity.commandMappingKey : null" (event "keyEntity.evAdded") (event "keyEntity.evRemoved"))
+
+		(var keyCode:number = "commandMappingComponent ? commandMappingComponent.keyId : 0")
+		(var mods:number = "commandMappingComponent ? commandMappingComponent.mods : 0")
+		(var inputKeyEntity:gfx = "$datahub.getPrimaryEntity(CC.inputKey, keyCode)")
+		(var keyPureName:str = "inputKeyEntity ? inputKeyEntity.inputKey.pureName : ''")
+		(var keyName:str = "inputKeyEntity ? inputKeyEntity.inputKey.name : ''")
+		(var isMouseKey:bool = "isIn(keyCode, [MOUSE_LEFT_CLICK, MOUSE_RIGHT_CLICK, MOUSE_MIDDLE_CLICK])")
+
+		(var cmModKeyEntity:gfx = "$datahub.getPrimaryEntity(CC.commandMappingMod, mods)") 
+		(var modKeyCode:number = "mods ? cmModKeyEntity.commandMappingModKey.keyCode : 0")
+		(var isModMouseKey:bool = "isMouseKey && mods")
+
+		(var isKeyActive:bool = "_active || (_toggled || isCmdDown)")
+		(var hotkeyState:number = "_overwriteState != HotkeyState.INVALID	? _overwriteState
+																			: _toggled 	? HotkeyState.POSITIVE
+																						: HotkeyState.DEFAULT")
+
+		(var isEmptyHotkeyFrameShown:bool = "_isOnSettingsScreen && (keyCode == 0)")
+	)
+
+	
+	(bind name "keyPureName")
+	
+	(style
+		(flow = "horizontal")
+		(bind minHeight "HOTKEY_SIZE[_size]")
+		(align = "center|middle")
+	)
+
+	
+	(block
+		(controller $Instance layout=true
+			(bind enabled "(mods != 0) && !isEmptyHotkeyFrameShown")
+			(exprs
+				(style
+					(flow = "horizontal")
+					(align = "middle")
+				)
+				(element HotKey
+					_size = "_size"
+					_isKeyActive = "isKeyActive"
+					_command = "command"
+					_hotkeyState = "hotkeyState"
+					_fxOnDown = "_fxOnDown"
+					_keyCode = "modKeyCode"
+				)
+				(tf
+					(class $HotkeyTextWhite)
+					(style
+						(marginTop = "-2px")
+					)
+					(text = ' + ')
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(controller $Instance renderer='HotKey'
+			(bind enabled "!isMouseKey && !isEmptyHotkeyFrameShown")
+			(args
+				_size = "_size"
+				_isKeyActive = "isKeyActive"
+				_command = "command"
+				_hotkeyState = "hotkeyState"
+				_fxOnDown = "_fxOnDown"
+				_keyCode = "keyCode"
+			)
+		)
+		(controller $Instance renderer='MouseKeyIndicator'
+			(bind enabled "isMouseKey && !isEmptyHotkeyFrameShown")
+			(args
+				_keyCode="keyCode"
+				_size="_size"
+			)
+		)
+	)
+
+	(block
+		(bind visible "isEmptyHotkeyFrameShown")
+		(style
+			(width = 24px)
+			(height = 24px)
+			(backgroundImage = "'url:../service_kit/keybindings/empty.png'")
+		)
+	)
+)
+
+(def element HotKey (	_command:gfx, _size:number, _isKeyActive:bool,
+						_hotkeyState:number, _fxOnDown:bool, _keyCode:number) layout=true
+	(scope
+		(var inputKeyEntityWatcher:gfx = "$datahub.getPrimWatcher(CC.inputKey, _keyCode)")
+		(var inputKeyEntity:gfx = "inputKeyEntityWatcher.entity" (event "inputKeyEntityWatcher.event"))
+
+		(var keyPureName:str = "inputKeyEntity ? inputKeyEntity.inputKey.pureName : ''")
+		(var keyName:str = "inputKeyEntity ? inputKeyEntity.inputKey.name : ''")
+		(var isShortKeyName:bool = "keyPureName.length == 1")
+
+		(var hotkeySize:number = "HOTKEY_SIZE[_size]")
+		(var marginForText:number = "_size == SIZE.SMALL ? 4px : 6px")
+		(var hotkeyScaleSize:number = "HOTKEY_SCALE_ANIMATION_SIZE[_size]")
+
+		(var paramScaleX:number = "($globalLayoutBounds[2] + hotkeyScaleSize) / max(1, $globalLayoutBounds[2])" (event "$evLayoutBoundsChanged")) 
+		(var paramScaleY:number = "($globalLayoutBounds[3] + hotkeyScaleSize) / max(1, $globalLayoutBounds[3])" (event "$evLayoutBoundsChanged")) 
+
+	)
+	(style
+		(bind minWidth "hotkeySize")
+		(bind minHeight "hotkeySize")
+		(align = "center|middle")
+		(bind maxWidth "isShortKeyName ? hotkeySize : 999")
+	)
+	(element HotkeyBackground _hotkeyState="_hotkeyState"
+		(class $FullsizeAbsolute)
+		(bind alpha "_isKeyActive ? 1 : 0.5")
+
+		(element HotkeyBackground _hotkeyState="_hotkeyState" $enabled = "_fxOnDown"
+			(class $FullsizeAbsolute)
+			(style
+				(pivotX = 50%)
+				(pivotY = 50%)
+				(left = 0%) 
+				(top = 0%)  
+			)
+			(visible = false)
+			(controller $Animation
+				(bindcall play 	from="{scaleX:1, scaleY:1, alpha:1.0, visible:true}"
+								to="{scaleX:paramScaleX, scaleY:paramScaleY, alpha:0.0, visible:false}"
+								watch=false
+								duration=0.25
+								(event "_command.commandMappingCommand.evCall")
+				)
+			)
+		)
+	)
+	(tf
+		(bind alpha "_isKeyActive ? 1 : 0.75")
+		(style
+			(bind marginLeft "marginForText")
+			(bind marginRight "marginForText")
+		)
+		(bind class "HOTKEY_FONTS[_size]")
+		
+		(bind text "inputKeyEntity	? (isShortKeyName || NOT_LOCALIZE_KEYS[keyPureName])	? toUpper(tr(keyPureName))
+																							: toUpper(tr('IDS_' + keyName))
+									: ''")
+	)
+)
+
+(def element HotkeyIndicatorWithText (_commandDescription:str, _commandId:number) layout=true
+	(style
+		(flow = "horizontal")
+	)
+	(element HotkeyIndicator
+			_commandId = "_commandId"
+			_fxOnDown=true
+			_active=true
+	)
+	(block
+		(style
+			(marginLeft = "XS")
+			(height = 100%)
+			(align = "center|middle")
+		)
+			
+		(tf
+			(class $TextDefaultBoldNM)
+			(class $FontEnableReadability)
+			(bind text "tr(_commandDescription)")
+		)
+	)
+)
+
+(def element LabelAuto () layout=true
+	(style
+		(position = "absolute") (width = 46px) (height = "HOTKEY_SIZE[SIZE.MEDIUM]") (hcenter = 0px) (bottom = "-HOTKEY_SIZE[SIZE.MEDIUM]") (alpha = 0.8)
+		(backgroundImage = 'url:../aircraft/key_auto_label.png')
+	)
+)

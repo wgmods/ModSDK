@@ -1,0 +1,56 @@
+<SGM030_120mm45_Vickers_F_R_dead.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS100_YGBS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.4720 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.4674 -0.0657 0.0000	</row1>
+					<row2>	0.0000 0.0657 0.4674 0.0000	</row2>
+					<row3>	0.0000 0.1141 -0.0131 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.4480 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.4436 -0.0623 0.0000	</row1>
+					<row2>	0.0000 0.0623 0.4436 0.0000	</row2>
+					<row3>	0.0000 0.1557 0.2784 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_deadShape.vertices	</vertices>
+			<primitive>	Turret_deadShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/SSC101_Jupiter/gun/SGM030_120mm45_Vickers_F_R_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1271 -0.0007 -0.1812	</min>
+		<max>	0.0968 0.1894 0.3120	</max>
+	</boundingBox>
+</SGM030_120mm45_Vickers_F_R_dead.visual>

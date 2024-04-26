@@ -1,0 +1,1009 @@
+(def css $WorldMarkerTextItemShadowFilter ()
+	(filters 
+		(dropShadow
+			(distance = 0)
+			(angle = 90)
+			(color = 0x333333)
+			(blurX = 2.0)
+			(blurY = 2.0)
+			(strength = 0.6)
+			(quality = 3)
+		)
+	)
+)
+
+(def css $WorldMarkerTextItem ()
+	(fontFamily = '$WWSDefaultFont')
+	(extends $WorldMarkerTextItemShadowFilter)
+	(extends $FontColorWhite)
+	(extends $FontEnableReadability)
+	(extends $FontEnableReadability)
+
+	(fontSize = 11)
+	(marginTextLeft = -3px)
+	(marginTextRight = -3px)
+	(marginTextTop = -6px)
+	(marginTextBottom = -5px)
+)
+
+(def css $WorldMarkerFXBlur ()
+	(filters
+		(blur
+			(blurX = 5.0)
+			(blurY = 5.0)
+			(quality = 1)
+		)
+	)
+)
+
+(def css $WorldMarkerItemMargins ()
+	(marginTop = 3)
+	(marginBottom = 3)
+)
+
+
+(def constant DIPLOMACY_RELATION_TO_RELATION_STR [
+	'ally',
+	'ally',
+	'white',
+	'enemy',
+	'enemy'
+])
+
+
+
+
+
+
+
+
+
+(def constant DistanceType {
+	NEAR: 0,
+	FAR: 1,
+	FARTHEST: 2,
+	TACTICAL: 3
+})
+
+(def constant DEATH_ANIMATION_DURATION 3.0)
+(def constant HEALTH_BAR_TWEEN_DURATION 0.35)
+(def constant DAMAGE_BAR_TWEEN_DURATION 0.75)
+(def constant DAMAGE_BAR_TWEEN_DELAY 0.5)
+
+(def constant HEALTH_BAR_SIZE [
+	[46, 4],
+	[92, 14] 
+])
+
+(def constant BATTERY_BAR_SIZE [
+	[46, 4],
+	[92, 4] 
+])
+
+(def constant SCENARIO_TAG_ITEM_ANIM_DELAY 15)
+(def constant SCENARIO_TAG_ITEM_FADE_ANIM_DURATION 0.3)
+(def constant SCENARIO_TAG_ITEM_FADE_ALPHA 0.3)
+
+
+(def constant CANT_HIT_TWEEN_DURATION 0.35)
+(def constant CANT_HIT_TWEEN_DELAY 0.5)
+(def constant CANT_HIT_TWEEN_DELAY_FIRST_SHOW 2)
+
+(def constant DEPTH_INDICATOR_OFFSET_TACTICAL 8)
+
+
+(def constant BATTERY_BURN_FX_KEYFRAMES_ANIM_IN "[
+	{percent:0, to:{alpha:0, x:-40, scaleY:1, scaleX:1}},
+	{percent:16, to:{alpha:0.3, x:-4, scaleY:1, scaleX:1}, easing:Easing.quad_in},
+	{percent:24, to:{alpha:1, x:0, scaleY:1, scaleX:1}, easing:Easing.quad_in}
+]")
+
+(def constant BATTERY_BURN_FX_KEYFRAMES_ANIM_OUT "[
+	{percent:0, to:{alpha:1, x:0, y:0, scaleY:1, scaleX:1}},
+	{percent:8, to:{alpha:0.5, x:0, y:0, scaleY:2, scaleX:2}},
+	{percent:12, to:{alpha:1, x:0, y:0, scaleY:1, scaleX:1}},
+	{percent:30, to:{alpha:1, x:0, y:0, scaleY:1, scaleX:1}},
+	{percent:60, to:{alpha:0, x:0, y:-50, scaleY:1, scaleX:1}, easing:Easing.quad_in}
+]")
+
+
+(def macro GET_MARKER_ENTITY_COMPONENT (_className:str)
+	(var name="_className+'Component'" type=gfx value="_markerEntity && _markerEntity.hasComponent(CC[_className]) ? _markerEntity.getComponent(CC[_className]) : null" (event "_markerEntity.evAdded") (event "_markerEntity.evRemoved"))
+)
+
+(def macro ALT_VISION_SCOPE ()
+	(macro GET_PREF 'altVisionMode' "'battle.altVision.mode'")
+
+	(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+	(var isTactical:bool = "cameraEntity.camera.isTactical" (event "cameraEntity.camera.evTacticalStateChanged"))
+	(var altVision:bool = "cameraEntity.camera.altVision" (event "cameraEntity.camera.evAltVisionChanged"))
+	(var isAdaptiveAltVisionMode:bool = "altVision || altVisionMode >= AltVisionMode.ADAPTIVE")
+	(var isFullAltVisionMode:bool = "altVision || altVisionMode >= AltVisionMode.ENABLED")
+)
+
+(def macro GET_SCENARIO_OBJECT_VIEW (_scenarioObjectViewComponent:expression, relationEntity:expression)
+	(var _component:gfx = "_scenarioObjectViewComponent")
+	(var _relationEntity:gfx = "relationEntity")
+	(var _relationComponent:gfx = "_relationEntity.relation" (event "_relationEntity.evAdded") (event "_relationEntity.evRemoved"))
+	(var VIEW_SIZE:number = "7")
+	
+	
+	(var type:number = "_relationComponent ? (_component.view >> (VIEW_SIZE * _relationComponent.value)) & ((1 << VIEW_SIZE) - 1) : 0" (event "_relationComponent.evChanged") (event "_component.evViewChanged"))
+)
+
+(def macro MARKER_DISSOLVE_BINDCALL_ANIMATION (_enabled:expression)
+	(bindcall play	duration="dissolveComponent.timeLeft > 0 ? dissolveComponent.timeLeft : 0.01"
+					from="{alpha: 0}"
+					to="{alpha: 1}"
+					init=false
+					watch=false
+					action="killAll"
+					reverse="!(dissolveComponent ? dissolveComponent.appearing : true)"
+					(bind enabled "_enabled")
+					(event "dissolveComponent.evTransitionStarted")
+					(event "evMarkerShow")
+	)
+)
+
+
+(def element SimpleMarkerTextItem (_value:str, _noTranslate:bool=false) layout=true
+	(class $WorldMarkerItemMargins)
+	(tf
+		(class $WorldMarkerTextItem)
+		(style (bind noTranslate "_noTranslate"))
+		(bind text "_value")
+	)
+)
+
+
+(def element PlayerNameItem (_markerEntity:gfx) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'avatar')
+		(macro GET_MARKER_ENTITY_COMPONENT 'relation')
+
+		(var playerName:str = "avatarComponent ? avatarComponent.name : ''")
+		(var tkStatus:bool = "avatarComponent ? avatarComponent.tkStatus : false" (event "avatarComponent.evTeamkillStatusChanged"))
+		(var isBot:bool = "avatarComponent ? avatarComponent.isBot : true")
+		(var relationValue:number = "relationComponent ? relationComponent.value : -1" (event "relationComponent.evChanged"))
+		(var isEnemy:bool = "relationValue == SC.Battle.PLAYER_RELATION.ENEMY")
+	)
+	(block
+		(class $WorldMarkerItemMargins)
+		(tf
+			(class $WorldMarkerTextItem)
+			(bind class "tkStatus && !(isEnemy) ? '$FontColorTeamkiller' : '$None'")
+			(style
+				(fontSize = 13)
+				(textAlign = "center")
+				(bind noTranslate "!isBot")
+			)
+			(bind text "playerName")
+		)
+	)
+)
+
+
+(def element DistanceItem (_markerEntity:gfx) layout=true
+	(scope
+		(var timer:gfx = "$datahub.getSingleComponent(CC.timer)")
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'distance')
+		(var distanceToShip:number = "distanceComponent ? distanceComponent.distanceToShip : 0" (event "timer.evInfrequent"))
+		(var distanceText:str = "formatFloatingPoint(round(distanceToShip * 10) / 10, 1) + ' ' + tr('IDS_KILOMETER')")
+	)
+	(element SimpleMarkerTextItem "distanceText")
+)
+
+
+(def element TargetLockItem (_markerEntity:gfx) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'target')
+		(var targetFlags:number = "targetComponent ? targetComponent.flags : 0" (event "targetComponent.evChanged") (event "targetComponent.evFlagsChanged"))
+
+		(var isTargetLocked:bool = "(targetFlags & LOCKABLE_WEAPONS) > 0")
+	)
+
+	(mc AimForShipIcon_pro
+		(style (marginTop = -1)) 
+		(bindcall gotoAndStop "isTargetLocked ? 'vis' : 'inv'" init=true watch=false)
+		(bindcall gotoAndPlay "isTargetLocked ? 'in' : 'out'" init=false)
+	)
+)
+
+
+(def element TargetAnimationItem (_markerEntity:gfx) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'quickCommand')
+
+		(event evPlay)
+		(var commandName:str = "$event.commandName" init=false (event "evPlay"))
+		(var commandDuration:number = "$event.commandDuration" init=false (event "evPlay"))
+
+		(dispatch evPlay args="{commandName: $event[1], commandDuration: $event[2]}" (event "quickCommandComponent.evPlay"))
+	)
+
+	(style
+		(position = "absolute")
+		(bind backgroundImage "'symbol:' + commandName")
+	)
+
+	(controller $Animation
+		(bindcall play	duration=0.15
+						from={alpha: 0, top: 10}
+						to={alpha: 1, top: 0}
+						action="killAll"
+						(event "evPlay")
+		)
+		(bindcall play	duration=0.15
+						delay="commandDuration"
+						from={alpha: 1, top: 0}
+						to={alpha: 0, top: -10}
+						(event "evPlay")
+		)
+	)
+)
+
+
+(def element ScenarioTagItem (_markerEntity:gfx) layout=true
+	(scope
+		(event evShow)
+		(macro GET_MARKER_ENTITY_COMPONENT 'scenarioTag')
+		(macro GET_SCENARIO_OBJECT_VIEW "scenarioTagComponent" "_markerEntity")
+		(var finalType:number = "type == 0 && _component.view != 0 ? _component.view : type")  
+		(var appearance:number = "scenarioTagComponent.appearance")
+
+		(var currentAppearance:number = "appearance == ScenarioTagAppearance.ANIMATION ? ScenarioTagAppearance.TEXT : appearance" watch=false)
+		(controller $Animation
+			(bindcall play	duration=0.01
+							delay="SCENARIO_TAG_ITEM_ANIM_DELAY"
+							from="{currentAppearance: ScenarioTagAppearance.TEXT}"
+							to="{currentAppearance: ScenarioTagAppearance.ICON}"
+							action="killAll"
+							(bind enabled "appearance == ScenarioTagAppearance.ANIMATION")
+							(event "evShow")
+			)
+		)
+
+		
+		(macro GET_MARKER_ENTITY_COMPONENT 'quickCommand')
+
+		(event evPlay)
+		(var commandDuration:number = "$event.commandDuration" init=false (event "evPlay"))
+		(dispatch evPlay args="{commandName: $event[1], commandDuration: $event[2]}" (event "quickCommandComponent.evPlay"))
+	)
+
+	(bind visible "finalType != SC.Battle.SCENARIO_TAG_VALUE.EMPTY")
+	(dispatch evShow on='addedToStage')
+
+	(controller $Animation
+		(bindcall play	duration="SCENARIO_TAG_ITEM_FADE_ANIM_DURATION"
+						from="{alpha: 1}"
+						to="{alpha: SCENARIO_TAG_ITEM_FADE_ALPHA}"
+						action="killAll"
+						(event "evPlay")
+		)
+		(bindcall play	duration="SCENARIO_TAG_ITEM_FADE_ANIM_DURATION"
+						delay="commandDuration"
+						from="{alpha: SCENARIO_TAG_ITEM_FADE_ALPHA}"
+						to="{alpha: 1}"
+						(event "evPlay")
+		)
+	)
+
+	(block
+		(element ScenarioTagItemText "_markerEntity"
+			(alpha = "currentAppearance == ScenarioTagAppearance.TEXT ? 1 : 0")
+			(controller $Animation
+				(bindcall play	duration=0.5
+								from="{alpha: 0, top: -15}"
+								to="{alpha: 1, top: 0}"
+								action="killAll"
+								reverse="currentAppearance != ScenarioTagAppearance.TEXT"
+								(bind trigger "currentAppearance")
+				)
+			)
+		)
+
+		(element ScenarioTagItemIcon "_markerEntity"
+			(alpha = "currentAppearance == ScenarioTagAppearance.ICON ? 1 : 0")
+			(controller $Animation
+				(bindcall play	duration=0.5
+								from="{alpha: 0, top: 15}"
+								to="{alpha: 1, top: 0}"
+								action="killAll"
+								reverse="currentAppearance != ScenarioTagAppearance.ICON"
+								(bind trigger "currentAppearance")
+				)
+			)
+		)
+	)
+)
+
+(def element ScenarioTagItemText (_markerEntity:gfx) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'scenarioTag')
+		(macro GET_SCENARIO_OBJECT_VIEW "scenarioTagComponent" "_markerEntity")
+		(var itemText:str = "'IDS_MARK_' + toUpper(SC.Battle.SCENARIO_TAG_VALUE.VALUE_TO_NAME[type])")
+
+		(var itemTextColor:number = "isIn(type, [SC.Battle.SCENARIO_TAG_VALUE.ATTACK, SC.Battle.SCENARIO_TAG_VALUE.MAIN_MONSTER]) 	? SC.Ui_styles.SERVICE_COLORS.RED
+																																	: SC.Ui_styles.SERVICE_COLORS.GREEN")
+	)
+
+	(style
+		(position = "absolute")
+		(width = 0)
+		(align = "center")
+	)
+
+	(tf
+		(style
+			(bind textColor "itemTextColor")
+		)
+		(class $WorldMarkerTextItem)
+		(class $TextDefaultBold13NM)
+		(bind text "itemText")
+	)
+)
+
+(def element ScenarioTagItemIcon (_markerEntity:gfx) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'scenarioTag')
+		(macro GET_SCENARIO_OBJECT_VIEW "scenarioTagComponent" "_markerEntity")
+		(var taskEntityId:number = "scenarioTagComponent.taskEntityId")
+
+		(var taskEntity:gfx = "$datahub.getEntity(taskEntityId)")
+		(var taskProgressType:number = "taskEntity ? taskEntity.task.progressType : 0")
+
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.battleTimer)")
+		(var currentTime:number = "timerEntity.battleTimer.battleTime" (event "timerEntity.battleTimer.evBattleTimeChanged"))
+
+		(var timeout:gfx = "isIn(taskProgressType, [TaskProgressType.TIMER, TaskProgressType.REVERSED_TIMER]) ? taskEntity.timeout : null")
+		(var timeoutTime:number = "timeout ? timeout.time : 0" (event "timeout.evTimeChanged"))
+		(var timeoutTotal:number = "timeout ? timeout.total : 0" (event "timeout.evTimeChanged"))
+		(var timeoutRunning:bool = "timeout ? timeout.running : false" (event "timeout.evRunningChanged"))
+		(var secondsLeft:number = "timeout && timeoutRunning ? max(timeoutTime - currentTime, 0) : 0")
+
+		(var timerText:str = "taskProgressType == TaskProgressType.TIMER 	? countdownFormat(secondsLeft - timeoutTotal, 0, true)
+																			: secondsLeft	? countdownFormat(secondsLeft, 0, true)
+																							: ''")
+		(var finalType:number = "type == 0 && _component.view != 0 ? _component.view : type")  
+		(var itemIcon:str = "'icon_scenario_tag_' + toLower(SC.Battle.SCENARIO_TAG_VALUE.VALUE_TO_NAME[finalType])")
+	)
+
+	(style
+		(position = "absolute")
+		(left = -12)
+	)
+
+	(block
+		(style
+			(width = 24) (height = 24)
+			(bind backgroundImage "'url:../battle_hud/markers/scenario_tags/' + itemIcon + '.png'" (bind enabled "itemIcon != ''"))
+		)
+	)
+
+	
+	(block
+		(style
+			(position = "absolute")
+			(left = 24) (top = 4)
+		)
+		(tf
+			(class $WorldMarkerTextItem)
+			(class $TextDefault13NM)
+			(bind text "timerText")
+		)
+	)
+)
+
+
+(def element PriorityItem (_markerEntity:gfx) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'target')
+		(var targetFlags:number = "targetComponent ? targetComponent.flags : 0" (event "targetComponent.evChanged") (event "targetComponent.evFlagsChanged"))
+
+		(var isAirDefense:bool = "targetFlags & (1 << SC.Ships.SHIP_WEAPON_TYPES.AIRDEFENCE)")
+		(var isATBA:bool = "targetFlags & (1 << SC.Ships.SHIP_WEAPON_TYPES.ATBA)")
+
+		(var priorityIcon:str = "isAirDefense 	? 'aa' :
+								 isATBA			? 'atba'
+								 				: 'aa'")
+	)
+	(bind visible "isAirDefense || isATBA")
+
+	(style
+		(width = 28) (height = 28)
+		(bind backgroundImage "'url:../battle_hud/markers/priority/' + priorityIcon + '_priority_attack.png'")
+	)
+)
+
+(def element EntityStatesItem (_markerEntity:gfx) layout=true
+	(scope
+		(var statesCollection:gfx = "$datahub.getCollection(CC.state)")
+		(var entityStates:gfx = "statesCollection.getChildByPath('byEntity.' + _markerEntity.id + '.marker.sorted')" (event "statesCollection.evChildAdded"))
+	)
+
+	(style
+		(width = 0) (height = 100%)
+		(align = "right|middle")
+	)
+
+	(hblock
+		(controller $Repeat renderer='EntityStateRepeatItem'
+			(bind count "entityStates ? entityStates.items.length : 0" watch=false (event "entityStates.evAdded"))
+			(bindcall removeChildAt "$event[1]" (event "entityStates.evRemoved"))
+			(args "entityStates" "_markerEntity")
+		)
+	)
+)
+
+
+(def constant SHIP_STATES_ICONS_MAP {
+	'1': ['heal'],
+	'2': ['gather_0'],
+	'4': ['freeze'],
+
+	'14': ['event/icons_team_blue_1'],
+	'15': ['event/icons_team_blue_2'],
+	'16': ['event/icons_team_blue_3'],
+
+	'17': ['event/icons_team_green_1'],
+	'18': ['event/icons_team_green_2'],
+	'19': ['event/icons_team_green_3'],
+
+	'20': ['event/icons_team_orange_1'],
+	'21': ['event/icons_team_orange_2'],
+	'22': ['event/icons_team_orange_3'],
+
+	'23': ['event/icons_team_yellow_1'],
+	'24': ['event/icons_team_yellow_2'],
+	'25': ['event/icons_team_yellow_3'],
+	'26': ['spotted_by_enemy'],
+	'27': ['invulnerability'],
+
+	'101': ['fire'],
+	'102': ['flood'],
+	'103': ['gather_0', 'gather_1', 'gather_2', 'gather_3', 'gather_4'],
+	'104': ['event/gather_filthior_team0'],
+	'105': ['event/gather_filthior_team1'],
+	'106': ['event/gather_filthior_team2'],
+	'107': ['event/gather_filthior_team3'],
+	'108': ['event/gather_points']
+})
+
+(def element EntityStateRepeatItem (_collection:gfx, _markerEntity:gfx) layout=true
+	(scope
+		(var stateEntity:gfx = "_collection.items[$index]" watch=false)
+		(macro GET_SCENARIO_OBJECT_VIEW "stateEntity.state" "_markerEntity")
+		(var finalType:number = "type == 0 && _component.view != 0 ? _component.view : type")
+		(var status:number = "stateEntity.state.status" (event "stateEntity.state.evStatusChanged"))
+
+		
+		(var progressComponent:gfx = "stateEntity.progress ? stateEntity.progress : null" (event "stateEntity.evAdded") (event "stateEntity.evRemoved"))
+		(var progressValue:number = "progressComponent ? progressComponent.value : 0" (event "progressComponent.evChanged"))
+		(var progressMin:number = "progressComponent ? progressComponent.min : 0" (event "progressComponent.evChanged"))
+		(var progressMax:number = "progressComponent ? progressComponent.max : 0" (event "progressComponent.evChanged"))
+		
+		
+		(var iconSource:array = "SHIP_STATES_ICONS_MAP[finalType]")
+		(var iconIndex:number = "progressComponent && iconSource ? floor(progressValue / progressMax * (iconSource.length - 1)) : 0")
+		(var iconPath:str = "iconSource ? iconSource[iconIndex] : null")
+		
+		
+		(macro IS_ALT_VISION_MODE)
+	)
+
+	(bind visible "status >= 0 && finalType > 0 && _markerEntity.relation.value != SC.Battle.PLAYER_RELATION.SELF")
+
+	(style
+		(height = 25)
+		(flow = "horizontal")
+		(align = "middle")
+		(marginLeft = "XXS")
+		(marginRight = "XXS")
+	)
+
+	
+	(block
+		(bind visible "isIn(type, SC.Battle.ENTITY_STATES.STATES_WITH_TEXT) && isAltVisionMode")
+		(tf
+			(class $WorldMarkerTextItem)
+			(style (fontSize = 13) (textAlign = "right"))
+			(bind text "progressValue")
+		)
+	)
+
+	
+	(block
+		(style
+			(bind backgroundImage "'url:../ship_states/' + iconPath + '.png'" (bind enabled "iconPath"))
+			(backgroundSize = "autosize")
+		)
+	)
+)
+
+(def element SimpleStateItem (_collection:gfx) layout=true
+	(scope
+		(var stateEntity:gfx = "_collection[$index]")
+		(var iconSource:array = "SHIP_STATES_ICONS_MAP[stateEntity.state.view]")
+		(var iconPath:str = "iconSource ? iconSource[0] : null")
+	)
+
+	(bind visible "stateEntity.state.type == SC.Battle.ENTITY_STATES.INVULNERABLE")
+
+	(style
+		(width = 0) (height = 100%)
+		(align = "right|middle")
+	)
+
+	(block
+		(style
+			(height = 25)
+			(flow = "horizontal")
+			(align = "middle")
+			(marginLeft = "XXS")
+			(marginRight = "XXS")
+		)
+
+		(block
+			(style
+				(bind backgroundImage "'url:../ship_states/' + iconPath + '.png'" (bind enabled "iconPath"))
+				(backgroundSize = "autosize")
+			)
+		)
+	)
+)
+
+
+(def element CanHitItem (_markerEntity:gfx) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'target')
+		(var targetFlags:number = "targetComponent ? targetComponent.flags : 0" (event "targetComponent.evChanged") (event "targetComponent.evFlagsChanged"))
+		(var isTargetLocked:bool = "(targetFlags & LOCKABLE_WEAPONS) > 0")
+
+		(var weaponController:gfx = "$datahub.getSingleComponent(CC.weaponController)")
+		(var selectedWeapon:number = "weaponController ? weaponController.selectedWeapon : SC.Ships.SHIP_WEAPON_TYPES.NONE" (event "weaponController.evSelectedWeaponChanged"))
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'canHit')
+		(var canHitReason:number = "canHitComponent && (selectedWeapon != SC.Ships.SHIP_WEAPON_TYPES.NONE) 	? canHitComponent.reasons[selectedWeapon]
+																											: SC.Battle.CANT_HIT_REASON.NONE" (event "canHitComponent.evChanged"))
+
+		
+		(var cameraComponent:gfx = "$datahub.getSingleComponent(CC.camera)")
+		(var isTactical:bool = "cameraComponent.isTactical" (event "cameraComponent.evTacticalStateChanged"))
+		(var altVision:bool = "cameraComponent.altVision" (event "cameraComponent.evAltVisionChanged"))
+
+		(var altVisionEnabled:bool = "altVision && !isTactical")
+
+		(event onShowTweenEnd)
+
+		(var showText:bool = "altVisionEnabled")
+		(var reasonIds:str = "canHitReason != SC.Battle.CANT_HIT_REASON.NONE ? 'IDS_CANNOT_HIT_TARGET_' + SC.Battle.CANT_HIT_REASON.VALUE_TO_NAME[canHitReason] : ''")
+	)
+	(style
+		(flow = "horizontal")
+		(align = "middle|center")
+	)
+	(block
+		(style
+			(width = 17) (height = 17) (marginRight = 2px)
+			(bind backgroundImage "'url:../battle_hud/markers/can_hit/icon_cant_hit.png'")
+			(backgroundSize = "align")
+		)
+	)
+	(block
+		(alpha = "showText ? 1 : 0")
+		(controller $Animation
+			(bind enabled "altVisionEnabled")
+			(bindcall play	duration = "CANT_HIT_TWEEN_DURATION"
+							action="killAll"
+							watch=false
+							easing="Easing.quad_in"
+							to = "{ alpha: 1 }"
+							(bind enabled "altVisionEnabled")
+			)
+		)
+		(controller $Animation
+			(bind enabled "!altVisionEnabled")
+			(bindcall play	duration = "CANT_HIT_TWEEN_DURATION"
+							delay = "CANT_HIT_TWEEN_DELAY"
+							action="killAll"
+							watch=false
+							easing="Easing.quad_in"
+							to = "{ alpha: 0 }"
+							(bind enabled "!altVisionEnabled")
+			)
+			(bindcall play	duration = "CANT_HIT_TWEEN_DURATION"
+							delay = "CANT_HIT_TWEEN_DELAY_FIRST_SHOW"
+							action="killAll"
+							watch=false
+							easing="Easing.quad_in"
+							to = "{ alpha: 0 }"
+							(event "onShowTweenEnd")
+			)
+		)
+		(controller $Animation
+			(bind enabled "!altVision && !isTactical")
+			(bindcall play  duration = "CANT_HIT_TWEEN_DURATION"
+							action="killAll"
+							watch=false
+							easing="Easing.quad_in"
+							to = "{ alpha: 1 }"
+							(bind enabled "isTargetLocked")
+							(event "canHitComponent.evChanged")
+			)
+			(dispatch onShowTweenEnd args="{}" on=evAnimEnded)
+		)
+		(tf
+			
+			(class $WorldMarkerTextItem)
+			(class $TextDefaultBold13NM)
+			(bind text "reasonIds")
+		)
+	)
+)
+
+
+(def element MarkerHealthBarItem (_markerEntity:gfx, _isLarge:bool, _isSuppressed:bool=false) layout=true
+	(scope
+		(var customElementsVisibilityComponent:gfx = "$datahub.getSingleEntity(CC.customElementsVisibility)")
+		(var enabledElements:number = "customElementsVisibilityComponent ? customElementsVisibilityComponent.customElementsVisibility.enabledElements : null" (event "customElementsVisibilityComponent.customElementsVisibility.evChanged"))
+		(var isMultyTeamEnabled:bool = "(enabledElements & SC.Battle.CUSTOM_BATTLE_ELEMENTS.MULTYTEAMS) > 0")
+
+		(var teamId:number = "_markerEntity.avatar ? _markerEntity.avatar.teamId : 0" (event "_markerEntity.avatar.evTeamIdChanged"))
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'health')
+		(var healthValue:number = "healthComponent ? healthComponent.value : 0" (event "healthComponent.evValueChanged"))
+		(var healthMax:number = "healthComponent ? healthComponent.max : 0" (event "healthComponent.evMaxChanged"))
+		(var healthDelta:number = "healthComponent ? healthComponent.delta : 0" (event "healthComponent.evDeltaChanged"))
+
+		(var healthRatio:number = "healthMax ? healthValue / healthMax : -1")
+		(var textValue:str = "toString(formatSeparator(healthValue)) + ' / ' + toString(formatSeparator(healthMax))")
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'relation')
+		(var relationValue:number = "relationComponent ? relationComponent.value : 0" (event "relationComponent.evChanged"))
+		(var relationStr:str = "toLower(SC.Battle.PLAYER_RELATION.VALUE_TO_NAME[relationValue])")
+		(var isAlly:bool = "relationComponent && relationComponent.value == SC.Battle.PLAYER_RELATION.ALLY" (event "relationComponent.evChanged"))
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'diplomacyRelation')
+		(var diplomacyRelationValue:number = "diplomacyRelationComponent ? diplomacyRelationComponent.value : 0" (event "diplomacyRelationComponent.evChanged"))
+		(var relationStrByDiplomacy:str = "DIPLOMACY_RELATION_TO_RELATION_STR[diplomacyRelationValue]")
+
+		(var sizes:array = "HEALTH_BAR_SIZE[_isLarge ? 1 : 0]")
+
+		
+		(event evBarTweenStart)
+		(event onBarTweenStart)
+		(event onBarTweenEnd)
+		(event onDamageTweenEnd)
+
+		(var isDirty:bool = false) 
+		(bind isDirty "true" (event "healthComponent.evValueChanged") (event "healthComponent.evMaxChanged"))
+		(bind isDirty "false" (event "onBarTweenStart"))
+		
+		(var isDamageShows:bool = false) 
+		(bind isDamageShows "true" (event "onBarTweenStart"))
+		(bind isDamageShows "false" (event "onDamageTweenEnd"))
+
+		(var targetBarScale:number = 0) 
+		(bind targetBarScale "healthRatio" watch=false (event "onBarTweenStart"))
+
+		(var markerColorTransform:dict = 
+			"	diplomacyRelationComponent	? TWO_TEAMS_COLOR_TRANSFORMS[relationStrByDiplomacy] :
+				isAlly						? TWO_TEAMS_COLOR_TRANSFORMS['ally'] :
+				isMultyTeamEnabled			? MULTI_TEAMS_COLOR_TRANSFORMS[teamId]
+											: TWO_TEAMS_COLOR_TRANSFORMS[relationStr]
+		")
+	)
+
+	(dispatch evBarTweenStart args="{}" (event "onDamageTweenEnd") (bind enabled "isDirty")) 
+	(block
+		(class $WorldMarkerItemMargins)
+		(style
+			(bind width "sizes[0]")
+			(bind height "sizes[1]")
+			(align = "center|middle")
+		)
+
+		
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(backgroundImage = "'url:../battle_hud/markers/bar/bar_bg.png'")
+				(backgroundSize = "fill")
+				(scale9grid = [1, 1, 44, 2])
+			)
+		)
+
+		
+		(block
+			(bind visible "_isSuppressed")
+			(class $FullsizeAbsolute)
+			(block
+				(class $FullsizeAbsolute)
+				(style
+					(bind backgroundImage "'url:../battle_hud/markers/bar/bar_hp_suppressed.png'")
+					(backgroundSize = "fill")
+					(scale9grid = [2, 1, 42, 2])
+				)
+				(bind colorTransform "markerColorTransform")
+			)
+
+			(block
+				(class $FullsizeAbsolute)
+				(bind scaleX "healthRatio")
+				(style (backgroundColor = 0x01000000))
+				(isMask = true)
+			)
+		)
+
+		
+		(block
+			(bind visible "!(_isSuppressed)")
+			(class $FullsizeAbsolute)
+			(style (padding = "HEALTH_BAR_FILL_PADDING"))
+
+			
+			(block
+				(class $FullsizeAbsolute)
+				(scaleX = "healthRatio")
+				
+				(alpha = 1.17)
+				(style
+					(bind backgroundColor "0xFFFFFFFF")
+					(backgroundSize = "fill")
+				)
+
+				(controller $Animation
+					(bindcall play  duration = "DAMAGE_BAR_TWEEN_DURATION"
+									delay = "DAMAGE_BAR_TWEEN_DELAY"
+									action="killAll"
+									watch=false
+									easing="Easing.quad_in"
+									to = "{ scaleX: targetBarScale }"
+									(event "onBarTweenEnd")
+					)
+					(dispatch onDamageTweenEnd args="{}" on=evAnimEnded)
+				)
+			)
+
+			
+			(block
+				(class $FullsizeAbsolute)
+				(scaleX = "healthRatio")
+
+				(style
+					(bind backgroundColor "0xFFFFFFFF")
+					(backgroundSize = "fill")
+				)
+
+				(bind colorTransform "markerColorTransform")
+
+				(controller $Animation
+					(bind enabled "!(isDamageShows)")
+					(bindcall play	duration = "HEALTH_BAR_TWEEN_DURATION"
+									action="killAll"
+									watch=false
+									to = "{ scaleX: healthRatio }"
+									(event "healthComponent.evValueChanged")
+									(event "healthComponent.evMaxChanged")
+									(event "evBarTweenStart")
+					)
+					(dispatch onBarTweenStart args="{}" on=evAnimStarted)
+					(dispatch onBarTweenEnd args="{}" on=evAnimEnded)
+				)
+			)
+		)
+
+		
+		(block
+			(bind visible "_isLarge")
+			(tf
+				(class $WorldMarkerTextItem)
+				(bind text "textValue")
+			)
+		)
+	)
+)
+
+(def element TimeoutIndicatorItem (_entityId:number) layout=true
+	(scope
+		(var timeoutEntity:gfx = "$datahub.getEntity(_entityId)")
+		(var timeoutComponent:gfx = "timeoutEntity ? timeoutEntity.timeout : null" (event "timeoutEntity.evAdded"))
+		(var timeoutTime:number = "timeoutComponent ? timeoutComponent.time : 0" (event "timeoutComponent.evTimeChanged"))
+		(var totalTime:number = "timeoutComponent ? timeoutComponent.total : 0")
+		(var timeoutIsRunning:bool = "timeoutComponent ? timeoutComponent.running : false" (event "timeoutComponent.evRunningChanged"))
+
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.battleTimer)")
+		(var currentTime:number = "timerEntity.battleTimer.battleTime" (event "timerEntity.battleTimer.evBattleTimeChanged"))
+
+		(var timeLeft:number = "timeoutIsRunning ? floor(timeoutTime - currentTime) : 0")
+
+		(var isActive:bool = "timeoutIsRunning && timeLeft > 0 && totalTime > 0")
+	)
+
+	(style
+		(width = 100%)
+		(align = "center")
+	)
+
+	(block
+		(bind visible "isActive")
+
+		(tf
+			(class $TextDefaultBoldNM)
+			(class $TextColorHUDNeutral)
+			(style
+				(textAlign = "center")
+			)
+			(bind text "countdownFormat(timeLeft, 0, true)")
+		)
+	)
+)
+
+(def element BatteryBurnItem (_burnNumber:number, _keyframes:array, _forceShowNumbers:bool = false) layout=true
+	(style
+		(position = "absolute")
+	)
+	(block
+		(style
+			(flow = "horizontal") (align = "middle")
+			(pivotX = 50%)
+			(pivotY = 50%)
+		)
+		(controller $Animation
+			(play duration=2 keyframes="_keyframes")
+		)
+		(block
+			(style
+				(width = 19) (height = 19)
+				(backgroundImage = "'url:../battle_hud/crosshair/indicators/crosshair_indicator_energy_white.png'")
+			)
+		)
+		(block
+			(tf
+				(class $WorldMarkerTextItem)
+				(class $TextDefaultNM)
+				(style (alpha = "TA"))
+				(bind text "formatFloatingPoint(_burnNumber, 0, false)")
+			)
+		)
+	)
+)
+
+(def element ShipMarkerBatteryDamageItem (_markerEntity:gfx) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'battery')
+		(var batteryBurnedValue:number = "batteryComponent ? batteryComponent.burnedValue : 0" (event "batteryComponent.evBurnedValueChanged"))
+		(var isBurning:number = "batteryBurnedValue > 0")
+	)
+	(controller $Instance renderer='BatteryBurnItem'
+		(bind enabled "isBurning")
+		(args _burnNumber="batteryBurnedValue" _keyframes="BATTERY_BURN_FX_KEYFRAMES_ANIM_IN")
+	)
+	(controller $FxInstance renderer='BatteryBurnItem' lifetime="2"
+		(args
+			_burnNumber="$event[1]"
+			_keyframes="BATTERY_BURN_FX_KEYFRAMES_ANIM_OUT"
+			_forceShowNumbers=true
+		)
+		(bindcall create (event "batteryComponent.evEnemyBatteryBurned"))
+	)
+)
+
+(def element ShipMarkerBatteryBarItem (_markerEntity:gfx, _isLarge:bool) layout=true
+	(scope
+		(event evShow)
+		(macro GET_MARKER_ENTITY_COMPONENT 'battery')
+		(var batteryValue:number = "batteryComponent ? batteryComponent.value : 0" (event "batteryComponent.evValueChanged"))
+		(var batteryMax:number = "batteryComponent ? batteryComponent.maxCapacity : 0" (event "batteryComponent.evMaxCapacityChanged"))
+		(var batteryState:number = "batteryComponent ? batteryComponent.batteryState : SC.Battle.BATTERY_STATE.IDLE" (event "batteryComponent.evBatteryStateChanged"))
+		(var isBatteryFrozen:bool = "batteryState == SC.Battle.BATTERY_STATE.FROZEN")
+		(var isBatteryBurning:bool = "batteryState == SC.Battle.BATTERY_STATE.BURNING")
+
+		(var batteryRatio:number = "batteryMax ? batteryValue / batteryMax : -1")
+
+		(var sizes:array = "BATTERY_BAR_SIZE[_isLarge ? 1 : 0]")
+
+		(var fillAlpha:number = "isBatteryFrozen ? 1.5 : 0.8" watch=false)
+		(controller $Animation
+			(bindcall play	duration = "1" repeatCount=-1 action="kill"
+							keyframes="[
+								{percent:0, to:{fillAlpha:0.8}}, 
+								{percent:30, to:{fillAlpha:1.5}, easing:Easing.quad_out},
+								{percent:40, to:{fillAlpha:1.5}},
+								{percent:60, to:{fillAlpha:0.8}}
+							]"
+							(event "evShow")
+							(bind enabled "isBatteryFrozen")
+			)
+			(bindcall play duration=0.15 to="{ fillAlpha:0.8 }" action="kill" (bind enabled "!(isBatteryFrozen)"))
+		)
+	)
+	(dispatch evShow on=addedToStage)
+
+	(class $WorldMarkerItemMargins)
+	(style
+		(bind width "sizes[0]")
+		(bind height "sizes[1]")
+
+		(backgroundImage = "'url:../battle_hud/markers/bar/bar_bg.png'")
+		(backgroundSize = "fill")
+		(scale9grid = [1, 1, 44, 2])
+		(padding = 1)
+	)
+
+	
+	(block
+		(class $Fullsize)
+		(scaleX = "batteryRatio")
+		(bind alpha "fillAlpha")
+		(style
+			(bind backgroundColor "0xFFFFFFFF")
+			(backgroundSize = "fill")
+		)
+
+		(controller $Animation
+			(bindcall play	duration = "HEALTH_BAR_TWEEN_DURATION"
+							action="kill"
+							watch=false
+							to = "{ scaleX: batteryRatio }"
+							(event "batteryComponent.evValueChanged")
+			)
+		)
+	)
+)
+
+
+(def element SubmarineDepthItem (_markerEntity:gfx) layout=true
+	(scope
+		(event evMarkerUpdate)
+		(var screenPosition:gfx = "_markerEntity ? _markerEntity.screenPosition : null" (event "_markerEntity.evAdded") (event "_markerEntity.evRemoved"))
+		(var screenPositionY:number = "screenPosition ? screenPosition.position.y : 0" (event "evMarkerUpdate"))
+		(var updateEnabled:bool = "screenPosition && !(screenPosition.behindCamera)" (event "evEnterFrame"))
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'submarine')
+		(var depthValue:number = "submarineComponent ? submarineComponent.depth : 0" (event "submarineComponent.evDepthChanged"))
+		(var showDepth:number = "submarineComponent ? submarineComponent.showDepth : false" (event "submarineComponent.evShowDepthChanged"))
+		(var depthText:str = "formatFloatingPoint(round(depthValue * 10) / 10, 1) + ' ' + tr('IDS_METER')")
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'submarineScreenPosition')
+		(var submarineScreenPositionY:number = "submarineScreenPositionComponent	? submarineScreenPositionComponent.position.y
+																					: 0" (event "evMarkerUpdate"))
+
+		(var depthFillHeight:number = "submarineScreenPositionY - screenPositionY")
+	)
+	(dispatch evMarkerUpdate args={} (event "evEnterFrame") (bind enabled "updateEnabled"))
+
+	(visible = "showDepth")
+	(style
+		(align = "middle")
+	)
+	(controller $Animation
+		(bindcall play	duration = "HEALTH_BAR_TWEEN_DURATION"
+						action="killAll"
+						watch=false
+						reverse = "!showDepth"
+						from = "{ alpha: 0, visible: false, marginTop: -depthFillHeight }"
+						to = "{ alpha: 1, visible: true,  marginTop: 0 }"
+						(bind trigger "showDepth")
+		)
+	)
+	(block
+		(style
+			(width = 1px)
+			(bind height "depthFillHeight")
+			(backgroundImage = "'url:../battle_hud/markers/submarine/fill_submarine_depth_info.png'")
+			(backgroundSize = "fill")
+			(scale9grid = [0, 0, 32, 64])
+		)
+	)
+	(block
+		(style
+			(width = 0)
+			(align = "center|top")
+			(marginTop = "4px")
+		)
+		(element SimpleMarkerTextItem "depthText")
+	)
+)

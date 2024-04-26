@@ -1,0 +1,258 @@
+(def element ZonesCapturingIndicatorContainer () layout = true
+	(scope 
+		(var selfInvadingCapturePoints:gfx = "$datahub.getCollection(CC.capturePoint).getChildByPath('selfInvading')")
+		(var capturePointsList:gfx = "selfInvadingCapturePoints.items" (event "selfInvadingCapturePoints.evAdded") (event "selfInvadingCapturePoints.evRemoved"))
+
+		(var dropZonesCollection:gfx = "$datahub.getCollection(CC.interactiveZone).getChildByPath('playerInside.dropZones')")
+		(var dropZonesList:gfx = "dropZonesCollection.items" (event "dropZonesCollection.evAdded") (event "dropZonesCollection.evRemoved"))
+
+		(var airshipZonesCollection:gfx = "$datahub.getCollection(CC.payload).getChildByPath('byRelation.hasSelfPlayerInZone')")
+		(var airshipZonesList:gfx = "airshipZonesCollection ? airshipZonesCollection.items : null" (event "airshipZonesCollection.evAdded") (event "airshipZonesCollection.evRemoved"))	
+		(var hasAirshipZones:bool = "airshipZonesList ? airshipZonesList.length : false")	
+	
+		(var isAnimated:bool = "capturePointsList.length || dropZonesList.length || airshipZonesList.length")
+	)
+
+	(style
+		(align = "center|middle") 
+		(flow = "horizontal")
+		(alpha = "isAnimated ? 1 : 0")
+	)
+
+	(hblock
+		(controller $Repeat renderer='CapturePointCapturingIndicator'
+			(bind count "capturePointsList.length")
+			(args 
+				_pointCapturedByMe = "capturePointsList[$index]"
+			)
+		)
+	)
+
+	(hblock
+		(controller $Repeat renderer='DropZoneCapturingIndicator'
+			(bind count "dropZonesList.length")
+			(args 
+				_dropZoneCapturedByMe = "dropZonesList[$index]"
+			)
+		)
+	)
+
+	(hblock
+		(bind visible "hasAirshipZones")
+		(controller $Repeat renderer='AirshipZoneCapturingIndicator'
+			(bind count "airshipZonesCollection ? airshipZonesCollection.items.length : 0")
+			(bindcall removeChildAt "$event[1]" (event "airshipZonesCollection.evRemoved"))
+			(bindcall addChildAt "$event[1]" (event "airshipZonesCollection.evAdded"))
+			(args "airshipZonesCollection")
+		)
+	)
+
+	(element IndividualProgressContainer) 
+
+	(controller $Animation
+		(bindcall play to={alpha:1} from={alpha:0} duration=0.3 easing="Easing.quint_in" (bind enabled "isAnimated"))
+	)
+)
+
+(def element AirshipZoneCapturingIndicator(_airshipZoneCollection:gfx) layout = true
+	(scope 
+		(var airshipZone:gfx = "_airshipZoneCollection.items[$index]" watch=false)
+		(var relation:number = "airshipZone.relation ? airshipZone.relation.value : 0" (event "airshipZone.payload.evStateChanged"))
+		(var relationName:str = "toLower(SC.Battle.PLAYER_RELATION.VALUE_TO_NAME[relation])")
+		(var countOfMovers:number = 	"airshipZone.payload.movers" 	(event "airshipZone.payload.evPlayersChanged"))
+		(var countOfBlockers:number = 	"airshipZone.payload.blockers" (event "airshipZone.payload.evPlayersChanged"))
+		(var countOfAllies:number = "relation == SC.Battle.PLAYER_RELATION.ALLY ? countOfMovers - 1 : countOfBlockers - 1")
+
+		(var speedStatus:str = "relation == SC.Battle.PLAYER_RELATION.ALLY && countOfBlockers < 1 ? 'fast' : 'slow'")
+		(var timeToLiveComponent:gfx = "airshipZone.timeToLive" (event "airshipZone.evAdded") (event "airshipZone.evRemoved"))
+	)
+
+	(style
+		(marginRight = "MS")
+		(marginLeft = "MS")
+		(flow = "Flow.HORIZONTAL")
+		(align = "middle")
+	)
+
+	(controller $Animation
+		(bindcall play to={alpha:0} duration="0.3" easing="Easing.quint_in" (event "timeToLiveComponent.evRemove"))
+	)
+
+	(block
+		(style
+			(bind backgroundImage "'svg:../battle_hud/capture_points/' + relationName + '_airship_' + speedStatus + '.svg'")
+			(height = 28px) (width = 28px) 
+			(marginRight = "10px")
+			(backgroundSize = "fill")
+		)
+	)
+	(block
+		
+		(style (height = 100%) (align = "middle"))
+		(tf
+			(bind text "'IDS_' + toUpper(relationName) + '_AIRSHIP_' + speedStatus")
+			(class $TextDefaultBold13NM)
+			(style (alpha = "TA"))
+		)
+
+		
+		(tf
+			(bind text "subst('IDS_COUNT_OF_ALLIES_IN_AIRSHIP_ZONE', [], { _countOfAllies: countOfAllies})")
+			(class $TextDefault13NM)
+			(style 
+				(marginTop = "S") 
+				(alpha = "countOfAllies > 0 ? TC : 0") 
+				(bind height "countOfAllies > 0 ? '19px' : 0")
+			)
+
+			(controller $Animation
+				(bindcall play to="{alpha:TC, height:19}" from="{alpha:0, height:0}" duration=0.15 easing="Easing.quint_in" (bind enabled "countOfAllies > 0"))
+				(bindcall play to="{alpha:0, height:0}" from="{alpha:1, height:19}" duration=0.15 easing="Easing.quint_out" (bind enabled "countOfAllies <= 0"))
+			)
+		)
+	)
+)
+
+(def element CapturePointCapturingIndicator (_pointCapturedByMe:gfx=null) layout = true
+    (name = 'base_capture_own')
+	(scope 
+		(var BAR_WIDTH:number = 160)
+
+		(var capturePoint:gfx = "_pointCapturedByMe ? _pointCapturedByMe.capturePoint : null" (event "_pointCapturedByMe.evAdded") (event "_pointCapturedByMe.evRemoved"))	
+		(var isBothInside:bool = "capturePoint.bothInside" (event "capturePoint.evBothInsideChanged") )
+		(var invaderRelation:number = "capturePoint.invaderRelation" (event "capturePoint.evInvaderChanged") )
+		(var timeToCaptureLeft:number = "capturePoint.timeLeft" (event "capturePoint.evTimeLeftChanged"))
+
+		(var progressComponent:gfx = "_pointCapturedByMe ? _pointCapturedByMe.progress : null" (event "_pointCapturedByMe.evAdded") (event "_pointCapturedByMe.evRemoved"))
+		(var progress:number = "progressComponent ? progressComponent.value: 0" (event "progressComponent.evChanged"))
+
+		(var relationValue:number = "_pointCapturedByMe.relation ? _pointCapturedByMe.relation.value : SC.Battle.PLAYER_RELATION.SELF" (event "_pointCapturedByMe.relation.evChanged"))
+		(var isEnemy:bool = "relationValue == SC.Battle.PLAYER_RELATION.ENEMY")
+		(var isInvaderEnemy:bool = "invaderRelation == SC.Battle.PLAYER_RELATION.ENEMY")
+	)
+
+	(style
+		(align = "center")
+		(marginRight = "MS")
+		(marginLeft = "MS")
+	)
+
+	
+	(tf
+		(class $TextDefaultBold13NM)
+		(style
+			(marginBottom = "XS")
+		)
+		(text = 'IDS_PROGRESS_IM_CAPTURE_CONTROL')
+	)
+
+	
+	(block 
+		(style
+			(marginBottom = "XS")
+			(bind alpha "timeToCaptureLeft > 0 ? 1 : 0")
+		)
+		(tf 
+			(class $TextDefault13NM)
+			(bind text "countdownFormat(timeToCaptureLeft, 0, true)")
+		)
+	)
+
+	
+	(block
+		(style
+			(zindex = 0)
+		)
+		(block
+			(bind visible "isEnemy")
+			(style
+				(position = "absolute")
+				(width = "BAR_WIDTH - 2")
+				(marginLeft = "1px")
+				(marginTop = "1px")
+				(height = "2px")
+				(bind backgroundColor "C_ENEMY")
+			)
+		)
+		(block
+			(controller $Instance renderer='BattleProgressBar'
+				(args
+					_barWidth = "BAR_WIDTH"
+					_barHeight = 4
+					_maxProgress = 1
+					_valueProgress = "progress"
+					_color = "isInvaderEnemy ? C_ENEMY : C_ALLY"
+				)
+			)
+		)
+		(block
+			(bind visible "isBothInside")
+			(style
+				(bind left "BAR_WIDTH * progress ")
+				(position = "absolute")
+				(width = 27px) (height = 27px) (marginTop = -12px) (marginLeft = -12px)
+				(backgroundImage = "'img://gui/battle_hud/capture_points/CaptureIndicatorCross.png'")
+			)
+		)
+	)
+)
+
+(def element DropZoneCapturingIndicator (_dropZoneCapturedByMe:gfx=null) layout = true
+	(scope 
+		(var drop:gfx = "_dropZoneCapturedByMe ? _dropZoneCapturedByMe.drop : null" (event "_dropZoneCapturedByMe.evAdded") (event "_dropZoneCapturedByMe.evRemoved"))
+
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+		(var timeout:gfx = "_dropZoneCapturedByMe ? _dropZoneCapturedByMe.timeout : null" (event "_dropZoneCapturedByMe.evAdded") (event "_dropZoneCapturedByMe.evRemoved"))
+		(var timeoutTime:number = "timeout ? timeout.time : 0" (event "timeout.evTimeChanged"))
+		(var timeToDropLeft:number = "timeout ? max(ceil(timeoutTime - timerEntity.timer.currentServerTime), 0) : 0" (event "timerEntity.timer.evFrequent"))
+
+		(var isBothInside:bool = "drop ? _dropZoneCapturedByMe.drop.isContested : false" (event "_dropZoneCapturedByMe.drop.evIsContestedChanged"))
+	)
+
+	(bind visible "isBothInside || timeToDropLeft > 0")
+
+	(style
+		(marginRight = "MS")
+		(marginLeft = "MS")
+	)
+
+	(hblock 
+		(bind visible "isBothInside")
+		(style
+			(align = "middle")
+		)
+		(block
+			(style
+				(height = 27px) (width = 27px) 
+				(marginRight = "S")
+				(backgroundImage = "'url:../battle_hud/capture_points/CaptureIndicatorCross.png'")
+				(backgroundSize = "fill")
+			)
+		)
+		(tf
+			(class $TextDefaultBold13NM)
+			(text = "'IDS_SHIP_MODIFIER_CAPTURING_INDICATOR'")
+		)
+	)
+
+	(block
+		(bind visible "!isBothInside")
+		(style
+			(height = "100%")
+			(align = "center|middle")
+		)
+		(tf
+			(class $TextDefaultBold13NM)
+			(text = "'IDS_SHIP_MODIFIER_CAPTURING_INACTIVE'")
+		)
+		(tf
+			(class $TextDefault13NM)
+			(style
+				(marginTop = "6")
+				(bind alpha "timeToDropLeft > 0")
+			)
+			(bind text "countdownFormat(timeToDropLeft, 0, true)")
+		)
+	)
+
+)

@@ -1,0 +1,89 @@
+(def constant QUICK_COMMANDS [
+	[
+		{	text: 'IDS_CMD_QUICK_COMMANDS_WINDOW',			command: "Cmd.CMD_QUICK_COMMANDS_WINDOW" }
+	],
+	[
+		{	text: 'IDS_CMD_QUICK_NO_WAY_WINDOW',			command: "Cmd.CMD_QUICK_NO_WAY" },
+		{	text: 'IDS_CMD_QUICK_TACTIC_WINDOW',			command: "Cmd.CMD_QUICK_TACTIC" },
+		{	text: 'IDS_CMD_QUICK_AYE_AYE_WINDOW',			command: "Cmd.CMD_QUICK_AYE_AYE" },
+		{	text: 'IDS_CMD_QUICK_NEED_SUPPORT_WINDOW',		command: "Cmd.CMD_QUICK_NEED_SUPPORT" }
+	],
+	[
+		{	text: 'IDS_CMD_QUICK_NEED_AIR_DEFENCE_WINDOW',	command: "Cmd.CMD_QUICK_NEED_AIR_DEFENCE" },
+		{	text: 'IDS_CMD_QUICK_NEED_VISION_WINDOW',		command: "Cmd.CMD_QUICK_NEED_VISION" },
+		{	text: 'IDS_CMD_QUICK_NEED_SMOKE_WINDOW',		command: "Cmd.CMD_QUICK_NEED_SMOKE" },
+		{	text: 'IDS_CMD_QUICK_BACK_WINDOW',				command: "Cmd.CMD_QUICK_BACK" }
+	],
+	[
+		{ text: 'IDS_CMD_QUICK_GOOD_LUCK_WINDOW',			command: "Cmd.CMD_QUICK_GOOD_LUCK" },
+		{ text: 'IDS_CMD_QUICK_GOOD_GAME_WINDOW',			command: "Cmd.CMD_QUICK_GOOD_GAME" },
+		{ text: 'IDS_CMD_QUICK_THANK_YOU_WINDOW',			command: "Cmd.CMD_QUICK_THANK_YOU" },
+		{ text: 'IDS_CMD_QUICK_CARAMBA_WINDOW',				command: "Cmd.CMD_QUICK_CARAMBA" }
+	]
+])
+
+
+(def element QuickCommandHelpPanel () layout=true dispatch_size_change=true
+	(tf
+		(class $TextDefaultBoldNM)
+		(style
+			(minWidth = 180px)
+			(textAlign = "right")
+			(marginBottom = "MS")
+		)
+		(text = "'IDS_QUICK_COMMANDS_C'")
+	)
+	(block
+		(controller $Repeat renderer='QuickCommandHelpItemsGroup'count="QUICK_COMMANDS.length"
+			(args _items="QUICK_COMMANDS[$index]")
+		)
+	)
+)
+
+(def element QuickCommandHelpItemsGroup (_items:array)
+	(style
+		(bind marginTop "$index != 0 ? M : 0")
+	)
+	(controller $Repeat renderer='QuickCommandHelpItemRenderer' count="_items.length"
+		(args
+			_text="_items[$index].text"
+			_command="_items[$index].command"
+		)
+	)
+)
+
+
+(def element QuickCommandHelpItemRenderer (_text:str, _command:number) layout=true dispatch_size_change=true
+	(scope
+		(var command:gfx = "$datahub.getPrimaryEntity(CC.commandMappingCommand, _command)")
+		(var bindingList:array = "command.commandKeyList.list" (event "command.commandKeyList.evChanged"))
+	)
+	(style
+		(flow = "horizontal")
+		(align = "top")
+		(marginBottom = "SXS")
+		(marginRight = "SXS")
+	)
+	(tf
+		(class $TextDefaultNM)
+		(style
+			(width = 180px)
+			(textAlign = "right")
+			(marginRight = "SXS")
+		)
+		(bind text "_text")
+	)
+	(element HotkeyIndicator
+		_commandId="_command"
+		_size="SIZE.SMALL"
+		_active=true
+		_fxOnDown="false"
+		(style
+			(marginTop = "-XXS")
+			(marginBottom = "-3")
+			(width = {1280:48px, 2560:128px})
+			(align = "middle")
+			(flow = "tile_horizontal")
+		)
+	)
+)

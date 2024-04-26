@@ -1,0 +1,38 @@
+<AGB196_Depth_Charge_Thrower_L_dead.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	AGB185_Depth_Charge_Thrower_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	AGB185_Depth_Charge_Thrower_dead	</node>
+		<geometry>
+			<vertices>	AGB185_Depth_Charge_Thrower_deadShape.vertices	</vertices>
+			<primitive>	AGB185_Depth_Charge_Thrower_deadShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ASC810_Austin/gun/AM677_Depth_Charge_Roller_Track_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0317 0.0000 -0.0169	</min>
+		<max>	0.0169 0.0590 0.0383	</max>
+	</boundingBox>
+</AGB196_Depth_Charge_Thrower_L_dead.visual>

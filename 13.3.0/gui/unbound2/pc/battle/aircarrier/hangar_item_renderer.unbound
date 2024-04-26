@@ -1,0 +1,104 @@
+(def element HangarItemRenderer (_ownSquadronEntity:gfx) layout=true
+	(scope
+		(event evMouseOver)
+		(event evMouseOut)
+
+		(var ammoType:number = "_ownSquadronEntity.plane.ammoType")
+
+		(var hangarEntity:gfx = "$datahub.getPrimaryEntity(CC.hangar, _ownSquadronEntity.ownSquadron.id)")
+		(var curPlanesInHangar:number = "hangarEntity ? hangarEntity.hangar.planeCount : 0" (event "hangarEntity.hangar.evChanged"))
+		(var planeIconPath:str = "'url:../service_kit/plane_types/icon_default_plane_' + toLower(SC.Common.PLANE_AMMO_TYPES.VALUE_TO_NAME[ammoType]) + '.png'")
+
+		(var isRollOver:bool = false)
+		(bind isRollOver true  init=false (event "evMouseOver"))
+		(bind isRollOver false init=false (event "evMouseOut"))
+	)
+
+	(style
+		(width = 30px)
+		(bind marginLeft "$index == 0 ? 16 : 14")
+		(align = "center")
+	)
+
+	(controller $Tooltip (renderer = 'HangarItemTooltip')
+		(args "_ownSquadronEntity")
+		(align="bottom|center")
+		(position="border")
+		(offset=[0, 20])
+		(cache=false)
+		(screenBoundsOffset={left:10, top:30, right:10, bottom:100})
+		(macro SIMPLE_TOOLTIP_ANIMATION)
+	)
+
+
+	(block
+		(style
+			(width = 30) (height = 30)
+		)
+		(block
+			(style
+				(position = "absolute")
+				(bind backgroundImage "planeIconPath")
+			)
+			(bind alpha "(curPlanesInHangar > 0 ? 1 : 0.5)")
+		)
+	)
+	(element PlaneReloadProgressAndAttackersBar "_ownSquadronEntity.ownSquadron.id" "false" "true")
+
+
+	
+	(block
+		(style (position = "absolute") (width = 30) (height = 50) (top = -2) (backgroundColor = 0x00FFFFFF))
+		(dispatch evMouseOver on='rollOver')
+		(dispatch evMouseOut on='rollOut')
+	)
+)
+
+
+(def element HangarItemTooltip(_ownSquadronEntity:gfx) layout=true
+	(scope
+		(var hangarEntity:gfx = "$datahub.getPrimaryEntity(CC.hangar, _ownSquadronEntity.ownSquadron.id)")
+
+		(var hangar:gfx = "hangarEntity.hangar")
+		(var planeCount:number = "hangar.planeCount")
+		(var maxPlanesInSquadron:number = "_ownSquadronEntity.health.max")
+		(var maxPlaneCount:number = "hangar.maxPlaneCount")
+		(var timeToRestore:number = "hangar.timeToRestore" (event "hangar.evChanged"))
+
+		(var ammoType:number = "_ownSquadronEntity.plane.ammoType")
+		(var planeIconPath:str = "'url:../service_kit/plane_types/icon_default_plane_' + toLower(SC.Common.PLANE_AMMO_TYPES.VALUE_TO_NAME[ammoType]) + '.png'")
+		(var planesInAttacker:number = "_ownSquadronEntity.ownSquadron.attackerSize")
+		(var numAttakers:number = "maxPlanesInSquadron && planesInAttacker ? floor(maxPlanesInSquadron / planesInAttacker) : 0")
+
+		(var tooltipParams:dict ="{
+			planeCount: planeCount,
+			maxPlanesInSquadron: maxPlanesInSquadron,
+			timeToRestore: timeToRestore,
+			maxPlaneCount: maxPlaneCount,
+			numAttakers: numAttakers,
+			planesInAttacker: planesInAttacker
+		}" (event "hangar.evChanged"))
+	)
+
+	(style (width = "WEAPON_TOOLTIP_WIDTH") (hitTest = false))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+					_imageUrl="planeIconPath"
+					_imageWidth=30
+					_imageHeight=30
+					_unifiedStatus=''
+					_headerText="_ownSquadronEntity.plane.ammoTypeIDS"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element WeaponBattleTooltipParamsList
+					_params="tooltipParams"
+					_paramSet="HANGAR_TOOLTIP_PARAMS_SET"
+					_entityId="_ownSquadronEntity.id"
+		)
+	)
+)

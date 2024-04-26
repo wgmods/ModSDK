@@ -1,0 +1,1234 @@
+
+(def constant CAROUSEL_SLOT_DEFAULT_WIDTH "216")
+(def constant CAROUSEL_SLOT_DEFAULT_HEIGHT "126")
+
+(def constant CAROUSEL_SLOT_SMALL_HEIGHT "63")
+
+
+
+(def constant CAROUSEL_ITEM_HEIGHT "120")
+(def constant CAROUSEL_SMALL_ITEM_HEIGHT "56")
+
+(def constant CAROUSEL_SELECTED_ITEM_HEIGHT "126")
+(def constant CAROUSEL_SELECTED_SMALL_ITEM_HEIGHT "60")
+
+(def constant CAROUSEL_ITEM_WIDTH "204")
+(def constant CAROUSEL_SELECTED_ITEM_WIDTH "216")
+
+
+(def macro CAROUSEL_SLOT_BACKGROUND ()
+	(block
+		(element BlurMapLow)
+		(class $FullsizeAbsolute)
+		(style (padding = -1px))
+		(block
+			(bind visible "isHighContrast")
+			(class $FullsizeAbsolute)
+			(style (backgroundImage = "'url:../service_kit/panel_backgrounds/infotip_panel.png'") (scale9grid = 3) (alpha = 1.3))
+		)
+	)
+)
+
+(def macro CAROUSEL_SLOT_THUMB_ANIMATION_STATE (_path:expression, _isActive:expression)
+	(block
+		(class $FullsizeAbsolute)
+		(style (bind backgroundImage "_path") (backgroundSize = "fill") (scale9grid = 4) (alpha = "_isActive"))
+		(controller $Animation
+			(bindcall play
+				from =	"{alpha: 0}"
+				to =	"{alpha: 1}"
+				reverse = "!_isActive"
+				duration="0.2"
+				(bind trigger "_isActive")
+			)
+		)
+	)
+)
+
+(def element CarouselScrollThumb() layout=true
+	(style
+		(height = "13px")
+		(backgroundImage = 'url:../battle_hud/central_log/lower_log_bg_9scale.png')
+		(scale9grid = [4, 3, 4, 3])
+	)
+)
+
+(def element CarouselScrollTrack() layout=true
+	(style
+		(height = "13px")
+		(backgroundColor=0x01000000)
+	)
+)
+
+(def element CarouselScroll() layout=true
+	(scope
+		(event CarouselScrollValueChanged)
+		(event CarouselCanScrollChanged)
+		(event CarouselScrollVisibleChanged)
+	)
+	(bind visible "$event" (event "CarouselScrollVisibleChanged"))
+	(scroll_bar
+		(orientation="horizontal")
+		(track = 'CarouselScrollTrack')
+		(thumb = 'CarouselScrollThumb')
+		(singleStep="CAROUSEL_SLOT_DEFAULT_WIDTH") 
+		(scrollDuration=700)
+		(dispatch 'CarouselScrollValueChanged' dir="EventDirection.UP" args="$event" on='valueChanged')
+		(dispatch 'CarouselCanScrollChanged' dir="EventDirection.UP" args="$event" on='canScrollChanged')
+	)
+)
+
+(def element ShipCarousel () layout=true dispatch_size_change=true
+	(scope
+		(event ShipsCarouselScrollPrev)
+		(event ShipsCarouselScrollNext)
+
+		(event CarouselScrollValueChanged)
+		(event CarouselCanScrollChanged)
+		(event CarouselScrollVisibleChanged)
+		(event evScrollToIndex)
+		(event evAddedToStage)
+
+		(macro USER_PREF_DATA)
+		(macro STAGE_SIZE)
+		(macro PULL_SHIP_ID)
+
+		(var trainingRoomWatcher:gfx = "$datahub.getFirstWatcher(CC.trainingRoomWindowState)")
+		(var trainingRoomEntity:gfx = "trainingRoomWatcher ? trainingRoomWatcher.entity : null" (event "trainingRoomWatcher.event"))
+		(var disableShipActions:bool = "!!trainingRoomEntity")
+
+		
+		(var shipsCarouselScrollingEntity:gfx="$datahub.getSingleEntity(CC.shipsCarouselScrolling)")
+		(var shipsCarouselScrollingComponent:gfx = "shipsCarouselScrollingEntity ? shipsCarouselScrollingEntity.shipsCarouselScrolling :  null")
+		(var selectedShipIndex:number =	"shipsCarouselScrollingComponent ? shipsCarouselScrollingComponent.shipIndex : 0" (event "shipsCarouselScrollingComponent.evScrollToSelected"))
+		(var isFilteredShipsHidden:bool = "shipsCarouselScrollingComponent ? shipsCarouselScrollingComponent.isFilteredShipsHidden : false" (event "shipsCarouselScrollingComponent.evIsFilteredShipsHiddenChanged"))
+		(var rowsCount:number = "shipsCarouselScrollingComponent ? shipsCarouselScrollingComponent.rowsCount : 1" (event "shipsCarouselScrollingComponent.evRowsCountChanged"))
+		(var isSmallCarouselView:bool = "userPrefs.isSmallCarouselView == null ? false : userPrefs.isSmallCarouselView")
+		
+
+		(var shipsCarouselCanScrollLeft:bool =	"$event ? $event.down	: false"	(event "CarouselCanScrollChanged"))
+		(var shipsCarouselCanScrollRight:bool =	"$event ? $event.up		: false"	(event "CarouselCanScrollChanged"))
+		(var shipsCarouselScrollEnabled:bool =	"$event ? $event.down || $event.up : true" (event "CarouselCanScrollChanged"))
+
+		(var shipsCollectionDH:gfx = "$datahub.getCollection(CC.carouselFilter)")
+		(var shipCollectionName:str = "isFilteredShipsHidden ? 'filtered.sorted' : 'sorted'")
+
+		(var carouselShipsCollection:gfx =	"shipsCollectionDH ? shipsCollectionDH.getChildByPath(shipCollectionName) : null")
+		(var carouselShipsArray:array =	"carouselShipsCollection ? carouselShipsCollection.items : []" (event "carouselShipsCollection.evUpdated"))
+		(var carouselShipsArrayLength:number =	"carouselShipsArray.length")
+
+		(var carouselHeight:number = "isSmallCarouselView	? (rowsCount * CAROUSEL_SLOT_SMALL_HEIGHT) + 6
+															: (CAROUSEL_SLOT_DEFAULT_HEIGHT) + 6")
+
+		
+		
+	)
+
+	(bind name "'carouselPlayerShips'")
+	(style (bind width "stageWidth") (bind height "carouselHeight") (marginBottom = "-6px") (paddingLeft = "4px") (paddingRight = "4px"))
+	
+	(dispatch evAddedToStage on='addedToStage')
+	(dispatch CarouselScrollVisibleChanged dir="EventDirection.DOWN" args="false" (event "evAddedToStage"))
+
+	(dispatch evScrollToIndex args="{value: selectedShipIndex}" (event "shipsCarouselScrollingComponent.evScrollToSelected"))
+	(dispatch evScrollToIndex args="{value: selectedShipIndex}" (event "evAddedToStage"))
+
+	
+	(block
+		(class $Fullsize)
+		(style (flow = "horizontal"))
+		(block
+			(controller $Animation
+				(bindcall play
+					from =	"{alpha: 0, ubScaleX: 0}"
+					to =	"{alpha: 1, ubScaleX: 1}"
+					reverse = "!shipsCarouselScrollEnabled"
+					duration="0.15"
+					(bind trigger "shipsCarouselScrollEnabled")
+				)
+			)
+
+			(style (width = "20px") (height = "100%") (align = "center|middle"))
+			(mc button_slide_left
+				(bind enabled "shipsCarouselCanScrollLeft")
+				(bind name "'buttonCarouselLeft'")
+				(dispatch "'ShipsCarouselScrollPrev'" on='click')
+			)
+		)
+		(dispatch 'evCarouselScrollChanged' dir="EventDirection.DOWN" (event "CarouselScrollValueChanged"))
+		(scrollArea
+			(style
+				(bind width "100%")
+				(bind height "carouselHeight")
+				(backgroundColor = "0x01000000")
+			)
+
+			(horizontalSlider = 'CarouselScroll')
+
+			(hscrollPolicy = 'auto')
+			(vscrollPolicy = 'off')
+			(scrollPerItem = "true")
+
+			(wheelScrollSpeed = "1.0")
+			(wheelScrollAcceleration = "0.8")
+			(maxScrollingAnimatedDistance = "280") 
+
+			(activeControlsAlpha = "1")
+			(inactiveControlsAlpha = "0.5")
+			(animationDuration = "0.2")
+			(animationEasing = "Easing.cubic_out")
+			
+			(repeatController = 'shipCarouselContainer')
+
+			(content
+				(style
+					(flow = "horizontal")
+				)
+				(vtile
+					(style
+						(bind height "carouselHeight")
+					)
+					(bind name "'shipCarouselContainer'")
+					(controller $Repeat renderer='CarouselItemWrapper' name='shipCarouselContainer'
+						(bind count "carouselShipsArrayLength")
+						(reuseElements = "true")
+
+						(bind itemHeight "isSmallCarouselView ? CAROUSEL_SLOT_SMALL_HEIGHT : CAROUSEL_SLOT_DEFAULT_HEIGHT")
+						(itemWidth =	"CAROUSEL_SLOT_DEFAULT_WIDTH")
+						(itemOffset =	"CAROUSEL_SLOT_DEFAULT_WIDTH")
+
+						(args
+							_shipsCollection =		"carouselShipsCollection"
+							_selectedShipId =		"shipIdForModuleInset"
+							_isSmallCarouselView =	"isSmallCarouselView"
+							_disableShipActions =	"disableShipActions"
+						)
+					)
+				)
+
+				(controller $Instance renderer = 'ShipCarouselNoCompatibleShips'
+					(bind enabled "carouselShipsArray.length == 0 && isFilteredShipsHidden")
+					(args
+						_isSmallCarouselView = "isSmallCarouselView"
+					)
+				)
+			)
+
+			(bindcall scrollTo		index="$event.value" (event "evScrollToIndex"))
+			(bindcall scrollLeft	(event "ShipsCarouselScrollPrev"))
+			(bindcall scrollRight	(event "ShipsCarouselScrollNext"))
+		)
+
+		(block
+			(controller $Animation
+				(bindcall play
+					from =	"{alpha: 0, ubScaleX: 0}"
+					to =	"{alpha: 1, ubScaleX: 1}"
+					reverse = "!shipsCarouselScrollEnabled"
+					duration="0.15"
+					(bind trigger "shipsCarouselScrollEnabled")
+				)
+			)
+
+			(style (width = "20px") (height = "100%") (align = "center|middle"))
+			(mc button_slide_right
+				(bind enabled "shipsCarouselCanScrollRight")
+				(bind name "'buttonCarouselRight'")
+				(dispatch "'ShipsCarouselScrollNext'" on='click')
+			)
+		)
+	)
+)
+
+(def element CarouselItemWrapper (_shipsCollection:gfx, _selectedShipId:number, _isSmallCarouselView:bool, _disableShipActions:bool) layout=true
+	(scope
+		(event evAddedToStage)
+		(var _shipEntity:gfx = "_shipsCollection.items[$index]" (event "_shipsCollection.evUpdated") (event "evAddedToStage"))
+	)
+
+	(dispatch evAddedToStage on='addedToStage')
+
+	(controller $Instance renderer = 'CarouselItem'
+		(bind enabled "_shipEntity")
+		(args
+			_shipEntity = "_shipEntity"
+			_selectedShipId = "_selectedShipId"
+			_isSmallCarouselView = "_isSmallCarouselView"
+			_disableShipActions = "_disableShipActions"
+		)
+	)
+)
+
+(def element CarouselItem (_shipEntity:gfx, _selectedShipId:number, _isSmallCarouselView:bool, _disableShipActions:bool) layout=true
+	(scope
+		(event evCarouselScrollChanged)
+		(event carouselItem_evMouseDoubleClick)
+
+		(macro MOUSE_HANDLER_SCOPE "'carouselItem_'")
+
+		(macro FEATURES "17")
+
+		
+		(var ownShipInfo:gfx = "_shipEntity && _shipEntity.hasComponent(CC.ownShip) ? _shipEntity.ownShip : null" (event "_shipEntity.evAdded") (event "_shipEntity.evRemoved"))
+		(var shipInfo:gfx =		"_shipEntity ? _shipEntity.ship : null")
+
+		(var isExcludedMain:bool =	"_shipEntity ? !_shipEntity.carouselFilter.isFiltered : false"	(event "_shipEntity.carouselFilter.evUpdate"))
+		(var isNeedRepair:bool =	"ownShipInfo ? ownShipInfo.isNeedRepair : false"			(event "ownShipInfo.evUpdateDockState"))
+		(var isNeedShell:bool =		"ownShipInfo ? ownShipInfo.isNeedShell : false"				(event "ownShipInfo.evUpdateDockState"))
+		(var isLocked:bool =		"ownShipInfo ? ownShipInfo.isLocked : false"				(event "ownShipInfo.evUpdateLock"))
+		(var isInFormation:bool =	"ownShipInfo ? ownShipInfo.isInFormation : false"			(event "ownShipInfo.evUpdateLock"))
+
+		(var fullName:str =		"shipInfo ? shipInfo.fullName : null"	(event "shipInfo.evUpdate"))
+		(var shipId:number =	"shipInfo ? shipInfo.id : null"			(event "shipInfo.evUpdate"))
+
+		(var isSelected:bool =	"shipId == _selectedShipId")
+		
+
+		(macro HIGH_CONTRAST_DATA_SCOPE)
+
+		
+		(var isThumbSelectedOver:bool = "isSelected && !carouselItem_mouseDown && carouselItem_rollOver")
+		(var isThumbSelectedUp:bool = "isSelected && !carouselItem_mouseDown && !carouselItem_rollOver")
+		
+		(var isThumbDown:bool = "carouselItem_mouseDown")
+		(var isThumbOver:bool = "!isSelected && !isThumbDown && carouselItem_rollOver")
+		
+
+		
+		(var mouseComponent:gfx = "$datahub.getSingleComponent(CC.mouse)")
+		(var isMouseActive:bool = "mouseComponent.active" (event "mouseComponent.evActiveChanged"))
+		
+
+		
+		(var shipParams:dict = "ownShipInfo ? ownShipInfo.params : null" (event "ownShipInfo.evShipParamsUpdate"))
+		
+	)
+
+	(bind name "'carouselItem' + fullName")
+
+	
+	(macro MOUSE_LMB_EXTERNAL_CALL 'inputMapping.onAction' "['selectShip', { shipId: shipId }]")
+	(bindcall externalCall 'inputMapping.onAction' "[ $event.buttonIdx == MouseButtons.LEFT && !_disableShipActions ? 'navigateTo' : '', {route: SC.Ui_windows.ROUTE.MANAGEMENT}]" init=false watch=false (event "carouselItem_evMouseDoubleClick"))
+	(dispatch carouselItem_evMouseDoubleClick on='doubleClick')
+
+	(macro SOUND_HANDLER
+		_soundSet = "'button_ship'"
+		_prefix = "'carouselItem_'"
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER
+		_prefix = "'carouselItem_'"
+	)
+	
+
+	
+	(style 
+		(width = "CAROUSEL_SLOT_DEFAULT_WIDTH") 
+		(bind height "_isSmallCarouselView ? CAROUSEL_SLOT_SMALL_HEIGHT : CAROUSEL_SLOT_DEFAULT_HEIGHT") 
+		(align = "center|middle")
+		(backgroundColor = "0x01000000")
+	)
+	
+
+	(block
+		(bind name "'carouselIndex' + $index")
+		(bind alpha "!isExcludedMain ? 1 : 0.3")
+		(style (align = "center|middle") (backgroundColor = "0x01000000"))
+
+		(macro CAROUSEL_SLOT_BACKGROUND)
+
+		(macro CAROUSEL_SLOT_THUMB_ANIMATION_STATE
+			_path = "'url:../service_kit/buttons/thumb/thumb_down.png'"
+			_isActive = "isThumbDown"
+		)
+		(macro CAROUSEL_SLOT_THUMB_ANIMATION_STATE
+			_path = "'url:../service_kit/buttons/thumb/thumb_over.png'"
+			_isActive = "isThumbOver"
+		)
+		(macro CAROUSEL_SLOT_THUMB_ANIMATION_STATE
+			_path = "'url:../service_kit/buttons/thumb/thumb_selected_over.png'"
+			_isActive = "isThumbSelectedOver"
+		)
+		(macro CAROUSEL_SLOT_THUMB_ANIMATION_STATE
+			_path = "'url:../service_kit/buttons/thumb/thumb_selected_up.png'"
+			_isActive = "isThumbSelectedUp"
+		)
+		
+		(block
+			(bind name "isSelected ? 'indicator_' + fullName + '_selected' : 'indicator_' + fullName ")
+			(bind doubleClickEnabled "feature_17 != 'locked'")
+
+			(class $FullsizeAbsolute)
+			(style (backgroundColor = "0x01000000"))
+
+
+			
+			(controller $Tooltip
+				(renderer = 'ShipExtendedTooltip')
+				(args
+					_shipId = "shipId"
+				)
+				(macro SHIP_TREE_TOOLTIP_BEHAVIOUR "shipId" "0")
+			)
+			
+			
+			
+			(controller $Tooltip
+				(renderer = 'ShipTreeMenu')
+				(args
+					_disableShipActions = "_disableShipActions"
+					_shipId = "shipId"
+					_needScrollOnSelectShipForManagement = "false"
+				)
+				(macro DEFAULT_MENU_BEHAVIOUR "evCarouselScrollChanged" "1")
+				(cache = false)
+			)
+		)
+
+		
+		(block
+			(bind name "isExcludedMain ? 'excluded' : 'included'")
+			(controller $Instance
+				(bind renderer "_isSmallCarouselView ? 'ShipCarouselSmallSlot' : 'ShipCarouselDefaultSlot'")
+				(args
+					_shipEntityId =	"shipId"
+					_rollOver =		"carouselItem_rollOver"
+					_mouseDown =	"carouselItem_mouseDown"
+					_isSelected =	"isSelected"
+				)
+			)
+		)
+	)
+)
+
+(def element NewbieGiftsShipSlot (_shipEntityId:number, _selectedId:number) layout=true dispatch_size_change=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'carouselItem_'")
+		(var isSelected:bool = "_selectedId == _shipEntityId")
+
+		(macro HIGH_CONTRAST_DATA_SCOPE)
+
+		
+		(var isThumbSelectedOver:bool = "isSelected && !carouselItem_mouseDown && carouselItem_rollOver")
+		(var isThumbSelectedUp:bool = "isSelected && !carouselItem_mouseDown && !carouselItem_rollOver")
+		
+		(var isThumbDown:bool = "carouselItem_mouseDown")
+		(var isThumbOver:bool = "!isSelected && !isThumbDown && carouselItem_rollOver")
+		
+	)
+
+	(block
+		(style (align = "center|middle") (backgroundColor = "0xFF000000"))
+		
+		(macro CAROUSEL_SLOT_BACKGROUND)
+
+		(macro CAROUSEL_SLOT_THUMB_ANIMATION_STATE
+			_path = "'url:../service_kit/buttons/thumb/thumb_down.png'"
+			_isActive = "isThumbDown"
+		)
+		(macro CAROUSEL_SLOT_THUMB_ANIMATION_STATE
+			_path = "'url:../service_kit/buttons/thumb/thumb_over.png'"
+			_isActive = "isThumbOver"
+		)
+		(macro CAROUSEL_SLOT_THUMB_ANIMATION_STATE
+			_path = "'url:../service_kit/buttons/thumb/thumb_selected_over.png'"
+			_isActive = "isThumbSelectedOver"
+		)
+		(macro CAROUSEL_SLOT_THUMB_ANIMATION_STATE
+			_path = "'url:../service_kit/buttons/thumb/thumb_selected_up.png'"
+			_isActive = "isThumbSelectedUp"
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style (backgroundColor = "0x01000000"))
+
+			
+			(controller $Tooltip
+				(renderer = 'ShipExtendedTooltip')
+				(args
+					_shipId = "_shipEntityId"
+				)
+				(macro SHIP_TREE_TOOLTIP_BEHAVIOUR "_shipEntityId" "0")
+			)
+			
+		)
+
+		(block
+			(controller $Instance renderer = 'ShipCarouselDefaultSlot'
+				(args
+					_shipEntityId =	"_shipEntityId"
+					_rollOver =		"carouselItem_rollOver"
+					_mouseDown =	"carouselItem_mouseDown"
+					_isSelected =	"false"
+				)
+			)
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_prefix = "'carouselItem_'"
+		_soundSet = "'button_ship'"
+	)
+)
+
+(def element ShipCarouselDefaultSlot (_shipEntityId:number, _rollOver:bool, _mouseDown:bool, _isSelected:bool="false") layout=true
+	(scope
+		(macro FEATURES "13")
+		(var trainingRoomWatcher:gfx = "$datahub.getFirstWatcher(CC.trainingRoomWindowState)")
+		(var trainingRoomEntity:gfx = "trainingRoomWatcher ? trainingRoomWatcher.entity : null" (event "trainingRoomWatcher.event"))
+		(var formationType:str = "!!trainingRoomEntity ? 'TRAINING_ROOM' : 'DIVISION'")
+
+		
+		(var shipEntity:gfx = "$datahub.getPrimaryEntity(CC.ship, _shipEntityId)")
+		(var shipInfo:gfx =	 "shipEntity ? shipEntity.ship : null")
+		(var ownShipInfo:gfx = "shipEntity && shipEntity.hasComponent(CC.ownShip) ? shipEntity.ownShip : null" (event "shipEntity.evAdded") (event "shipEntity.evRemoved"))
+
+		(var crewId:number =		"ownShipInfo ? ownShipInfo.crewId : null"		(event "ownShipInfo.evCrewChanged"))
+		(var isPrimary:bool =		"ownShipInfo ? ownShipInfo.isPrimary : false"	(event "ownShipInfo.evIsPrimaryChanged"))
+		(var costTotal:number =		"ownShipInfo ? ownShipInfo.costTotal : null"	(event "ownShipInfo.evUpdateDockState"))
+		(var rentUntil:number =		"ownShipInfo ? ownShipInfo.timeRent : null"		(event "ownShipInfo.evUpdateDockState"))
+		(var expMultiply:number =	"ownShipInfo ? ownShipInfo.expMultiply : false"	(event "ownShipInfo.evExpMultiplyChanged"))
+
+		(var upgradableShipInfo:gfx = "shipEntity ? shipEntity.upgradableShipInfo : null" (event "shipEntity.upgradableShipInfo.evUpdate"))
+
+		(var isNeedRepair:bool =	"ownShipInfo ? ownShipInfo.isNeedRepair : false"	(event "ownShipInfo.evUpdateDockState"))
+		(var isNeedShell:bool =		"ownShipInfo ? ownShipInfo.isNeedShell : false"		(event "ownShipInfo.evUpdateDockState"))
+		(var isLocked:bool =		"ownShipInfo ? ownShipInfo.isLocked : false"		(event "ownShipInfo.evUpdateLock"))
+		(var isInFormation:bool =	"ownShipInfo ? ownShipInfo.isInFormation : false"	(event "ownShipInfo.evUpdateLock"))
+
+		(var pathPreview:str = "shipInfo ? 'url:' + shipInfo.pathPreview : ''" (event "shipInfo.evCurrentSkinChanged") (event "shipInfo.evUpdate"))
+		(var flagName:str = "shipInfo ? shipInfo.flagName : ''" (event "shipInfo.evUpdate"))
+
+		(var fullName:str = "shipInfo ? shipInfo.fullName : null" (event "shipInfo.evUpdate"))
+		(var shipName:str = "shipInfo ? toUpper(tr(shipInfo.nameIDS)) : ''" (event "shipInfo.evUpdate"))
+		(var isShipNameGolden:bool = "shipInfo ? shipInfo.isFarming || shipInfo.uiSpecial : false")
+		(var isBonusTagsVisible:bool = "shipInfo ? shipInfo.bonusTags.length > 0 || expMultiply > 1 : false" (event "shipInfo.evBonusTagsChanged"))
+
+		(var shipType:str = "shipInfo ? shipInfo.subtype : ''" (event "shipInfo.evUpdate"))
+		(var isSpecial:bool = "shipInfo ? shipInfo.uiSpecial : false" (event "shipInfo.evUpdate"))
+		(var isFarming:bool = "shipInfo ? shipInfo.isFarming : false" (event "shipInfo.evUpdate"))
+		(var isElite:bool = "shipInfo ? upgradableShipInfo.isElite : false" (event "upgradableShipInfo.evUpdate"))
+		
+
+		
+		(var selectedBattleTypes:gfx =			"$datahub.getCollection(CC.battleType).getChildByPath('selected')")
+		(var selectedBattleTypesArray:array =	"selectedBattleTypes ? selectedBattleTypes.items : []")
+		(var selectedBattleType:str =			"selectedBattleTypesArray.length > 0 ? selectedBattleTypesArray[0].battleType.type : ''")
+		
+
+		(var isNeedService:bool = "isNeedRepair || isNeedShell")
+		(var isDockButtonVisible:bool = "ownShipInfo && isNeedService")
+
+		(var isShipHasRestrictions:bool = "isNeedRepair || isNeedShell || isLocked || (crewId == 0 && feature_13 != 'locked')")
+		
+		(var shipCarouselSlotStatusData:dict = "isNeedService &&
+												!_rollOver && !_mouseDown		? { status: toUpper(tr('IDS_NEED_SERVICE')), isPositive: false, small: true} :
+												isInFormation					? { status: toUpper(tr('IDS_READY_TO_BATTLE_IN_' + toUpper(formationType))), isPositive: true, small: true } :
+												isLocked						? { status: toUpper(tr('IDS_IN_BATTLE')), isPositive: false, small: true} :
+												crewId == 0	&&
+												feature_13 != 'locked' &&
+												!isNeedService					? { status: toUpper(tr('IDS_NO_CREW')), isPositive: false, small: true}
+																				: null ")
+		
+	)
+	(style (width = "_isSelected ? CAROUSEL_SELECTED_ITEM_WIDTH : CAROUSEL_ITEM_WIDTH") (height = "_isSelected ? CAROUSEL_SELECTED_ITEM_HEIGHT : CAROUSEL_ITEM_HEIGHT"))
+
+	(controller $Animation
+		(bindcall play
+			from =	"{width: CAROUSEL_ITEM_WIDTH,			height: CAROUSEL_ITEM_HEIGHT}"
+			to =	"{width: CAROUSEL_SELECTED_ITEM_WIDTH,	height: CAROUSEL_SELECTED_ITEM_HEIGHT}"
+			reverse = "!_isSelected"
+			delay="0.1"
+			duration="0.15"
+			(bind trigger "_isSelected")
+		)
+	)
+
+	(mc thumb_hl_red
+		(class $FullsizeAbsolute)
+		(style (hitTest = "false") (alpha = "1.2"))
+		(bind visible "!!(isNeedRepair || isNeedShell)")
+	)
+
+	
+	(block
+		(class $Fullsize)
+		
+		(block
+			(style (position = "absolute") (left = "2px") (top = "2px") (width = "_isSelected ? 208px : 196px") (height = "_isSelected ? 126px : 118px") (hitTest = "false"))
+			(bind alpha "isShipHasRestrictions ? 0.3 : 0.5")
+			
+			(controller $Animation
+				(bindcall play
+					from =	"{width: 196, height: 118}"
+					to =	"{width: 208, height: 126}"
+					reverse = "!_isSelected"
+					delay="0.1"
+					duration="0.15"
+					(bind trigger "_isSelected")
+				)
+			)
+
+			(element NationFlagsBig
+				_width =		"'100%'"
+				_height =		"'100%'"
+				_shipCountry =	"flagName"
+			)
+		)
+
+		
+		(block
+			(bind alpha "isShipHasRestrictions ? 0.4 : 1")
+			(style
+				(position = "absolute")
+				(align = "center|middle")
+				(width = "_isSelected ? 214px : 204px")
+				(height = "_isSelected ? 126px : 120px")
+				(backgroundSize = "fill")
+				(bind backgroundImage "pathPreview")
+				(hitTest = "false")
+			)
+
+			(controller $Animation
+				(bindcall play
+					from =	"{width: 204, height: 120}"
+					to =	"{width: 214, height: 126}"
+					reverse = "!_isSelected"
+					delay="0.1"
+					duration="0.15"
+					(bind trigger "_isSelected")
+				)
+			)
+		)
+
+		
+		(block
+			(bind visible "isPrimary")
+			(style
+				(position = "absolute")
+				(right = "-1px")
+				(top = "-1px")
+				(bind alpha "isPrimary ? 1 : 0")
+			)
+			(block
+				(style
+					(width = "41px")
+					(height = "46px")
+					(backgroundImage = "'url:../service_kit/icons/icon_primary_ribbon.png'")
+				)
+			)
+			
+			(controller $Tooltip
+				(renderer='SimpleHeaderSubheaderTooltip')
+				(args
+					_headerText = "'IDS_TOOLTIP_PRIMARY_SHIP'"
+					_subheaderText = "'IDS_TOOLTIP_PRIMARY_SHIP_DESCRIPTION'"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			)
+		)
+		
+		
+		(block
+			(bind name "shipInfo ? 'timeRent_' + fullName : ''")
+			(style (position = "absolute") (right = "3px") (top = "7px"))
+
+			(controller $Instance renderer='RentTimer'
+				(bind enabled "rentUntil > 0")
+				(args
+					_rentUntil = "rentUntil"
+				)
+			)
+		)
+		(block
+			(class $FullsizeAbsolute)
+			(element ShipSlotNameBackPanel _isSelected = "_isSelected" _rollOver = "_rollOver")
+		)
+
+		(block
+			(bind alpha "isShipHasRestrictions ? 0.3 : 1")
+
+			(style (paddingLeft = "8px") (paddingTop = "4px") (paddingRight = "8px") (paddingBottom = "4px"))
+			(class $Fullsize)
+
+			(block
+				(class $Fullsize)
+				
+				(hblock
+					(style (align = "middle") (marginTop = "5") (hitTest = "false"))
+					
+					(block
+						(style (marginTop = -8px) (marginBottom = -10px) (marginLeft = -4px))
+						(element ShipIcon
+							_shipType = "shipType"
+							_isSpecial = "isSpecial"
+							_isFarming = "isFarming"
+							_isElite = "isElite"
+						)
+					)
+
+					(block
+						(style
+							(bind marginLeft "shipInfo && shipInfo.levelIcon.length == 0 ? 4px : 0px")
+						)
+						
+						(element ShipLevelNM
+							_levelIcon =		"shipInfo.levelIcon"
+							_alpha =			"TA"
+							_colorTransform =	"isShipNameGolden ? COLOR_TRANSFORM_WHITE_TO_YELLOW : {}"
+							_levelRome =		"shipInfo.levelRome"
+							_fontClass =		"'$TextDefaultBold13NM'"
+							_textColor =		"isShipNameGolden ? SC.Ui_styles.SERVICE_COLORS.YELLOW : SC.Ui_styles.SERVICE_COLORS.WHITE"
+						)
+					)
+				)
+
+				
+				(block 
+					(style (position = "absolute") (bottom = "-2px") (right = "0") (hitTest = "false"))
+
+					(tf 
+						(style
+							(width = "128px")
+							(letterSpacing = "0")
+							(textAlign = "right")
+							(elideMode = true)
+							(bind textColor "isShipNameGolden ? SC.Ui_styles.SERVICE_COLORS.YELLOW : SC.Ui_styles.SERVICE_COLORS.WHITE")
+						)
+						(class $TextDefaultBold)
+						(bind text "shipName")
+					)
+				)
+
+				
+				(block
+					(style (position = "absolute") (bottom = "2px"))
+					(controller $Instance renderer='ShipBonusTags'
+						(bind enabled "isBonusTagsVisible")
+						(args
+							_shipEntityId = "shipEntity.id"
+						)
+					)
+				)
+			)
+		)
+	)
+	
+	(block
+		(bind name "shipInfo ? 'isLockedShip_' + fullName + '_' + isLocked : ''")
+		(class $FullsizeAbsolute)
+		(style (hitTest = "false") (align = "center|middle"))
+
+		(block
+			(controller $Instance renderer='ShipCarouselSlotStatus'
+				(bind enabled "shipCarouselSlotStatusData != null")
+				(args
+					_status =		"shipCarouselSlotStatusData.status"
+					_small =		"shipCarouselSlotStatusData.small"
+					_isPositive =	"shipCarouselSlotStatusData.isPositive"
+				)
+			)
+		)
+	)
+	(block
+		(class $FullsizeAbsolute)
+
+		(controller $Instance renderer = 'ServiceUnfreezeButtons'
+			(bind enabled "isDockButtonVisible")
+			(args
+				_ownShipId =			"ownShipInfo.id"
+				_selectedBattleType =	"selectedBattleType"
+				_costTotal =			"costTotal"
+				_rollOver = 			"_rollOver"
+			)
+		)
+	)
+)
+
+(def element ShipCarouselSmallSlot (_shipEntityId:number, _rollOver:bool, _mouseDown:bool, _isSelected:bool="false") layout=true
+	(scope
+		(macro FEATURES "13")
+		(var trainingRoomWatcher:gfx = "$datahub.getFirstWatcher(CC.trainingRoomWindowState)")
+		(var trainingRoomEntity:gfx = "trainingRoomWatcher ? trainingRoomWatcher.entity : null" (event "trainingRoomWatcher.event"))
+		(var formationType:str = "!!trainingRoomEntity ? 'TRAINING_ROOM' : 'DIVISION'")
+
+		
+		(var shipEntity:gfx = "$datahub.getPrimaryEntity(CC.ship, _shipEntityId)")
+		(var shipInfo:gfx =	 "shipEntity ? shipEntity.ship : null")
+		(var ownShipInfo:gfx = "shipEntity && shipEntity.hasComponent(CC.ownShip) ? shipEntity.ownShip : null" (event "shipEntity.evAdded") (event "shipEntity.evRemoved"))
+
+		(var crewId:number =		"ownShipInfo ? ownShipInfo.crewId : null"		(event "ownShipInfo.evCrewChanged"))
+		(var isPrimary:bool =		"ownShipInfo ? ownShipInfo.isPrimary : false"	(event "ownShipInfo.evIsPrimaryChanged"))
+		(var costTotal:number =		"ownShipInfo ? ownShipInfo.costTotal : null"	(event "ownShipInfo.evUpdateDockState"))
+		(var rentUntil:number =		"ownShipInfo ? ownShipInfo.timeRent : null"		(event "ownShipInfo.evUpdateDockState"))
+		(var expMultiply:number =	"ownShipInfo ? ownShipInfo.expMultiply : false"	(event "ownShipInfo.evExpMultiplyChanged"))
+
+		(var upgradableShipInfo:gfx = "shipEntity ? shipEntity.upgradableShipInfo : null" (event "shipEntity.upgradableShipInfo.evUpdate"))
+
+		(var isNeedRepair:bool =	"ownShipInfo ? ownShipInfo.isNeedRepair : false"	(event "ownShipInfo.evUpdateDockState"))
+		(var isNeedShell:bool =		"ownShipInfo ? ownShipInfo.isNeedShell : false"		(event "ownShipInfo.evUpdateDockState"))
+		(var isLocked:bool =		"ownShipInfo ? ownShipInfo.isLocked : false"		(event "ownShipInfo.evUpdateLock"))
+		(var isInFormation:bool =	"ownShipInfo ? ownShipInfo.isInFormation : false"	(event "ownShipInfo.evUpdateLock"))
+
+		(var pathTinyIcon:str = "shipInfo ? 'url:' + shipInfo.pathTinyIcon : ''" (event "shipInfo.evCurrentSkinChanged") (event "shipInfo.evUpdate"))
+		(var flagName:str = "shipInfo ? shipInfo.flagName : ''" (event "shipInfo.evUpdate"))
+
+		(var fullName:str = "shipInfo ? shipInfo.fullName : ''" (event "shipInfo.evUpdate"))
+		(var shipName:str = "shipInfo ? toUpper(tr(shipInfo.nameIDS)) : ''" (event "shipInfo.evUpdate"))
+		(var isShipNameGolden:bool = "shipInfo ? shipInfo.isFarming || shipInfo.uiSpecial : false")
+		(var isBonusTagsVisible:bool = "shipInfo ? shipInfo.bonusTags.length > 0 || expMultiply > 1 : false" (event "shipInfo.evBonusTagsChanged"))
+
+		(var shipType:str = "shipInfo ? shipInfo.subtype : ''" (event "shipInfo.evUpdate"))
+		(var isSpecial:bool = "shipInfo ? shipInfo.uiSpecial : false" (event "shipInfo.evUpdate"))
+		(var isFarming:bool = "shipInfo ? shipInfo.isFarming : false" (event "shipInfo.evUpdate"))
+		(var isElite:bool = "shipInfo ? upgradableShipInfo.isElite : false" (event "upgradableShipInfo.evUpdate"))
+		
+
+		
+		(var selectedBattleTypes:gfx =			"$datahub.getCollection(CC.battleType).getChildByPath('selected')")
+		(var selectedBattleTypesArray:array =	"selectedBattleTypes ? selectedBattleTypes.items : []")
+		(var selectedBattleType:str =			"selectedBattleTypesArray.length > 0 ? selectedBattleTypesArray[0].battleType.type : ''")
+		
+
+		(var isNeedService:bool = "isNeedRepair || isNeedShell")
+		(var isDockButtonVisible:bool = "ownShipInfo && isNeedService")
+
+		(var isShipHasRestrictions:bool = "isNeedRepair || isNeedShell || isLocked || (crewId == 0 && feature_13 != 'locked')")
+		
+		(var shipCarouselSlotStatusData:dict = "isNeedService &&
+												!_rollOver && !_mouseDown		? { status: toUpper(tr('IDS_NEED_SERVICE')), isPositive: false, small: true} :
+												isInFormation					? { status: toUpper(tr('IDS_READY_TO_BATTLE_IN_' + toUpper(formationType))), isPositive: true, small: true } :
+												isLocked						? { status: toUpper(tr('IDS_IN_BATTLE')), isPositive: false, small: true} :
+												crewId == 0	&&
+												feature_13 != 'locked' &&
+												!isNeedService					? { status: toUpper(tr('IDS_NO_CREW')), isPositive: false, small: true}
+																				: null ")
+		
+	)
+	(style (width = "_isSelected ? CAROUSEL_SELECTED_ITEM_WIDTH : CAROUSEL_ITEM_WIDTH") (height = "_isSelected ? CAROUSEL_SELECTED_SMALL_ITEM_HEIGHT : CAROUSEL_SMALL_ITEM_HEIGHT"))
+	
+	(controller $Animation
+		(bindcall play
+			from =	"{width: CAROUSEL_ITEM_WIDTH,			height: CAROUSEL_SMALL_ITEM_HEIGHT}"
+			to =	"{width: CAROUSEL_SELECTED_ITEM_WIDTH,	height: CAROUSEL_SELECTED_SMALL_ITEM_HEIGHT}"
+			reverse = "!_isSelected"
+			delay="0.1"
+			duration="0.15"
+			(bind trigger "_isSelected")
+		)
+	)
+
+	(mc thumb_hl_red
+		(class $FullsizeAbsolute)
+		(style (hitTest = "false") (alpha = "1.2"))
+		(bind visible "!!(isNeedRepair || isNeedShell)")
+	)
+
+	
+	(block
+		(class $Fullsize)
+		
+		(block
+			(style (position = "absolute") (alpha = "0.6") (top = "2px") (width = "95px") (height = "56px") (hitTest = "false"))
+			(bind alpha "isShipHasRestrictions ? 0.4 : 0.6")
+			
+			(controller $Animation
+				(bindcall play
+					from =	"{width: 95, height: 56}"
+					to =	"{width: 99, height: 60}"
+					reverse = "!_isSelected"
+					delay="0.1"
+					duration="0.15"
+					(bind trigger "_isSelected")
+				)
+			)
+
+			(element NationFlagsSmall
+				_width =		"'100%'"
+				_height =		"'100%'"
+				_shipCountry =	"flagName"
+			)
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(element ShipSlotNameBackPanel _isSelected = "_isSelected" _rollOver = "_rollOver")
+		)
+		
+		(block
+			(bind alpha "isShipHasRestrictions ? 0.4 : 1")
+
+			(style (paddingLeft = "8px") (paddingTop = "4px") (paddingRight = "8px") (paddingBottom = "4px"))
+			(class $Fullsize)
+
+			(block
+				(class $Fullsize)
+				
+				(hblock
+					(style (align = "middle") (marginTop = "5") (hitTest = "false"))
+					
+					(block
+						(style (marginTop = -8px) (marginBottom = -10px) (marginLeft = -4px))
+						(element ShipIcon
+							_shipType = "shipType"
+							_isSpecial = "isSpecial"
+							_isFarming = "isFarming"
+							_isElite = "isElite"
+						)
+					)
+
+					(block
+						(style
+							(bind marginLeft "shipInfo && shipInfo.levelIcon.length == 0 ? 4px : 0px")
+						)
+						
+						(element ShipLevelNM
+							_levelIcon =		"shipInfo.levelIcon"
+							_alpha =			"TA"
+							_colorTransform =	"isShipNameGolden ? COLOR_TRANSFORM_WHITE_TO_YELLOW : {}"
+							_levelRome =		"shipInfo.levelRome"
+							_fontClass =		"'$TextDefaultBold13NM'"
+							_textColor =		"isShipNameGolden ? SC.Ui_styles.SERVICE_COLORS.YELLOW : SC.Ui_styles.SERVICE_COLORS.WHITE"
+						)
+					)
+				)
+
+				
+				(block
+					(style
+						(position = "absolute")
+						(right = "0")
+						(bind width "	shipInfo.subtype == SC.Common.SHIP_TYPE.SUBMARINE	? '84px' :
+										shipInfo.subtype == SC.Common.SHIP_TYPE.DESTROYER	? '96px' :
+										shipInfo.subtype == SC.Common.SHIP_TYPE.CRUISER		? '110px'
+																							: '122px'")
+						(height = "22px")
+						(bind backgroundImage "pathTinyIcon")
+						(hitTest = "false")
+					)
+				)
+
+				
+				(block 
+					(style (position = "absolute") (bottom = "-1px") (right = "0") (hitTest = "false"))
+
+					(tf 
+						(style
+							(width = "128px")
+							(letterSpacing = "0")
+							(textAlign = "right")
+							(elideMode = true)
+							(bind textColor "isShipNameGolden ? SC.Ui_styles.SERVICE_COLORS.YELLOW : SC.Ui_styles.SERVICE_COLORS.WHITE")
+						)
+						(class $TextDefaultBold)
+						(bind text "shipName")
+					)
+				)
+
+				
+				(block
+					(style (position = "absolute") (bottom = "2px"))
+					(controller $Instance renderer='ShipBonusTags'
+						(bind enabled "isBonusTagsVisible")
+						(args
+							_shipEntityId = "shipEntity.id"
+						)
+					)
+				)
+			)
+		)
+		
+		(block
+			(bind visible "isPrimary")
+			(style (position = "absolute") (right = "-1px") (top = "-1px"))
+			(mc icon_primary_ribbon)
+			
+			(controller $Tooltip
+				(renderer='SimpleHeaderSubheaderTooltip')
+				(args
+					_headerText = "'IDS_TOOLTIP_PRIMARY_SHIP'"
+					_subheaderText = "'IDS_TOOLTIP_PRIMARY_SHIP_DESCRIPTION'"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			)
+		)
+
+		
+		(block
+			(bind name "shipInfo ? 'timeRent_' + fullName : ''")
+			(style (position = "absolute") (right = "3px") (top = "7px"))
+
+			(controller $Instance renderer='RentTimer'
+				(bind enabled "rentUntil > 0")
+				(args
+					_rentUntil = "rentUntil"
+				)
+			)
+		)
+	)
+	
+	(block
+		(bind name "shipInfo ? 'isLockedShip_' + fullName + '_' + isLocked : ''")
+		(class $FullsizeAbsolute)
+		(style (hitTest = "false") (align = "center|middle"))
+
+		(block
+			(controller $Instance renderer='ShipCarouselSlotStatus'
+				(bind enabled "shipCarouselSlotStatusData != null")
+				(args
+					_status =		"shipCarouselSlotStatusData.status"
+					_small =		"shipCarouselSlotStatusData.small"
+					_isPositive =	"shipCarouselSlotStatusData.isPositive"
+				)
+			)
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+
+		(controller $Instance renderer = 'ServiceUnfreezeButtons'
+			(bind enabled "isDockButtonVisible")
+			(args
+				_ownShipId =			"ownShipInfo.id"
+				_selectedBattleType =	"selectedBattleType"
+				_costTotal =			"costTotal"
+				_rollOver = 			"_rollOver"
+			)
+		)
+	)
+)
+
+(def element ShipCarouselNoCompatibleShips (_isSmallCarouselView:bool) layout=true
+	(scope
+		(macro USER_PREF_DATA)
+		(var curRowCountIndex:number = "userPrefs.curRowCountIndex == null ? 0 : userPrefs.curRowCountIndex")
+	)
+	(style
+		(width =		"CAROUSEL_ITEM_WIDTH")
+		(bind height	"!_isSmallCarouselView	? 120px :
+						curRowCountIndex == 0	? 120px	:
+						curRowCountIndex == 1	? 182px	:
+						curRowCountIndex == 2	? 246px
+												: 120px")
+		(marginLeft =	"8px")
+		(marginRight =	"8px")
+		(marginTop = 	"3px")
+		(marginBottom = "3px")
+	)
+
+	(controller $Tooltip
+		(renderer='SimpleStatusTooltip')
+		(args
+			_text = "'IDS_CAROUSEL_NO_COMPATIBLE_SHIPS_TOOLTIP'"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(mc inner_panel
+		(class $FullsizeAbsolute)
+	)
+
+	(block
+		(class $Fullsize)
+		(style (align = "center|middle"))
+		(tf
+			(style (width = "100%") (textAlign = "center") (marginRight = "S") (marginLeft = "S") (leading = "0") (textColor = "SC.Ui_styles.SERVICE_COLORS.ORANGE"))
+			(class $TextDefaultBold17NM)
+			(text = "'IDS_CAROUSEL_NO_COMPATIBLE_SHIPS'")
+		)
+	)
+)
+
+(def element ShipSlotNameBackPanel (_isSelected:bool, _rollOver:bool) layout=true
+	(style
+		(width =	"100%")
+		(alpha =	"0.3")
+		(bottom	=	"0px")
+		(hitTest =	"false")
+		(position =	"absolute")
+		(bind padding "_isSelected || _rollOver ? 1px : 0px")
+	)
+
+	(block
+		(style
+			(width = "100%")
+			(bind height "_isSelected || _rollOver ? 26px : 27px")
+			(backgroundColor  = "0xFF000000")
+		)
+	)
+)
+
+(def element ShipCarouselSlotStatus (_status:str = '', _small:bool="false", _isPositive:bool="false") layout=true
+	(controller $Animation
+		(play
+			from =	"{alpha: 0, top: 10}"
+			to =	"{alpha: 1, top: 0}"
+			delay = "0"
+			duration = "0.15"
+			easing="Easing.quad_in"
+		)
+	)
+
+	(tf
+		(style	(maxWidth = "180px") (textAlign = "center") (leading = "-3") (hitTest = "false")
+				(bind textColor "_isPositive ? SC.Ui_styles.SERVICE_COLORS.GREEN : SC.Ui_styles.SERVICE_COLORS.ORANGE")
+		)
+		(class $TextDefaultBold17NM)
+		(bind text "_status")
+	)
+)
+
+(def element ServiceUnfreezeButtons (_ownShipId:number, _selectedBattleType:str, _costTotal:number, _rollOver:bool="false") layout=true
+	(scope
+		(macro USER_PREF_DATA)
+		(var dockButtonCostMediumData:dict = " 	{	label: 'IDS_SERVICE_C',
+													deficitLabel: 'IDS_SERVICE_COST',
+													tooltipText: 'IDS_SERVICE_C',
+													price:	{	finalPrice: _costTotal,
+																currency: SC.Common.CURRENCIES.CREDITS	},
+													method: {	type: 'inputMapping.onAction',
+																name: 'serveShip',
+																args: { shipId: _ownShipId }
+															}
+												}")
+	)
+	(class $FullsizeAbsolute)
+	(style (align = "center|middle"))
+	(bind visible "_rollOver")
+
+	(element DockButtonCostMedium
+		_label =		"dockButtonCostMediumData.label"
+		_deficitLabel =	"dockButtonCostMediumData.deficitLabel"
+		_tooltipText =	"dockButtonCostMediumData.tooltipText"
+		_price =		"dockButtonCostMediumData.price"
+		_method =		"dockButtonCostMediumData.method"
+	)
+)
+
+(def element DockButtonCostMedium (_label:str, _deficitLabel:str, _tooltipText:str, _price:dict, _method:dict) layout=true
+	(scope
+		(macro USER_PREF_DATA)
+		(var isSmallCarouselView:bool = "userPrefs.isSmallCarouselView == null ? false : userPrefs.isSmallCarouselView")
+
+		(var resourceEntity:gfx = "$datahub.getSingleEntity(CC.accountResource)")
+		(var accountResourceCurrency:gfx = "resourceEntity.accountResource[_price.currency]"	(event "resourceEntity.accountResource.evChangedEventum_1")
+																								(event "resourceEntity.accountResource.evChangedGold")
+																								(event "resourceEntity.accountResource.evChangedCredit"))
+		(var priceDeficit:number = "_price.finalPrice - accountResourceCurrency")
+		(var isDeficit:bool = "priceDeficit > 0")
+		(var isButtonEnabled:bool = "priceDeficit <= 0")
+
+	)
+	(class $Fullsize)
+	(style (align = "center|middle"))
+
+	(block
+		(style (bind hitTest "isButtonEnabled") (marginBottom = "S"))
+		(controller $Instance renderer = 'DockButton'
+			(args
+				_label =		"isDeficit ? _deficitLabel : _label"
+				_isTextBold =	"!isDeficit"
+				_methods =		"[ _method ]"
+			)
+		)
+	)
+
+	(block
+		(style (hitTest = "false") (bind marginBottom "isDeficit ? XS : 0"))
+		(controller $Instance renderer = 'PriceTag'
+			(args
+				_priceInfo			= "_price"
+				_showDiscountTag 	= "true"
+			)
+		)
+	)
+
+	(block
+		(style (hitTest = "false"))
+		(controller $Instance renderer = 'PriceDeficit'
+			(bind enabled "isDeficit")
+			(args
+				_priceInfo	= "_price"
+				_deficit 	= "priceDeficit"
+			)
+		)
+	)
+)
+
+(def element RentTimer (_rentUntil:number=0, _forceShow:bool=false, _rentDuration:number=0) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var serverTime:number = "currentServerSeconds()" (event "evInfrequent"))
+		(var timeDifference:number = "_rentUntil - serverTime")
+		(var hoursLeft:str = "formatTime(timeDifference, 'hh:mm:ss')")
+		(var rentWithDays:str = "formatTime(timeDifference, 'HIGHEST,WITH_DAYS')")
+
+		(var daysTimeRentUntil:number = "floor(timeDifference/DAY_IN_SEC)") 
+
+		(var isRentRunningUp:bool = "	_rentDuration	? false :
+										_rentUntil		? timeDifference < DAY_IN_SEC
+														: daysTimeRentUntil < 1")
+
+		(var timeRentText:str = "	_rentUntil		?	daysTimeRentUntil < 0	? 'IDS_RENT_STATUS_TIME_IS_UP'	:
+														daysTimeRentUntil >= 1 	? rentWithDays
+																				: hoursLeft :
+									_rentDuration	? subst( 'IDS_PL_DAYS_PARAM', [], { _days: toString(_rentDuration) })
+													: ''")
+
+		(var isTimeFormatWithHourLeft:bool = "!(_rentDuration || daysTimeRentUntil < 0 || daysTimeRentUntil >= 1)")
+
+		(var tooltipData:dict = "{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.DATE,
+									text:	daysTimeRentUntil < 0	?	'IDS_SHIP_RENT_TIME_IS_UP_TOOLTIP' :
+											daysTimeRentUntil >= 1	?	subst(	'IDS_PL_RENT_STATUS_TIME_LEFT',	[], { _days: daysTimeRentUntil }, daysTimeRentUntil)
+																	:	subst(	'IDS_RENT_STATUS_TIME_LEFT',	[], { _timeLeft: rentWithDays })
+								}")
+	)
+	(style (flow = "horizontal"))
+	(block
+		(style (marginRight = "6px") (alpha = "0") (hitTest = "false"))
+		(controller $Animation
+			(bindcall play
+				from =	"{alpha: 0, x: 20}"
+				to =	"{alpha: 1, x: 0}"
+				reverse = "!(rollOver || _forceShow)"
+				duration="0.07"
+				(bind trigger "rollOver || _forceShow")
+			)
+		)
+		(tf
+			(class $TextDefaultBoldNM)
+			(style
+				(bind width "isTimeFormatWithHourLeft ? 60px : 'auto'")
+				(textAlign = "right")
+				(leading = "-3")
+				(alpha = "TA")
+				(bind textColor "isRentRunningUp ? SC.Ui_styles.SERVICE_COLORS.ORANGE : SC.Ui_styles.SERVICE_COLORS.WHITE")
+			)
+			(bind text "timeRentText")
+		)
+	)
+	(block
+		(style
+			(width = "21px")
+			(height = "21px")
+			(backgroundSize = "cover")
+			(marginTop = "-XS")
+			(bind backgroundImage "isRentRunningUp	? 'url:../service_kit/icons/icon_rent_orange.png'
+													: 'url:../service_kit/icons/icon_rent_white.png'")
+		)
+
+		(macro MOUSE_EVENTS_DISPATCHER)
+	)
+
+	(controller $Tooltip
+		(renderer='SimpleStatusTooltip')
+		(args
+			_text = "tooltipData.text"
+			_unifiedStatus = "tooltipData.unifiedStatus"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)

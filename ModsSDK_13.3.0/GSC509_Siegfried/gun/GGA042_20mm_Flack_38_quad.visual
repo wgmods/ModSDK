@@ -1,0 +1,74 @@
+<GGA042_20mm_Flack_38_quad.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	GGA042_20mm_Flack_38_quad	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	HP_gunFire1	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.7071 -0.7071 0.0000	</row1>
+					<row2>	0.0000 0.7071 0.7071 0.0000	</row2>
+					<row3>	0.0225 0.1535 0.0672 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	HP_gunFire2	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.7071 -0.7071 0.0000	</row1>
+					<row2>	0.0000 0.7071 0.7071 0.0000	</row2>
+					<row3>	0.0225 0.1399 0.0808 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	HP_gunFire3	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.7071 -0.7071 0.0000	</row1>
+					<row2>	0.0000 0.7071 0.7071 0.0000	</row2>
+					<row3>	-0.0225 0.1535 0.0672 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	HP_gunFire4	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.7071 -0.7071 0.0000	</row1>
+					<row2>	0.0000 0.7071 0.7071 0.0000	</row2>
+					<row3>	-0.0225 0.1399 0.0808 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	GGA042_20mm_Flack_38_quad	</node>
+		<geometry>
+			<vertices>	GGA042_20mm_Flack_38_quadShape.vertices	</vertices>
+			<primitive>	GGA042_20mm_Flack_38_quadShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/GSC509_Siegfried/gun/GGA042_20mm_Flack_38_quad.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0824 0.0000 -0.0925	</min>
+		<max>	0.0827 0.2413 0.1679	</max>
+	</boundingBox>
+</GGA042_20mm_Flack_38_quad.visual>

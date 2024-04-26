@@ -1,0 +1,152 @@
+(def element CrosshairContainer () layout=true dispatch_size_change=true
+	(scope
+		(var spectatorState:gfx = "$datahub.getSingleComponent(CC.spectatorState)")
+		(var isSpectator:bool = "spectatorState != null")
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var isTactical:bool = "cameraEntity.camera.isTactical" (event "cameraEntity.camera.evTacticalStateChanged"))
+	)
+
+	(block
+		(bind visible "!isTactical")
+
+		(controller $Instance
+			(bind renderer "isSpectator ? 'SpectatorCrosshair' : 'PlayerCrosshair'")
+		)
+	)
+)
+
+(def element SpectatorCrosshair () layout=true
+	(scope
+
+		(var stageComponent:gfx = "$datahub.getSingleComponent(CC.stage)")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+	)
+
+	(style
+		(position = "absolute")
+		(bind width "stageWidth")
+		(bind height "stageHeight")
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(position = "absolute") (top = 50%) (left = 50%)
+		)
+		(block
+			(style
+				(position = "absolute")
+				(top = -15) (left = -15)
+				(bind backgroundImage 'url:../crosshairs/spectator.png')
+			)
+		)
+	)
+)
+
+(def element PlayerCrosshair () layout=true
+	(scope
+		(var crosshairComponent:gfx = "$datahub.getSingleComponent(CC.crosshair)")
+
+		(var stageComponent:gfx = "$datahub.getSingleComponent(CC.stage)")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var cameraMode:number = "cameraEntity.camera.mode" (event "cameraEntity.camera.evModeChanged"))
+		(var isBinocular:bool = "cameraEntity.camera.isBinocular" (event "cameraEntity.camera.evIsBinocularChanged"))
+		(var isCameraTracking:bool = "cameraMode == CameraMode.PLANETRACKER || cameraMode == CameraMode.SHELLTRACKER")
+		(var isCameraTrackingShell:bool = "cameraMode == CameraMode.SHELLTRACKER")
+
+		(var avatar:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var healthComponent:gfx = "avatar.health")
+		(var isAlive:bool = "healthComponent != null ? healthComponent.isAlive : false" (event "healthComponent.evIsAliveChanged"))
+		(var isAircarrier:bool = "avatar.avatar.ship.ref.ship.subtype == ShipTypes.AIRCARRIER")
+
+		(var aircarrier:gfx = "$datahub.getSingleComponent(CC.aircarrier)")
+		(var squadronCameraMode:str = "aircarrier.squadronCameraMode" (event "aircarrier.evSquadronCameraModeChanged"))
+		(var isLastLookCamera:bool = "aircarrier && (squadronCameraMode != SquadronCameraModes.DEFAULT)")
+
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var battleState:number = "battleDataEntity.battleState.battleState" (event "battleDataEntity.battleState.evBattleStateChanged"))
+		(var countDownState:bool = "battleState == SC.Common.CLIENT_BATTLE_STATE.COUNTDOWN")
+		(var isBattleStarted:bool = "battleState == SC.Common.CLIENT_BATTLE_STATE.STARTED")
+		(var isBattleEnded:bool = "battleState == SC.Common.CLIENT_BATTLE_STATE.END_BATTLE_IDLING")
+
+		(macro SCOPE_SELF_WEAPON_TYPE)
+		(var forceHideBinocular:bool = "weaponType == SC.Ships.SHIP_WEAPON_TYPES.AIR_SUPPORT")
+		(var isAirplaneWeapon:bool = "weaponType == SC.Ships.SHIP_WEAPON_TYPES.AIRPLANES")
+
+		(var isCrosshairVisible:bool = "isAlive && !(isCameraTrackingShell) && !(isLastLookCamera)")
+		(var isArrowCrosshairVisible:bool = "!(isBinocular) && isAlive && !(countDownState) && !(isCameraTracking) && !(isAirplaneWeapon) && !(forceHideBinocular)")
+		(var centralMarkerImage:str = " isArrowCrosshairVisible		? 'crosshair_arrow_center.png'
+																	: 'spectator.png'")
+
+		
+		(var isBattleStartAnimationTriggered:bool = "isBattleStarted")
+
+		(var posX:number = "floor(crosshairComponent ? crosshairComponent.posX : 0)" (event "evEnterFrame"))
+		(var posY:number = "floor(crosshairComponent ? crosshairComponent.posY : 0)" (event "evEnterFrame"))
+	)
+
+	(style
+		(position = "absolute")
+		(bind width "stageWidth")
+		(bind height "stageHeight")
+	)
+
+	(block
+		(style (position = "absolute"))
+		(macro CROSS_SHOW_ANIMATION "0" "isBattleStartAnimationTriggered")
+
+		(controller $Instance renderer='CrosshairGunMarkersContainer'
+			(bind enabled "isAlive && !(isAircarrier)")
+			(exprs
+				(style
+					(position = "absolute")
+					(bind left "posX")
+					(bind top "posY")
+				)
+				(bind visible "(isBattleStarted || isBattleEnded) && isCrosshairVisible")
+			)
+		)
+	)
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(position = "absolute") (top = 50%) (left = 50%)
+		)
+		(block
+			(style
+				(position = "absolute")
+				(top = -15) (left = -15)
+				(bind backgroundImage "'url:../crosshairs/' + centralMarkerImage")
+			)
+		)
+	)
+
+	(controller $Instance renderer='CrosshairIndicators'
+		(bind enabled "isAlive")
+		(exprs
+			(style (position = "absolute") (left = 50%) (top = 50%))
+			(bind visible "isCrosshairVisible")
+		)
+	)
+
+	(controller $Instance renderer='CrosshairBinocular'
+		(bind enabled "isAlive && !(isAircarrier)")
+		(exprs
+			(bind visible "isBinocular && !(forceHideBinocular)")
+		)
+	)
+
+	(controller $Instance renderer='CrosshairGunLockedIndicator'
+		(bind enabled "isAlive && !(isAirplaneWeapon)")
+		(exprs
+			(style (position = "absolute") (left = 50%) (top = 50%))
+		)
+	)
+)

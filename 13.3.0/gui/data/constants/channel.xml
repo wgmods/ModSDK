@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<constants>
+	<enum name="CHANNEL_TYPE_IDENT_VALUE" type="String">
+		<const name="UNKNOWN" 		value='unknown'/>
+		<const name="GROUP_OPEN" 	value='group_open'/>
+		<const name="GROUP_CLOSED" 	value='group_closed'/>
+		<const name="PREBATTLE" 	value='division'/>
+		<const name="COMMON" 		value='common'/>
+		<const name="PRIVATE" 		value='private'/>
+		<const name="CLAN" 			value='clan'/>
+		<const name="TRAINING_ROOM" value='training_room'/>
+
+		<range name="DOCK_AND_CLAN"				values="PRIVATE, CLAN, GROUP_OPEN, GROUP_CLOSED"/>
+		<range name="PREBATTLE_AND_TRAINING"	values="TRAINING_ROOM, PREBATTLE"/>
+	</enum>
+
+	<enum name="BATTLE_CHAT_CHANNEL_TYPE" type="Integer">
+		<const name="SYSTEM"	value="-1"/>
+		<const name="GENERAL"	value="0"/>
+		<const name="TEAM"		value="1"/>
+		<const name="DIVISION"	value="2"/>
+	</enum>
+</constants>

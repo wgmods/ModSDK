@@ -1,0 +1,108 @@
+(def constant RIBBON_TOOLTIP_WIDTH 320)
+
+(def element RibbonTooltip (_ribbonEntityId:number) layout=true
+	(scope
+		(var ribbonEntity:gfx = "$datahub.getEntity(_ribbonEntityId)")
+		(var count:number = "ribbonEntity.incomeRibbon.count" (event "ribbonEntity.incomeRibbon.evCountChanged"))
+		(var hasSubRibbons:bool = "ribbonEntity.children.list.length > 1")
+	)
+	
+	(style (width = "RIBBON_TOOLTIP_WIDTH") (hitTest = false))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+
+		(controller $Instance renderer='TooltipSystemHeaderWithIconAndText'
+			(args
+				_headerIconType="SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.RIBBON"
+				_imageUrl="'url:../ribbons/' + ribbonEntity.ribbonInfo.iconName + '.png'"
+				_imageWidth="RIBBON_ICON_WIDTH"
+				_imageHeight="RIBBON_ICON_HEIGHT"
+				_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.CHECK"
+				_headerText="'IDS_RIBBON_' + ribbonEntity.ribbonInfo.ids"
+				_iconAmount="'x' + count"
+			)
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider')
+		
+		(controller $Instance renderer='TooltipSystemDescriptionText'
+			(args
+				_descriptionText="'IDS_RIBBON_DESCRIPTION_' + ribbonEntity.ribbonInfo.ids"
+			)
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "hasSubRibbons")
+		)
+
+		(block
+			(style (width = 100%))
+
+			(controller $Repeat renderer='TooltipSystemSubRibbonItem'
+				(bind count "hasSubRibbons ? ribbonEntity.children.list.length : 0")
+				(args "ribbonEntity.children.list[$index]")
+			)
+		)
+	)
+)
+
+(def element TooltipSystemSubRibbonItem (_entityId:number) layout=true
+	(scope
+		(var subRibbonEntity:gfx = "$datahub.getEntity(_entityId)")
+
+		(var incomeRibbon:gfx = "subRibbonEntity.incomeRibbon" (event "subRibbonEntity.evAdded") (event "subRibbonEntity.evRemoved"))
+		(var count:number = "incomeRibbon ? incomeRibbon.count : 0" (event "incomeRibbon.evCountChanged"))
+	)
+
+	(style (width = 100%))
+
+	(controller $Instance renderer='TooltipSystemHeaderWithIconAndText'
+		(bind enabled "count > 0")
+		(args
+			_headerIconType="SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.RIBBON"
+			_imageUrl="'url:../ribbons/subribbons/' + subRibbonEntity.ribbonInfo.iconName + '.png'"
+			_imageWidth="SUBRIBBON_ICON_WIDTH"
+			_imageHeight="RIBBON_ICON_HEIGHT"
+			_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			_subheaderText="'IDS_RIBBON_' + subRibbonEntity.ribbonInfo.ids"
+			_iconAmount="'x' + count"
+		)
+	)
+)
+
+(def element AchievementBattleTooltip (_ribbonEntityId:number) layout=true
+	(scope
+		(var ribbonEntity:gfx = "$datahub.getEntity(_ribbonEntityId)")
+		(var count:number = "ribbonEntity.incomeRibbon.count" (event "ribbonEntity.incomeRibbon.evCountChanged"))
+	)
+
+	(style (width = "RIBBON_TOOLTIP_WIDTH") (hitTest = false))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+
+		(controller $Instance renderer='TooltipSystemHeaderWithIconAndText'
+			(args
+				_headerIconType="SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.RIBBON"
+				_imageUrl="'url:../achievements/icon_achievement_' + ribbonEntity.achievementInfo.name + '.png'"
+				_imageWidth="ACHIEVEMENT_ICON_SIZE"
+				_imageHeight="ACHIEVEMENT_ICON_SIZE"
+				_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.CHECK"
+				_headerText="ribbonEntity.achievementInfo.nameIDS"
+				_subheaderText="toUpper('IDS_ACHIEVEMENT_TYPE_' + ribbonEntity.achievementInfo.uiType)"
+				_iconAmount="'x' + count"
+			)
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider')
+		
+		(controller $Instance renderer='TooltipSystemDescriptionText'
+			(args
+				_descriptionText="ribbonEntity.achievement.condition.description"
+			)
+		)
+	)
+)

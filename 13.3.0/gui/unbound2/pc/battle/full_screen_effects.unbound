@@ -1,0 +1,95 @@
+(def animation AlphaChannelMovement () 
+	keyframes=
+	"[
+		{percent:10%,	to:{alpha:0.79}},
+		{percent:20%,	to:{alpha:1.00}},
+		{percent:30%,	to:{alpha:0.85}},
+		{percent:40%,	to:{alpha:0.99}},
+		{percent:50%,	to:{alpha:0.87}},
+		{percent:60%,	to:{alpha:1.00}},
+		{percent:70%,	to:{alpha:0.89}},
+		{percent:80%,	to:{alpha:0.96}},
+		{percent:90%,	to:{alpha:0.85}},
+		{percent:100%,	to:{alpha:1.00}}
+	]"
+)
+
+(def animation AlphaChannelFlicker () 
+	keyframes=
+	"[
+		{percent:0%,	to:{alpha:0}},
+		{percent:100%,	to:{alpha:1}}
+	]"
+)
+
+(def element FullScreenEffectsContainer () layout=true
+	(scope
+		(macro STAGE_SIZE)
+		(macro IS_ON_PLANE)
+
+		(var aircarrier:gfx = "ownCarrierEntity.aircarrier")
+		(var squadronCameraMode:str = "aircarrier.squadronCameraMode" (event "aircarrier.evSquadronCameraModeChanged"))
+		(var lastLookSquadronCamera:bool = "squadronCameraMode == SquadronCameraModes.SQUADRON_DEAD || squadronCameraMode == SquadronCameraModes.LAST_SQUADRON_ATTACKED")
+
+		(var selfAvatarEntity:gfx =  "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var healthComponent:gfx = "selfAvatarEntity ? selfAvatarEntity.health : null")
+		(var isAlive:bool = "healthComponent ? healthComponent.isAlive : false" (event "healthComponent.evIsAliveChanged"))
+
+		(macro GET_PREF 'userGuiEffects' "'graphics.GUI.effects'")
+	)
+	(style (bind width "stageWidth") (bind height "stageHeight"))
+	
+	(controller $Instance renderer='FullScreenEffectsBurnAndFlood'
+		(bind enabled "userGuiEffects && !isOnPlane && isAlive && !lastLookSquadronCamera")
+	)
+)
+
+(def element FullScreenEffectsBurnAndFlood () layout=true
+	(scope
+		(event evAlphaChannelMovement)
+
+		(var damagedBurnModuleEntity:gfx = "$datahub.getPrimaryEntity(CC.damagedModule, SC.Battle.DAMAGE_MODULES.BURN)")
+		(var damagedBurnState:number = "damagedBurnModuleEntity ? damagedBurnModuleEntity.damagedModule.damagedModulesCount : 0" (event "damagedBurnModuleEntity.damagedModule.evDamagedModulesCountChanged"))
+
+		(var damagedFloodModuleEntity:gfx = "$datahub.getPrimaryEntity(CC.damagedModule, SC.Battle.DAMAGE_MODULES.FLOOD)")
+		(var damagedFloodState:number = "damagedFloodModuleEntity ? damagedFloodModuleEntity.damagedModule.damagedModulesCount : 0" (event "damagedFloodModuleEntity.damagedModule.evDamagedModulesCountChanged"))
+		
+		(var guiEffectState:number = "min(damagedBurnState + (damagedFloodState * 2), 5)") 
+		(var isActiveUserGuiEffect:bool = "guiEffectState > 0")
+		
+		(var guiEffectImage:str = "'url:../fullscreen_effects/burn_and_flood/state_' + max(guiEffectState, 1) + '.png'") 
+	)
+	(style
+		(width = "100%")
+		(height = "100%")
+		(backgroundSize = "fill")
+		(bind backgroundImage "guiEffectImage" (bind enabled "isActiveUserGuiEffect"))
+	)
+	
+	(controller $Animation
+		(bindcall play name='AlphaChannelFlicker'
+			repeatCount=4
+			duration=0.13
+			easing="Easing.sine_in"
+			watch=false (bind enabled "isActiveUserGuiEffect")
+		)
+		(dispatch evAlphaChannelMovement on=evAnimEnded)
+	)
+
+	(controller $Animation
+		(bindcall play name='AlphaChannelMovement'
+			repeatCount=-1
+			duration=0.9
+			easing="Easing.sine_in"
+			watch=false	(event "evAlphaChannelMovement")
+		)
+
+		(bindcall play
+			to={alpha: 0}
+			duration=0.15
+			easing="Easing.sine_in"
+			action="killAll"
+			watch=false	(bind enabled "!isActiveUserGuiEffect")
+		)
+	)
+)

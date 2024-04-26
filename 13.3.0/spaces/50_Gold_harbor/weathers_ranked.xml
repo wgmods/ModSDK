@@ -1,0 +1,48 @@
+<weathers.xml>
+	<!-- Статичный -->
+	<scheme>
+		<startWeight> 33 </startWeight>
+		<step>
+			<param>PCOW005_Evening</param>
+			<duration>
+				<min> 1200 </min>
+				<max> 1200 </max>
+			</duration>
+			<transition> 1200 </transition>
+		</step>
+	</scheme>
+	
+	<!-- Статичный -->
+	<scheme>
+		<startWeight> 33 </startWeight>
+		<step>
+			<param>PCOW003_Cloudy</param>
+			<duration>
+				<min> 1200 </min>
+				<max> 1200 </max>
+			</duration>
+			<transition> 1200 </transition>
+		</step>
+	</scheme>
+
+	<!-- Перед началом боя -->
+	<scheme>
+		<startWeight> 33 </startWeight>
+		<step>
+			<param>PCOW002_Storm</param>
+			<duration>
+				<min> 0 </min>
+				<max> 0 </max>
+			</duration>
+			<transition> 90 </transition>
+		</step>
+		<step>
+			<param>PCOW005_Evening</param>
+			<duration>
+				<min> 1200 </min>
+				<max> 1200 </max>
+			</duration>
+			<transition> 60 </transition>
+		</step>
+	</scheme>
+</weathers.xml>

@@ -1,0 +1,65 @@
+<GGS038_150mm_SK_C28_dead.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS100_YGBS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.4590 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.4547 -0.0629 0.0000	</row1>
+					<row2>	0.0000 0.0629 0.4547 0.0000	</row2>
+					<row3>	-0.0042 0.1240 0.0801 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS101_YGCS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.4938 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0671 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.6683 0.0000	</row2>
+					<row3>	0.0000 0.0128 0.0960 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.4591 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.4548 -0.0628 0.0000	</row1>
+					<row2>	0.0000 0.0628 0.4548 0.0000	</row2>
+					<row3>	-0.0046 0.1696 0.4130 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_deadShape.vertices	</vertices>
+			<primitive>	Turret_deadShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/GSC809_Colorful_Roon/gun/GGS038_150mm_SK_C28_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0954 -0.0583 -0.1815	</min>
+		<max>	0.1105 0.2041 0.4475	</max>
+	</boundingBox>
+</GGS038_150mm_SK_C28_dead.visual>

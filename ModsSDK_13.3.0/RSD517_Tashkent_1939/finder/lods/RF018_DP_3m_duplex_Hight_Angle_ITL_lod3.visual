@@ -1,0 +1,74 @@
+<RF018_DP_3m_duplex_Hight_Angle_ITL_lod3.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	finder	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	MP_RM302_Vympel2d_radar	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.1069 -0.0331 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS201_YDCS_M_2	</identifier>
+				<transform>
+					<row0>	0.6674 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.6674 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.6674 0.0000	</row2>
+					<row3>	0.0000 0.0914 -0.0485 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS203_YDSS_M_1	</identifier>
+				<transform>
+					<row0>	0.4616 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.0000 0.4616 0.0000	</row1>
+					<row2>	0.0000 -0.4616 0.0000 0.0000	</row2>
+					<row3>	-0.1000 0.0543 -0.0079 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS203_YDSS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.4616 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.0000 0.4616 0.0000	</row1>
+					<row2>	0.0000 -0.4616 0.0000 0.0000	</row2>
+					<row3>	0.1000 0.0543 -0.0079 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	finder	</node>
+		<geometry>
+			<vertices>	finder_lod3Shape.vertices	</vertices>
+			<primitive>	finder_lod3Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/RSD517_Tashkent_1939/finder/RF018_DP_3m_duplex_Hight_Angle_ITL.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1151 0.0000 -0.0829	</min>
+		<max>	0.1151 0.1069 0.0829	</max>
+	</boundingBox>
+</RF018_DP_3m_duplex_Hight_Angle_ITL_lod3.visual>

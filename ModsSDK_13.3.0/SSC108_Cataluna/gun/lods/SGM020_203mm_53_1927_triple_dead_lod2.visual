@@ -1,0 +1,74 @@
+<SGM020_203mm_53_1927_triple_dead_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS100_YGBS_M_1_INDEX_3	</identifier>
+				<transform>
+					<row0>	0.7364 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.7346 0.0518 0.0000	</row1>
+					<row2>	0.0000 -0.0518 0.7346 0.0000	</row2>
+					<row3>	-0.0667 0.0853 0.1847 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS100_YGBS_M_1_INDEX_4	</identifier>
+				<transform>
+					<row0>	0.7364 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.7350 -0.0451 0.0000	</row1>
+					<row2>	0.0000 0.0451 0.7350 0.0000	</row2>
+					<row3>	0.0000 0.0853 0.1847 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_3	</identifier>
+				<transform>
+					<row0>	0.5975 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.5974 0.0066 0.0000	</row1>
+					<row2>	0.0000 -0.0066 0.5974 0.0000	</row2>
+					<row3>	-0.0667 0.0724 0.7422 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_4	</identifier>
+				<transform>
+					<row0>	0.5975 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.5969 -0.0261 0.0000	</row1>
+					<row2>	0.0000 0.0261 0.5969 0.0000	</row2>
+					<row3>	0.0000 0.1175 0.7422 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_dead_lod2Shape.vertices	</vertices>
+			<primitive>	Turret_dead_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/SSC108_Cataluna/gun/SGM020_203mm_53_1927_triple_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.3362 0.0000 -0.3920	</min>
+		<max>	0.3362 0.1963 0.7424	</max>
+	</boundingBox>
+</SGM020_203mm_53_1927_triple_dead_lod2.visual>

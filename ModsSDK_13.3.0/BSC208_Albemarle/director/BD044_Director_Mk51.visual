@@ -1,0 +1,47 @@
+<BD044_Director_Mk51.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	BD044_Director_Mk51	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS200_YDCS_M_1	</identifier>
+				<transform>
+					<row0>	0.8734 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.8734 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.8734 0.0000	</row2>
+					<row3>	0.0000 0.0583 -0.0180 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	BD044_Director_Mk51	</node>
+		<geometry>
+			<vertices>	BD044_Director_Mk51Shape.vertices	</vertices>
+			<primitive>	BD044_Director_Mk51Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/BSC208_Albemarle/director/BD044_Director_Mk51.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0583 0.0000 -0.0762	</min>
+		<max>	0.0583 0.1165 0.0403	</max>
+	</boundingBox>
+</BD044_Director_Mk51.visual>

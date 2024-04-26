@@ -1,0 +1,102 @@
+<ZD087_HACS_MK_IV_RF15ft_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Root_BlendBone	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 -1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	Rotate_Y	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0463 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Rotate_Y_BlendBone	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 -1.0000 0.0000	</row2>
+						<row3>	0.0000 -0.0463 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	SP_YMS200_YDCS_M_1	</identifier>
+					<transform>
+						<row0>	1.5251 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.5251 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.5251 0.0000	</row2>
+						<row3>	0.0000 0.0729 -0.0587 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	SP_YMS203_YDSS_M_1	</identifier>
+					<transform>
+						<row0>	0.0000 0.3959 0.0000 0.0000	</row0>
+						<row1>	-0.3959 0.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 0.3959 0.0000	</row2>
+						<row3>	-0.1388 0.0469 0.0222 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	SP_YMS203_YDSS_M_1_INDEX_1	</identifier>
+					<transform>
+						<row0>	0.0000 -0.3959 0.0000 0.0000	</row0>
+						<row1>	0.3959 0.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 0.3959 0.0000	</row2>
+						<row3>	0.1388 0.0469 0.0222 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+		<node>
+			<identifier>	ZD087_HACS_MK_IV_RF15ft	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+		<node>	Root_BlendBone	</node>
+		<node>	Rotate_Y_BlendBone	</node>
+		<geometry>
+			<vertices>	ZD087_HACS_MK_IV_RF15ft_lod2Shape.vertices	</vertices>
+			<primitive>	ZD087_HACS_MK_IV_RF15ft_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director_skinned	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ZSC106_Rahmat/director/ZD087_HACS_MK_IV_RF15ft_skinned.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1658 0.0000 -0.1017	</min>
+		<max>	0.1658 0.2120 0.1028	</max>
+	</boundingBox>
+</ZD087_HACS_MK_IV_RF15ft_lod2.visual>

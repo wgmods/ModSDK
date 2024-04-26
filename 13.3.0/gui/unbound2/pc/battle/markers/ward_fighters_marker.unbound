@@ -1,0 +1,63 @@
+(def constant TOO_FAR_SCALE 0.8)
+
+(def element WorldWardMarker (_markerEntity:gfx) layout=true
+	(scope
+		(event evMarkerShow)
+		(event evMarkerHide)
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'interactiveZone')
+		(macro GET_MARKER_ENTITY_COMPONENT 'worldMarkerScale')
+		(macro VAR_RELATION "_markerEntity")
+
+		(var scaleValue:number = "worldMarkerScaleComponent.value" (event "worldMarkerScaleComponent.evValueChanged"))
+
+		
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var isTactical:bool = "cameraEntity.camera.isTactical" (event "cameraEntity.camera.evTacticalStateChanged"))
+		(var altVision:bool = "cameraEntity.camera.altVision" (event "cameraEntity.camera.evAltVisionChanged"))
+
+		(var distanceItemVisibility:bool = "isTactical || altVision || (scaleValue > TOO_FAR_SCALE)")
+	)
+
+	(dispatch evMarkerShow on='addedToStage')
+	(dispatch evMarkerHide (event "interactiveZoneComponent.evHide"))
+
+	(style
+		(width = 0) (height = 0)
+		(align = "center|middle")
+	)
+
+	(block
+		(class $WorldMarkerItemMargins)
+
+		(macro BIND_SCALE "altVision ? 1 : scaleValue")
+
+		
+		(block
+			(alpha = 0.75)
+			(style
+				(bind backgroundImage "'url:../battle_hud/markers/ward_fighters/icon_ward_' + relation + '.png'")
+				(backgroundSize = "autosize")
+			)
+		)
+	)
+
+	(element DistanceItem "_markerEntity"
+		(bind visible "distanceItemVisibility")
+	)
+
+	(controller $Animation
+		(bindcall play	duration=0.3
+						from="{alpha: 0, marginTop: 10}"
+						to="{alpha: 1, marginTop: 0}"
+						easing="Easing.cubic_in"
+						(event "evMarkerShow")
+		)
+		(bindcall play	duration=0.3
+						from="{alpha: 1, marginTop: 0}"
+						to="{alpha: 0, marginTop: 10}"
+						easing="Easing.cubic_out"
+						(event "evMarkerHide")
+		)
+	)
+)

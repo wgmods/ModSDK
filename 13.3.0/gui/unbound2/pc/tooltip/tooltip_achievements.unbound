@@ -1,0 +1,168 @@
+(def element AchievementTooltip (_id:number, _isShowUB2Tooltip:bool=false, _amount:number=0) layout=true dispatch_size_change=true
+	(scope
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE)
+		(var achievementEntity:gfx = "$datahub.getEntity(_id)")
+		(var achievementInfo:gfx = "achievementEntity ? achievementEntity.achievementInfo : null")
+
+		(var achievementName:str = "achievementEntity.achievementInfo.name")
+		(var isMultiple:bool = "achievementEntity.achievementInfo.multiple")
+		(var isUiOutOfDate:bool = "achievementEntity.achievementInfo.uiOutOfDate")
+		(var uiHideMultiplicity:bool = "achievementEntity.achievementInfo.uiHideMultiplicity")
+		(var uiRestrictionIDS:str = "achievementEntity.achievementInfo.uiRestrictionIDS")
+		(var multipleIDS:str = "achievementEntity.achievementInfo.multipleIDS")
+
+		(var amountDH:number =				"achievementEntity.achievement.amount"		(event "achievementEntity.achievement.evChanged"))
+		(var achievementCondition:dict =	"achievementEntity.achievement.condition"	(event "achievementEntity.achievement.evChanged"))
+		(var achievementShipId:number =		"achievementEntity.achievement.achieveShip"	(event "achievementEntity.achievement.evChanged"))
+		(var receivedTimestamp:number =		"achievementEntity.achievement.timestamp"	(event "achievementEntity.achievement.evChanged"))
+
+		(var amount:number = "_amount ? _amount : amountDH")
+		(var isReceived:bool = "amount > 0")
+		
+		(var restrictionsText:str = "	(uiRestrictionIDS ? tr(uiRestrictionIDS) : '') +
+										(uiRestrictionIDS && !uiHideMultiplicity ? ' ' : '') + 
+										(!uiHideMultiplicity ? tr(multipleIDS) : '')")
+		
+		(var achievementImageUrl:str = "'url:../achievements/icon_achievement_' + achievementName + '.png'")
+		
+		(var unifiedStatus:str = "isReceived	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+												: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+
+		(var nameIDS:str = "achievementEntity.achievementInfo.nameIDS")
+		(var typeIDS:str = "toUpper('IDS_ACHIEVEMENT_TYPE_' + achievementEntity.achievementInfo.uiType)")
+
+		(var isAmountVisible:bool = "isReceived && isMultiple")
+		(var isReceivedDateVisible:bool = "receivedTimestamp > 0")
+		(var isShipVisible:bool = "achievementShipId != 0 && achievementCondition.max == 0")
+		(var isProgressVisible:bool = "achievementCondition.currentProgress > 0 && achievementCondition.max > 0")
+
+		(var textAmountReceived:str = "tr('IDS_ACHIEVEMENT_TOTAL_COUNT') + ' ' + amount")
+		(var achieveTime:str = "formatTime(receivedTimestamp, 'dd.MM.yy', '', true)")
+
+		(var lastAchievementDateText:str = "isAmountVisible 	? tr('IDS_ACHIEVEMENT_LAST_TIME') + ' ' + achieveTime
+																: tr('IDS_ACHIEVEMENT_DATE_COLON') + ' ' + achieveTime")
+	)
+
+	(style (width = "320") (hitTest = "false"))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHeaderWithIconAndText'
+				(args
+					_imageUrl = "achievementImageUrl"
+					_imageWidth = 80
+					_imageHeight = 80
+					_unifiedStatus = "unifiedStatus"
+					_headerText = "nameIDS"
+					_headerIconType = "SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.SIMPLE"
+					_subheaderText = "typeIDS"
+				)
+			)
+		)
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isReceived"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isReceived")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+					_text = 'IDS_REWARD_IS_TAKEN'
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isAmountVisible || isReceivedDateVisible || isShipVisible"))
+		)
+		
+		(element TOOLTIP_SYSTEM_ELEMENTS_GROUP _isEnabled="isAmountVisible || isReceivedDateVisible || isShipVisible"
+
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT _isEnabled="isAmountVisible"
+				(controller $Instance renderer='TooltipSystemStatusLine'
+					(bind enabled "isAmountVisible")
+					(args
+						_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+						_text = "textAmountReceived"
+					)
+				)
+			)
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT _isEnabled="isReceivedDateVisible"
+				(controller $Instance renderer='TooltipSystemDescriptionText'
+					(bind enabled "isReceivedDateVisible")
+					(args
+						_descriptionText = "lastAchievementDateText"
+					)
+				)
+			)
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT _isEnabled="isShipVisible"
+				(controller $Instance renderer='TooltipSystemShipWithTitle'
+					(bind enabled "isShipVisible")
+					(args
+						_title = "'IDS_ON_SHIP'"
+						_shipId = "achievementShipId"
+						_withFlag = "true"
+					)
+				)
+			)
+		)
+		
+		(element TooltipSystemHorizontalDivider)
+		
+		(element TOOLTIP_SYSTEM_ELEMENTS_GROUP
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT _isEnabled="!isProgressVisible"
+				(controller $Instance renderer='TooltipSystemDescriptionText'
+					(bind enabled "!isProgressVisible")
+					(args
+						_descriptionText = "achievementCondition.description"
+					)
+				)
+			)
+
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT _isEnabled="isProgressVisible"
+				(controller $Instance renderer='TooltipSystemProgressBarBlock'
+					(bind enabled "isProgressVisible")
+					(args
+						_title = "achievementCondition.description"
+						_currentValue = "floor(achievementCondition.currentProgress)"
+						_maxValue = "achievementCondition.max"
+						_showPercent = "false"
+					)
+				)
+			)
+			
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT _isEnabled="restrictionsText"
+				(controller $Instance renderer='TooltipSystemStatusLine'
+					(bind enabled "restrictionsText")
+					(args
+						_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+						_text = "restrictionsText"
+					)
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isUiOutOfDate"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isUiOutOfDate")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.INFO"
+					_text = "'IDS_ACHIEVEMENT_OUT_OF_DATE'"
+				)
+			)
+		)
+	)
+)

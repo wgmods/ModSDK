@@ -1,0 +1,110 @@
+<RGM159_152mm_57_BL_115_dead.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS100_YGBS_M_1_INDEX_2	</identifier>
+				<transform>
+					<row0>	0.4279 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.4276 -0.0169 0.0000	</row1>
+					<row2>	0.0000 0.0169 0.4276 0.0000	</row2>
+					<row3>	0.0368 0.0866 0.1899 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS100_YGBS_M_1_INDEX_3	</identifier>
+				<transform>
+					<row0>	0.4278 -0.0003 -0.0082 0.0000	</row0>
+					<row1>	-0.0008 0.4236 -0.0605 0.0000	</row1>
+					<row2>	0.0082 0.0605 0.4235 0.0000	</row2>
+					<row3>	-0.0355 0.1019 0.1891 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS101_YGCS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.4337 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0311 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.8288 0.0000	</row2>
+					<row3>	-0.0368 0.0306 0.2045 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS101_YGCS_M_1_INDEX_3	</identifier>
+				<transform>
+					<row0>	0.4337 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0311 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.8288 0.0000	</row2>
+					<row3>	0.0368 0.0306 0.2045 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_2	</identifier>
+				<transform>
+					<row0>	0.4095 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.4092 -0.0161 0.0000	</row1>
+					<row2>	0.0000 0.0161 0.4092 0.0000	</row2>
+					<row3>	0.0368 0.1014 0.5665 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_3	</identifier>
+				<transform>
+					<row0>	0.4094 -0.0003 -0.0079 0.0000	</row0>
+					<row1>	-0.0008 0.4054 -0.0579 0.0000	</row1>
+					<row2>	0.0078 0.0579 0.4053 0.0000	</row2>
+					<row3>	-0.0283 0.1552 0.5621 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS106_YGLL_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.6803 -0.1228 0.0000 0.0000	</row0>
+					<row1>	0.1228 0.6803 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.6912 0.0000	</row2>
+					<row3>	-0.1860 0.0657 0.0206 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS107_YGLR_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.6803 0.1228 0.0000 0.0000	</row0>
+					<row1>	-0.1228 0.6803 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.6912 0.0000	</row2>
+					<row3>	0.1860 0.0657 0.0206 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_deadShape.vertices	</vertices>
+			<primitive>	Turret_deadShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/RSC528_Ochakov/gun/RGM159_152mm_57_BL_115_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.2396 -0.0382 -0.2863	</min>
+		<max>	0.2396 0.1939 0.5948	</max>
+	</boundingBox>
+</RGM159_152mm_57_BL_115_dead.visual>

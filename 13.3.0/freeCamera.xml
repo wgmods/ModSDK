@@ -1,0 +1,104 @@
+<freeCamera.xml>
+
+	<tuning1Params>moveSpeed</tuning1Params>
+	<tuning2Params>moveAcceleration, moveDamping</tuning2Params>
+	<secondaryParams>yawDamping, pitchDamping, yawAcceleration, pitchAcceleration</secondaryParams>
+
+	<defaults>
+			<fovBase>60</fovBase>
+			<inertialMouse>1</inertialMouse>
+			
+			<moveSpeed>1.0</moveSpeed>
+			<moveAcceleration>1.0</moveAcceleration>
+			<moveDamping>1.0</moveDamping>
+			
+			<yawSpeed>1.0</yawSpeed>
+			<yawAcceleration>1.0</yawAcceleration>
+			<yawDamping> 1.0 </yawDamping>
+
+			<pitchMin> -89 </pitchMin>
+			<pitchMax> 89 </pitchMax>
+			<pitchSpeed>1.0</pitchSpeed>
+			<pitchAcceleration>1.0</pitchAcceleration>
+			<pitchDamping> 1.0 </pitchDamping>
+
+			<zoomMin>1.0</zoomMin>
+			<zoomMax>8.0</zoomMax>
+			<zoomSpeed>1.0</zoomSpeed>
+			<zoomAcceleration>1.0</zoomAcceleration>
+			<zoomDamping>1.0</zoomDamping>
+			<zoomSteps>0</zoomSteps>
+
+			<sphereMin>0.0</sphereMin>
+			<sphereMax>1000.0</sphereMax>
+			<sphereSpeed>100.0</sphereSpeed>
+			<sphereAcceleration>7.5</sphereAcceleration>
+			<sphereDamping>3.0</sphereDamping>
+
+			<tuning1Min>0.2</tuning1Min>
+			<tuning1Max>5.0</tuning1Max>
+			<tuning1Steps>10</tuning1Steps>
+			
+			<tuning2Min>0.2</tuning2Min>
+			<tuning2Max>5.0</tuning2Max>
+			<tuning2Steps>10</tuning2Steps>
+	</defaults>
+
+	<defaultKey>1</defaultKey>
+	<states>
+		<state>
+			<key>1</key>
+		</state>
+		
+		<state>
+			<key>2</key>
+			
+			<moveSpeed>2.0</moveSpeed>
+			<moveAcceleration>0</moveAcceleration>
+			<moveDamping>0</moveDamping>
+			
+			<yawSpeed>2.0</yawSpeed>
+			<yawAcceleration>2.0</yawAcceleration>
+			<yawDamping> 2.0 </yawDamping>
+			
+			<pitchAcceleration>2.0</pitchAcceleration>
+			<pitchDamping> 2.0 </pitchDamping>
+		</state>
+		
+		<state>
+			<key>3</key>
+			<moveSpeed>2.0</moveSpeed>
+			<moveAcceleration>0.1</moveAcceleration>
+			<moveDamping>0.3</moveDamping>
+			
+			<yawSpeed>2.0</yawSpeed>
+			<yawAcceleration>0.3</yawAcceleration>
+			<yawDamping> 0.3 </yawDamping>
+			
+			<pitchAcceleration>2.0</pitchAcceleration>
+			<pitchDamping> 2.0 </pitchDamping>
+		</state>
+		
+		<state>
+			<key>9</key>
+			<moveAcceleration>0.0</moveAcceleration>
+			<moveSpeed>5.0</moveSpeed>
+			<moveDamping>0</moveDamping>
+			<inertialMouse>0</inertialMouse>
+		</state>
+		
+		<state>
+			<!-- RESERVED FOR DEV CAMERA-->
+			<key>10</key>
+			<moveSpeed>5.0</moveSpeed>
+			<moveDamping>0</moveDamping>
+			<zoomMax>16.0</zoomMax>
+			<inertialMouse>0</inertialMouse>
+			<heightMin>-100</heightMin>
+			<heightMax>1000</heightMax>
+			<fovBase>70</fovBase>
+		</state>
+		
+	</states>
+	
+</freeCamera.xml>

@@ -1,0 +1,334 @@
+(def constant COMBAT_LOG_WIDTH 255)
+(def constant COMBAT_LOG_HEIGHT 200)
+(def constant COMBAT_LOG_SCROLL_BAR_WIDTH 8)
+
+(def constant COMBAT_LOG_MESSAGE_WIDTH "COMBAT_LOG_WIDTH - COMBAT_LOG_SCROLL_BAR_WIDTH")
+(def constant COMBAT_LOG_MESSAGE_HEIGHT 17)
+
+(def constant COMBAT_LOG_INPUT_WIDTH 261)
+(def constant COMBAT_LOG_INPUT_HEIGHT 29)
+
+(def constant COMBAT_LOG_HIDE_DELAY 10)
+
+(def constant INVALID_SPECTATOR_STATE -1)
+
+(def element CombatLogPanel () layout=true
+	(scope
+		(var battleInfoWatcher:gfx = "$datahub.getFirstWatcher(CC.battleInfo)")
+		(var battleInfoEntity:gfx = "battleInfoWatcher.entity" (event "battleInfoWatcher.event"))
+		(var battleType:str = "battleInfoEntity.battleInfo.battleType")
+		(var isEventBattle:bool = "battleType == SC.Common.BATTLE_TYPES.EVENT_BATTLE")
+		
+		(var collection:gfx = "$datahub.getCollection(CC.avatar)")
+		(var allyCollection:gfx = "collection ? collection.getChildByPath('team.ally.alive') : null" (event "collection.evChildAdded") (event "collection.evChildRemoved"))
+		(var allyItems:array = "allyCollection ? allyCollection.items : null" (event "allyCollection.evAdded") (event "allyCollection.evRemoved"))
+		(var itemsLength:number = "allyItems ? allyItems.length : 0")
+		(var allTeammatesAreDead:number = "itemsLength == 0")
+
+		(var spectatorStateWatcher:gfx = "$datahub.getFirstWatcher(CC.spectatorState)")
+		(var spectatorStateEntity:gfx = "spectatorStateWatcher.entity" (event "spectatorStateWatcher.event"))
+		(var spectatorStateValue:number = "spectatorStateEntity ? spectatorStateEntity.spectatorState.state : INVALID_SPECTATOR_STATE" (event "spectatorStateEntity.spectatorState.evStateChanged"))
+		(var isSpectator:bool = "spectatorStateValue == SC.Common.SPECTATOR_STATE.TRAINING_SPECTATOR")
+		(var isTeamSpectator:bool = "isEventBattle ? allTeammatesAreDead : isSpectator")
+	)
+
+	(controller $Instance renderer='CombatLogPanelContent'
+		(bind enabled "!isTeamSpectator")
+	)
+)
+
+(def element CombatLogPanelContent () layout=true
+	(scope
+		(event evNewMessageEvent)
+
+		(event evShowChatEvent)
+		(event evShowChatWithAutoScrollEvent)
+		(event evHideChatEvent)
+		(event evDelayedHideChatEvent)
+
+		(event evInputFocusInEvent)
+		(event evInputFocusOutEvent)
+	
+		(event evContextMenuShowed)
+		(event evContextMenuHidden)
+
+		(macro MOUSE_HANDLER_SCOPE)
+		(macro MOUSE_HANDLER_SCOPE "'chatInput_'")
+
+		(macro GET_PREF 'enableBattleChat' "'ui.enableBattleChat'")
+
+		(var selfAvatarWatcher:gfx = "$datahub.getFirstWatcher(CC.playerAvatar)")
+		(var selfAvatarEntity:gfx = "selfAvatarWatcher.enity" (event "selfAvatarWatcher.event"))
+
+		(var battleChatAndLog:gfx = "$datahub.getSingleComponent(CC.battleChatAndLog)")
+		(var isInputFocused:bool = "battleChatAndLog.isInputFocused" (event "battleChatAndLog.evIsInputFocusedChanged"))
+		(var currentChannelId:number = "battleChatAndLog.currentChannelId" (event "battleChatAndLog.evChannelChanged"))
+		(var isChatDisabled:bool = "battleChatAndLog.isChatDisabled" (event "battleChatAndLog.evChannelChanged"))
+		(var isTabDisabled:bool = "battleChatAndLog.isTabDisabled" (event "battleChatAndLog.evChannelChanged"))
+
+		(var isDivisionChat:bool = "currentChannelId == SC.Channel.BATTLE_CHAT_CHANNEL_TYPE.DIVISION")
+		(var isTeamChat:bool = "currentChannelId == SC.Channel.BATTLE_CHAT_CHANNEL_TYPE.TEAM")
+
+		(var playerContextMenuVisible:bool = false)
+		(bind playerContextMenuVisible "true" init=false (event "evContextMenuShowed"))
+		(bind playerContextMenuVisible "false" init=false (event "evContextMenuHidden"))
+		
+		(var chatInputActive:bool = "enableBattleChat && isInputFocused")
+		(var chatInputRollOver:bool = "chatInputActive || chatInput_rollOver || playerContextMenuVisible")
+
+		(var isChatExpanded:bool = false)
+		(bind isChatExpanded "true" init=false (event "evShowChatEvent") (event "evShowChatWithAutoScrollEvent"))
+		(bind isChatExpanded "isInputFocused || rollOver || playerContextMenuVisible" init=false watch=false (event "evHideChatEvent"))
+
+		(var battleChatAndLogMessages:gfx = "$datahub.getCollection(CC.battleChatAndLogMessage).child('sorted')")
+		(var battleChatAndLogMessagesItems:gfx = "battleChatAndLogMessages.items" (event "battleChatAndLogMessages.evAdded"))
+		(var battleChatAndLogMessagesCount:number = "battleChatAndLogMessagesItems.length" (event "battleChatAndLogMessages.evAdded"))
+
+		(var chatInputTitleColor:number = "	isChatDisabled || !enableBattleChat	? SC.Ui_styles.SERVICE_COLORS.WHITE :
+											isTeamChat							? SC.Ui_styles.SERVICE_COLORS.GREEN :
+											isDivisionChat						? SC.Ui_styles.SERVICE_COLORS.YELLOW
+																				: SC.Ui_styles.SERVICE_COLORS.WHITE")
+
+		(var chatInputTitleText:str = "	isChatDisabled		? 'IDS_CHAT_DISABLED' :
+										!enableBattleChat	? 'IDS_CHAT_SWITCH_ON' :
+										isTeamChat			? tr('IDS_BATTLE_CHAT_TEAM') + ':' :
+										isDivisionChat		? tr('IDS_LOBBY_CHAT_DIVISION') + ':'
+															: tr('IDS_BATTLE_CHAT_GENERAL') + ':'")
+	)
+
+	(bindcall externalCall 'inputMapping.onAction' "['battleChat.shown', { }]" init=false watch=false on='addedToStage')
+	(bindcall externalCall 'inputMapping.onAction' "['battleChat.rollOverChanged', { rollOver: rollOver }]" init=false watch=false (bind trigger "rollOver"))
+
+	(macro MOUSE_EVENTS_DISPATCHER)
+	
+	(dispatch evNewMessageEvent dir="EventDirection.DOWN" args="{}" (event "battleChatAndLogMessages.evAdded"))
+
+	(dispatch evShowChatEvent args="{}" (bind enabled "isChatExpanded") (event "evNewMessageEvent"))
+	(dispatch evShowChatEvent args="{}" (event "evInputFocusInEvent"))
+
+	(dispatch evShowChatWithAutoScrollEvent args="{}" (bind enabled "!isChatExpanded") (event "evNewMessageEvent"))
+
+	(dispatch evInputFocusInEvent args="{}" on='addedToStage' (bind enabled "isInputFocused") (event "battleChatAndLog.evIsInputFocusedChanged"))
+	(dispatch evInputFocusOutEvent args="{}" (bind enabled "!isInputFocused") (event "battleChatAndLog.evIsInputFocusedChanged"))
+
+	(dispatch evDelayedHideChatEvent args="{}" (bind enabled "!rollOver") (bind trigger "rollOver"))
+	(dispatch evDelayedHideChatEvent args="{}" (event "evContextMenuHidden"))
+	(dispatch evDelayedHideChatEvent args="{}" (event "evNewMessageEvent"))
+	(dispatch evDelayedHideChatEvent args="{}" (event "evInputFocusOutEvent"))
+
+	(dispatch evHideChatEvent args="{}" delay="COMBAT_LOG_HIDE_DELAY" reset=true (event "evDelayedHideChatEvent"))
+
+	
+	(block
+		(macro CHANGE_ALPHA_BY_TRIGGER_ANIM _duration="0.25" _fromAlpha=0 _toAlpha=1 _triggerExpression="isChatExpanded")
+
+		(style
+			(width = "COMBAT_LOG_WIDTH") (height = "COMBAT_LOG_HEIGHT")
+			(align = "bottom")
+		)
+
+		
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(backgroundImage = 'url:../battle_hud/combat_log/chat_background.png')
+				(backgroundSize = "fill")
+				(scale9grid = "[4, 4, 1, 19]")
+				(hitTest = false)
+			)
+		)
+
+		
+		(scrollArea
+			(class $FullsizeAbsolute)
+			
+			
+			(style
+				(backgroundColor = 0x01000000)
+				(align = "bottom")
+				(bind hitTest "isChatExpanded")
+			)
+
+			(verticalSlider='ScrollBarVLight')
+			(topShadow='ScrollAreaShadowTop')
+			(bottomShadow='ScrollAreaShadowBottom')
+
+			(activeControlsAlpha=0.7)
+			(inactiveControlsAlpha=0.2)
+			(animationDuration=0.2)
+			(animationEasing="Easing.cubic_out")
+
+			(hscrollPolicy='off')
+			(vscrollPolicy='auto')
+			(repeatController='battleChat')
+
+			(content
+				(name = 'txa_output')
+
+				(style
+					(width = "COMBAT_LOG_WIDTH")
+				)
+
+				(controller $Repeat renderer='CombatLogMessageRenderer' name='battleChat'
+					(bind enabled "battleChatAndLogMessagesCount > 0")
+					(bind count "battleChatAndLogMessagesCount")
+					(args "battleChatAndLogMessagesItems[$index]")
+				)
+			)
+			(bindcall scrollToEnd (event "evNewMessageEvent"))
+		)
+	)
+
+	
+	(block
+		(macro MOUSE_EVENTS_DISPATCHER "'chatInput_'")
+
+		(style
+			(width = "COMBAT_LOG_INPUT_WIDTH") (height = "COMBAT_LOG_INPUT_HEIGHT")
+			(marginLeft = -3px)
+			(bind hitTest "!isChatDisabled && enableBattleChat")
+		)
+
+		(macro CHANGE_ALPHA_BY_TRIGGER_ANIM _duration="0.1" _fromAlpha=0.8 _toAlpha=1 _triggerExpression="chatInputActive")
+
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(align = "middle")
+				(bind backgroundImage "'url:../battle_hud/combat_log/' + (isInputFocused	? 'chat_input_focused.png'
+																							: 'chat_input_up.png')")
+				(backgroundSize = "fill")
+				(scale9grid = "[7, 7, 7, 14]")
+			)
+
+			(macro CHANGE_ALPHA_BY_TRIGGER_ANIM _duration="0.1" _fromAlpha=0.6 _toAlpha=1 _triggerExpression="chatInputRollOver")
+			(hblock
+				(name = 'txaHeader')
+				(style
+					(width = 100%)
+					(paddingLeft = "S") (paddingRight = "S")
+					(align = "middle")
+				)
+
+				
+				(tf
+					(class $TextDefaultBold13NM)
+					(style
+						(hitTest = false)
+						(bind textColor "chatInputTitleColor")
+					)
+					(bind text "chatInputTitleText")
+				)
+				(block
+					(style (marginLeft = "XS") (width = 100%))
+					(element CombatLogTextInput _isChatAvailable="enableBattleChat && !isChatDisabled")
+				)
+			)
+		)
+	)
+	(hblock
+		(bind alpha "isInputFocused && enableBattleChat ? 1 : 0")
+		(name = 'txtChatHelp')
+
+		(style
+			(position = "absolute") (bottom = -20px)
+			(width = 100%) (align = "middle") (hitTest = false)
+		)
+		
+		(block
+			(style
+				(marginRight = "XS")
+			)
+			(element HotKey
+					_keyCode = "KEY_TAB"
+					_size = "SIZE.SMALL"
+					_isKeyActive = "false"
+					_hotkeyState = "HotkeyState.DEFAULT"
+			)
+		)
+
+		(tf
+			(class $TextDefault13NM)
+			(alpha = "TC")
+			(text = 'IDS_TAB_CHANGE_CHANNEL')
+		)
+	)
+
+	(element CombatChatMuteButton "isInputFocused" "!enableBattleChat"
+		(style
+			(position = "absolute")
+			(right = "XXS")
+			(bottom = -27px)
+		)
+	)
+	(block
+		(style
+			(position = "absolute")
+			(right = -20px) (bottom = 6px)
+		)
+		(element VoiceChatOutgoingIcon)
+	)
+)
+
+
+(def element CombatLogMessageRenderer (_messageEntity:gfx) layout=true
+	(scope
+		(event evHideInfotip)
+
+		(event evMenuItemClicked)
+
+		(event evNewMessageEvent)
+
+		(var battleChatEntity:gfx = "$datahub.getSingleEntity(CC.battleChatAndLog)")
+	
+		(var playerId:number = "_messageEntity.battleChatAndLogMessage.playerId")
+		(var playerEntity:gfx = "$datahub.getPrimaryEntity(CC.avatar, playerId)")
+		(var isBot:bool = "playerEntity && playerEntity.avatar.isBot")
+
+		(var relationComponent:gfx = "playerEntity ? playerEntity.relation : null")
+		(var isSelf:number = "relationComponent && relationComponent.value == SC.Battle.PLAYER_RELATION.SELF")
+		(var isSysLogMessage:bool = "playerEntity == null")
+
+		(var isContextMenuAvailable:bool = "!(isSelf || isSysLogMessage || isBot)")
+
+		(var contextMenuVisible:bool = "false")
+
+		(var mouse:gfx = "$datahub.getSingleComponent(CC.mouse)")
+		(var isMouseActive:bool = "mouse.active" (event "mouse.evActiveChanged"))
+
+		(var selfPlayer:gfx = "$datahub.getSingleEntity(CC.accountSelf)")
+	)
+
+	(dispatch evHideInfotip args="{}" (bind trigger "isMouseActive") (event "evMenuItemClicked") (event "evNewMessageEvent"))
+
+	(style (width = "COMBAT_LOG_MESSAGE_WIDTH"))
+
+	(controller $Tooltip (renderer = 'BattlePlayerTooltip')
+		(args _playerEntity="playerEntity")
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(cache=false)
+	)
+
+	(controller $Tooltip (renderer = 'ContextMenuPlayer')
+		(args _playerEntity="playerEntity" _selfPlayer="selfPlayer")
+		(macro DEFAULT_MENU_BEHAVIOUR "evHideInfotip" "1")
+		(cache=false)
+	)
+
+	(element DockSubmenuItem _selected="contextMenuVisible"
+		(class $FullsizeAbsolute)
+		(style (bind hitTest "isContextMenuAvailable"))
+	)
+	(tf
+		(style (width = 100%) (marginTop = -1) (marginLeft = 4) (marginRight = 4) (leading = -3) (fontSize = 15) (hitTest = false)
+			(styleSheet="'.ally {color:#4ce8aa} .enemy {color:#ff3600} .self {color:#ffcc66}'")
+		)
+		
+		(class $FontFamilyDefault)
+		(bind htmlText "_messageEntity.battleChatAndLogMessage.htmlText")
+		(bindcall substitute imageOffset=5 substitutionMap="battleChatEntity.battleChatAndLog.substitutions" sourceText="_messageEntity.battleChatAndLogMessage.htmlText" init=true)
+	)
+)
+
+
+

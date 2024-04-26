@@ -1,0 +1,91 @@
+(def constant SLOT_ATBA_ICON_WIDTH 26)
+
+(def element ATBAIndicator(entityId:number) layout=true
+	(scope
+		(var atbaEntity:gfx = "$datahub.getEntity(entityId)")
+		(var isSlotVisible:bool = "!atbaEntity.shipATBA.enabled" (event "atbaEntity.shipATBA.evEnabledChanged"))
+
+		(var _width:number = "SLOT_ATBA_ICON_WIDTH")
+		(var _height:number = "SLOT_SIZE")
+
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER)
+
+	(style (width = "_width") (height = "_height"))
+
+	(block
+		(macro MOUSE_LMB_EXTERNAL_CALL 'direct.action' "['weaponSlot.pressed', [Cmd.CMD_SWITCH_ATBA_AIRDEFENSE] ]")
+
+		(style
+			(position = "absolute")
+			(width = "_width") (height = "_height")
+			(backgroundImage = "'bitmap:icon_atba_off'")
+			(alpha = "isSlotVisible ? 1 : 0")
+			(pivotX = "_width/2")
+			(pivotY = "_height/2")
+			(left = "_width/2")
+			(top = "_height/2")
+		)
+
+		(visible = "isSlotVisible")
+		(bind name "'atbaOffIndicator'")
+
+		(controller $Animation
+			(bindcall play  duration = 0.35
+							easing = "Easing.elastic_out"
+							from = "{alpha: 0, scaleX: 2, scaleY: 2, visible: false}"
+							to = "{alpha: 1, scaleX: 1, scaleY: 1, visible: true}"
+							action="killAll"
+							(bind enabled "isSlotVisible")
+			)
+		)
+
+		(controller $Animation
+			(bindcall play  duration = 0.5
+							easing = "Easing.elastic_in"
+							from = "{alpha: 1, scaleX: 1, scaleY: 1, visible: true}"
+							to = "{alpha: 0, scaleX: 2, scaleY: 2, visible: false}"
+							action="killAll"
+							(bind enabled "!(isSlotVisible)")
+			)
+		)
+
+		(element SlotMouseOverAnimationFrame _width="_width+8" _height="SLOT_FX_SIZE" _slotWidth="_width" _slotHeight="_height"
+			(scope
+				(bind isEnabled "rollOver")
+			)
+		)
+	)
+
+	(element HotkeyIndicator _commandId="Cmd.CMD_SWITCH_ATBA_AIRDEFENSE" _fxOnDown=true
+		(style
+			(position = "absolute")
+			(bottom = "-HOTKEY_SIZE[SIZE.MEDIUM]")
+			(hcenter = 0px)
+		)
+
+		(alpha = "isSlotVisible ? 1 : 0")
+
+		(controller $Animation
+			(bindcall play  duration=0.35
+							easing = "Easing.quad_out"
+							from = "{alpha: 0}"
+							to = "{alpha: 1}"
+							action="killAll"
+							(bind enabled "isSlotVisible")
+			)
+		)
+
+		(controller $Animation
+			(bindcall play  duration=0.5
+							easing = "Easing.elastic_in"
+							from = "{alpha: 1}"
+							to = "{alpha: 0}"
+							action="killAll"
+							(bind enabled "!(isSlotVisible)")
+			)
+		)
+	)
+)

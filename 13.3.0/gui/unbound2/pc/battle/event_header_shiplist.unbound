@@ -1,0 +1,48 @@
+(def element EventShipList() layout=true
+	(scope
+		
+		(var collection:gfx = "$datahub.getCollection(CC.avatar)")
+		(var realPlayersCollection:gfx = "collection.getChildByPath('realPlayers')" (event "collection.evChildAdded") (event "collection.evChildRemoved"))
+		(var alivePlayersCollection:gfx = "realPlayersCollection ? realPlayersCollection.getChildByPath('alive') : null" (event "collection.evChildAdded") (event "collection.evChildRemoved"))
+		(var alivePlayersItems:array = "alivePlayersCollection ? alivePlayersCollection.items : null" (event "alivePlayersCollection.evAdded") (event "alivePlayersCollection.evRemoved"))
+		(var maxPlayersCount:number = "realPlayersCollection ? max(realPlayersCollection.items.length, 1) : 1" (event "realPlayersCollection.evAdded") (event "realPlayersCollection.evRemoved"))
+		(var alivePlayersCount:number = "alivePlayersItems ? alivePlayersItems.length : 0")
+	)
+
+	(macro DIPLOMACY_BG )
+	(style
+		(padding = "3px")
+		(height = "42px")
+	)
+	(hblock
+		(style
+			(align = "center|middle")
+			(height = "100%")
+			(backgroundColor = "0xFFFFFFFF")
+			(alpha = "0.7")
+		)
+
+		(block
+			(style
+				(height = "30px")
+				(width = "30px")
+				(marginLeft = "S")
+				(backgroundImage = "'url:../events/halloween20/icon_ships_counter.png'")
+			)
+		)
+		(tf	
+			(class $FontBlackBoldWithoutShadow19)
+			(style
+				(marginLeft = "SXS")
+				(marginRight = "SXS")
+				(marginTop = "XXS")
+				(marginBottom = "XXS")
+				(textAlign = "right")
+				(width = "24px")
+				(multiline = false)
+				(hitTest = "false")
+			)
+			(bind text "alivePlayersCount > 9 ? alivePlayersCount : '0' + alivePlayersCount")
+		)
+	)
+)

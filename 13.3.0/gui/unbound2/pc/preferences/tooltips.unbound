@@ -1,0 +1,506 @@
+(def constant PREF_ROW_TOOLTIP {
+	'graphics.postFX.colorblind.mode':		{ tooltip: 'PrefRowCommonTooltip' },
+	'graphics.postFX.colorblind.intensity':	{ tooltip: 'PrefRowCommonTooltip' },
+
+
+	'monitor.index':			{ tooltip: 'PrefRowMonitorTooltip' },
+	'monitor.windowMode':		{ tooltip: 'PrefRowCommonTooltip' },
+	'monitor.mode':				{ tooltip: 'PrefRowPerformanceTooltip',	extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW",	gpuImpact: "SC.Ui_prefs.PERF_IMPACT.HIGH" } },
+	'monitor.uiScale':			{ tooltip: 'PrefRowCommonTooltip' },
+	'graphics.gamma':			{ tooltip: 'PrefRowCommonTooltip' },
+	'graphics.vsync':			{ tooltip: 'PrefRowPerformanceTooltip',	extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW",	gpuImpact: "SC.Ui_prefs.PERF_IMPACT.MEDIUM" } },
+	'graphics.tripleBuffering':	{ tooltip: 'PrefRowCommonTooltip' },
+
+	'graphics.preset':							{ tooltip: 'PrefRowCommonTooltip' },
+
+	'graphics.texture.quality':					{ tooltip: 'PrefRowPerformanceTooltip',		extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW",		gpuImpact: "SC.Ui_prefs.PERF_IMPACT.MEDIUM" } },
+	'graphics.texture.filtering':				{ tooltip: 'PrefRowPerformanceTooltip',		extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW",		gpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW" } },
+	'graphics.postFX.fidelityFX_CAS':			{ tooltip: 'PrefRowPerformanceTooltip',		extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW",		gpuImpact: "SC.Ui_prefs.PERF_IMPACT.HIGH" } },
+	'graphics.browser.hardwareAcceleration':	{ tooltip: 'PrefRowPerformanceTooltip',		extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW",		gpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW",	restart: true } },
+	
+	'graphics.GUI.quality':						{ tooltip: 'PrefRowCommonTooltip' },
+	'graphics.GUI.contrast':					{ tooltip: 'PrefRowPerformanceTooltip',		extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.MEDIUM",	gpuImpact: "SC.Ui_prefs.PERF_IMPACT.MEDIUM" } },
+
+	'graphics.msaa.quality':		{ tooltip: 'PrefRowPerformanceTooltip',	extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW",	gpuImpact: "SC.Ui_prefs.PERF_IMPACT.HIGH" } },
+	'graphics.postFX.fxaa.quality':	{ tooltip: 'PrefRowPerformanceTooltip',	extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW",	gpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW" } },
+	'graphics.postFX.txaa':			{ tooltip: 'PrefRowPerformanceTooltip',	extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW",	gpuImpact: "SC.Ui_prefs.PERF_IMPACT.MEDIUM" } },
+
+	'graphics.sea.simulation.quality':				{ tooltip: 'PrefRowPerformanceTooltip',	extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.MEDIUM",	gpuImpact: "SC.Ui_prefs.PERF_IMPACT.VERYHIGH" } },
+	'graphics.forest.quality':						{ tooltip: 'PrefRowPerformanceTooltip',	extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW",		gpuImpact: "SC.Ui_prefs.PERF_IMPACT.HIGH" } },
+	'graphics.camera.farPlane':						{ tooltip: 'PrefRowPerformanceTooltip',	extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.MEDIUM",	gpuImpact: "SC.Ui_prefs.PERF_IMPACT.HIGH" } },
+	'graphics.object.lod':							{ tooltip: 'PrefRowPerformanceTooltip',	extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW",		gpuImpact: "SC.Ui_prefs.PERF_IMPACT.MEDIUM" } },
+	'graphics.sea.reflection.quality':				{ tooltip: 'PrefRowPerformanceTooltip',	extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.MEDIUM",	gpuImpact: "SC.Ui_prefs.PERF_IMPACT.HIGH" } },
+	'graphics.sea.reflection.screenSpace.quality':	{ tooltip: 'PrefRowPerformanceTooltip',	extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW",		gpuImpact: "SC.Ui_prefs.PERF_IMPACT.HIGH" } },
+
+	'graphics.particle.preset':				{ tooltip: 'PrefRowPerformanceTooltip',		extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.MEDIUM",	gpuImpact: "SC.Ui_prefs.PERF_IMPACT.MEDIUM",	restart: true } },
+	'graphics.particle.quality':			{ tooltip: 'PrefRowPerformanceTooltip',		extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW",		gpuImpact: "SC.Ui_prefs.PERF_IMPACT.HIGH" } },
+	'graphics.shadow.quality':				{ tooltip: 'PrefRowPerformanceTooltip',		extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.MEDIUM",	gpuImpact: "SC.Ui_prefs.PERF_IMPACT.HIGH" } },
+	'graphics.lighting.dynamic.quality':	{ tooltip: 'PrefRowPerformanceTooltip',		extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.MEDIUM",	gpuImpact: "SC.Ui_prefs.PERF_IMPACT.HIGH" } },
+	'graphics.postFX.quality':				{ tooltip: 'PrefRowPerformanceTooltip',		extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW",		gpuImpact: "SC.Ui_prefs.PERF_IMPACT.HIGH" } },
+	'graphics.gameLogic.preset':			{ tooltip: 'PrefRowPerformanceTooltip',		extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.MEDIUM",	gpuImpact: "SC.Ui_prefs.PERF_IMPACT.MEDIUM" } },
+	
+	'graphics.GUI.effects':					{ tooltip: 'PrefRowCommonTooltip' },
+	'graphics.fog.alpha':					{ tooltip: 'PrefRowPerformanceTooltip',		extraData: { cpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW",		gpuImpact: "SC.Ui_prefs.PERF_IMPACT.LOW" } },
+
+	'sound.volume.master':			{ tooltip: 'PrefRowCommonTooltip',	extraData: { customHeader: 'IDS_MASTER_VOLUME_TOOLTIP_HEADER' } },
+	'sound.source':					{ tooltip: 'PrefRowCommonTooltip' },
+	'graphics.sound.quality':		{ tooltip: 'PrefRowCommonTooltip',	extraData: { restart: true } },
+
+	'sound.music.dockVolume':		{ tooltip: 'PrefRowCommonTooltip',	extraData: { customHeader: 'IDS_OPTIONS_DOCK_MUSIC_VOLUME_TOOLTIP_HEADER' } },
+	'sound.music.battleVolume':		{ tooltip: 'PrefRowCommonTooltip',	extraData: { customHeader: 'IDS_OPTIONS_BATTLE_MUSIC_VOLUME_TOOLTIP_HEADER' } },
+	'sound.music.mod':				{ tooltip: 'PrefRowItemsTooltip' },
+
+	'sound.mixingPreset':				{ tooltip: 'PrefRowItemsTooltip' },
+	'sound.volume.world':				{ tooltip: 'PrefRowCommonTooltip',	extraData: { customHeader: 'IDS_OPTIONS_WORLD_VOLUME_TOOLTIP_HEADER' } },
+	'sound.volume.ui':					{ tooltip: 'PrefRowCommonTooltip',	extraData: { customHeader: 'IDS_OPTIONS_UI_VOLUME_TOOLTIP_HEADER' } },
+	'sound.volume.engines':				{ tooltip: 'PrefRowCommonTooltip',	extraData: { customHeader: 'IDS_OPTIONS_ENGINES_VOLUME_TOOLTIP_HEADER' } },
+	'sound.volume.shoot':				{ tooltip: 'PrefRowCommonTooltip',	extraData: { customHeader: 'IDS_OPTIONS_SHOOT_VOLUME_TOOLTIP_HEADER' } },
+	'sound.volume.damage':				{ tooltip: 'PrefRowCommonTooltip',	extraData: { customHeader: 'IDS_OPTIONS_DAMAGE_VOLUME_TOOLTIP_HEADER' } },
+	'sound.narrowDynamicRange':			{ tooltip: 'PrefRowCommonTooltip' },
+	'sound.toneDefeat':					{ tooltip: 'PrefRowCommonTooltip' },
+	'sound.foghorn.enabled':			{ tooltip: 'PrefRowCommonTooltip' },
+	'sound.thirdPartyMusic.enabled':	{ tooltip: 'PrefRowCommonTooltip' },
+
+	'sound.volume.voice':			{ tooltip: 'PrefRowCommonTooltip',		extraData: { customHeader: 'IDS_OPTIONS_VOICE_VOLUME_TOOLTIP_HEADER' } },
+	'sound.voice.package':			{ tooltip: 'PrefRowCommonTooltip',		extraData: { customHeader: 'IDS_VOICE_PACKAGE_TOOLTIP_HEADER' } },
+	'sound.voice.mod':				{ tooltip: 'PrefRowSoundModsTooltip',	extraData: { customHeader: 'IDS_VOICE_MOD_TOOLTIP_HEADER' } },
+	'sound.quickCommands':			{ tooltip: 'PrefRowCommonTooltip',		extraData: { customHeader: 'IDS_OPTIONS_QUICKCOMMANDS_SOUND_TOOLTIP_HEADER' } },
+	'sound.voiceOverEffect':		{ tooltip: 'PrefRowCommonTooltip' },
+
+	'sound.voice.chat.enabled':				{ tooltip: 'PrefRowCommonTooltip' },
+	'sound.voice.chat.outputVolume':		{ tooltip: 'PrefRowCommonTooltip',	extraData: { customHeader: 'IDS_VOICECHAT_OUTPUT_VOLUME_TOOLTIP_HEADER' } },
+	'sound.voice.chat.device':				{ tooltip: 'PrefRowCommonTooltip' },
+	'sound.voice.chat.inputVolume':			{ tooltip: 'PrefRowCommonTooltip' },
+	'sound.voice.chat.activationMethod':	{ tooltip: 'PrefRowCommonTooltip' },
+
+	'battle.altVision.mode':			{ tooltip: 'PrefRowImageAndItemsTooltip',	extraData: { img: 'battle_alt_vision_mode', customHeader: 'IDS_ALTERNATE_INTERFACE_TOOLTIP_HEADER' } },
+	'battle.ears.enabled':				{ tooltip: 'PrefRowImageTooltip',			extraData: { img: 'battle_ears_enabled' } },
+	'ui.showPerformance':				{ tooltip: 'PrefRowImageTooltip',			extraData: { img: 'ui_show_performance' } },
+	'ui.showAdditionalDamageCounters':	{ tooltip: 'PrefRowImageTooltip',			extraData: { img: 'ui_show_additional_damage_counters' } },
+	'ui.enableBattleChat':				{ tooltip: 'PrefRowImageTooltip',			extraData: { img: 'ui_enable_battle_chat' } },
+
+	'battle.terrain.shooting.mode':					{ tooltip: 'PrefRowImageTooltip',	extraData: { img: 'battle_terrain_shooting_mode',					customHeader: 'IDS_TERRAIN_SHOOT_INDICATOR_TOOLTIP_HEADER' } },
+	'battle.weapon.indicator.simultaneousReload':	{ tooltip: 'PrefRowImageTooltip',	extraData: { img: 'battle_weapon_indicator_simultaneous_reload',	customHeader: 'IDS_SIMULTANEOUS_RELOAD_TOOLTIP_HEADER' } },
+	'ui.alwaysShowModifiersTimers':					{ tooltip: 'PrefRowImageTooltip',	extraData: { img: 'ui_always_show_modifiers_timers' } },
+
+	'battle.camera.fov':	{ tooltip: 'PrefRowCommonTooltip' },
+	'battle.camera.height':	{ tooltip: 'PrefRowCommonTooltip' },
+
+	'battle.camera.autoTrackTarget.enabled':	{ tooltip: 'PrefRowCommonTooltip' },
+	'battle.camera.wheelTransition.enabled':	{ tooltip: 'PrefRowCommonTooltip' },
+	'battle.camera.autoChangePosition.enabled':	{ tooltip: 'PrefRowCommonTooltip' },
+	'battle.camera.observeYawRestore.enabled':	{ tooltip: 'PrefRowCommonTooltip' },
+	'battle.camera.damageEffect.enabled':		{ tooltip: 'PrefRowCommonTooltip' },
+
+	'ui.mouse.sensivity':			{ tooltip: 'PrefRowCommonTooltip' },
+	'ui.mouse.wheelSensivity':		{ tooltip: 'PrefRowCommonTooltip' },
+	'battle.camera.signY.inverted':	{ tooltip: 'PrefRowCommonTooltip' },
+
+	'battle.autoPilot.mode':	{ tooltip: 'PrefRowCommonTooltip' },
+	'ui.showPortClock':			{ tooltip: 'PrefRowCommonTooltip' },
+	'ui.skipVideo':				{ tooltip: 'PrefRowCommonTooltip' },
+	'ui.enableLanguageBar':		{ tooltip: 'PrefRowCommonTooltip' }
+})
+
+
+(def element TooltipSystemImageContainer(_path:str, _imgHeight:number=200)
+	(style (width = 100%) (paddingTop = "-SXS") (paddingBottom = "-SXS") (paddingLeft = "-M") (paddingRight = "-M"))
+
+	(block
+		(style
+			(width = 100%)
+			(bind height "_imgHeight")
+			(backgroundSize = "fill")
+			(bind backgroundImage "'url:../prefs/tooltips/' + _path + '.png'")
+		)
+	)
+)
+
+(def element PrefRowItemsDescriptionList (_items:array)
+	(style (width = 100%))
+	(macro TOOLTIP_SYSTEM_INNER_PANEL_BACKGROUND)
+
+	(block
+		(style (width = 100%) (paddingBottom = -22px))
+
+		(controller $Repeat renderer = 'PrefRowTooltipInnerItemExplanation'
+			(bind count "_items.length")
+			(args
+				_header = "_items[$index]"
+				_description = "_items[$index] + '_DESCRIPTION'"
+			)
+		)
+	)
+)
+
+(def element PrefRowTooltipInnerItemExplanation (_header:str, _description:str, _extraData:dict)
+	(style (width = 100%) (marginBottom = 22px))
+
+	(element TOOLTIP_SYSTEM_ELEMENTS_GROUP
+		(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+			(element TooltipSystemSecondaryHeaderText
+				_headerText = "_header"
+			)
+		)
+
+		(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+			(element TooltipSystemDescriptionText
+				_descriptionText = "_description"
+			)
+		)
+	)
+)
+
+
+(def element PrefRowCommonTooltip (_option:str, _localization:str, _extraData:dict)
+	(scope
+		(var tooltipHeader:str = "'customHeader' in _extraData ? _extraData.customHeader : _localization")
+		(var isRestartNeeded:bool = "'restart' in _extraData ? _extraData.restart : false")
+	)
+
+	(style (hitTest = false) (width = "DEFAULT_TOOLTIP_WIDTH"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "tooltipHeader"
+		)
+
+		(block
+			(bind visible "isRestartNeeded")
+			(style (width = 100%))
+
+			(element TooltipSystemHorizontalDivider)
+			(element TooltipSystemStatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+				_text = "'IDS_PREF_CHANGE_RESTART_NEEDED'"
+				_width = "100%"
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "_localization + '_DESCRIPTION'"
+		)
+	)
+)
+
+(def element PrefRowMonitorTooltip (_option:str, _localization:str, _extraData:dict)
+	(scope
+		(var tooltipHeader:str = "'customHeader' in _extraData ? _extraData.customHeader : _localization")
+		(macro GET_PREF 'monitorMode' "'monitor.windowMode'")
+	)
+
+	(style (hitTest = false) (width = "DEFAULT_TOOLTIP_WIDTH"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "tooltipHeader"
+		)
+
+		(block
+			(bind visible "monitorMode == 1")
+			(style (width = 100%))
+
+			(element TooltipSystemHorizontalDivider)
+			(element TooltipSystemStatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+				_text = "'IDS_PREF_CHANGE_RESTART_NEEDED'"
+				_width = "100%"
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "_localization + '_DESCRIPTION'"
+		)
+	)
+)
+
+(def element PrefRowItemsTooltip (_option:str, _localization:str, _extraData:dict)
+	(scope
+		(var valueEntity:gfx="$datahub.getPrimaryEntity(CC.preference, _option)")
+		(var componentPrefChoices:gfx = "valueEntity ? valueEntity.preferenceChoices : null")
+		(var valueChoices:array = "componentPrefChoices ? componentPrefChoices.choices : []")
+		
+		(var tooltipHeader:str = "'customHeader' in _extraData ? _extraData.customHeader : _localization")
+	)
+
+	(style (hitTest = false) (width = "DEFAULT_TOOLTIP_WIDTH"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "tooltipHeader"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "_localization + '_DESCRIPTION'"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element PrefRowItemsDescriptionList
+			_items = "valueChoices"
+		)
+	)
+)
+
+(def element PrefRowSoundModsTooltip (_option:str, _localization:str, _extraData:dict)
+	(scope
+		(var valueEntity:gfx="$datahub.getPrimaryEntity(CC.preference, _option)")
+		(var componentPrefChoices:gfx = "valueEntity ? valueEntity.preferenceChoices : null" (event "valueEntity.evAdded")(event "valueEntity.evRemoved"))
+		(var valueChoices:array="componentPrefChoices ? componentPrefChoices.choices : []")
+
+		(var tooltipHeader:str = "'customHeader' in _extraData ? _extraData.customHeader : _localization")
+		(var mainSoundMods:array = "valueChoices.length == 3	? [ 'IDS_SOUND_MOD_DEFAULT', 'IDS_SOUND_MOD_NATION', 'IDS_SOUND_MOD_NATION_PLUS' ]
+																: [ 'IDS_SOUND_MOD_DEFAULT', 'IDS_SOUND_MOD_NATION', 'IDS_SOUND_MOD_NATION_PLUS', 'IDS_SOUND_MOD_UNIQUE' ]")
+	)
+
+	(style (hitTest = false) (width = "DEFAULT_TOOLTIP_WIDTH"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "tooltipHeader"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "_localization + '_DESCRIPTION'"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element PrefRowItemsDescriptionList
+			_items = "mainSoundMods"
+		)
+	)
+)
+
+(def element PrefRowCommonTooltipRestart (_option:str, _localization:str, _extraData:dict)
+	(scope
+		(var tooltipHeader:str = "'customHeader' in _extraData ? _extraData.customHeader : _localization")
+	)
+
+	(style (hitTest = false) (width = "DEFAULT_TOOLTIP_WIDTH"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "tooltipHeader"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "_localization + '_DESCRIPTION'"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+			_text = "'IDS_PREF_CHANGE_RESTART_NEEDED'"
+			_width = "100%"
+		)
+	)
+)
+
+(def element PrefRowPerformanceTooltip (_option:str, _localization:str, _extraData:dict)
+	(scope
+		(var tooltipHeader:str = "'customHeader' in _extraData ? _extraData.customHeader : _localization")
+		(var isRestartNeeded:bool = "'restart' in _extraData ? _extraData.restart : false")
+
+		(var gpuImpactType:str = "	_extraData.gpuImpact == SC.Ui_prefs.PERF_IMPACT.LOW			? SC.Ui_styles.TOOLTIP_SYSTEM_PARAMS_MODIFIERS_STATUS.POSITIVE :
+									_extraData.gpuImpact == SC.Ui_prefs.PERF_IMPACT.MEDIUM		? SC.Ui_styles.TOOLTIP_SYSTEM_PARAMS_MODIFIERS_STATUS.NEUTRAL :
+									_extraData.gpuImpact == SC.Ui_prefs.PERF_IMPACT.HIGH		? SC.Ui_styles.TOOLTIP_SYSTEM_PARAMS_MODIFIERS_STATUS.NEGATIVE :
+									_extraData.gpuImpact == SC.Ui_prefs.PERF_IMPACT.VERYHIGH	? SC.Ui_styles.TOOLTIP_SYSTEM_PARAMS_MODIFIERS_STATUS.NEGATIVE
+																								: SC.Ui_styles.TOOLTIP_SYSTEM_PARAMS_MODIFIERS_STATUS.NEUTRAL")
+		(var gpuValue:str = "'IDS_PERFORMANCE_IMPACT_' + _extraData.gpuImpact")
+
+		(var cpuImpactType:str = "	_extraData.cpuImpact == SC.Ui_prefs.PERF_IMPACT.LOW		? SC.Ui_styles.TOOLTIP_SYSTEM_PARAMS_MODIFIERS_STATUS.POSITIVE :
+									_extraData.cpuImpact == SC.Ui_prefs.PERF_IMPACT.MEDIUM	? SC.Ui_styles.TOOLTIP_SYSTEM_PARAMS_MODIFIERS_STATUS.NEUTRAL :
+									_extraData.cpuImpact == SC.Ui_prefs.PERF_IMPACT.HIGH	? SC.Ui_styles.TOOLTIP_SYSTEM_PARAMS_MODIFIERS_STATUS.NEGATIVE
+																							: SC.Ui_styles.TOOLTIP_SYSTEM_PARAMS_MODIFIERS_STATUS.NEUTRAL")
+		(var cpuValue:str = "'IDS_PERFORMANCE_IMPACT_' + _extraData.cpuImpact")
+	)
+	(style (hitTest = false) (width = "DEFAULT_TOOLTIP_WIDTH"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "tooltipHeader"
+		)
+
+		(block
+			(bind visible "isRestartNeeded")
+			(style (width = 100%))
+
+			(element TooltipSystemHorizontalDivider)
+			(element TooltipSystemStatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+				_text = "'IDS_PREF_CHANGE_RESTART_NEEDED'"
+				_width = "100%"
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "_localization + '_DESCRIPTION'"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemParamsModifiersList
+			_attributesNegative="[]"
+			_attributesPositive="[]"
+			_attributesNeutral="[{ attributeIDS: 'IDS_PERFORMANCE_IMPACT_GPU', measuredValue: gpuValue, category: gpuImpactType },
+								 { attributeIDS: 'IDS_PERFORMANCE_IMPACT_CPU', measuredValue: cpuValue, category: cpuImpactType }]"
+		)
+	)
+)
+
+(def element PrefRowImageTooltip (_option:str, _localization:str, _extraData:dict)
+	(scope
+		(var tooltipHeader:str = "'customHeader' in _extraData ? _extraData.customHeader : _localization")
+		(var imagePath:str = "_extraData.img")
+	)
+
+	(style (hitTest = false) (width = 380px))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemImageContainer
+			_path = "imagePath"
+			_imgHeight = 214
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "tooltipHeader"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "_localization + '_DESCRIPTION'"
+		)
+	)
+)
+
+(def element PrefRowImageAndItemsTooltip (_option:str, _localization:str, _extraData:dict)
+	(scope
+		(var valueEntity:gfx="$datahub.getPrimaryEntity(CC.preference, _option)")
+		(var componentPrefChoices:gfx = "valueEntity ? valueEntity.preferenceChoices : null")
+		(var valueChoices:array = "componentPrefChoices ? componentPrefChoices.choices : []")
+
+		(var tooltipHeader:str = "'customHeader' in _extraData ? _extraData.customHeader : _localization")
+		(var imagePath:str = "_extraData.img")
+	)
+
+	(style (hitTest = false) (width = 380px))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemImageContainer
+			_path = "imagePath"
+			_imgHeight = 214
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "tooltipHeader"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.INFO"
+			_text = "_localization + '_STATUS_INFO'"
+			_width = "100%"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "_localization + '_DESCRIPTION'"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element PrefRowItemsDescriptionList
+			_items = "valueChoices"
+		)
+	)
+)
+
+(def element PrefRowCommandMappingTooltip (_cmdId:str, _customHeader:str='')
+	(style (hitTest = false) (width = "DEFAULT_TOOLTIP_WIDTH"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "_customHeader ? _customHeader : _cmdId"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "_cmdId + '_PREF_TOOLTIP_DESCRIPTION'"
+		)
+	)
+)
+
+(def element PrefCommandMappingInCaptureTooltip ()
+	(scope
+		(var currentlyEditingCommandWatcher:gfx = "$datahub.getFirstWatcher(CC.currentlyEditingCommand)")
+		(var currentlyEditingCommandEntity:gfx = "currentlyEditingCommandWatcher.entity" (event "currentlyEditingCommandWatcher.event"))
+		(var currentlyEditingCommandComponent:gfx = "currentlyEditingCommandEntity ? currentlyEditingCommandEntity.currentlyEditingCommand : null")
+
+		(var isUnableToSet:bool = false)
+		(bind isUnableToSet "true" init=false watch=false (event "currentlyEditingCommandComponent.evWarnUnableToSet"))
+	)
+
+	(style (hitTest = false) (width = 240px))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(bind visible "isUnableToSet")
+			(style (width = 100%))
+
+			(element TooltipSystemStatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.NEGATIVE"
+				_text = "'IDS_PREFS_KEYBINDING_IN_CAPTURE_STATE_UNABLE_TO_SET'"
+				_width = "100%"
+			)
+			(element TooltipSystemHorizontalDivider)
+		)
+
+		(element TOOLTIP_SYSTEM_ELEMENTS_GROUP
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+				(element TooltipSystemDescriptionText
+					_descriptionText = "'IDS_PREFS_KEYBINDING_IN_CAPTURE_STATE_TOOLTIP_1'"
+					_substitutionMap = "{ '[ASSET_KEY_DELETE]' : 'url:../service_kit/hotkeys/small/delete.png' }"
+				)
+			)
+
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+				(element TooltipSystemDescriptionText
+					_descriptionText = "'IDS_PREFS_KEYBINDING_IN_CAPTURE_STATE_TOOLTIP_2'"
+					_substitutionMap = "{ '[ASSET_KEY_ESC]' : 'url:../service_kit/hotkeys/small/esc.png' }"
+				)
+			)
+		)
+	)
+)

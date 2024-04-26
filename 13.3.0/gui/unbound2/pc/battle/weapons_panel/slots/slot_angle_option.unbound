@@ -1,0 +1,148 @@
+
+
+
+(def constant ANGLE_SLOT_WIDTH 20)
+(def constant ANGLE_SLOT_FX_WIDTH 28)
+
+(def element AngleSwitcher (_command:number, _height:number) layout=true
+	(scope
+		(var weaponSelected:bool = "false")
+		(var _selected:number = 0)
+		(var _options:array = "[]")
+		(var _width:number = "ANGLE_SLOT_FX_WIDTH")
+
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+
+	
+	(bind name "_selected == 1 ? 'angle_wide' : 'angle_narrow'")
+
+	(macro MOUSE_EVENTS_DISPATCHER)
+	(macro MOUSE_LMB_EXTERNAL_CALL 'direct.action' "['weaponSlot.pressed', [_command]]")
+
+	(controller $Tooltip
+		(renderer='SimpleStatusTooltip')
+		(args
+			_text = 'IDS_TORPEDOES_CHANGE_FIRE_MODE'
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(align="bottom|center")
+		(position="border")
+		(offset=[0, 20])
+		(screenBoundsOffset={left:10, top:30, right:10, bottom:100})
+	)
+
+	(style
+		(bind width "_width")
+		(bind height "_height")
+		(align = "center|middle")
+		(marginRight = "3")
+	)
+
+	(controller $Repeat renderer='AngleSwitchIcon'
+		(bind count "_options.length")
+		(args _options="_options")
+		(exprs
+			(scope
+				(bind _selected "_selected")
+			)
+		)
+	)
+
+	(element SlotMouseOverAnimationFrame  _width="ANGLE_SLOT_FX_WIDTH" _height="SLOT_FX_SIZE" _slotWidth="_width" _slotHeight="_height"
+		(scope
+			(bind isEnabled "rollOver")
+		)
+		(style
+			(position = "absolute")
+		)
+	)
+)
+
+
+
+
+(def element AngleSwitchIcon (_options:array) layout=true
+	(scope
+		(var _selected:number = -1)
+		(var isSelected:bool = "_selected == $index")
+		(var type:str = "isSelected ? 'normal_' : 'inactive_'")
+	)
+
+	(bind alpha "isSelected ? 1 : 0.5")
+
+	(style
+		(width = 16)
+		(height = 16)
+		(bind marginBottom "$index != _options.length - 1 ? 8 : 0")
+
+		(bind backgroundImage "'url:../battle_hud/weapons_panel/guns/torpedo/weapon_panel_torpedo_range_mini_' + type + _options[$index] + '.png'")
+	)
+)
+
+
+
+
+(def element AngleBackground (_width:number=SLOT_SIZE, _height:number=SLOT_SIZE) layout=true
+	(scope
+		(var _selected:number = 0)
+		(var _options:array = "[]")
+	)
+
+	(block
+		(style
+			(position = "absolute")
+		)
+		(controller $Repeat renderer='AngleBackgroundIcon'
+			(bind count "_options.length")
+			(args _width="_width" _height="_height" _options="_options")
+			(exprs
+				(scope
+					(bind _selected "_selected")
+				)
+			)
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(width = "_width")
+			(height = "_height")
+			(backgroundColor = "0x01000000")
+		)
+		(isMask = true)
+	)
+)
+
+
+
+
+(def element AngleBackgroundIcon (_width:number=SLOT_SIZE, _height:number=SLOT_SIZE, _options:array=[]) layout=true
+	(scope
+		(var _selected:number = -1)
+		(var isSelected:bool = "_selected == $index")
+	)
+
+	(alpha = "isSelected ? 1 : 0")
+
+	(style
+		(position = "absolute")
+		(width = "_width")
+		(height = "_height")
+
+		(bind backgroundImage "'url:../battle_hud/weapons_panel/guns/torpedo/weapon_panel_torpedo_range_normal_' + _options[$index] + '.png'")
+	)
+
+	(controller $Animation
+		(bindcall play  duration=0.25
+						easing="Easing.cubic_in"
+						from="{alpha: 0}"
+						to="{alpha: 1}"
+						action="killAll"
+						reverse="!(isSelected)"
+						(bind trigger "isSelected")
+		)
+	)
+)

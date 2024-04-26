@@ -1,0 +1,54 @@
+(def macro RADIO_BUTTON_THUMB_ANIMATION_STATE (_path:expression, _isActive:expression)
+	(block
+		(class $FullsizeAbsolute)
+		(style (bind backgroundImage "_path") (backgroundSize = "fill"))
+		(alpha = "_isActive")
+		
+		(controller $Animation
+			(bindcall play
+				from =	"{alpha: 0}"
+				to =	"{alpha: 1}"
+				reverse = "!_isActive"
+				duration="0.1"
+				(bind trigger "_isActive")
+			)
+		)
+	)
+)
+
+(def element RadioButton (	_isSelected:bool=false, _isDisabled:bool=false, _size:str='25px', _name:str='',
+							_dispatchedEv:str='', _dispatchParams:gfx={}, _methods:array=[]) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+		(var isThumbOver:bool = "!_isSelected && !mouseDown && rollOver")
+	)
+
+	(bind name "_name")
+
+	(style
+		(bind height "_size")
+		(bind width "_size")
+		(backgroundImage = "'url:../service_kit/buttons/radio_button/default.png'")
+		(backgroundSize = "fill")
+		(bind alpha "_isDisabled ? 0.4 : 1")
+		(marginLeft = "SXS")
+		(marginRight = "SXS")
+	)
+
+	(macro RADIO_BUTTON_THUMB_ANIMATION_STATE
+		_path = "'url:../service_kit/buttons/radio_button/over.png'"
+		_isActive = "isThumbOver"
+	)
+	(macro RADIO_BUTTON_THUMB_ANIMATION_STATE
+		_path = "'url:../service_kit/buttons/radio_button/check.png'"
+		_isActive = "_isSelected"
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "!_isDisabled && !_isSelected"
+		_dispatchedEv = "_dispatchedEv"
+		_dispatchParams = "_dispatchParams"
+		_methods = "_methods"
+		_soundSet = "'button_tab'"
+	)
+)

@@ -1,0 +1,321 @@
+(def constant BATTERY_STATE_TO_COLOR 
+{
+	'0': "SC.Ui_styles.SERVICE_COLORS.WHITE",		
+	'1': "SC.Ui_styles.SERVICE_COLORS.GREEN",		
+	'2': "SC.Ui_styles.SERVICE_COLORS.WHITE",		
+	'3': "SC.Ui_styles.SERVICE_COLORS.WHITE",		
+	'4': "SC.Ui_styles.SERVICE_COLORS.ORANGE",		
+	'5': "SC.Ui_styles.SERVICE_COLORS.ORANGE",		
+	'6': "SC.Ui_styles.SERVICE_COLORS.ORANGE",		
+	'7': "SC.Ui_styles.SERVICE_COLORS.ORANGE"		
+}
+)
+
+(def constant BATTERY_STATE_TO_ALPHA 
+{
+	'0': "TA",		
+	'1': "1",		
+	'2': "1",		
+	'3': '1',		
+	'4': '1',		
+	'5': '1',		
+	'6': '1',		
+	'7': '1'		
+}
+)
+
+(def constant BATTERY_STATE_TO_ICON_PREFIX "
+{
+	'0': 'white',	# BATTERY_STATE.IDLE: 0
+	'1': 'green',	# BATTERY_STATE.CHARGING: 1
+	'2': 'white',	# BATTERY_STATE.FROZEN: 2
+	'3': 'white',	# BATTERY_STATE.SPENDING_NORMAL: 3
+	'4': 'orange',	# BATTERY_STATE.SPENDING_WARNING: 4
+	'5': 'orange',	# BATTERY_STATE.SPENDING_CRITICAL: 5
+	'6': 'orange',	# BATTERY_STATE.BURNING: 6
+	'7': 'orange'	# BATTERY_STATE.EMPTY: 7
+}
+")
+
+
+
+(def element SubmarineBatterySimple () layout=true
+	(scope
+		
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var isTactical:bool = "cameraEntity.camera.isTactical" (event "cameraEntity.camera.evTacticalStateChanged"))
+
+		
+		(var selfVehicleEntity:gfx = "$datahub.getSingleEntity(CC.selfVehicle)")
+
+		(var batteryComponent:gfx = "selfVehicleEntity.battery")
+		(var absBaseSpendRate:number = "batteryComponent ? abs(batteryComponent.baseSpendRate) : 0" (event "selfVehicleEntity.evAdded"))
+		(var absCurrentRate:number = "batteryComponent ? abs(batteryComponent.currentRate) : 0" (event "batteryComponent.evCurrentRateChanged"))
+		(var energyValue:number = "batteryComponent ? batteryComponent.value : 0" (event "batteryComponent.evValueChanged"))
+		(var burnRate:number = "batteryComponent ? batteryComponent.burnRate : 0" (event "batteryComponent.evBurnRateChanged"))
+		(var batteryState:number = "batteryComponent ? batteryComponent.batteryState : SC.Battle.BATTERY_STATE.IDLE" (event "batteryComponent.evBatteryStateChanged"))
+		(var isPotentiallyBurning:bool = "batteryComponent ? batteryComponent.isPotentiallyBurning : false" (event "batteryComponent.evIsPotentiallyBurningChanged"))
+
+		
+		(var isFrozen:bool = "batteryState == SC.Battle.BATTERY_STATE.FROZEN")
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+		(var countdown:gfx = "selfVehicleEntity && selfVehicleEntity.hasComponent(CC.countDown)	? selfVehicleEntity.countDown
+																								: null" 
+							(event "selfVehicleEntity.evAdded") (event "selfVehicleEntity.evRemoved")
+		)
+		(var remainTime:number = "countdown ? countdown.endTime - timerEntity.timer.currentTime : 0" (event "timerEntity.timer.evFrequent") (event "countdown.evEndTimeChanged"))
+		(var percentPassed:number = "countdown ? max(remainTime, 0) / countdown.duration : 1")
+		(var arcProgress:number = "360 * percentPassed")
+
+		(var iconAnimAlpha:number = "isFrozen ? 0 : 1" watch=false)
+		(controller $Animation
+			(bindcall play  duration=0.15
+							easing="Easing.quad_in"
+							from="{ iconAnimAlpha: isFrozen ? 1 : 0 }"
+							to="{ iconAnimAlpha: isFrozen ? 0 : 1 }"
+							watch=false
+							action="kill"
+							(bind trigger "isFrozen")
+			)
+		)
+
+		
+		(var formattedTimeLeft:str = "countdownFormat(floor(energyValue), 0, true, false)")
+		(var formattedTimeLeftWidth:number = "formattedTimeLeft.length == 5 ? 45px : 36px")
+		(var batteryIconName:str = "'url:../battle_hud/crosshair/indicators/crosshair_indicator_energy_' + BATTERY_STATE_TO_ICON_PREFIX[batteryState] + '.png'")
+
+		
+		(var burningMultiplier:number = "isPotentiallyBurning ? (absCurrentRate + burnRate) : absBaseSpendRate" watch=false)
+		(bind burningMultiplier "(absCurrentRate + burnRate)" (bind enabled "isPotentiallyBurning"))
+
+		(event evMultiplierResetAnimEnd)
+		(controller $Animation
+			(bindcall play	from="{burningMultiplier: (absCurrentRate + burnRate)}"
+							to="{burningMultiplier: absBaseSpendRate}"
+							duration=0.3
+							easing="Easing.quad_in"
+							watch=false
+							(bind enabled "!isPotentiallyBurning")
+			)
+			(dispatch evMultiplierResetAnimEnd args="{}" on=evAnimEnded)
+		)
+
+		
+		(event evWarningBatteryState)
+		(event evCriticalBatteryState)
+		(event evRepeatCriticalBatteryState)
+
+		(var batteryIsWarning:bool = "batteryState == SC.Battle.BATTERY_STATE.SPENDING_WARNING")
+		(var batteryIsCritical:bool = "batteryState == SC.Battle.BATTERY_STATE.SPENDING_CRITICAL")
+
+		(controller $Animation
+			(bindcall play	from="{iconAnimAlpha: 0}"
+							to="{iconAnimAlpha: 1}"
+							duration=0.9
+							easing="Easing.line"
+							watch=false
+							(event "evWarningBatteryState")
+			)
+		)
+
+		(controller $Animation
+			(bindcall play	from="{iconAnimAlpha: 0}"
+							to="{iconAnimAlpha: 1}"
+							duration=0.9
+							easing="Easing.line"
+							watch=false
+							(event "evCriticalBatteryState")
+			)
+			(dispatch evRepeatCriticalBatteryState on=evAnimEnded)
+		)
+
+		(dispatch evWarningBatteryState (bind trigger "batteryIsWarning") (bind enabled "!batteryIsWarning"))
+		(dispatch evCriticalBatteryState (bind trigger "batteryIsCritical") (bind enabled "!batteryIsCritical"))
+	)
+
+	(style
+		(flow = "horizontal")
+		(align = "right")
+	)
+
+	(alpha = "isTactical ? 0 : 1")
+	(controller $Animation
+		(bindcall play  duration=0.35
+						from="{ alpha: 0 }"
+						to="{ alpha: 1 }"
+						reverse="isTactical"
+						(bind trigger "isTactical")
+		)
+	)
+
+	
+	(block
+		(style
+			(width = 19px)
+			(height = 19px)
+		)
+		(block
+			(bind alpha "iconAnimAlpha")
+			(style
+				(position = "absolute")
+				(top = -4px)
+				(bind backgroundImage "batteryIconName")
+				(backgroundSize = "autosize")
+			)
+		)
+		(block
+			(bind alpha "(1 - iconAnimAlpha) * 0.2")
+			(style
+				(position = "absolute")
+				(top = 6px)
+				(left = 9px)
+			)
+			(controller $Sector
+				(bind color "0x33000000")
+				(bind arc "360")
+				(bind radius "6")
+			)
+		)
+		(block
+			(bind alpha "1 - iconAnimAlpha")
+			(style
+				(position = "absolute")
+				(top = 6px)
+				(left = 9px)
+			)
+			(controller $Sector
+				(bind color "SC.Ui_styles.SERVICE_COLORS.WHITE")
+				(bind arc "isFrozen ? arcProgress : 0")
+				(bind offset "-90 - arcProgress")
+				(bind radius "5")
+				(bind innerRadius "3")
+			)
+		)
+		
+		(block
+			(style
+				(position = "absolute")
+				(top = 6px)
+				(left = 9px)
+			)
+
+			(controller $FxInstance renderer='CautionBatteryEnergyFX' lifetime="1"
+				(bindcall create (event "evWarningBatteryState"))
+				(bindcall create (event "evCriticalBatteryState"))
+				(bindcall create (event "evRepeatCriticalBatteryState"))
+			)
+		)
+	)
+
+	
+	(block
+		(tf
+			(bind alpha "BATTERY_STATE_TO_ALPHA[batteryState]")
+			(class $TelegraphValueText)
+			(style
+				(bind textColor "BATTERY_STATE_TO_COLOR[batteryState]")
+				(bind width "formattedTimeLeftWidth")
+			)
+			(bind text "formattedTimeLeft")
+		)
+		
+		(block
+			(alpha = "isPotentiallyBurning ? 1 : 0 ")
+			(style
+				(position = "absolute")
+				(right = "4px")
+				(top = "18px")
+			)
+			(controller $Animation
+				(bindcall play	from="{alpha: 0}"
+								to="{alpha: 1}"
+								duration=0.5
+								easing="Easing.quad_in"
+								watch=false
+								action=killAll
+								(bind enabled "isPotentiallyBurning")
+				)
+				(bindcall play	from="{alpha: 1}"
+								to="{alpha: 0}"
+								duration=0.3
+								delay=1
+								easing="Easing.quad_out"
+								action=killAll
+								watch=false
+								(event "evMultiplierResetAnimEnd")
+				)
+			)
+			(tf
+				(class $TextDefault11NM)
+				(style
+					(bind textColor "isPotentiallyBurning	? SC.Ui_styles.SERVICE_COLORS.ORANGE
+															: SC.Ui_styles.SERVICE_COLORS.WHITE")
+					(textAlign = "right")
+				)
+				(bind text "'x'+ formatFloatingPoint(burningMultiplier, 2)")
+			)
+		)
+	)
+)
+
+(def element CautionBatteryEnergyFX () layout=true
+	(scope
+		(event evShow)
+
+		(var mainCircleRadius:number = "0")
+		(var mainCircleAlpha:number = "0")
+		(var secondCircleRadius:number = "0")
+		(var secondCircleAlpha:number = "0")
+
+		(controller $Animation
+			(bindcall play
+				duration = "0.7"
+				from = "{ mainCircleRadius: 0, mainCircleAlpha: 1}"
+				to = "{ mainCircleRadius: 25, mainCircleAlpha: 0}"
+				easing = "Easing.line"
+				watch=false
+				(event "evShow")
+			)
+
+			(bindcall play
+				duration = "0.7"
+				delay = "0.35"
+				from = "{ secondCircleRadius: 0, secondCircleAlpha: 1}"
+				to = "{ secondCircleRadius: 25, secondCircleAlpha: 0}"
+				easing = "Easing.line"
+				watch=false
+				(event "evShow")
+			)
+		)
+	)
+
+	(dispatch evShow on='addedToStage')
+
+	(block
+		(style (position = "absolute"))
+		(alpha = 0)
+		(bind alpha "mainCircleAlpha")
+		(controller $Sector
+			(arc="360")
+			(radius = 0)
+			(bind radius "mainCircleRadius")
+			(bind color "0xFFFF9933")
+			(alphas="[0.75, 1, 0.75]")
+			(ratios="[175, 215, 255]")
+		)
+	)
+
+	(block
+		(style (position = "absolute"))
+		(alpha = 0)
+		(bind alpha "secondCircleAlpha")
+		(controller $Sector
+			(arc="360")
+			(radius = 0)
+			(bind radius "secondCircleRadius")
+			(bind color "0xFFFF9933")
+			(alphas="[0.75, 1, 0.75]")
+			(ratios="[175, 215, 255]")
+		)
+	)
+)

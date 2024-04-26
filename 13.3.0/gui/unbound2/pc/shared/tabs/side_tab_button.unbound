@@ -1,0 +1,203 @@
+(def constant SIDE_TAB_IMAGE_ALPHA {
+	SC.Ui_styles.BUTTON_STATE.DISABLED	: 0.2,
+	SC.Ui_styles.BUTTON_STATE.SELECTED	: 1,
+	SC.Ui_styles.BUTTON_STATE.DOWN		: 0.3,
+	SC.Ui_styles.BUTTON_STATE.OVER		: "TA",
+	SC.Ui_styles.BUTTON_STATE.UP		: 0.65
+})
+
+(def element SideTabButton (_label:str, _isSelected:bool, _dispatchedEv:str='', _dispatchParams:gfx={}, _methods:array=[], _isDisabled:bool=false,
+							_isNewMarker:bool=false, _isAttentionMarker:bool=false, _entityId:number=0, _hasInlineCounter:bool=false, _inlineCounter:number=0,
+							_newContentCounter:number=0, _image:dict={}, _unifiedStatus:str = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(event stateAnimationFinised)
+
+		(var state:number = "	_isDisabled	? SC.Ui_styles.BUTTON_STATE.DISABLED :
+								_isSelected	? SC.Ui_styles.BUTTON_STATE.SELECTED :
+								mouseDown	? SC.Ui_styles.BUTTON_STATE.DOWN :
+								rollOver	? SC.Ui_styles.BUTTON_STATE.OVER
+											: SC.Ui_styles.BUTTON_STATE.UP")
+
+		(var overAlpha:number = "state == SC.Ui_styles.BUTTON_STATE.OVER ? 1 : 0")
+		(var selectedAlpha:number = "state == SC.Ui_styles.BUTTON_STATE.SELECTED ? 1 : 0")
+
+		(var imageAlpha:number = "SIDE_TAB_IMAGE_ALPHA[state]")
+
+		(var labelColor:number = "	state == SC.Ui_styles.BUTTON_STATE.SELECTED			? SC.Ui_styles.SERVICE_COLORS.MATTE_BLACK :
+									_unifiedStatus == SC.Ui_styles.UNIFIED_STATUS.CHECK	? SC.Ui_styles.SERVICE_COLORS.YELLOW
+																						: SC.Ui_styles.SERVICE_COLORS.WHITE"
+									watch=false (event "stateAnimationFinised"))
+		(var labelAlpha:number = "	_unifiedStatus == SC.Ui_styles.UNIFIED_STATUS.CHECK	? MAIN_AND_SIDE_TAB_LABEL_YELLOW_ALPHA[state]
+																						: MAIN_AND_SIDE_TAB_LABEL_ALPHA[state]")
+
+		(var imageRenderer:str = "'renderer' in _image ? _image.renderer : null")
+		(var imageData:dict = "'data' in _image ? _image.data : null")
+
+		(var showMarkerNew:bool = "_isNewMarker")
+		(var showMarkerAttention:bool = "_isAttentionMarker && !_isNewMarker")
+		(var showMarkerCounter:bool = "_newContentCounter > 0 && !showMarkerNew && !showMarkerAttention")
+
+		(var tabRoute:str = "_methods.length	? 'route' in _methods[0].args	? _methods[0].args.route
+																				: ''
+												: ''")
+	)
+	
+	(bindcall externalCall "_isNewMarker ? 'inputMapping.onAction' : ''" "['makeSeen', { entityId: _entityId }]" init=false watch=false (event "evClicked"))
+
+	(bind name "'profile_' + tabRoute")
+
+	(style (width = 100%) (height = 36px) (marginBottom = 1px))
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(bind backgroundImage "'url:../service_kit/tabs/side/bgr.png'")
+			(scale9grid = [12, 0, 9, 0])
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundImage = 'url:../service_kit/tabs/side/over.png')
+			(scale9grid = [12, 0, 9, 0])
+			(bind alpha "overAlpha" watch=false)
+		)
+		(macro DEFAULT_CONTROL_STATE_ANIMATION_ALPHA _trigger="state" _alpha="overAlpha")
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundImage = 'url:../service_kit/tabs/side/selected.png')
+			(scale9grid = [12, 0, 9, 0])
+			(bind alpha "selectedAlpha" watch=false)
+		)
+		(macro DEFAULT_CONTROL_STATE_ANIMATION_ALPHA _trigger="state" _alpha="selectedAlpha")
+	)
+
+	
+	(tf
+		(bind visible "_hasInlineCounter")
+
+		(macro DEFAULT_CONTROL_STATE_ANIMATION_ALPHA _trigger="state" _alpha="labelAlpha")
+
+		(class $TextDefaultBold17NM)
+		(bind class "labelColor == SC.Ui_styles.SERVICE_COLORS.MATTE_BLACK ? '$DropShadowDisabler' : '$FontDropShadowFilter'")
+
+		(style
+			(position = "absolute")
+			(top = 12px)
+			(right = 20px)
+			(bind textColor "labelColor")
+			(bind alpha "labelAlpha" watch=false)
+		)
+
+		(bind text "_inlineCounter ? _inlineCounter : ''")
+	)
+
+	(hblock
+		(class $Fullsize)
+
+		(style
+			(align = "middle")
+			(paddingLeft = "M")
+		)
+
+		
+		(block
+			(bind visible "imageRenderer")
+			(macro DEFAULT_CONTROL_STATE_ANIMATION_ALPHA _trigger="state" _alpha="imageAlpha")
+
+			(style
+				(marginRight = "S")
+				(bind alpha "imageAlpha" watch=false)
+			)
+
+			(controller $Instance
+				(bind enabled "imageRenderer")
+				(bind renderer "imageRenderer")
+				(args
+					_data = "imageData"
+				)
+			)
+		)
+
+		
+		(hblock
+			(style
+				(width = 100%)
+				(bind paddingRight "_hasInlineCounter ? 40 : M")
+			)
+
+			(tf
+				(controller $Animation
+					(bindcall play
+						duration = "0.1"
+						to = "{alpha: labelAlpha}"
+						easing = "Easing.quad_in"
+						
+						(bind trigger "state")
+					)
+					(dispatch stateAnimationFinised on=evAnimEnded)
+				)
+
+				(class $TextDefaultBold17NM)
+				(bind class "labelColor == SC.Ui_styles.SERVICE_COLORS.MATTE_BLACK ? '$DropShadowDisabler' : '$FontDropShadowFilter'")
+
+				(style
+					(maxWidth = 100%)
+					(multiline = false)
+					(elideMode = true)
+					(bind textColor "labelColor")
+					(bind alpha "labelAlpha" watch=false)
+				)
+
+				(bind text "toUpper(tr(_label))")
+			)
+
+			(block
+				
+				(block
+					(style (position = "absolute") (right = -40px) (top = -10px))
+
+					(block
+						(macro DEFAULT_CONTROL_MARKER_ANIMATION "showMarkerNew")
+
+						(style
+							(bind alpha "showMarkerNew ? 1 : 0" watch=false)
+						)
+
+						(element MarkerNew)
+					)
+				)
+				
+				(block
+					(style (position = "absolute") (right = -3px) (top = -10px))
+
+					(block
+						(macro DEFAULT_CONTROL_MARKER_ANIMATION "showMarkerCounter")
+						(style
+							(position = "absolute")
+							(bind alpha "showMarkerCounter ? 1 : 0" watch=false)
+						)
+						(element MarkerNewCounter
+							_newContentCounter = "_newContentCounter"
+						)
+					)
+				)
+			)
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "!_isDisabled && !_isSelected"
+		_dispatchedEv = "_dispatchedEv"
+		_dispatchParams = "_dispatchParams"
+		_methods = "_methods"
+		_soundSet = "'button_secondary'"
+	)
+)

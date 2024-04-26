@@ -1,0 +1,47 @@
+<GGM128_283mm_SK_L50_LC_1908_dead_lod3.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	MP_GM499_Vizirs_dead	</identifier>
+				<transform>
+					<row0>	0.8790 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.8790 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.8790 0.0000	</row2>
+					<row3>	0.0030 0.1583 0.0291 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_dead_lod3Shape.vertices	</vertices>
+			<primitive>	Turret_dead_lod3Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/GSB204_Moltke/gun/GGM128_283mm_SK_L50_LC_1908_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.2819 0.0000 -0.4333	</min>
+		<max>	0.2819 0.1871 0.8026	</max>
+	</boundingBox>
+</GGM128_283mm_SK_L50_LC_1908_dead_lod3.visual>

@@ -1,0 +1,330 @@
+(def constant MODERNIZATION_ICON_SIZE 60)
+
+(def element ModalWindowBuyAndInstallRecommendedModernizations () dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(scope
+		(var resourceWatcher:gfx = "$datahub.getFirstWatcher(CC.accountResource)")
+		(var resourceEntity:gfx = "resourceWatcher.entity" (event "resourceWatcher.event"))
+		(var resourceComponent:gfx = "resourceEntity ? resourceEntity.accountResource : null")
+		(var playerCreditsAmount:number = "resourceComponent ? resourceComponent.credits : null" (event "resourceComponent.evChangedCredit"))
+
+		(var recommendedModernizationsEntity:gfx="$datahub.getSingleEntity(CC.recommendedModernization)")
+		(var recommendedModernizationsComponent:gfx = "recommendedModernizationsEntity ? recommendedModernizationsEntity.recommendedModernization : null")
+		(var modernizationsFromStorage:array = "recommendedModernizationsComponent ? recommendedModernizationsComponent.modsOnStorage : null" (event "recommendedModernizationsComponent.evUpdated"))
+		(var modernizationsToPurchase:array = "recommendedModernizationsComponent ? recommendedModernizationsComponent.modsToBuy : null" (event "recommendedModernizationsComponent.evUpdated"))
+
+		(var totalCreditPrice:number =	"recommendedModernizationsComponent ? recommendedModernizationsComponent.totalCostCR : null" (event "recommendedModernizationsComponent.evUpdated"))
+		(var deficit:number = "totalCreditPrice - playerCreditsAmount")
+		(var isDeficit:bool = "deficit > 0")
+		(var priceInfo:dict = "{ finalPrice: totalCreditPrice, currency: SC.Common.CURRENCIES.CREDITS }")
+		(var currenciesPanelPrices:array = "[{ finalPrice: -totalCreditPrice, currency:  SC.Common.CURRENCIES.CREDITS}]")
+
+		(var isAnyModernizationFromStorage:bool = "modernizationsFromStorage.length > 0")
+		(var isAnyModernizationPurchased:bool = "modernizationsToPurchase.length > 0")
+		(var isPurchasingAndInstallingFromStorage:bool = "isAnyModernizationPurchased && isAnyModernizationFromStorage")
+
+		(var questionString:str = "isAnyModernizationPurchased	? 'IDS_QUESTION_PURCHASE_AND_INSTALL_FOR' : 'IDS_QUESTION_INSTALL'")
+
+		(var modernizationMarginsSumm:number = "M * 2")
+		(var largestList:array = "modernizationsFromStorage.length >= modernizationsToPurchase.length	? modernizationsFromStorage
+																										: modernizationsToPurchase")
+		(var largestListWidth:number = "largestList.length <= 5	? 5 * (modernizationMarginsSumm + MODERNIZATION_ICON_SIZE)
+																: largestList.length * (modernizationMarginsSumm + MODERNIZATION_ICON_SIZE)")
+
+		(event evHideContent)
+		(event evAnimationFinished)
+		(event dataLoadingBecomeVisible)
+		(event delayedDataLoadingBecomeVisible)
+
+		(var windowHitTest:bool = true)
+		(bind windowHitTest "false" watch=false init=false (event "evHideContent"))
+	)
+	
+	(bindcall externalCall 'inputMapping.onAction' "['installAllRecommendedModernizations', { }]" init=false (event "dataLoadingBecomeVisible"))
+	(bindcall externalCall 'inputMapping.onRequest' "['close', { }]" init=false (event "delayedDataLoadingBecomeVisible"))
+
+	(style	(align = "center|middle")
+			(bind hitTest "windowHitTest"))
+
+	(block
+		(style (bind width "largestListWidth"))
+
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 1 hideEvent = "'evHideContent'")
+			(style (width = 100%) (align = "center") (marginBottom = "S"))
+
+			(element ModalWindowShortHeader
+				_header = 'IDS_WINDOW_HEADER_PURCHASE_AND_INSTALL_MODERNIZATIONS'
+				_hasDivider = "false"
+			)
+
+			(element CurrenciesPanel
+				_priceInfo = "currenciesPanelPrices"
+				_width = "largestListWidth"
+			)
+		)
+		
+
+		(block
+			(style
+				(width = 100%)
+				(marginBottom = "MS")
+			)
+
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 2 hideEvent = "'evHideContent'")
+				(style (width = 100%))
+
+				(controller $Instance renderer='ModernizationsList'
+					(bind enabled "isAnyModernizationFromStorage")
+					(args
+						_listTitle = "isPurchasingAndInstallingFromStorage ? 'IDS_RECOMMENDED_MODERNIZATIONS_FROM_STORAGE_LIST_TITLE' : ''"
+						_list = "modernizationsFromStorage"
+					)
+				)
+
+				(block
+					(bind visible "isAnyModernizationPurchased")
+					(style
+						(width = 100%)
+						(marginTop = "isPurchasingAndInstallingFromStorage ? M : 0")
+					)
+
+					(controller $Instance renderer='ModernizationsList'
+						(bind enabled "isAnyModernizationPurchased")
+						(args
+							_listTitle = "isPurchasingAndInstallingFromStorage ? 'IDS_RECOMMENDED_MODERNIZATIONS_TO_PURCHASE_LIST_TITLE' : ''"
+							_list = "modernizationsToPurchase"
+						)
+					)
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%) (marginBottom = "MS"))
+
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 3 hideEvent = "'evHideContent'")
+				(style (align = "center") (width = 100%))
+
+				(element PriceTagWithQuestion
+					_questionText = "questionString"
+					_priceInfo = "priceInfo.finalPrice ? priceInfo : null"
+					_isDeficit = "isDeficit"
+				)
+
+				(block
+					(style (align = "center") (marginTop = "M"))
+
+					(block
+						(style
+							(bind alpha "isDeficit ? 1 : 0" watch=false)
+							(bind ubScaleY "isDeficit ? 1 : 0" watch=false)
+						)
+
+						(element PriceDeficit
+							_priceInfo =	"priceInfo"
+							_deficit =		"deficit"
+							_size =			"SIZE.MEDIUM"
+						)
+
+						(controller $Animation
+							(bindcall play
+								duration = 0.15
+								from	 = "{ alpha: 0, ubScaleY: 0 }"
+								to		 = "{ alpha: 1, ubScaleY: 1 }"
+								easing	 = "Easing.quad_out"
+								action	 ="kill"
+								reverse	= "!isDeficit"
+								(bind trigger "isDeficit")
+							)
+						)
+					)
+
+					(block
+						(style
+							(bind alpha "isDeficit ? 0 : 1" watch=false)
+							(bind ubScaleY "isDeficit ? 0 : 1" watch=false)
+						)
+
+						(element StatusLine
+							_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+							_text = 'IDS_WARNING_MODERNIZATIONS_MULTIPLE_UNMOUNT'
+							_textClass = '$TextDefault17NM'
+						)
+
+						(controller $Animation
+							(bindcall play
+								duration = 0.15
+								from	 = "{ alpha: 1, ubScaleY: 1 }"
+								to		 = "{ alpha: 0, ubScaleY: 0 }"
+								easing	 = "Easing.quad_out"
+								action	 ="kill"
+								reverse	= "!isDeficit"
+								(bind trigger "isDeficit")
+							)
+						)
+					)
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%) (align = "center"))
+
+			(hblock
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 4 hideEvent = "'evHideContent'" animationFinishedEvent = "'evAnimationFinished'")
+				(style (width = 276px))
+
+				(block
+					(style
+						(position = "absolute")
+						(bind alpha "isDeficit ? 0 : 1" watch=false)
+						(bind top "isDeficit ? 10 : 0" watch=false)
+					)
+
+					(element DefaultButton
+						_width = 130
+						_name = 'btn_yes'
+						_isTransactionBtn = true
+						_label = 'IDS_YES'
+						_focusIndex = 1
+						_defaultFocused = true
+						_dispatchedEv = "'evHideContent'"
+					)
+
+					(controller $Animation
+						(bindcall play
+							duration = 0.15
+							delay = 0.1
+							from	 = "{ alpha: 0, top: 10 }"
+							to		 = "{ alpha: 1, top: 0 }"
+							easing	 = "Easing.quad_out"
+							action	 ="kill"
+							(bind enabled "!isDeficit")
+							(bind trigger "isDeficit")
+						)
+						(bindcall play
+							duration = 0.15
+							from	 = "{ alpha: 1, top: 0 }"
+							to		 = "{ alpha: 0, top: 10 }"
+							easing	 = "Easing.quad_out"
+							action	 ="kill"
+							(bind enabled "isDeficit")
+							(bind trigger "isDeficit")
+						)
+					)
+				)
+
+				(block
+					(style
+						(position = "absolute")
+						(bind left "isDeficit ? 73 : 146" watch=false)
+					)
+
+					(element DefaultButton
+						_width = 130
+						_name = 'btn_cancel'
+						_label = "isDeficit ? 'IDS_CLOSE_BTN' : 'IDS_NO'"
+						_dispatchedEv = "'evHideContent'"
+						_focusIndex = 2
+					)
+
+					(controller $Animation
+						(bindcall play
+							duration = 0.15
+							from	 = "{ left: 146 }"
+							to		 = "{ left: 73 }"
+							easing	 = "Easing.quad_out"
+							action	 ="kill"
+							(bind enabled "isDeficit")
+							(bind trigger "isDeficit")
+						)
+						(bindcall play
+							duration = 0.15
+							delay = 0.1
+							from	 = "{ left: 73 }"
+							to		 = "{ left: 146 }"
+							easing	 = "Easing.quad_out"
+							action	 ="kill"
+							(bind enabled "!isDeficit")
+							(bind trigger "isDeficit")
+						)
+					)
+				)
+			)
+		)
+	)
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+		(class $FullsizeAbsolute)
+		(style
+			(align = "center|middle")
+		)
+
+		(block
+			(alpha = 0)
+
+			(controller $Animation
+				(bindcall play	duration = "0.1"
+								action="kill"
+								from = "{alpha: 0, visible: false,  top: 10}"
+								to = "{alpha: 1, visible: true, top: 0}"
+								(event "evAnimationFinished")
+				)
+				(dispatch dataLoadingBecomeVisible args="{}" init=false on=evAnimEnded)
+				(dispatch delayedDataLoadingBecomeVisible args="{}" delay=0.4 init=false on=evAnimEnded)
+			)
+
+			(tf
+				(class $TextDefaultBoldNM)
+				(alpha = "TA")
+				(bind text "toUpper(tr('IDS_DATA_LOADING'))")
+			)
+		)
+	)
+)
+
+(def element ModernizationsList (_listTitle:str='', _list:array=[])
+	(style (width = 100%))
+
+	(tf
+		(bind visible "_listTitle")
+
+		(class $TextDefaultBold17NM)
+		(style
+			(marginBottom = "SXS")
+			(marginLeft = "M")
+			(alpha = "TC")
+		)
+
+		(bind text "_listTitle")
+	)
+
+	(element HorizontalDividerTwoPx)
+
+	(hblock
+		(style (align = "center|middle") (width = 100%) (paddingTop = "SXS") (paddingBottom = "SXS") (backgroundColor = "SC.Ui_styles.SERVICE_COLORS.INNER_PANEL"))
+
+		(controller $Repeat renderer='RecommendedModernizationElementWrapper'
+			(bind count "_list.length")
+			(args
+				_id = "_list[$index]"
+			)
+		)
+	)
+
+	(element HorizontalDividerTwoPx)
+)
+
+(def element RecommendedModernizationElementWrapper (_id:number)
+	(style (margin = "SXS"))
+
+	(element ModernizationItemStatic
+		_id = "_id"
+	)
+)

@@ -1,0 +1,218 @@
+(def constant DYNAMIC_C_CENTER 'binocular_scale_center') 
+(def constant DYNAMIC_C_LINE_LEFT 'binocular_scale_left_side') 
+(def constant DYNAMIC_C_LINE_RIGHT 'binocular_scale_right_side') 
+(def constant DYNAMIC_C_LINE_V_BIG 'binocular_scale_vert_big') 
+(def constant DYNAMIC_C_LINE_V_SMALL 'binocular_scale_vert_small') 
+
+(def constant DYNAMIC_C_CENTER_DARK 'binocular_scale_center_dark') 
+(def constant DYNAMIC_C_LINE_LEFT_DARK 'binocular_scale_left_side_dark') 
+(def constant DYNAMIC_C_LINE_RIGHT_DARK 'binocular_scale_right_side_dark')  
+(def constant DYNAMIC_C_LINE_V_BIG_DARK 'binocular_scale_vert_big_dark')  
+(def constant DYNAMIC_C_LINE_V_SMALL_DARK 'binocular_scale_vert_small_dark')  
+
+(def constant DYNAMIC_C_TICK_SIZE 0.30)
+(def constant DYNAMIC_C_LINE_HOR_PADDING 80)
+(def constant DYNAMIC_C_MAX_BIG_TICKS 180)
+
+(def element DynamicBinocularCrosshairRenderer_01(_crosshairId:number = 0) layout=false
+	(scope
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHalfW:number = "stageWidth * 0.5")
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var frustumAngleOriginal:number = "radToGrad(cameraEntity.camera.frustumAngle)" (event "cameraEntity.camera.evFrustumAngleChanged"))
+		(var frustumAngle:number = "min(frustumAngleOriginal, 70)")
+
+		(var maxTicksCount:number = "DYNAMIC_C_MAX_BIG_TICKS")
+
+		(var horizontalLineMaxWidth:number = "stageHalfW - DYNAMIC_C_LINE_HOR_PADDING")
+		(var lineStep:number = "stageHalfW / frustumAngle")
+		(var horizontalLineOffset:number = "lineStep*DYNAMIC_C_TICK_SIZE*2")
+
+		(var horizontalLineWidth:number = "min(horizontalLineMaxWidth, horizontalLineOffset*maxTicksCount)")
+
+		(var maxVisibleTickIndex:number = "floor((horizontalLineOffset + horizontalLineWidth) / (horizontalLineOffset))")
+	)
+
+	(sprite
+		(bind x "stageWidth*0.5")
+		(bind y "stageHeight*0.5")
+
+		
+		(symbol "DYNAMIC_C_CENTER")
+
+		
+		(sprite
+			(y = -2)
+        	(bind x "floor(horizontalLineOffset)-2")
+
+			(symbol "DYNAMIC_C_LINE_RIGHT"
+				(bind width "horizontalLineWidth")
+				(height = 4)
+			)
+		)
+
+		
+		(sprite
+			(y = -2)
+        	(bind x "-floor(horizontalLineOffset)+1")
+
+			(symbol "DYNAMIC_C_LINE_LEFT"
+				(bind width "horizontalLineWidth")
+				(height = 4)
+			)
+		)
+
+		
+		(controller $Repeat renderer='DynamicTickLineRendererMcNoLayout'
+			(bind count "maxTicksCount")
+			(args _horizontalLineOffset="horizontalLineOffset" _maxIndex="maxVisibleTickIndex")
+		)
+
+		
+		(controller $Repeat renderer='DynamicTickLineRendererMcNoLayout'
+			(bind count "maxTicksCount")
+			(args _horizontalLineOffset="-horizontalLineOffset" _maxIndex="maxVisibleTickIndex")
+		)
+	)
+)
+
+(def element DynamicTickLineRendererMcNoLayout (_horizontalLineOffset:number, _maxIndex:number) layout=false
+	(scope
+		(var isZeroTick:bool = "$index == 0")
+		(var isBigTick:bool = "$index % 5 == 0")
+	)
+
+	(y = -2)
+	(bind x "floor(_horizontalLineOffset*$index)")
+
+	(bind visible "$index <= _maxIndex")
+
+	(symbol "isBigTick ? DYNAMIC_C_LINE_V_BIG : DYNAMIC_C_LINE_V_SMALL" $enabled="!(isZeroTick)")
+
+	(element DynamicTickLineRendererText "$index"
+		(bind visible "!(isZeroTick) && isBigTick")
+	)
+)
+
+(def element DynamicTickLineRendererText (_text:str) layout=true
+	(tf
+		(class $FontEnableReadability)
+		(style
+			(position = "absolute")
+			(left = -12)
+			(top = -36)
+			(width = 24)
+			(fontFamily = '$WWSDefaultFont')
+			(fontSize = 12)
+			(textColor = 0xCCCCCC)
+			(textAlign = "center")
+		)
+		(bind text "_text")
+	)
+)
+
+
+(def element DynamicBinocularCrosshairRenderer_01_Dark (_crosshairId:number = 0) layout=false
+	(scope
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHalfW:number = "stageWidth * 0.5")
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var frustumAngleOriginal:number = "radToGrad(cameraEntity.camera.frustumAngle)" (event "cameraEntity.camera.evFrustumAngleChanged"))
+		(var frustumAngle:number = "min(frustumAngleOriginal, 70)")
+
+		(var maxTicksCount:number = "DYNAMIC_C_MAX_BIG_TICKS")
+
+		(var horizontalLineMaxWidth:number = "stageHalfW - DYNAMIC_C_LINE_HOR_PADDING")
+		(var lineStep:number = "stageHalfW / frustumAngle")
+		(var horizontalLineOffset:number = "lineStep*DYNAMIC_C_TICK_SIZE*2")
+
+		(var horizontalLineWidth:number = "min(horizontalLineMaxWidth, horizontalLineOffset*maxTicksCount)")
+
+		(var maxVisibleTickIndex:number = "floor((horizontalLineOffset + horizontalLineWidth) / (horizontalLineOffset))")
+	)
+
+	(alpha = 0.8)
+
+	(sprite
+		(bind x "stageWidth*0.5")
+		(bind y "stageHeight*0.5")
+
+		
+		(symbol "DYNAMIC_C_CENTER_DARK")
+
+		(sprite
+			(y = -1)
+
+			
+			(sprite
+				(bind x "floor(horizontalLineOffset)")
+
+				(symbol "DYNAMIC_C_LINE_RIGHT_DARK"
+					(bind width "horizontalLineWidth")
+					(height = 4)
+				)
+			)
+
+			
+			(sprite
+				(bind x "-floor(horizontalLineOffset)")
+
+				(symbol "DYNAMIC_C_LINE_LEFT_DARK"
+					(bind width "horizontalLineWidth")
+					(height = 4)
+				)
+			)
+		)
+
+		
+		(controller $Repeat renderer='DynamicTickLineRendererMcNoLayoutDark'
+			(bind count "maxTicksCount")
+			(args "horizontalLineOffset" "maxVisibleTickIndex" "false")
+		)
+
+		
+		(controller $Repeat renderer='DynamicTickLineRendererMcNoLayoutDark'
+			(bind count "maxTicksCount")
+			(args "-horizontalLineOffset" "maxVisibleTickIndex" "true")
+		)
+	)
+)
+
+(def element DynamicTickLineRendererMcNoLayoutDark (_horizontalLineOffset:number, _maxIndex:number, _isLeft:bool) layout=false
+	(scope
+		(var isZeroTick:bool = "$index == 0")
+		(var isBigTick:bool = "$index % 5 == 0")
+		(var assetName:str = "(isBigTick ? DYNAMIC_C_LINE_V_BIG_DARK : DYNAMIC_C_LINE_V_SMALL_DARK) + (_isLeft ? '_left' : '_right')")
+	)
+	(bind x "floor(_horizontalLineOffset*$index)")
+
+	(bind visible "$index <= _maxIndex")
+
+	(symbol "assetName" $enabled="!(isZeroTick)")
+
+	(element DynamicTickLineRendererTextDark "$index"
+		(bind visible "!(isZeroTick) && isBigTick")
+	)
+)
+
+(def element DynamicTickLineRendererTextDark (_text:str) layout=true
+	(tf
+		(class $FontEnableReadability)
+		(style
+			(position = "absolute")
+			(left = -12)
+			(top = -42)
+			(width = 24)
+			(fontFamily = '$WWSDefaultFont')
+			(fontSize = 12)
+			(textAlign = "center")
+		)
+		(bind text "_text")
+	)
+)

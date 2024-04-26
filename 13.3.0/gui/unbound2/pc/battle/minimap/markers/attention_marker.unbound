@@ -1,0 +1,6 @@
+(def element MapAttentionMarker (_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number) layout=true
+	
+	(macro BIND_FAIR_SCALE "_itemScale / _mapScale")
+
+	(macro AttentionMarker _markerEntity="_markerEntity" _markerType='minimap')
+)

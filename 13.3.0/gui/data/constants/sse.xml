@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<constants>
+	<enum name="SSE_STATE" type="Integer">
+		<const name="LOCKED"	value="0"	/>
+		<const name="ACTIVE"	value="1"	/>
+	</enum>
+
+	<enum name="PREDEFINED_SSE_TAGS" type="String">
+		<const name="BATTLEPASS"	value="battlepass"		/>
+		<const name="COMMON"		value="common"			/>
+	</enum>
+
+	<enum name="SSE_REWARD_CATEGORY" type="String">
+		<const name="NONE"				value="none"				/>
+		<const name="SHIP"				value="ship"				/>
+		<const name="CREW"				value="crew"				/>
+		<const name="PREMIUM"			value="premium"				/>
+		<const name="XP"				value="exp"					/>
+		<const name="FREE_XP"			value="free_exp"			/>
+		<const name="CREDITS"			value="credits"				/>
+		<const name="GOLD"				value="gold"				/>
+		<const name="COAL"				value="coal"				/>
+		<const name="STEEL"				value="steel"				/>
+		<const name="META_CURRENCY"		value="metacurrencies"		/>
+		<const name="LOOTBOX"			value="containers"			/>
+		<const name="LOOTBOX_CREDITS"	value="containers_credits"	/>
+		<const name="LOOTBOX_RESOURCES"	value="containers_resources"/>
+		<const name="LOOTBOX_SIGNALS"	value="containers_signals"	/>
+		<const name="LOOTBOX_SUPER"		value="containers_super"	/>
+		<const name="LOOTBOX_UNLUCKY"	value="containers_unlucky"	/>
+		<const name="DOGTAG"			value="dogtags"				/>
+		<const name="CAMO"				value="camos"				/>
+		<const name="SIGNAL"			value="signals"				/>
+		<const name="ENSIGN"			value="ensigns"				/>
+		<const name="MODERNIZATION"		value="modernizations"		/>
+		<const name="PARAGON_XP"		value="paragonexp"			/>
+		<const name="UNIT"				value="module"				/>
+		<const name="ECOBOOST"			value="eco"					/>
+		<const name="BRASS"				value="brass"				/>
+		<const name="MOLYBDENUM"		value="molybdenum"			/>
+		<const name="DOCKYARD"			value="dockyard"			/>
+		<const name="COMMUNITY_TOKEN"	value="community_tokens"	/>
+		<const name="BP_POINTS"			value="bp_points"			/>
+		<const name="PORTAL_REWARD"		value="portal_reward"		/>
+		<const name="MYSTERY_REWARD"	value="mystery_reward"		/>
+		<const name="ABILITY_UNLOCK"	value="ability_unlock"		/>
+		<const name="OTHER"				value="other"				/>
+	</enum>
+
+	<enum name="SSE_CONDITION_CATEGORY" type="String">
+		<const name="NONE"					value="none"					/>
+		<const name="SCOUTING_DAMAGE"		value="scouting_damage"			/>
+		<const name="START_FIRE"			value="start_fire"				/>
+		<const name="DAMAGE"				value="damage"					/>
+		<const name="DAMAGE_MAIN"			value="damage_main"				/>
+		<const name="DAMAGE_ATBA"			value="damage_atba"				/>
+		<const name="DAMAGE_FIRE"			value="damage_fire"				/>
+		<const name="DAMAGE_FLOOD"			value="damage_flood"			/>
+		<const name="DAMAGE_FIRE_FLOOD"		value="damage_fire_flood"		/>
+		<const name="DAMAGE_TORPS"			value="damage_torps"			/>
+		<const name="DAMAGE_TBOMBER"		value="damage_tbomber"			/>
+		<const name="DAMAGE_TORPS_TBOMBER"	value="damage_torps_tbomber"	/>
+		<const name="DAMAGE_BOMBER"			value="damage_bomber"			/>
+		<const name="DAMAGE_SKIPBOMBER"		value="damage_skipbomber"		/>
+		<const name="DAMAGE_DEPTHCHARGE"	value="damage_depthcharge"		/>
+		<const name="DAMAGE_ROCKET"			value="damage_rocket"			/>
+		<const name="DAMAGE_RAM"			value="damage_ram"				/>
+		<const name="HIT"					value="hit"						/>
+		<const name="SPOT"					value="spot"					/>
+		<const name="TOP"					value="top"						/>
+		<const name="RIBBONS"				value="ribbons"					/>
+		<const name="CONTROL_POINTS"		value="control_points"			/>
+		<const name="GAIN_EXP"				value="gain_exp"				/>
+		<const name="GAIN_CREDITS"			value="gain_credits"			/>
+		<const name="GAIN_STARS"			value="gain_stars"				/>
+		<const name="KILL_PLANE"			value="kill_plane"				/>
+		<const name="KILL_SHIP"				value="kill_ship"				/>
+		<const name="POTENTIAL_DAMAGE"		value="potential_damage"		/>
+		<const name="GAIN_ACHIEVEMENT"		value="gain_achievement"		/>
+		<const name="COMPLETE_TASK"			value="complete_task"			/>
+		<const name="BATTLE_COUNT"			value="battle_count"			/>
+		<const name="BATTLE_RESULT_COUNT"	value="battle_result_count"		/>
+		<const name="ALIVE_COUNT"			value="alive_count"				/>
+		<const name="BATTLE_PRECONDITION"	value="battle_precondition"		/>
+		<range name="PRICE_CATEGORIES"		values="GAIN_EXP, GAIN_CREDITS"	/>
+
+		<value_to_name/>
+	</enum>
+
+	<enum name="RVR_TASK_STATE" type="Integer"> <!-- RvR states extend SSE states -->
+		<const name="LOCKED"	value="0"/>
+		<const name="ACTIVE"	value="1"/>
+		<const name="FINISHED"	value="2"/>
+	</enum>
+
+	<enum name="RVR_EVENT_STATE" type="BinaryShift">
+		<const name="EVENT_ACTIVE"		value="0"/>
+		<const name="PRIME_ACTIVE"		value="1"/>
+		<const name="EVENT_FINISHED"	value="2"/>
+		<const name="PARTICIPATING"		value="3"/>
+		<const name="SIDE_CHOSEN"		value="4"/>
+	</enum>
+
+	<enum name="SSE_WEEK_UPDATE_TYPE" type="Integer">
+		<const name="NONE"	value="0"/>
+		<const name="MONDAY"	value="1"/>
+		<const name="WEEK"	value="2"/>
+
+		<name_to_value/>
+	</enum>
+</constants>

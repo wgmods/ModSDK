@@ -1,0 +1,47 @@
+(def element AmmoHEDamage (shipTTX:gfx, ammoHETTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_DAMAGE_HE'
+									_value = "ammoHETTX.damage"
+	)
+)
+(def element AmmoCSDamage (shipTTX:gfx, ammoCSTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_DAMAGE_CS'
+									_value = "ammoCSTTX.damage"
+	)
+)
+(def element AmmoAPDamage (shipTTX:gfx, ammoAPTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_DAMAGE_AP'
+									_value = "ammoAPTTX.damage"
+	)
+)
+
+(def layout ModuleArtillery_ParametersForDock (shipTTX:gfx, hasIntegralDiff:bool)
+	(scope
+		(var anyGun:gfx = "shipTTX.artillery.mainGun[0]")
+		(var rotationTime:gfx = "anyGun ? anyGun.rotationTime : STUB_VALUE")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+											_value = "shipTTX.artillery.mgReloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MIN_SWITCH_TIME'
+											_value = "shipTTX.artillery.ammoSwitchTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ROTATION_TIME'
+											_value = "rotationTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(macro TTX_INSTANCE 'AmmoHEDamage' "shipTTX.artillery.ammoHE")
+			(macro TTX_INSTANCE 'AmmoCSDamage' "shipTTX.artillery.ammoCS")
+			(macro TTX_INSTANCE 'AmmoAPDamage' "shipTTX.artillery.ammoAP")
+		)
+	)
+	(macro TTX_INSTANCE 'ModuleIntegralParams' "shipTTX" "hasIntegralDiff")
+)

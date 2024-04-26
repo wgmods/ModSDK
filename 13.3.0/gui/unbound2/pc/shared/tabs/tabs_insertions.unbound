@@ -1,0 +1,778 @@
+(def constant CONTACTS_BLOCK_WIDTH 304)
+(def constant FORMATION_WIDGET_WIDTH 302)
+
+(def macro PULL_DYNAMIC_DIVISIONS_FLAG (_battleType:expression)
+	(var isBattletypeWithDynamicDivisions:bool = "	(_battleType == SC.Common.BATTLE_TYPES.COOPERATIVE_BATTLE) ||
+													(_battleType == SC.Common.BATTLE_TYPES.RANDOM_BATTLE) ||
+													(_battleType == SC.Common.BATTLE_TYPES.EVENT_BATTLE) ||
+													(_battleType == SC.Common.BATTLE_TYPES.BRAWL_BATTLE)")
+)
+
+(def element ShipsBranchesFeaturesMainTabButtons (_selectedTabIndex:number) dispatch_size_change=true
+	(style (width = 0px) (align = "center"))
+
+	(element MAIN_TAB_BUTTONS_BLOCK
+
+		(element MainTabButton
+			_label = "'IDS_MODAL_WINDOW_SHIPS_BRANCHES_FEATURES_TAB_BAR_MAIN'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.TINY"
+			_isSelected = "_selectedTabIndex == SC.Common.SHIP_FEATURES_TAB_INDEX.MAIN"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: {	name: 'shipFeaturesTabIndex',
+																						value: SC.Common.SHIP_FEATURES_TAB_INDEX.MAIN } }]"
+			_name = "'ShipFeaturesScreenTab0'"
+		)
+
+		(element MainTabButton
+			_label = "'IDS_MODAL_WINDOW_SHIPS_BRANCHES_FEATURES_TAB_BAR_OTHER'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.TINY"
+			_isSelected = "_selectedTabIndex == SC.Common.SHIP_FEATURES_TAB_INDEX.OTHER"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: {	name: 'shipFeaturesTabIndex',
+																						value: SC.Common.SHIP_FEATURES_TAB_INDEX.OTHER } }]"
+			_name = "'ShipFeaturesScreenTab1'"
+			_isLast = true
+		)
+	)
+)
+
+(def element InBattleStatsMainTabButtons (_validTabIndex:number, _isStrategicActionsActive:bool, _isDynamicDivisionsEnabled:bool) dispatch_size_change=true
+	(style (width = 0px) (align = "center"))
+
+	(element MAIN_TAB_BUTTONS_BLOCK
+		(element MainTabButton
+			_label = "'IDS_SCENARIO_TASKS_TAB'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.MEDIUM"
+			_isSelected = "_validTabIndex == 2"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'tabStatsTabIndex', value: 2 } }]"
+			_name = "'itemTab_2'"
+		)
+
+		(block
+			(controller $Instance renderer='MainTabButton'
+				(bind enabled "_isStrategicActionsActive")
+				(args
+					_label = "'IDS_TEAM_STRATEGIC_ACTIONS'"
+					_width = "MAIN_TAB_BUTTON_WIDTH.MEDIUM"
+					_isSelected = "_validTabIndex == 3"
+					_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'tabStatsTabIndex', value: 3 } }]"
+					_name = "'itemTab_3'"
+				)
+			)
+		)
+
+		(element MainTabButton
+			_label = "'IDS_TEAM_STRUCTURE'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.MEDIUM"
+			_isSelected = "_validTabIndex == 0"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'tabStatsTabIndex', value: 0 } }]"
+			_name = "'itemTab_0'"
+			_isLast = "!_isDynamicDivisionsEnabled"
+		)
+
+		(block
+			(controller $Instance renderer='MainTabButton'
+				(bind enabled "_isDynamicDivisionsEnabled")
+				(args
+					_label = "'IDS_DIVISIONS'"
+					_width = "MAIN_TAB_BUTTON_WIDTH.MEDIUM"
+					_isSelected = "_validTabIndex == 1"
+					_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'tabStatsTabIndex', value: 1 } }]"
+					_name = "'itemTab_1'"
+					_isLast = true
+				)
+			)
+		)
+	)
+)
+
+(def element BattleLoadingMainTabButtons (_validTabIndex:number, _isStrategicActionsActive:bool, _isCurrentEventDuckBattle:bool, _isDynamicDivisionsEnabled:bool) dispatch_size_change=true
+	(style (width = 0px) (align = "center"))
+
+	(element MAIN_TAB_BUTTONS_BLOCK
+		
+		(element MainTabButton
+			_label = "'IDS_TEAM_TASKS'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.MEDIUM"
+			_isSelected = "_validTabIndex == SC.Common.BATTLE_LOADING_TAB.TASKS"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'battleLoadingTabIndex', value: SC.Common.BATTLE_LOADING_TAB.TASKS } }]"
+			_name = "'itemTab_' + SC.Common.BATTLE_LOADING_TAB.TASKS"
+		)
+
+		
+		(block
+			(name = "'StrategicActionsTabLoading'")
+
+			(controller $Instance renderer='MainTabButton'
+				(bind enabled "_isStrategicActionsActive")
+				(args
+					_label = "'IDS_TEAM_STRATEGIC_ACTIONS'"
+					_width = "MAIN_TAB_BUTTON_WIDTH.MEDIUM"
+					_isSelected = "_validTabIndex == SC.Common.BATTLE_LOADING_TAB.STRATEGIC_ACTIONS"
+					_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'battleLoadingTabIndex', value: SC.Common.BATTLE_LOADING_TAB.STRATEGIC_ACTIONS } }]"
+					_name = "'itemTab_' + SC.Common.BATTLE_LOADING_TAB.STRATEGIC_ACTIONS"
+				)
+			)
+		)
+
+		
+		(element MainTabButton
+			_label = "'IDS_TEAM_STRUCTURE'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.MEDIUM"
+			_isSelected = "_validTabIndex == SC.Common.BATTLE_LOADING_TAB.TEAMS"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'battleLoadingTabIndex', value: SC.Common.BATTLE_LOADING_TAB.TEAMS } }]"
+			_name = "'itemTab_' + SC.Common.BATTLE_LOADING_TAB.TEAMS"
+			_isLast = "_isCurrentEventDuckBattle && !_isDynamicDivisionsEnabled"
+		)
+
+		
+		(block
+			(controller $Instance renderer='MainTabButton'
+				(bind enabled "!_isCurrentEventDuckBattle")
+				(args
+					_label = "'IDS_BATTLE_TIPS'"
+					_width = "MAIN_TAB_BUTTON_WIDTH.MEDIUM"
+					_isSelected = "_validTabIndex == SC.Common.BATTLE_LOADING_TAB.TIPS"
+					_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'battleLoadingTabIndex', value: SC.Common.BATTLE_LOADING_TAB.TIPS } }]"
+					_name = "'itemTab_' + SC.Common.BATTLE_LOADING_TAB.TIPS"
+					_isLast = "!_isDynamicDivisionsEnabled"
+				)
+			)
+		)
+
+		
+		(block
+			(controller $Instance renderer='MainTabButton'
+				(bind enabled "_isDynamicDivisionsEnabled")
+				(args
+					_label = "'IDS_DIVISIONS'"
+					_width = "MAIN_TAB_BUTTON_WIDTH.MEDIUM"
+					_isSelected = "_validTabIndex == SC.Common.BATTLE_LOADING_TAB.DYNAMIC_DIVISIONS"
+					_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'battleLoadingTabIndex', value: SC.Common.BATTLE_LOADING_TAB.DYNAMIC_DIVISIONS } }]"
+					_name = "'itemTab_' + SC.Common.BATTLE_LOADING_TAB.DYNAMIC_DIVISIONS"
+					_isLast = true
+				)
+			)
+		)
+	)
+)
+
+(def element FirstBattleLoadingMainTabButtons (_battleLoadingTabIndex:number) dispatch_size_change=true
+	(style (width = 0px) (align = "center"))
+
+	(element MAIN_TAB_BUTTONS_BLOCK
+		
+		(element MainTabButton
+			_label = "'IDS_TEAM_TASKS'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.MEDIUM"
+			_isSelected = "_battleLoadingTabIndex == SC.Common.BATTLE_LOADING_TAB.TASKS"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'battleLoadingTabIndex', value: SC.Common.BATTLE_LOADING_TAB.TASKS } }]"
+			_name = "'itemTab_' + SC.Common.BATTLE_LOADING_TAB.TASKS"
+		)
+
+		
+		(element MainTabButton
+			_label = "'IDS_BATTLE_TIPS'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.MEDIUM"
+			_isSelected = "_battleLoadingTabIndex == SC.Common.BATTLE_LOADING_TAB.TIPS"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'battleLoadingTabIndex', value: SC.Common.BATTLE_LOADING_TAB.TIPS } }]"
+			_name = "'itemTab_' + SC.Common.BATTLE_LOADING_TAB.TIPS"
+			_isLast = true
+		)
+	)
+)
+
+(def element BattlepassMainTabButtons (_battlePassTabIndex:number) dispatch_size_change=true
+	(scope
+		(macro USER_PREF_DATA)
+		(var isBattlePassTasksNew:bool = "userPrefs.isBattlePassTasksNew == null ? false : userPrefs.isBattlePassTasksNew")
+	)
+
+	(style (width = 0px) (align = "center"))
+
+	(element MAIN_TAB_BUTTONS_BLOCK
+		(element MainTabButton
+			_label = "'IDS_BATTLEPASS_TABS_BATTLEPASS_TITLE'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.TINY"
+			_isSelected = "_battlePassTabIndex == SC.Common.BATTLE_PASS_TAB_INDEX.MAIN"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'battlePassActiveTabIndex', value: SC.Common.BATTLE_PASS_TAB_INDEX.MAIN } }]"
+			_name = 'battlePass'
+		)
+
+		(element MainTabButton
+			_label = "'IDS_BATTLEPASS_TABS_TASKS_TITLE'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.TINY"
+			_isSelected = "_battlePassTabIndex == SC.Common.BATTLE_PASS_TAB_INDEX.TASKS"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'battlePassActiveTabIndex', value: SC.Common.BATTLE_PASS_TAB_INDEX.TASKS } },
+						 { type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'isBattlePassTasksNew', value: false } }]"
+			_isNewMarker = "isBattlePassTasksNew"
+			_name = 'tasks'
+			_isLast = true
+		)
+	)
+)
+
+(def element BattleResultsMainTabButtons (_currentTabIndex:number) dispatch_size_change=true
+	(style (width = 0px) (align = "center"))
+
+	(element MAIN_TAB_BUTTONS_BLOCK
+		(element MainTabButton
+			_label = "'IDS_BATTLE_STATS_PERSONAL_REPORT'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.LARGE"
+			_isSelected = "_currentTabIndex == SC.Common.POST_BATTLE_SCREEN_TAB.PERSONAL_REPORT"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'PBSScreenActiveTabIndex', value: SC.Common.POST_BATTLE_SCREEN_TAB.PERSONAL_REPORT } }]"
+			_name = 'itemTabPBS_0'
+		)
+
+		(element MainTabButton
+			_label = "'IDS_BATTLE_STATS_TEAM_REPORT'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.LARGE"
+			_isSelected = "_currentTabIndex == SC.Common.POST_BATTLE_SCREEN_TAB.TEAM_REPORT"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'PBSScreenActiveTabIndex', value: SC.Common.POST_BATTLE_SCREEN_TAB.TEAM_REPORT } }]"
+			_name = 'itemTabPBS_1'
+		)
+
+		(element MainTabButton
+			_label = "'IDS_BATTLE_STATS_DETAILED_REPORT'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.LARGE"
+			_isSelected = "_currentTabIndex == SC.Common.POST_BATTLE_SCREEN_TAB.DETAILED_REPORT"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'PBSScreenActiveTabIndex', value: SC.Common.POST_BATTLE_SCREEN_TAB.DETAILED_REPORT } }]"
+			_name = 'itemTabPBS_2'
+		)
+
+		(element MainTabButton
+			_label = "'IDS_BATTLE_STATS_CREDITS_AND_EXP'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.LARGE"
+			_isSelected = "_currentTabIndex == SC.Common.POST_BATTLE_SCREEN_TAB.CREDITS_AND_EXP"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'PBSScreenActiveTabIndex', value: SC.Common.POST_BATTLE_SCREEN_TAB.CREDITS_AND_EXP } }]"
+			_name = 'itemTabPBS_3'
+			_isLast = true
+		)
+	)
+)
+
+(def element ProfileRanksMainTabButtons (_currentRanksRoute:str) dispatch_size_change=true
+	(style (width = 0px) (align = "center"))
+
+	(element MAIN_TAB_BUTTONS_BLOCK
+		(element MainTabButton
+			_label = "'IDS_RANKS_TABS_RANKS_TITLE'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.SMALL"
+			_isSelected = "_currentRanksRoute == SC.Ui_windows.ROUTE.RANKS_CAROUSEL"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'navigateTo', args: { route: SC.Ui_windows.ROUTE.RANKS_CAROUSEL } }]"
+			_name = 'ranks'
+		)
+
+		(element MainTabButton
+			_label = "'IDS_RANKS_TABS_REWARDS_TITLE'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.SMALL"
+			_isSelected = "_currentRanksRoute == SC.Ui_windows.ROUTE.RANKS_REWARDS"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'navigateTo', args: { route: SC.Ui_windows.ROUTE.RANKS_REWARDS } }]"
+			_name = 'rewards'
+			_isLast = true
+		)
+	)
+)
+
+(def element ArcEventsMainTabButtons (_arcEventsTabIndex:number) dispatch_size_change=true
+	(style (width = 0px) (align = "center"))
+
+	(element MAIN_TAB_BUTTONS_BLOCK
+		(element MainTabButton
+			_label = "'IDS_ARC_EVENT_MAIN_SCREEN_TAB_PROGRESS'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.TINY"
+			_isSelected = "_arcEventsTabIndex == SC.Common.ARC_EVENT_TABS.PROGRESS"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'arcEventsActiveTabIndex', value: SC.Common.ARC_EVENT_TABS.PROGRESS } }]"
+			_name = 'progress'
+		)
+
+		(element MainTabButton
+			_label = "'IDS_ARC_EVENT_MAIN_SCREEN_TAB_TASKS'"
+			_width = "MAIN_TAB_BUTTON_WIDTH.TINY"
+			_isSelected = "_arcEventsTabIndex == SC.Common.ARC_EVENT_TABS.TASKS"
+			_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'arcEventsActiveTabIndex', value: SC.Common.ARC_EVENT_TABS.TASKS } }]"
+			_name = 'tasks'
+			_isLast = true
+		)
+	)
+)
+
+(def element ProfileSideTabButtons (_profilePage:str)
+	(scope
+		(macro FEATURES "16")
+		
+		(var rankSeasonCollection:gfx = "$datahub.getCollection(CC.rankSeason)")
+		(var rankSeasonEntity:gfx = "	rankSeasonCollection &&
+										rankSeasonCollection.items.length > 0	? rankSeasonCollection.items[0]
+																				: null"
+										(event "rankSeasonCollection.evAdded") (event "rankSeasonCollection.evRemoved"))
+
+		(var isRanksAvailable:bool = "feature_16 != 'locked' && rankSeasonEntity")
+		(var isNewRanksItem:bool = "rankSeasonEntity && rankSeasonEntity.hasComponent(CC.newItem)"	(event "rankSeasonEntity.evAdded")
+																									(event "rankSeasonEntity.evRemoved"))
+
+		(macro PULL_NEW_CONTENT "'newCardsEntity'" "'newContentComponent'" "'newCardsCounter'"	"SC.Common.CONTENT_CATEGORY.CARDS")
+
+		(var routeCollectionEntity:gfx = "$datahub.getPrimaryEntity(CC.route, SC.Ui_windows.ROUTE.COLLECTIONS)")
+		(var routeCollectionEntityComponent:gfx = "routeCollectionEntity ? routeCollectionEntity.route : null")
+		(var isCollectionsAvailable:bool = "routeCollectionEntityComponent ? routeCollectionEntityComponent.isAvailable : false" (event "routeCollectionEntityComponent.evIsAvailableChanged"))
+	)
+
+	(style (width = 200px))
+
+	(element SideTabButton
+		_label = 'IDS_ACCESS_LEVEL'
+		_isSelected = "_profilePage == SC.Ui_windows.ROUTE.LEVELING"
+		_methods = "[{ type: 'inputMapping.onAction', name: 'navigateTo', args: {	route: SC.Ui_windows.ROUTE.LEVELING,
+																					data: {isPortBannerClicked: false}}}]"
+	)
+
+	(element SideTabButton
+		_label = 'IDS_PROFILE_ACHIEVEMENTS'
+		_isSelected = "_profilePage == SC.Ui_windows.ROUTE.ACHIEVEMENTS"
+		_methods = "[{ type: 'inputMapping.onAction', name: 'navigateTo', args: {	route: SC.Ui_windows.ROUTE.ACHIEVEMENTS,
+																					data: {isPortBannerClicked: false}}}]"
+	)
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='SideTabButton'
+			(bind enabled "isRanksAvailable")
+			(args
+				_label = "'IDS_PROFILE_RANKS'"
+				_isSelected = "_profilePage == SC.Ui_windows.ROUTE.RANKS"
+				_methods = "[	{type: 'inputMapping.onAction', name: 'navigateTo', args: {	route: SC.Ui_windows.ROUTE.RANKS,
+																							data: {isPortBannerClicked: false}}},
+								{type: 'inputMapping.onAction', name: 'featureSeen', args: {featureIndex: 16}}]"
+				_isNewMarker = "feature_16 == 'new' || isNewRanksItem"
+				_entityId = "rankSeasonEntity.id"
+			)
+		)
+	)
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='SideTabButton'
+			(bind enabled "isCollectionsAvailable")
+			(args
+				_label = "'IDS_PROFILE_COLLECTIONS'"
+				_isSelected = "_profilePage == SC.Ui_windows.ROUTE.COLLECTIONS"
+				_methods = "[	{type: 'inputMapping.onAction', name: 'navigateTo', args: {	route: SC.Ui_windows.ROUTE.COLLECTIONS,
+																							data: {isPortBannerClicked: false}}}]"
+				_newContentCounter = "newCardsCounter"
+			)
+		)
+	)
+
+	(element SideTabButton
+		_label = 'IDS_PROFILE_SUMMARY'
+		_isSelected = "_profilePage == SC.Ui_windows.ROUTE.SUMMARY"
+		_methods = "[{ type: 'inputMapping.onAction', name: 'navigateTo', args: {	route: SC.Ui_windows.ROUTE.SUMMARY,
+																					data: { isPortBannerClicked: false } } }]"
+	)
+)
+
+(def element CrewSkillsInfoTabButtons (_selectedShipClass:str) dispatch_size_change=true
+	(style (width = {1280:820, 1920:900}))
+
+	(element HorizontalDividerTwoPx)
+
+	(hblock
+		(style
+			(width = 100%)
+			(backgroundColor = "SC.Ui_styles.SERVICE_COLORS.INNER_PANEL")
+		)
+
+		(controller $Repeat renderer='TabButton'
+			(bind count "SC.Common.SHIP_TYPE.PLAYABLE_SHIP_TYPES.length")
+			(args
+				_label = "tr(toUpper('IDS_' + SC.Common.SHIP_TYPE.PLAYABLE_SHIP_TYPES[$index] + 'S'))"
+				_isSelected = "_selectedShipClass == SC.Common.SHIP_TYPE.PLAYABLE_SHIP_TYPES[$index]"
+				_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'crewInfoActiveShipClass', value: SC.Common.SHIP_TYPE.PLAYABLE_SHIP_TYPES[$index] } }]"
+				_width = "toString(100/SC.Common.SHIP_TYPE.PLAYABLE_SHIP_TYPES.length) + '%'"
+			)
+		)
+
+		(element HorizontalDividerTwoPx
+			(style
+				(position = "absolute")
+				(width = 100%)
+				(bottom = 0)
+			)
+		)
+	)
+)
+
+(def element ExteriorsTabButtons (_image:str, _width:number, _isDisabled:bool, _isSelected:bool, _name:str, _exteriorPage:str, _canEquipCamouflage:bool, _isCamouflageExpired:bool=false, _isAttentionMarker:bool=false) dispatch_size_change=true
+	(scope
+		(var isCamouflageRoute:bool = "_exteriorPage == SC.Ui_windows.ROUTE.CAMOUFLAGE")
+		(var isPermoflageRoute:bool = "_exteriorPage == SC.Ui_windows.ROUTE.PERMOFLAGE")
+	)
+
+	(style
+		(width = 148px)
+		(backgroundColor = "SC.Ui_styles.SERVICE_COLORS.INNER_PANEL")
+	)
+
+	(element TabButton
+		_isSelected = "_isSelected"
+		_width = 148
+		_name = "_name"
+		_methods = "[{ type: 'inputMapping.onAction', name: 'navigateTo', args: { route: SC.Ui_windows.ROUTE[toUpper(_exteriorPage)]} }]"
+		_isDisabled = "_isDisabled"
+		_image = "_image"
+	)
+
+	(controller $Tooltip
+		(bind enabled "(!isCamouflageRoute || !isPermoflageRoute) && (_isCamouflageExpired || _isDisabled)")
+		(renderer = 'SimpleStatusTooltip')
+		(args
+			_text =				"_isCamouflageExpired	? 'IDS_WARNING_CAMOUFLAGE_EXPIRED'
+														: 'IDS_WARNING_CANT_EQUIP_CAMOUFLAGE'"
+			_unifiedStatus =	"SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(element HorizontalDividerTwoPx
+		(style
+			(position = "absolute")
+			(width = 100%)
+			(bottom = 0)
+		)
+	)
+)
+
+(def element ConvertExpTabButtons (_tabIndex:number) dispatch_size_change=true
+	(style (width = 492px) (flow = "horizontal"))
+
+	(element TabButton
+		_label = 'IDS_FROM_SHIPS'
+		_isSelected = "_tabIndex == SC.Common.EXCHANGE_EXP_INSET.SHIP_XP"
+		_width = '50%'
+		_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'exchangeExpTabIndex', value: SC.Common.EXCHANGE_EXP_INSET.SHIP_XP } }]"
+	)
+
+	(element TabButton
+		_label = 'IDS_FROM_COMMANDERS'
+		_isSelected = "_tabIndex == SC.Common.EXCHANGE_EXP_INSET.ELITE_XP"
+		_width = '50%'
+		_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'exchangeExpTabIndex', value: SC.Common.EXCHANGE_EXP_INSET.ELITE_XP } }]"
+	)
+
+	(element HorizontalDividerTwoPx
+		(style
+			(position = "absolute")
+			(width = 100%)
+			(bottom = 0)
+		)
+	)
+)
+
+(def element ContactsAndChannelsTabButtons (_tabIndex:number) dispatch_size_change=true
+	(style (flow = "horizontal") (width = "CONTACTS_BLOCK_WIDTH"))
+
+
+	(element TabButton
+		_label = 'IDS_CONTACTS'
+		_isSelected = "_tabIndex == SC.Common.CONTACTS_AND_CHANNELS_INSET.CONTACTS"
+		_width = '50%'
+		_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'contactsInset', value: SC.Common.CONTACTS_AND_CHANNELS_INSET.CONTACTS } },
+					 { type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'contactsAndChannelsSearchState', value: SC.Common.CONTACTS_AND_CHANNELS_SEARCH_STATE.OFF } }]"
+	)
+
+	(element TabButton
+		_label = 'IDS_CHANNELS'
+		_isSelected = "_tabIndex == SC.Common.CONTACTS_AND_CHANNELS_INSET.CHANNELS"
+		_width = '50%'
+		_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'contactsInset', value: SC.Common.CONTACTS_AND_CHANNELS_INSET.CHANNELS } },
+					 { type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'contactsAndChannelsSearchState', value: SC.Common.CONTACTS_AND_CHANNELS_SEARCH_STATE.OFF } }]"
+	)
+
+	(element HorizontalDividerTwoPx
+		(style
+			(position = "absolute")
+			(width = 100%)
+			(bottom = 0)
+		)
+	)
+)
+
+(def element DivisionEntranceInfotipTabButtons (_validatedTabInset:number, _isChatServerAvailable:bool) dispatch_size_change=true
+	(style (flow = "horizontal") (width = "FORMATION_WIDGET_WIDTH"))
+
+	(block
+		(style (width = 50%))
+
+		(element TabButton
+			_label = 'IDS_PLAYERS'
+			_isSelected = "_validatedTabInset == SC.Common.DIVISION_INFOTIP_STATE.TAB_PLAYER"
+			_width = '100%'
+			_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'trainingInfotipTabInset', value: SC.Common.DIVISION_INFOTIP_STATE.TAB_PLAYER } }]"
+			_isDisabled = "!_isChatServerAvailable"
+			_isAttentionMarker = "!_isChatServerAvailable"
+		)
+
+		(controller $Tooltip
+			(bind enabled "!_isChatServerAvailable")
+			(renderer = 'SimpleStatusTooltip')
+			(args
+				_text =				'IDS_SERVICE_IS_UNAVAILABLE_CHAT'
+				_unifiedStatus =	"SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+	)
+
+	(element TabButton
+		_label = 'IDS_BOT'
+		_isSelected = "_validatedTabInset == SC.Common.DIVISION_INFOTIP_STATE.TAB_BOT"
+		_width = '50%'
+		_name = 'tabBarItem'
+		_methods = "[{ type: 'inputMapping.onAction', name: 'setUserPref', args: { name: 'trainingInfotipTabInset', value: SC.Common.DIVISION_INFOTIP_STATE.TAB_BOT } }]"
+	)
+
+	(element HorizontalDividerTwoPx
+		(style
+			(position = "absolute")
+			(width = 100%)
+			(bottom = 0)
+		)
+	)
+)
+
+
+
+(def css $SSETabWidth ()
+	(width={1280:250, 1920:320})
+)
+
+(def element SseCategoryTab (_sseTagEntity:gfx, _selectedCategoryId:str, _isSmallStageWidth:bool) dispatch_size_change=true
+	(scope
+		(event evAddedToStage)
+
+		(var sseTagComponent:gfx = "_sseTagEntity ? _sseTagEntity.sseTag : null")
+		(var sseCategoryId:str = "sseTagComponent ? sseTagComponent.id : null" (event "sseTagComponent.evChanged"))
+		(var sseCategoryLabel:str = "sseTagComponent ? sseTagComponent.name : null")
+		(var unclaimedTasks:number = "sseTagComponent ? sseTagComponent.unclaimedTotal : null" (event "sseTagComponent.evChanged"))
+		(var numTasks:number = "sseTagComponent ? sseTagComponent.activeAmount : null" (event "sseTagComponent.evChanged"))
+
+		(var isNewItem:bool = "_sseTagEntity && _sseTagEntity.hasComponent(CC.newItem)" (event "_sseTagEntity.evAdded") (event "_sseTagEntity.evRemoved"))
+
+		(var isSelected:bool = "_selectedCategoryId ? _selectedCategoryId == sseCategoryId : false")
+		(var isRewardBreadCrumbShown:bool = "unclaimedTasks && !isSelected")
+	)
+
+	(dispatch evAddedToStage on='addedToStage')
+	(bindcall externalCall "isSelected ? 'direct.action' : ''" "['makeSeen', { entityId: _sseTagEntity.id }]" init=false watch=false (event "evAddedToStage"))
+
+	(class $SSETabWidth)
+	(style (marginBottom = 1px))
+
+	(element SideTabButton
+		_label = "sseCategoryLabel"
+		_isSelected = "isSelected"
+		_methods = "[{ type: 'inputMapping.onAction', name: 'SSEProxyCommonUSS.selectTag', args: { tagId: sseCategoryId, skipDone: false } },
+					 { type: 'inputMapping.onAction', name: 'makeSeen', args: { entityId: _sseTagEntity.id } },
+					 { type: 'inputMapping.onAction', name: 'navigateTo', args: { route: SC.Ui_windows.ROUTE.SSE_ALL } }]"
+		_hasInlineCounter = true
+		_inlineCounter = "isRewardBreadCrumbShown ? 0 : numTasks"
+		_isNewMarker = "isNewItem"
+		_unifiedStatus = "unclaimedTasks ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+	)
+
+	(controller $Tooltip
+		(bind enabled "isRewardBreadCrumbShown")
+		(bind renderer "'SimpleStatusTooltip'")
+		(args
+			_text = 'IDS_SSE_REWARD_AVAILABLE'
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(block
+		(style
+			(hitTest = false)
+			(position = "absolute")
+			(right = 10px)
+			(top = 13px)
+			(bind alpha "isRewardBreadCrumbShown ? 1 : 0" watch=false)
+		)
+
+		(block
+			(style (position = "absolute") (right = "XS") (top = "XS"))
+
+			(controller $Instance renderer='RewardsMarkerAnimation'
+				(bind enabled "isRewardBreadCrumbShown")
+			)
+		)
+
+		(block
+			(bind visible "isRewardBreadCrumbShown")
+			(style
+				(position = "absolute")
+				(top = "-XS")
+				(right = "MS")
+				(backgroundImage = "'url:../service_kit/unified_status_icons/icon_' + SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE + '.png'")
+			)
+		)
+
+		(controller $Animation
+			(bindcall play
+				duration	= 0.15
+				from		= "{ alpha: 0 }"
+				to			= "{ alpha: 1 }"
+				action		= "kill"
+				easing		= "Easing.quad_in"
+				reverse		= "!isRewardBreadCrumbShown"
+				(bind trigger "isRewardBreadCrumbShown")
+			)
+		)
+	)
+)
+
+(def element ShipAcesTab (_shipAcesSeasonEntity:gfx, _isShipAcesSelected:bool, _isSmallStageWidth:bool) dispatch_size_change=true
+	(scope
+		(var isNewItem:bool = "_shipAcesSeasonEntity && _shipAcesSeasonEntity.hasComponent(CC.newItem)" (event "_shipAcesSeasonEntity.evAdded") (event "_shipAcesSeasonEntity.evRemoved"))
+	)
+
+	(class $SSETabWidth)
+	(style (marginBottom = 1px))
+
+	(name = "'buttonShipAces'")
+
+	(element SideTabButton
+		_label = 'IDS_SHIP_ACES_COMMON_TITLE'
+		_isSelected = "_isShipAcesSelected"
+		_methods = "[{ type: isNewItem ? 'inputMapping.onAction' : '', name: 'makeSeen', args: { entityId: _shipAcesSeasonEntity.id } },
+					 { type: 'inputMapping.onAction', name: 'navigateTo', args: { route: SC.Ui_windows.ROUTE.SSE_SHIP_ACES } }]"
+		_isNewMarker = "isNewItem"
+	)
+)
+
+(def element OpenEndedSSETab (_sseOpenEndedEntity:gfx, _isSseOpenEndedSelected:bool, _isSmallStageWidth:bool) dispatch_size_change=true
+	(scope
+		
+		(var sseOpenEndedCounterCollection:gfx = "$datahub.getCollection(CC.sseOpenEndedCounter)")
+		(var sseOpenEndedCounterEntity:gfx = "	sseOpenEndedCounterCollection &&
+												sseOpenEndedCounterCollection.items.length > 0	? sseOpenEndedCounterCollection.items[0]
+																								: null"
+												(event "sseOpenEndedCounterCollection.evAdded") (event "sseOpenEndedCounterCollection.evRemoved"))
+
+		(var sseOpenEndedCounterComponent:gfx = "sseOpenEndedCounterEntity ? sseOpenEndedCounterEntity.sseOpenEndedCounter : null"
+												(event "sseOpenEndedCounterEntity.evAdded") (event "sseOpenEndedCounterEntity.evRemoved"))
+		(var activeSseOpenEndedTasks:number = "sseOpenEndedCounterComponent ? sseOpenEndedCounterComponent.activeAmount : null" (event "sseOpenEndedCounterComponent.evChanged"))
+
+		(var isNewItem:bool = "_sseOpenEndedEntity && _sseOpenEndedEntity.hasComponent(CC.newItem)" (event "_sseOpenEndedEntity.evAdded") (event "_sseOpenEndedEntity.evRemoved"))
+	)
+
+	(class $SSETabWidth)
+	(style (marginBottom = 1px))
+
+	(element SideTabButton
+		_label = "'IDS_PORTAL_SSE_COMMON_TITLE'"
+		_isSelected = "_isSseOpenEndedSelected"
+		_methods = "[{ type: isNewItem ? 'inputMapping.onAction' : '', name: 'makeSeen', args: { entityId: _sseOpenEndedEntity.id } },
+					 { type: 'inputMapping.onAction', name: 'navigateTo', args: { route: SC.Ui_windows.ROUTE.SSE_OPEN_ENDED } }]"
+		_hasInlineCounter = true
+		_inlineCounter = "activeSseOpenEndedTasks"
+		_isNewMarker = "isNewItem"
+	)
+)
+
+(def element NewbieQuestsTab (_isNewbieQuestsSelected:bool, _isSmallStageWidth:bool) dispatch_size_change=true
+	(scope
+		(var activeNewbieQuestsCollection:gfx = "$datahub.getCollection(CC.newbieQuest).getChildByPath('notDone.byTier')")
+		(var activeNewbieQuestsCollectionItems:array = "activeNewbieQuestsCollection.items" (event "activeNewbieQuestsCollection.evAdded") (event "activeNewbieQuestsCollection.evRemoved"))
+	)
+
+	(class $SSETabWidth)
+	(style (marginBottom = 1px))
+
+	(element SideTabButton
+		_label = "'IDS_NEWBIE_QUESTS_COMMON_TITLE'"
+		_isSelected = "_isNewbieQuestsSelected"
+		_methods = "[{ type: 'inputMapping.onAction', name: 'navigateTo', args: { route: SC.Ui_windows.ROUTE.SSE_NEWBIE_QUESTS } }]"
+		_hasInlineCounter = true
+		_inlineCounter = "activeNewbieQuestsCollectionItems.length"
+	)
+)
+
+
+(def element SideTabButtonShipResearch (_labelTF:str, _currentNationName:str) dispatch_size_change=true
+	(scope
+		(var routeEntity:gfx = "$datahub.getPrimaryEntity(CC.route, _labelTF)")
+		(var hasGiftShip:bool = "routeEntity && routeEntity.hasComponent(CC.giftLabelComponent)" (event "routeEntity.evAdded") (event "routeEntity.evRemoved"))
+		(var isGiftShipAvailable:bool = "hasGiftShip ? routeEntity.giftLabelComponent.canClaim : false" (event "routeEntity.giftLabelComponent.evChanged"))
+		(var isTabSelected:bool = "_currentNationName == _labelTF")
+
+		(var rewardIcon:str = "isGiftShipAvailable ? SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE : SC.Ui_styles.UNIFIED_STATUS.REWARD_DEFAULT")
+	)
+
+	(style (width = 220px))
+	(style (marginBottom = 1px))
+
+	(element SideTabButton
+		_label = "'IDS_' + toUpper(_labelTF)"
+		_isSelected = "isTabSelected"
+		_methods = "[{ type: 'inputMapping.onAction', name: 'navigateTo', args: { route: _labelTF } }]"
+		_image = "{	renderer:	'SideTabButtonNationFlagRenderer',
+					data:		{ shipCountry: _labelTF } }"
+	)
+
+	(controller $Tooltip
+		(bind enabled "!isTabSelected && hasGiftShip")
+		(bind renderer "'SimpleStatusTooltip'")
+		(args
+			_text = 'IDS_NEWBIE_GIFTS_NATIONS_BUTTON_TOOLTIP'
+			_unifiedStatus = "isGiftShipAvailable	? SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE
+													: SC.Ui_styles.UNIFIED_STATUS.REWARD_DEFAULT"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(block
+		(style
+			(hitTest = false)
+			(position = "absolute")
+			(right = 10px)
+			(top = 13px)
+			(bind alpha "hasGiftShip ? 1 : 0" watch=false)
+		)
+
+		(block
+			(style (position = "absolute") (right = "XS") (top = "XS"))
+
+			(controller $Instance renderer='RewardsMarkerAnimation'
+				(bind enabled "isGiftShipAvailable")
+			)
+		)
+
+		(block
+			(bind visible "hasGiftShip")
+			(style
+				(position = "absolute")
+				(top = "-XS")
+				(right = "MS")
+				(bind backgroundImage "'url:../service_kit/unified_status_icons/icon_' + rewardIcon + '.png'")
+			)
+		)
+
+		(controller $Animation
+			(bindcall play
+				duration	= 0.15
+				from		= "{ alpha: 0 }"
+				to			= "{ alpha: 1 }"
+				action		= "kill"
+				easing		= "Easing.quad_in"
+				reverse		= "!hasGiftShip"
+				(bind trigger "hasGiftShip")
+			)
+		)
+	)
+)
+
+(def element SideTabButtonNationFlagRenderer (_data:dict={})
+	(element NationFlagsTiny
+		_shipCountry = "_data.shipCountry"
+	)
+)

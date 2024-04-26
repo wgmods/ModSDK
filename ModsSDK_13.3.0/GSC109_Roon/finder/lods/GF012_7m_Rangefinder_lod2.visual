@@ -1,0 +1,83 @@
+<GF012_7m_Rangefinder_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	GF012_Rangefinder_7m	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	MP_GM043_Antenna_FuMB_Ant3_Bali	</identifier>
+				<transform>
+					<row0>	0.0000 0.0000 1.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	-1.0000 0.0000 0.0000 0.0000	</row2>
+					<row3>	-0.0370 0.5043 -0.0872 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_GM043_Antenna_FuMB_Ant3_Bali_INDEX_1	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0370 0.5043 -0.0872 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_GM044_Antenna_FuME2_Wespe_G	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	-0.0712 0.4292 -0.0711 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_GM045_Antenna_FuMB26_Tunis	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	-0.0877 0.4553 -0.0364 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_GM049_FuMO26_3x6_Dir_Mod_2	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.1553 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	GF012_Rangefinder_7m	</node>
+		<geometry>
+			<vertices>	GF012_Rangefinder_7m_lod2Shape.vertices	</vertices>
+			<primitive>	GF012_Rangefinder_7m_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/GSC109_Roon/finder/GF012_7m_Rangefinder.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.2465 -0.0095 -0.1129	</min>
+		<max>	0.2465 0.1607 0.1136	</max>
+	</boundingBox>
+</GF012_7m_Rangefinder_lod2.visual>

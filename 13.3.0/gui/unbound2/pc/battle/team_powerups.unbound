@@ -1,0 +1,233 @@
+(def constant PICKED_POWERUPS_INDICATOR_SECTOR_MARGINS 14)
+(def constant DROP_ITEMS_SIZE 28)
+(def constant INDICATOR_OUTER_RADIUS "(DROP_ITEMS_SIZE / 2) + 4")
+(def constant INDICATOR_OUTER_RADIUS_ACCENT "(DROP_ITEMS_SIZE / 2) + 8")
+(def constant INDICATOR_INNER_RADIUS "(DROP_ITEMS_SIZE / 2) + 1")
+
+(def element CapturedDropsCount(_isAlly:bool)
+	(scope
+		(var selfAvatarEntity:gfx =  "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var selfTeamId:number = "selfAvatarEntity.avatar.teamId" (event "selfAvatarEntity.avatar.evTeamIdChanged"))
+
+		(var relation:str = "_isAlly ? 'ally' : 'enemy'")
+
+		(var collection:gfx = "$datahub.getCollection(CC.capturedDropInfo)")
+		(var collectionByTeam:gfx = "collection ? collection.getChildByPath('capturedDropByTeamId.' + relation + '.sorted') : null" (event "collection.evUpdated") (event "collection.evChildAdded") (event "collection.evChildRemoved"))
+		(var collectionLength:number = "collectionByTeam ? collectionByTeam.items.length : 0")
+
+		(macro STAGE_SIZE)
+	)
+	(hblock
+		(style
+			(bind height "INDICATOR_OUTER_RADIUS * 2")
+			(align = "middle")
+		)
+		(controller $Repeat renderer='DropItems'
+			(bind count "collectionLength")
+			(bindcall removeChildAt "$event[1]" (event "collectionByTeam.evRemoved"))
+			(bindcall addChildAt "$event[1]" (event "collectionByTeam.evAdded"))
+			(args "collectionByTeam" "_isAlly")
+		)
+	)
+)
+
+(def element DropItems(collection:gfx , _isAlly:bool)
+	(scope
+		(var capturedDropInfo:gfx = "collection.items[$index].capturedDropInfo" watch=false)
+		(var markerName:str = "capturedDropInfo.markerNameActive")
+		(var markerNameDescription:str = "tr(toUpper('IDS_' + markerName + '_DESC'))")
+		(var currentPowerupLevel:number = "capturedDropInfo.count" (event "capturedDropInfo.evCountChanged"))
+		(var maxPowerupLevel:number = "capturedDropInfo.maxBuffLevel" (event "capturedDropInfo.evCountChanged"))
+
+		(macro STAGE_SIZE)
+		(var powerupMargins:number = "10")
+
+		(event evShowStartAnimations)
+		(event evPlaceReady)
+		(event evPlaceAtFinalPos)
+		(event evShowLevels)
+	)
+
+	(style
+		(bind marginLeft "powerupMargins")
+		(bind marginRight "powerupMargins")
+		(bind pivotX "DROP_ITEMS_SIZE / 2")
+		(bind pivotY "DROP_ITEMS_SIZE / 2")
+	)
+
+	(dispatch evShowStartAnimations on=addedToStage)
+
+	(controller $Animation
+		(bindcall play
+			duration 	= "collection.items.length > 1 ? 0.4 : 0.01"  watch=false
+			killAll		= true
+			easing		= "Easing.cubic_out"
+			from		= {alpha:0, marginLeft:0, marginRight: 0, width: 0}
+			to			= "{alpha:0, marginLeft: powerupMargins, marginRight: powerupMargins, width: DROP_ITEMS_SIZE}"
+			(event "evShowStartAnimations")
+		)
+		(dispatch evPlaceReady on=evAnimEnded)
+	)
+
+	(controller $Animation
+		(bindcall play
+			duration	= 0.25
+			killAll		= true
+			easing		= "Easing.quad_in"
+			from		= {alpha:0, scaleX: 0, scaleY: 0}
+			to			= {alpha:1, scaleX: 1.5, scaleY: 1.5}
+			(event "evPlaceReady")
+		)
+		(dispatch evPlaceAtFinalPos on=evAnimEnded)
+	)
+
+	(controller $Animation
+		(bindcall play
+			duration	= 0.15
+			killAll		= true
+			easing		= "Easing.quad_out"
+			from		= {scaleX: 1.5, scaleY: 1.5}
+			to			= {scaleX: 1, scaleY: 1}
+			(event "evPlaceAtFinalPos")
+		)
+		(dispatch evShowLevels dir="EventDirection.DOWN" on=evAnimEnded)
+	)
+
+	(controller $Tooltip (renderer = 'SimpleStatusTooltip')
+		(args 
+			_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			_text="markerNameDescription"
+		)
+		(align="bottom|center")
+		
+		(position="border")
+		(offset=[0, 6])
+		(screenBoundsOffset={left:10, top:10, right:10, bottom:10})
+		(macro SIMPLE_TOOLTIP_ANIMATION)
+	)
+
+	(block
+		(style
+			(backgroundSize = "fill")
+			(width = "DROP_ITEMS_SIZE")
+			(height = "DROP_ITEMS_SIZE")
+			(bind backgroundImage "'url:../powerups/drops/icon_marker_' + markerName + '.png'")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(top = "DROP_ITEMS_SIZE / 2")
+			(left = "DROP_ITEMS_SIZE  / 2")
+		)
+		
+		(block 
+			(class $FullsizeAbsolute)
+			(controller $Repeat renderer='PickedPowerupsIndicatorBackground'
+				(bind count "maxPowerupLevel" watch=true)
+				(args "maxPowerupLevel")
+			)
+		)
+
+		(controller $Repeat renderer='PickedPowerupsIndicator'
+			(bind count "maxPowerupLevel" watch=true)
+			(args "maxPowerupLevel" "currentPowerupLevel" "_isAlly")
+		)
+	)
+)
+
+(def element PickedPowerupsIndicator (_maxPowerupLevel:number, _currentPowerupLevel:number, _isAlly:bool=false) layout=true
+	(scope
+		(var isPicked:bool = "($index + 1) <= _currentPowerupLevel")
+
+		(var lengthCalculated:number = "(360 - _maxPowerupLevel * PICKED_POWERUPS_INDICATOR_SECTOR_MARGINS) / _maxPowerupLevel")
+		(var length:number = "	!isPicked				? 0 :
+								_maxPowerupLevel == 1	? 360
+														: lengthCalculated")
+
+		(var offset:number = "(length + PICKED_POWERUPS_INDICATOR_SECTOR_MARGINS) * $index")
+		(var gapOffset:number = "PICKED_POWERUPS_INDICATOR_SECTOR_MARGINS / 2")
+		(var offsetDirectionByTeam:number = "(-90 + gapOffset)  + offset")
+
+		(var segmentLengthAnimated:number = "0")
+
+		(var color:gfx = "	!isPicked	? 0xFFA3A4A6 :
+							_isAlly		? C_ALLY
+										: C_ENEMY")
+
+		(var radiusAnimated:number = "INDICATOR_OUTER_RADIUS")
+		(var radiusAnimatedAccent:number = "INDICATOR_OUTER_RADIUS_ACCENT")
+		(var innerRadiusAnimated:number = "INDICATOR_INNER_RADIUS")
+
+		(event evShowLevels)
+
+		(controller $Animation
+			(bindcall play
+				duration 	= 0.15
+				delay	 	= 0.15
+				easing		= "Easing.cubic_in"
+				from		= {segmentLengthAnimated: 0}
+				to			= "{segmentLengthAnimated: length}"
+				(event "evShowLevels")
+			)
+		)
+
+		(controller $Animation
+			(bindcall play
+				duration	= 0.5
+				delay		= 0.15
+				easing		= "Easing.cubic_in"
+				from		= "{radiusAnimated: INDICATOR_OUTER_RADIUS_ACCENT}"
+				to			= "{radiusAnimated: INDICATOR_OUTER_RADIUS}"
+				(bind enabled "isPicked")
+				(event "evShowLevels")
+			)
+		)
+	)
+	(style
+		(bind scaleX "_isAlly ? 1 : -1")
+	)
+	(controller $Sector
+		(bind arc "segmentLengthAnimated")
+		(bind offset "offsetDirectionByTeam")
+		(bind radius "radiusAnimated")
+		(bind innerRadius "INDICATOR_INNER_RADIUS")
+		(bind color "color")
+	)
+)
+
+(def element PickedPowerupsIndicatorBackground (_maxPowerupLevel:number) layout=true
+	(scope
+		(var length:number = "_maxPowerupLevel == 1 ? 360 : (360 - _maxPowerupLevel * PICKED_POWERUPS_INDICATOR_SECTOR_MARGINS) / _maxPowerupLevel")
+		(var offset:number = "(length + PICKED_POWERUPS_INDICATOR_SECTOR_MARGINS) * $index")
+		(var gapOffset:number = "PICKED_POWERUPS_INDICATOR_SECTOR_MARGINS / 2")
+		(var offsetDirection:number = "(-90 + gapOffset)  + offset")
+
+		(var segmentLengthAnimated:number = "0")
+
+		(var radiusAnimated:number = "INDICATOR_OUTER_RADIUS")
+		(var innerRadiusAnimated:number = "INDICATOR_INNER_RADIUS")
+
+		(event evShowLevels)
+
+		(controller $Animation
+			(bindcall play
+				duration 	= 0.15
+				easing		= "Easing.cubic_in"
+				from		= {segmentLengthAnimated: 0}
+				to			= "{segmentLengthAnimated: length}"
+				(event "evShowLevels")
+			)
+		)
+	)
+	(style (alpha = "0.2"))
+
+	(controller $Sector
+		(bind arc "segmentLengthAnimated")
+		(bind offset "offsetDirection")
+		(bind radius "radiusAnimated")
+		(bind innerRadius "INDICATOR_INNER_RADIUS")
+		(bind color "0xFF000000")
+	)
+)

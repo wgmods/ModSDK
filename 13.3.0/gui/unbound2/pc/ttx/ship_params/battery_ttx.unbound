@@ -1,0 +1,23 @@
+(def element BatteryTTX (shipTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(class $TTXSecondaryPanel)
+
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_BATTERY_MAX_CAPACITY'
+									_value = "shipTTX.battery.capacity"
+									_valueConfig = "VALUE_CONFIG.UNITS"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_BATTERY_MAX_CAPACITY' 'IDS_TOOLTIP_BATTERY_MAX_CAPACITY')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_BATTERY_CONSUMPTION_RATE'
+									_value = "{value: 1, delta: 0}"
+									_valueConfig = "VALUE_CONFIG.UNITS_SECOND_NEGATIVE"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_BATTERY_CONSUMPTION_RATE' 'IDS_TOOLTIP_BATTERY_CONSUMPTION_RATE')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_BATTERY_REGEN_RATE'
+									_value = "shipTTX.battery.regeneration"
+									_valueConfig = "VALUE_CONFIG.UNITS_SECOND"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_BATTERY_REGEN_RATE' 'IDS_TOOLTIP_BATTERY_REGEN_RATE')
+	)
+)

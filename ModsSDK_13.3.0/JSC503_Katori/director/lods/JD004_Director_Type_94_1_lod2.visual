@@ -1,0 +1,88 @@
+<JD004_Director_Type_94_1_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	JD004_Director_Type_94_1	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	JD022_Director	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_JM006_Binocular_1	</identifier>
+				<transform>
+					<row0>	0.0000 0.0000 0.7524 0.0000	</row0>
+					<row1>	0.0000 0.7524 0.0000 0.0000	</row1>
+					<row2>	-0.7524 0.0000 0.0000 0.0000	</row2>
+					<row3>	0.0725 0.0038 0.0289 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_JM006_Binocular_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.0000 0.0000 0.7524 0.0000	</row0>
+					<row1>	0.0000 0.7524 0.0000 0.0000	</row1>
+					<row2>	-0.7524 0.0000 0.0000 0.0000	</row2>
+					<row3>	-0.0735 0.0041 0.0289 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_JM011_Day_Light	</identifier>
+				<transform>
+					<row0>	0.4202 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.4202 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.4202 0.0000	</row2>
+					<row3>	-0.0663 0.0787 0.0831 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	JD004_Director_Type_94_1	</node>
+		<geometry>
+			<vertices>	JD004_Director_Type_94_1_lodShape2.vertices	</vertices>
+			<primitive>	JD004_Director_Type_94_1_lodShape2.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director1	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSC503_Katori/director/JD004_Director_Type_94_1.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	JD022_Director	</node>
+		<geometry>
+			<vertices>	JD022_Director_lodShape2.vertices	</vertices>
+			<primitive>	JD022_Director_lodShape2.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSC503_Katori/director/JD022_Director_Type_95_Mod1.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1060 0.0000 -0.1068	</min>
+		<max>	0.1106 0.1078 0.1048	</max>
+	</boundingBox>
+</JD004_Director_Type_94_1_lod2.visual>

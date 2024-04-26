@@ -1,0 +1,69 @@
+(def constant SEA_MINE_MARKER_WIDTH "35")
+(def constant SEA_MINE_MARKER_HEIGHT "35")
+(def constant SEA_MINE_MARKER_CENTER_X "17.5")
+(def constant SEA_MINE_MARKER_CENTER_Y "17.5")
+
+(def css $MineMarkerDimensions ()
+	(width = "SEA_MINE_MARKER_WIDTH") (height = "SEA_MINE_MARKER_HEIGHT")
+	(pivotX = "SEA_MINE_MARKER_CENTER_X") (pivotY = "SEA_MINE_MARKER_CENTER_Y")
+)
+
+(def element WorldMineMarker (_markerEntity:gfx) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'mine')
+		(macro VAR_RELATION "_markerEntity")
+
+		(var cameraComponent:gfx = "$datahub.getSingleComponent(CC.camera)")
+		(var showMarker:bool = "!cameraComponent.isTactical" (event "cameraComponent.evTacticalStateChanged"))
+
+		(var isActive:bool = "mineComponent.isActive" (event "mineComponent.evIsActiveChanged"))
+		(var markerIcon:str = "'mine_' + relation")
+
+		(var danger:number = "mineComponent.dangerLevel" (event "mineComponent.evDangerLevelChanged"))
+
+		(var iconSize:str = "	relation != SC.Battle.PLAYER_RELATION.NAMES.ENEMY	? '_small'
+																					: danger == SC.Battle.DANGER_LEVEL.CRITICAL	? '' 
+																					: danger == SC.Battle.DANGER_LEVEL.WARNING	? '_small' 
+																																: '_tiny'")
+		(var isActiveText:str = "isActive ? '' : '_inactive' ")
+	)
+	(alpha = "showMarker ? 1 : 0")
+	(controller $Animation
+		(bindcall play	duration="MINEFIELD_MARKER_ANIM_DURATION"
+						from="{alpha: 1}"
+						to="{alpha: 0}"
+						reverse="showMarker"
+						(bind trigger "showMarker")
+		)
+	)
+
+	(style
+		(width = 0) (height = 0)
+		(align = "center|middle")
+	)
+	(block
+		(class $MineMarkerDimensions)
+		(style
+			(bind backgroundImage "'url:../battle_hud/markers/mines/' + markerIcon + iconSize + isActiveText + '.png'")
+		)
+
+		
+		(block
+			(class $MineMarkerDimensions)
+			(style
+				(bind backgroundImage "'url:../battle_hud/markers/mines/' + markerIcon + iconSize + isActiveText + '.png'")
+				(alpha = 0)
+			)
+			(controller $Animation
+				(bindcall play
+					duration = 0.75
+					from="{alpha: 1, scaleX: 1, scaleY: 1, ubScaleX: 1, ubScaleY: 1}"
+					to="{alpha: 0, scaleX: 3, scaleY: 3, ubScaleX: 3, ubScaleY: 3}"
+					easing = "Easing.line"
+					watch=false
+					(event "mineComponent.evIsActiveChanged")
+				)
+			)
+		)
+	)
+)

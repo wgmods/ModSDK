@@ -1,0 +1,166 @@
+(def layout AutopilotIndicator () dispatch_size_change=true
+	(scope
+		(var avatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var healthComponent:gfx = "avatarEntity.health")
+		(var isAlive:bool = "healthComponent != null ? healthComponent.isAlive : false" (event "healthComponent.evIsAliveChanged"))
+
+		(macro SCOPE_IS_BATTLE_IN_PROGRESS "'isBattleInProgress'")
+		(var gameModeId:number = "battleDataEntity.battleInfo.gameModeId")
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var isTactical:bool = "cameraEntity.camera.isTactical" (event "cameraEntity.camera.evTacticalStateChanged"))
+
+		(var waypointsColl:gfx = "$datahub.getCollection(CC.navpoint)")
+		(var hasWaypoints:bool = "waypointsColl.items.length > 0" (event "waypointsColl.evAdded") (event "waypointsColl.evRemoved"))
+		
+		(var shipInfo:gfx = "$datahub.getEntity(avatarEntity.vehicleInfo.shipInfoEntityId)")
+		(var isSubmarine:bool = "shipInfo.ship.subtype == ShipTypes.SUBMARINE")
+	)
+
+	(bind visible "isAlive && isBattleInProgress && (gameModeId != SC.Battle.GAME_MODE.TUTORIAL)")
+	(hblock
+		(style
+			(position = "absolute")
+			(bind bottom "isSubmarine ? 18 : 0")
+			(align = "middle")
+		)
+
+		(element HotkeyIndicator _commandId="Cmd.CMD_TACTICAL_MAP" _toggled="isTactical"
+			(style (marginRight = "4px"))
+		)
+
+		(block
+			(style (marginTop = "1px"))
+			(block
+				(alpha = "hasWaypoints ? 1 : 0.5")
+				(tf
+					(class $TextDefaultBold13NM)
+					(bind class "hasWaypoints ? '$FontColorHealth' : '$None'")
+					(bind text "hasWaypoints ? 'IDS_AUTOPILOT_ON' : 'IDS_AUTOPILOT'")
+				)
+				(controller $Animation
+					(bindcall play  duration = 0.3
+									easing = "Easing.cubic_in"
+									from = "{ alpha: 0, marginTop: 10 }"
+									to = "{ alpha: hasWaypoints ? 1 : 0.5, marginTop: 0 }"
+								action="killAll"
+									(bind trigger "hasWaypoints")
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element TacticalMapTextGridContainer () layout=true
+	(scope
+		(var camera:gfx = "$datahub.getSingleComponent(CC.camera)")
+		(var isTactical:bool = "camera.isTactical" (event "camera.evTacticalStateChanged"))
+	)
+	(style
+		(position = "absolute")
+	)
+
+	(controller $Instance renderer='TacticalMapTextGrid'
+		(bind enabled "isTactical")
+	)
+)
+
+(def element TacticalMapTextGrid () layout=true
+	(scope
+		(var tacticalMapTextsCollection:gfx = "$datahub.getCollection(CC.tacticalMapGridTextElement)")
+	)
+	(style
+		(position = "absolute")
+	)
+	(controller $Repeat renderer='TacticalMapTextGridElement' layout=false
+		(bind count "tacticalMapTextsCollection.items.length" (event "tacticalMapTextsCollection.evAdded") (event "tacticalMapTextsCollection.evRemoved"))
+		(args _col = "tacticalMapTextsCollection")
+	)
+)
+
+(def element TacticalMapTextGridElement (_col:gfx) layout=true
+	(scope
+		(event emptyEventHack)
+		(var entity:gfx = "_col.items[$index]" (event "_col.evChanged") (event "_col.evAdded") (event "_col.evRemoved"))
+		(var component:gfx = "entity.tacticalMapGridTextElement")
+		(var haveScreenPosition:bool = "entity.screenPosition !=null" (event "entity.evAdded") (event "entity.evRemoved"))
+		(var posX:number = "haveScreenPosition ? entity.screenPosition.position.x : 0" (event "haveScreenPosition ? evEnterFrame : emptyEventHack"))
+		(var posY:number = "haveScreenPosition ? entity.screenPosition.position.y : 0" (event "haveScreenPosition ? evEnterFrame : emptyEventHack"))
+	)
+	(style
+		(position = "absolute")
+		(bind left "posX")
+		(bind top "posY")
+	)
+	(block
+		(alpha = 0.3)
+		(style
+			(position = "absolute")
+			(hcenter = 0)
+			(vcenter = 0)
+		)
+		(tf
+			(class $TacticalGridText)
+			(bind text "component.text" (event "component.evTextUpdated"))
+		)
+	)
+)
+
+(def element TacticalMapHelpElement () layout=true
+	(scope
+		(var camera:gfx = "$datahub.getSingleComponent(CC.camera)")
+		(var cameraMode:number = "camera.mode" (event "camera.evModeChanged"))
+		(var isTactical:bool = "camera.isTactical" (event "camera.evTacticalStateChanged"))
+		(var isTacticalConsumble:bool = "cameraMode == CameraMode.TACTICAL_CONSUMABLE" (event "camera.evTacticalStateChanged"))
+		(var avatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var healthComponent:gfx = "avatarEntity.health")
+		(var isAlive:bool = "healthComponent != null ? healthComponent.isAlive : false" (event "healthComponent.evIsAliveChanged"))
+		(var battleStateEntity:gfx = "$datahub.getSingleEntity(CC.battleState)")
+		(var battleState:number = "battleStateEntity.battleState.battleState" (event "battleStateEntity.battleState.evBattleStateChanged"))
+
+		(var mouseCommandsEnabledEntity:gfx = "$datahub.getPrimaryEntity(CC.minimapOption, SC.Battle.MINIMAP_OPTION.mouseCommandsEnabled)")
+		(var mouseCommandsEnabled:bool = "mouseCommandsEnabledEntity.minimapOption.value > 0" (event "mouseCommandsEnabledEntity.minimapOption.evValueChanged"))
+	)
+	(bind visible "isTactical && isAlive && !isTacticalConsumble")
+	(block
+		(style (marginBottom = 28px))
+		(tf
+			(style (marginBottom = 3px))
+			(class $TacticalMapHelpTextTitle)
+			(text = 'IDS_QUICK_COMMANDS_C')
+		)
+		(tf
+			(style (marginBottom = 3px))
+			(class $TacticalMapHelpText)
+			(bindcall substitute imageOffset=5 sourceText="tr('IDS_CMD_QUICK_COMMANDS_WINDOW')+'  [CMD_QUICK_COMMANDS_WINDOW]'" postfix='' toggle=false init=true)
+		)
+		(tf
+			(bind visible "mouseCommandsEnabled")
+			(class $TacticalMapHelpText)
+			(bindcall substitute imageOffset=5 sourceText="tr('IDS_HELP_TACTICAL_MAP_CLICK_ON_ICONS')" postfix='' toggle=false init=true)
+		)
+	)
+	(block
+		(tf
+			(style (marginBottom = 3px))
+			(class $TacticalMapHelpTextTitle)
+			(text = 'IDS_AUTOPILOT_CONTROL')
+		)
+		(tf
+			(style (marginBottom = 20px))
+			(class $TacticalMapHelpText)
+			(bindcall substitute imageOffset=5 sourceText="tr('IDS_HELP_TACTICAL_MAP_NAVPOINTS')" postfix='' init=true)
+		)
+		(tf
+			(style (marginBottom = 20px))
+			(class $TacticalMapHelpText)
+			(bindcall substitute imageOffset=5 sourceText="tr('IDS_HELP_TACTICAL_MAP_TURNAUTOPILOTOFF_3')" postfix='' init=true)
+		)
+		(tf
+			(style (marginBottom = 20px))
+			(class $TacticalMapHelpText)
+			(bindcall substitute imageOffset=5 sourceText="tr('IDS_HELP_TACTICAL_MAP_EXIT')" postfix='' init=true)
+		)
+	)
+)

@@ -1,0 +1,65 @@
+<FGM064_138_6mm_50_Mle_1929_dead.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	MP_XM440_YGRS_FranceArc_M_1	</identifier>
+				<transform>
+					<row0>	0.5172 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.5155 -0.0417 0.0000	</row1>
+					<row2>	0.0000 0.0417 0.5155 0.0000	</row2>
+					<row3>	0.0000 0.1118 0.3431 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_XM441_YGLL_FranceArc_M_1	</identifier>
+				<transform>
+					<row0>	0.5643 -0.0193 0.0459 0.0000	</row0>
+					<row1>	0.0194 0.5662 0.0000 0.0000	</row1>
+					<row2>	-0.0459 0.0016 0.5647 0.0000	</row2>
+					<row3>	-0.0887 0.0910 -0.0393 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_XM442_YGLR_FranceArc_M_1	</identifier>
+				<transform>
+					<row0>	0.5643 0.0193 -0.0459 0.0000	</row0>
+					<row1>	-0.0194 0.5662 0.0000 0.0000	</row1>
+					<row2>	0.0459 0.0016 0.5647 0.0000	</row2>
+					<row3>	0.0887 0.0910 -0.0393 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_deadShape.vertices	</vertices>
+			<primitive>	Turret_deadShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/FSD508_Le_Terrible/gun/FGM064_138_6mm_50_Mle_1929_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1011 -0.0006 -0.1436	</min>
+		<max>	0.0937 0.1420 0.3428	</max>
+	</boundingBox>
+</FGM064_138_6mm_50_Mle_1929_dead.visual>

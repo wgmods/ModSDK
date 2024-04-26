@@ -1,0 +1,13 @@
+(def element ShipWeaponSlots () layout=true
+	(scope
+		(var slots:gfx = "$datahub.getCollection(CC.weaponSlot)")
+		(var slotsCount:number = "slots.items.length" (event "slots.evAdded") (event "slots.evRemoved"))
+	)
+
+	(style (flow = "horizontal"))
+
+	(controller $Repeat renderer='SlotRenderer'
+		(bind count "slotsCount")
+		(args "slots.items[$index].weaponSlot.id" "slots.items[$index].weaponSlot.type" "slots.items.length")
+	)
+)

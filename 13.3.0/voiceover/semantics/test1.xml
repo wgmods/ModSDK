@@ -1,0 +1,27 @@
+<test1.xml>
+	<SemanticsRule
+			name="remove-everything-between-start-and-last-hope">
+		<Tag
+				action="none">	Announcement.LastHope
+		</Tag>
+		<Tag
+				action="remove">	*+
+		</Tag>
+		<Tag
+				action="none">	Announcement.StartBattle
+		</Tag>
+	</SemanticsRule>
+	<Rule
+			name="autopilot-end-only"
+			enabled="0">
+		<Tag
+				action="none">	Autopilot.End
+		</Tag>
+		<Tag
+				action="none">	**
+		</Tag>
+		<Tag
+				action="remove">	Autopilot.Off
+		</Tag>
+	</Rule>
+</test1.xml>

@@ -1,0 +1,56 @@
+<AGB196_Depth_Charge_Thrower_L_lod3.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	AGB185_Depth_Charge_Thrower	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	HP_gunFire1	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.7017 -0.7124 0.0000	</row1>
+					<row2>	0.0000 0.7124 0.7017 0.0000	</row2>
+					<row3>	0.0000 0.0566 0.0359 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	HP_gunFireEffect	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.7017 -0.7124 0.0000	</row1>
+					<row2>	0.0000 0.7124 0.7017 0.0000	</row2>
+					<row3>	0.0000 0.0566 0.0359 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	AGB185_Depth_Charge_Thrower	</node>
+		<geometry>
+			<vertices>	AGB185_Depth_Charge_Thrower_lod3Shape.vertices	</vertices>
+			<primitive>	AGB185_Depth_Charge_Thrower_lod3Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ASD111_Joshua_Humphreys/gun/AM677_Depth_Charge_Roller_Track.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0300 0.0000 -0.0169	</min>
+		<max>	0.0169 0.0614 0.0412	</max>
+	</boundingBox>
+</AGB196_Depth_Charge_Thrower_L_lod3.visual>

@@ -1,0 +1,47 @@
+<RD024_Dip_Compass_dir_TA_ITA_lod1.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	RD024_Dip_Compass_dir_TA_ITA	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS200_YDCS_M_1	</identifier>
+				<transform>
+					<row0>	0.7440 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.7440 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.7440 0.0000	</row2>
+					<row3>	0.0000 0.0926 -0.0217 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	RD024_Dip_Compass_dir_TA_ITA	</node>
+		<geometry>
+			<vertices>	RD024_Dip_Compass_dir_TA_ITA_lod1Shape.vertices	</vertices>
+			<primitive>	RD024_Dip_Compass_dir_TA_ITA_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/RSC515_Mikoyan/director/RD024_Dip_Compass_dir_TA_ITA.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0219 -0.0017 -0.0235	</min>
+		<max>	0.0217 0.1234 0.0248	</max>
+	</boundingBox>
+</RD024_Dip_Compass_dir_TA_ITA_lod1.visual>

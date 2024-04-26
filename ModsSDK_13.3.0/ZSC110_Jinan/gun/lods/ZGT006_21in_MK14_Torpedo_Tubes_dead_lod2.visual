@@ -1,0 +1,38 @@
+<ZGT006_21in_MK14_Torpedo_Tubes_dead_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	ZGT004_21in_MK14_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	ZGT004_21in_MK14_dead	</node>
+		<geometry>
+			<vertices>	ZGT004_21in_MK14_dead_lod2Shape.vertices	</vertices>
+			<primitive>	ZGT004_21in_MK14_dead_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ZSC110_Jinan/gun/ZGT006_21in_MK14_Torpedo_Tubes_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1091 0.0000 -0.2216	</min>
+		<max>	0.1098 0.1384 0.3151	</max>
+	</boundingBox>
+</ZGT006_21in_MK14_Torpedo_Tubes_dead_lod2.visual>

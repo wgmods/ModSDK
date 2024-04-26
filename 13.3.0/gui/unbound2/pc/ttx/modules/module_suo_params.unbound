@@ -1,0 +1,12 @@
+(def layout ModuleSuo_ParametersForDock (shipTTX:gfx, hasIntegralDiff:bool)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DIST'
+											_value = "shipTTX.artillery.mgMaxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+		)
+	)
+	(macro TTX_INSTANCE 'ModuleIntegralParams' "shipTTX" "hasIntegralDiff")
+)

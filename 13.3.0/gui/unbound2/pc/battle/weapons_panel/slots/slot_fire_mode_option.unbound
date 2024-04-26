@@ -1,0 +1,83 @@
+
+
+
+(def constant SWITCHER_SLOT_FX_WIDTH 28)
+
+(def element FireModeSwitcher () layout=true
+	(scope
+		(var _width:number = "SLOT_SIZE")
+		(var _height:number = "SLOT_SIZE")
+
+		(var fireModeEntity:gfx = "$datahub.getSingleEntity(CC.fireModeSlot)")
+		(var fireModeComponent:gfx = "fireModeEntity ? fireModeEntity.fireModeSlot : null")
+
+		(var _command:number = "fireModeComponent.commandId")
+		(var itemImageUrl:str = "'url:' + fireModeComponent.iconPath")
+
+		(var selfVehicleWatcher:gfx = "$datahub.getFirstWatcher(CC.selfVehicle)")
+		(var selfVehicleEntity:gfx = "selfVehicleWatcher.entity" (event "selfVehicleWatcher.event"))
+		(var controller:gfx = "selfVehicleEntity ? selfVehicleEntity.weaponController : null" (event "selfVehicleEntity.evAdded") (event "selfVehicleEntity.evRemoved"))
+
+		
+		(var weaponType:number = "controller	? controller.selectedWeapon
+												: SC.Ships.SHIP_WEAPON_TYPES.NONE" (event "controller.evSelectedWeaponChanged"))
+
+		(var altFireModeEntity:gfx = "$datahub.getSingleEntity(CC.altFireMode)")
+		(var altFireModeComponent:gfx = "altFireModeEntity.altFireMode")
+		(var isAltFireModeActive:bool = "altFireModeComponent.isActive"  (event "altFireModeComponent.evIsActiveChanged"))
+		(var isArtillery:bool = "weaponType == SC.Ships.SHIP_WEAPON_TYPES.ARTILLERY")
+		(var isFireModeEnable:bool = "isAltFireModeActive && isArtillery")
+
+		(macro STAGE_SIZE)
+	)
+
+	(style
+		(width = "_width")
+		(height = "_height")
+		(bind marginRight "stageHeight >= 900 ? PANEL_GROUP_MARGIN : PANEL_ITEM_MARGIN")
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+
+		(element SlotItem
+			(scope
+				(bind _itemImageUrl "itemImageUrl")
+				(bind _isSelectable "true")
+				(bind _width "_width")
+				(bind _height "_height")
+				(bind _isLocked "weaponType != SC.Ships.SHIP_WEAPON_TYPES.ARTILLERY")
+				(bind _isSelected "isAltFireModeActive")
+			)
+		)
+
+		(controller $Instance (renderer = 'HotkeyIndicator')
+			(args _commandId="_command" _toggled="isAltFireModeActive")
+			(exprs
+				(scope
+					(bind isKeyActive "isFireModeEnable")
+				)
+				(style
+					(bottom = "-HOTKEY_SIZE[SIZE.MEDIUM]")
+					(hitTest = false)
+					(position = "absolute")
+					(hcenter = "0px")
+				)
+				(bind alpha "isFireModeEnable ? 1 : 0.8")
+			)
+		)
+
+		(element HIT_TEST_TOOLTIP_CONTAINER
+			(macro MOUSE_LMB_EXTERNAL_CALL 'direct.action' "['weaponSlot.pressed', [_command]]" "isArtillery")
+			(controller $Tooltip
+				(renderer = 'FireModeTooltip')
+				(args _fireModeEntity="fireModeEntity")
+				(align="bottom|center")
+				(position="border")
+				(offset=[0, 20])
+				(screenBoundsOffset={left:10, top:30, right:10, bottom:100})
+				(macro SIMPLE_TOOLTIP_ANIMATION)
+			)
+		)
+	)
+)

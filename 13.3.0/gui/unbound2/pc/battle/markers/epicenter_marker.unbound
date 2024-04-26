@@ -1,0 +1,186 @@
+(def constant EPICENTER_INDICATOR_SIZE 42)
+(def constant EPICENTER_INDICATOR_ITEMS [
+	{ bg: 'epicenter_bar_small_grey', barSize: 5, barInnerSize: 0 },
+	{ bg: 'epicenter_bar_middle_grey', barSize: 12, barInnerSize: 8 },
+	{ bg: 'epicenter_bar_big_grey', barSize: 19, barInnerSize: 15 }
+])
+
+(def css $EpicenterIndicatorItemFXBlur ()
+	(filters
+		(blur
+			(blurX = 10.0)
+			(blurY = 10.0)
+			(quality = 1)
+		)
+	)
+)
+
+
+(def element EpicenterIndicator (_markerEntity:gfx) layout=true
+	(scope
+		(var points:gfx = "$datahub.getCollection(CC.capturePoint).child('epicenter').child(_markerEntity.epicenter.id)")
+	)
+
+	(style
+		(width = "EPICENTER_INDICATOR_SIZE")
+		(height = "EPICENTER_INDICATOR_SIZE")
+	)
+	
+
+	(controller $Repeat renderer='EpicenterIndicatorItem'
+		(bind count "points.items.length")
+		(args "points.items[$index].id")
+	)
+)
+
+(def element EpicenterIndicatorItem (_markerEntity:gfx) layout=true
+	(scope
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'capturePoint')
+		(macro GET_MARKER_ENTITY_COMPONENT 'progress')
+		(macro GET_MARKER_ENTITY_COMPONENT 'relation')
+		(macro VAR_RELATION "_markerEntity")
+
+		
+		(var relationValue:number = "relationComponent ? relationComponent.value : SC.Battle.PLAYER_RELATION.SELF" (event "relationComponent.evChanged"))
+
+		
+		(var bothInside:bool = "capturePointComponent && capturePointComponent.bothInside" (event "capturePointComponent.evBothInsideChanged"))
+		(var invaderRelation:number = "capturePointComponent ? capturePointComponent.invaderRelation : 0" (event "capturePointComponent.evInvaderChanged"))
+		
+		
+		(var captureProgress:number = "progressComponent ? progressComponent.value : 0" (event "progressComponent.evChanged"))
+		(var isCaptureInProgress:bool = "bothInside || captureProgress > 0" (event "progressComponent.evChanged") (event "capturePointComponent.evBothInsideChanged"))
+		(var progressInvertion:number = "invaderRelation == SC.Battle.PLAYER_RELATION.ALLY ? 1 : -1")
+		(var captureBarProgress:number = "isCaptureInProgress	? captureProgress == 0	? 0 
+																						: 360 * captureProgress * progressInvertion
+																: 0")
+		
+		
+		(var itemSettings:dict = "EPICENTER_INDICATOR_ITEMS[$index]")
+		(var mainBarColor:number = "relationValue == SC.Battle.PLAYER_RELATION.ALLY	? CAPTURE_POINT_LABEL_COLORS.GREEN
+																					: CAPTURE_POINT_LABEL_COLORS.RED")
+
+		(var captureBarColor:number = "invaderRelation == SC.Battle.PLAYER_RELATION.ALLY	? CAPTURE_POINT_LABEL_COLORS.GREEN
+																							: CAPTURE_POINT_LABEL_COLORS.RED")
+	)
+
+	(style (zindex = 0))
+
+	
+	
+	
+	(block
+		(style
+			(bind backgroundImage "'url:../battle_hud/markers/epicenter/' + itemSettings.bg + '.png'")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(left = "EPICENTER_INDICATOR_SIZE / 2")
+			(top = "EPICENTER_INDICATOR_SIZE / 2")
+		)
+
+		
+		
+		
+		(block
+			(bind visible "relationValue != SC.Battle.PLAYER_RELATION.NEUTRAL")
+			(style (position = "absolute"))
+			(controller $Sector
+				(offset = "-90")
+				(bind color "mainBarColor")
+				(bind arc "360")
+				(bind radius "itemSettings.barSize")
+				(bind innerRadius "itemSettings.barInnerSize")
+			)
+		)
+
+		
+		
+		
+		(block
+			(style (position = "absolute"))
+			(controller $Sector
+				(offset = "-90")
+				(bind color "captureBarColor")
+				(bind arc "captureBarProgress")
+				(bind radius "itemSettings.barSize")
+				(bind innerRadius "itemSettings.barInnerSize")
+			)
+		)
+
+		
+		
+		
+		(controller $FxInstance renderer='EpicenterIndicatorItemFX' lifetime="1"
+			(bindcall create (bind enabled "!(isCaptureInProgress)"))
+			(args "itemSettings")
+		)
+	)
+)
+
+(def element EpicenterIndicatorItemFX (_itemSettings:dict) layout=true
+	(scope
+		(event evShow)
+	)
+	(dispatch evShow on='addedToStage')
+
+	(alpha = 0)
+
+	(controller $Animation
+		(bindcall play	duration="0.5"
+						keyframes="[
+							{
+								percent: 30,
+								to: {alpha: 1}
+							},
+							{
+								percent: 60,
+								to: {alpha: 0}
+							},
+							{
+								percent: 80,
+								to: {alpha: 1}
+							},
+							{
+								percent: 100,
+								to: {alpha: 0}
+							}]"
+						(event "evShow")
+		)
+	)
+
+	(class $EpicenterIndicatorItemFXBlur)
+
+	(controller $Sector
+		(offset = "-90")
+		(bind color "CAPTURE_POINT_LABEL_COLORS.WHITE")
+		(bind arc "360")
+		(bind radius "_itemSettings.barSize")
+		(bind innerRadius "_itemSettings.barInnerSize")
+	)
+)
+
+
+(def element WorldEpicenterMarker (_markerEntity:gfx) layout=true
+
+	(style
+		(width = 0) (height = 0)
+		(align = "center|middle")
+	)
+	
+	(block
+		(style
+			(position = "absolute")
+			(bottom = 40)
+		)
+		(element TargetAnimationItem "_markerEntity"
+			(style (position = "absolute"))
+		)
+	)
+
+	(element EpicenterIndicator "_markerEntity")
+)

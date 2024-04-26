@@ -1,0 +1,49 @@
+(def layout ModuleHull_ParametersForDock (shipTTX:gfx, hasIntegralDiff:bool)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_HEALTH'
+											_value = "shipTTX.durability.health"
+			)
+			(element ShipParameter_Range	_title = 'IDS_SHIP_PARAM_ARMOR'
+											_valueMin = "shipTTX.armor.min"
+											_valueMax = "shipTTX.armor.max"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_GUNS_COUNT'
+											_value = "shipTTX.hull.artilleryGunsCount"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ATBA_GUNS_COUNT'
+											_value = "shipTTX.hull.atbaGunsCount"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDOES_GUNS_COUNT'
+											_value = "shipTTX.hull.torpedoesGunsCount"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDOES_GUNS_COUNT_BOW'
+											_value = "shipTTX.hull.torpedoesGunsCountBow"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDOES_GUNS_COUNT_STERN'
+											_value = "shipTTX.hull.torpedoesGunsCountStern"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_AA_GUNS_COUNT'
+											_value = "shipTTX.hull.aaGunsCount"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_DEPTH_CHARGE_GUNS_COUNT'
+											_value = "shipTTX.hull.depthChargeGunsCount"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_BATTERY_MAX_CAPACITY'
+											_value = "shipTTX.hull.batteryCapacity"
+											_valueConfig = "VALUE_CONFIG.UNITS"
+											_zeroValueHidden = true
+			)
+		)
+	)
+	(macro TTX_INSTANCE 'ModuleIntegralParams' "shipTTX" "hasIntegralDiff")
+)

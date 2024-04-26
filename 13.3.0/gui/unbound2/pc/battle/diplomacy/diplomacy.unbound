@@ -1,0 +1,462 @@
+(def constant DIPLOMACY_REQUEST_CONFIG "[
+	# SC.Battle.DIPLOMACY_EVENT_TYPE.INVITE:	
+	{
+		commands: [	{'id' : Cmd.CMD_DIPLOMACY_ACCEPT,		'desc' : 'IDS_DIPLOMACY_ACCEPT_INVITE'} ,
+					{'id' :  Cmd.CMD_DIPLOMACY_DECLINE,		'desc' : 'IDS_DIPLOMACY_DECLINE_INVITE'}],
+		message	:	'IDS_DIPLOMACY_LOG_REQUEST_AWAITS',
+		iconUrl	:	'url:../battle_hud/diplomacy/icon_log_pact.png',
+		frameIconUrl : 'url:../battle_hud/diplomacy/icon_log_pact_frame.png',
+		colorTransform : {}
+	},
+	# SC.Battle.DIPLOMACY_EVENT_TYPE.REQUEST:
+	{
+		commands: [{'id' :  Cmd.CMD_DIPLOMACY_DECLINE, 'desc' : 'IDS_DIPLOMACY_CANCEL_INVITE'}],
+		message	:	'IDS_DIPLOMACY_LOG_AWAIT_ANSWER',
+		iconUrl	:	'url:../battle_hud/diplomacy/icon_log_pact.png',
+		frameIconUrl : 'url:../battle_hud/diplomacy/icon_log_pact_frame.png',
+		colorTransform : {}
+	}
+]")
+
+(def element DiplomacyHud() layout=true dispatch_size_change=true
+	(controller $Instance renderer='InviteToTeamCrosshairHint')
+
+	(block
+		(style
+			(position = "absolute")
+			(paddingLeft = 3)
+			(paddingTop = "MS")
+		)
+		(controller $Instance renderer='EventShipHealth')
+	)
+)
+
+(def element EventIngameBattleResultsContainer() layout = true dispatch_size_change = true
+	(scope
+		(var playerAvatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var battleInfoComponent:gfx = "$datahub.getSingleComponent(CC.battleInfo)")
+		(var battleType:str = "battleInfoComponent.battleType")
+		(var isAvailableBattleType:bool = "battleInfoComponent.battleType == SC.Common.BATTLE_TYPES.EVENT_BATTLE ? true : false")
+
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var gameModeId:number = "battleDataEntity.battleInfo.gameModeId")
+		(var isAvailableGameMode:bool = "gameModeId == SC.Battle.GAME_MODE.PORTAL_2021")
+
+		(var isAvailableToDisplayResults:bool = "isAvailableGameMode && isAvailableBattleType")
+
+		
+		(var hasBattleResultsComponent:bool = "(playerAvatarEntity != null && playerAvatarEntity.hasComponent(CC.vehicleDeathInfo)) ? isAvailableToDisplayResults : false" (event "playerAvatarEntity.evAdded"))
+
+	)
+	(class $FullsizeAbsolute)
+	(controller $Instance renderer='EventIngameBattleResults'
+		(bind enabled "hasBattleResultsComponent")
+	)
+)
+(def element EventIngameBattleResults() layout = true dispatch_size_change = true
+		
+	(scope
+		(macro STAGE_SIZE)
+		(var playerAvatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var vehicleDeathInfoReason:str = "playerAvatarEntity.hasComponent(CC.vehicleDeathInfo) ? playerAvatarEntity.vehicleDeathInfo.reason : null" (event "playerAvatarEntity.evAdded"))
+		(var battleResultPostfix:str = "(vehicleDeathInfoReason == 'PORTAL') || (vehicleDeathInfoReason == 'MATCH') ? vehicleDeathInfoReason : 'bad'")
+
+		(event evHideButtonClicked)
+		(var cmdEntity:gfx = "$datahub.getPrimaryEntity(CC.commandMappingCommandName, 'CMD_KEY_SHOW_EVENT_RESULTS')")
+		(var cmdComponent:gfx = "cmdEntity ? cmdEntity.commandMappingCommand : null")
+
+		(var cmdReplayEntity:gfx = "$datahub.getPrimaryEntity(CC.commandMappingCommandName, 'CMD_REPLAY_KEY_SHOW_EVENT_RESULTS')")
+		(var cmdReplayComponent:gfx = "cmdReplayEntity ? cmdReplayEntity.commandMappingCommand : null")
+
+		(var isHideResults:bool = "false")
+		(bind isHideResults "!isHideResults" watch=false init=false (event "cmdComponent.evCall") (event "cmdReplayComponent.evCall"))
+
+		(var resourcesCollection:gfx = "$datahub.getCollection(CC.resource)")
+		(var resourceEntity:gfx = "$datahub.getPrimaryCompositeEntity(CC.resource, SC.Battle.RESOURCE_TYPES.FILTHIOR_SAVED, playerAvatarEntity.id)" (event "resourcesCollection.evAdded"))
+		(var progressComponent:gfx = "resourceEntity ? resourceEntity.progress : null" (event "resourceEntity.evAdded") (event "resourceEntity.evRemoved"))
+		(var bonusCurrency:number = "progressComponent ? progressComponent.value : 0" (event "progressComponent.evChanged"))
+
+		(event evShow)
+	)
+	(dispatch evShow on=addedToStage)
+	(dispatch evHideButtonClicked dir="EventDirection.NONE" (bind enabled "isHideResults") (bind trigger "isHideResults"))
+
+	(style
+		(position = "absolute")
+		(bind height "stageHeight")
+		(width = "640px")
+		(align = "center|middle")
+		(alpha = 0)
+	)
+	(controller $Animation
+		(bindcall play 	duration="0.25"
+						delay="2"
+						from="{left: -640, alpha: 0}"
+						to="{left: 0, alpha: 1}" (event "evShow")
+		)
+		(bindcall play 	duration="0.25"
+						delay="0"
+						from="{left: -640, alpha: 0}"
+						to="{left: 0, alpha: 1}" (bind enabled "!isHideResults")
+		)
+		(bindcall play 	duration="0.25"	
+						delay="0" 
+						from="{left: 0, alpha: 1}" 
+						to="{left: -640, alpha: 0}" watch=false (bind enabled "isHideResults")
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundColor = "0xCC001431")
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(macro DIPLOMACY_BG )
+	)
+
+	(tf
+		(class $TextDefaultBold21NM)
+		(bind text "'IDS_BATTLE_RESULT_BLOCK_HEADER_HW2020'")
+	)
+
+	(block
+		(style
+			(marginTop = "S")
+			(width = "100%")
+			(paddingLeft = "XL")
+			(paddingRight = "XL")
+		)
+		(element HorizontalDivider)
+	)
+
+	(tf
+		(style
+			(marginTop = "M")
+		)
+		(class $TextDefaultBold58NM)
+		(bind text "tr('IDS_BATTLE_RESULT_HW2020_HEADER_' + toUpper(battleResultPostfix))")
+	)
+
+	(tf
+		(style
+			(marginTop = "M")
+			(width = "520px")
+			(backgroundColor = "0xFF00FFFF")
+			(textAlign = "center")
+		)
+		(class $TextDefault19NM)
+		(bind text "'IDS_BATTLE_RESULT_DESCRIPTION_HW2020'")
+	)
+
+	(block
+		(style
+			(marginTop = "M")
+			(width = "600px")
+			(height = "400px")
+			(bind backgroundImage "'url:../events/halloween20/icon_result_' + toLower(battleResultPostfix) + '.png'")
+		)
+		(bind scaleX "stageHeight < 900 ? 0.7 : 1")
+		(bind scaleY "stageHeight < 900 ? 0.7 : 1")
+	)
+
+	(tf
+		(class $TextDefaultBold27NM)
+		(bind text "'IDS_MODAL_WINDOW_POSTBATTLE_KEY_BATTLE_RESULTS_REWARD_TITLE'")
+	)
+
+	(hblock 
+		(style 
+			(marginTop = "MS")
+			(marginBottom = "M")
+		)
+		(tf
+			(class $TextDefaultBold58NM)
+			(bind text "bonusCurrency")
+		)
+
+		(block
+			(style 
+				(width = "44px")
+				(height = "44px")
+				(backgroundSize = "cover")
+				(marginLeft = "SXS")
+				(bind backgroundImage "'url:../events/halloween20/icon_reward_eventum_2_postbattle.png'")
+			)
+		)
+	)
+
+	(tf
+		(style
+			(marginTop = "MS")
+		)
+		(class $TextDefaultNM)
+		(bindcall substitute imageOffset=5 sourceText="'[CMD_KEY_SHOW_EVENT_RESULTS]' + ' ' + tr('IDS_CMD_HIDE_OR_SHOW_BATTLE_RESULTS_HW2020')" postfix='' toggle=false init=true)
+	)
+)
+
+(def element InviteToTeamCrosshairHint() layout = true dispatch_size_change = true
+	(scope
+		(var selectedTargetWatcher:gfx = "$datahub.getFirstWatcher(CC.diplomacyTarget)")
+		(var entity:gfx = "selectedTargetWatcher.entity" (event "selectedTargetWatcher.event"))
+
+		(macro STAGE_SIZE )
+		(macro IS_ALT_VISION_MODE)
+	)
+	
+	(bind visible "entity")
+
+	(style
+		(position = "absolute")
+		(bind left "stageWidth/2")
+		(bind top "stageHeight/2")
+		(bind paddingTop "isAltVisionMode ? 36px : 0px")
+	)
+
+	(element HotkeyIndicatorWithText _commandDescription='IDS_DIPLOMACY_INVITE' _commandId="Cmd.CMD_DIPLOMACY_ACCEPT"
+		(style
+			(marginTop = 100%) (marginLeft = -50%) 
+		)
+		(controller $Animation
+			(bindcall play from="{scaleX:0.8, scaleY:0.8}" to="{scaleX:1.1, scaleY:1.1}" duration=0.25 easing="Easing.cubic_out" action="killAll" (bind enabled "entity") (event "selectedTargetWatcher.event"))
+			(bindcall play from="{scaleX:1.1, scaleY:1.1}" to="{scaleX:1.0, scaleY:1.0}" duration=0.25 delay=0.25 easing="Easing.cubic_in" (bind enabled "entity") (event "selectedTargetWatcher.event"))
+		)
+	)
+)
+
+(def element DiplomacyEventsHolder() layout=true dispatch_size_change=true
+	(scope
+		(var diplomacyTicketCollection:gfx = "$datahub.getCollection(CC.diplomacyTicket)")
+		(var hasTicket:bool = "diplomacyTicketCollection.items.length > 0" watch=true (event "diplomacyTicketCollection.evAdded") (event "diplomacyTicketCollection.evRemoved"))
+
+		(macro STAGE_SIZE )
+	)
+
+	(style
+		(paddingTop = "MS")
+		(bind marginLeft "stageWidth/2")
+	)
+
+	(controller $Instance renderer='DiplomacyPendingRequestContent'
+		(bind enabled "hasTicket")
+		(exprs
+			(style
+				(marginLeft = "-50%")
+			)
+		)
+	)
+)
+
+(def element DiplomacyPendingRequestContent() layout=true
+	(scope
+		(var entity:gfx = "$datahub.getSingleEntity(CC.diplomacyTicket)" watch=false)
+		(var component:gfx = "entity.getComponent(CC.diplomacyTicket)" watch=false)
+		(var senderId:number = "component.avatarId")
+		
+		(var avatarComponent:gfx = "$datahub.getPrimaryEntity(CC.avatar, senderId).avatar")
+		
+		(var countdown:gfx = "entity.countDown" (event "entity.evAdded") (event "entity.evRemoved"))
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+		(var endTime:number = "countdown ? countdown.endTime : 0")
+		(var isActive:bool = "countdown && endTime > timerEntity.timer.currentTime" watch=false  (event "timerEntity.timer.evFrequent"))
+		(var remainTime:number = "isActive ? endTime - timerEntity.timer.currentTime : 0" watch=false (event "timerEntity.timer.evFrequent"))
+		(macro HUMAN_READABLE_COUNTDOWN_SCOPE "remainTime > 0 ? remainTime : 0")
+
+		(var arcProgress:number = "countdown && isActive > 0 ? 360 * ((remainTime) / countdown.duration) : 0")
+
+		(var playerName:str = "avatarComponent.pureName")
+		(var config:dict = "DIPLOMACY_REQUEST_CONFIG[component.type]")
+	)
+
+	(style
+		(width = "600px")
+		(marginLeft = "-50%")
+	)
+
+	(controller $Instance renderer='DiplomacyReactImage'
+		(args
+			_iconUrl = "config.iconUrl" 
+			_frameIconUrl = "config.frameIconUrl"
+			_colorTransform = "config.colorTransform"
+			_arcProgress = "arcProgress"
+		)
+		(exprs
+			(scope
+				(bind arcProgress "arcProgress")
+			)
+		)
+	)
+
+	(element DiplomacyMessage _message = "subst(config.message,[],{playerName: playerName})")
+
+	(element DiplomacyReactionHints _commands = "config.commands"
+									$enabled="config.commands")
+)
+
+(def element DiplomacyReactImage(_iconUrl:str, _colorTransform:dict, _arcProgress:number = 0, _frameIconUrl:str = '') layout=true
+	(scope
+		(var arcProgress:number = "_arcProgress")
+	)
+	(style
+		(width = "100%")
+		(padding = 1px)
+	)
+		
+	(element DiplomacyLogBG)
+
+	(block
+		(style		
+			(width = "100%")
+			(margin = "XS")
+		)
+		
+		(block			
+			(style
+				(bind backgroundImage "_iconUrl")
+				(backgroundSize = "align")
+				(padding = [4, 4, 4, 4])
+				(width = "100%")
+				(height = "100px")
+				(position = "absolute")
+			)
+			(bind colorTransform "_colorTransform")
+		)
+
+		(block
+			(block
+				(style 
+					(position = "absolute")
+					(top = 50%)
+					(left = 50%)
+				)
+
+				(controller $Sector
+					(bind arc "arcProgress")
+					(bind offset "-90 - arcProgress")
+					(bind radius "100%")
+				)
+				(isMask = true)
+			)
+			
+			(style
+				(bind backgroundImage "_frameIconUrl" $enabled="_frameIconUrl")
+				(backgroundSize = "align")
+				(padding = [4, 4, 4, 4])
+				(width = "100%")
+				(height = "100px")
+			)
+			(bind colorTransform "_colorTransform")
+			(bind visible "_frameIconUrl")
+		)	
+	)
+)
+
+(def element DiplomacyMessage(_message:str) layout=true
+	(style
+		(width = "100%")
+		(padding = 1px)
+	)
+
+	(element DiplomacyLogBG)
+
+	(block
+		(style
+			(margin = "XS")
+			(align = "center|middle")
+			(width = 100%)
+		)
+			
+		(tf
+			(class $TextDefaultBoldNM)
+			(class $FontEnableReadability)
+			(bind text "_message")
+		)
+	)
+)
+
+(def element DiplomacyReactionHints(_commands:array) layout=true
+	(scope
+		(var commands:array = "_commands")
+	)
+
+	(style
+		(width = "100%")
+		(padding = 1px)
+	)
+
+	(element DiplomacyLogBG)
+
+	(hblock
+		(style
+			(width = 100%)
+			(align = "center")
+			(margin = "XS")
+		)			
+			
+		(controller $Repeat renderer='DiplomacyReactionHotkeyIndicator' count="commands.length"
+			(args
+				_commandId = "commands[$index].id"
+				_commandDescription = "commands[$index].desc"
+				_isLast = "$index == commands.length - 1"
+			)
+			(exprs
+				(style
+					(bind width "round(1% * 100/commands.length)")
+				)
+			)
+		)
+	)
+)
+
+(def element DiplomacyReactionHotkeyIndicator(_commandId:number, _commandDescription: str, _isLast:bool) layout=true
+	(scope
+		(var isFirst:bool = "$index == 0")
+		(var isLast:bool = "_isLast")
+		(var isOnly:bool = "isFirst && isLast")
+	)
+	(style
+		(flow = "horizontal")
+		(bind align "	isOnly || (!isFirst && !isLast) ? center :
+						isFirst							? right  
+														: left")
+	)
+
+	(element HotkeyIndicatorWithText _commandDescription="_commandDescription" _commandId = "_commandId"
+		(style
+			(bind align "	isOnly || (!isFirst && !isLast) ? center :
+							isFirst							? right  
+															: left")
+			(marginRight = "SXS")
+			(marginLeft = "SXS")
+		)
+	)
+
+	(element VerticalDivider $enabled="!isLast && !isOnly"
+		(style
+			(right = 0)
+			(position = "absolute")
+		)
+	)
+)
+
+(def element DiplomacyLogBG () layout=true
+	(class $FullsizeAbsolute)
+	(style
+		(paddingBottom = "XXS")
+	)
+	(block
+		(class $Fullsize)
+		(macro DIPLOMACY_BG )
+	)
+)
+
+(def macro DIPLOMACY_BG ()
+	(style
+		(backgroundImage = "'url:../battle_hud/central_log/pattern.png'")
+		(backgroundRepeatX = true)
+		(backgroundRepeatY = true)
+	)
+)

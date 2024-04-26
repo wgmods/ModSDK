@@ -1,0 +1,83 @@
+<FGS003_130_45_Mle_1932_twin_dead.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS101_YGCS_M_1_INDEX_2	</identifier>
+				<transform>
+					<row0>	0.8934 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.9258 -0.0380 0.0000	</row1>
+					<row2>	0.0000 0.0246 0.5995 0.0000	</row2>
+					<row3>	0.0000 0.0306 0.1608 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_2	</identifier>
+				<transform>
+					<row0>	0.3431 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.3352 -0.0735 0.0000	</row1>
+					<row2>	0.0000 0.0735 0.3352 0.0000	</row2>
+					<row3>	-0.0188 0.1709 0.3496 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_3	</identifier>
+				<transform>
+					<row0>	0.3431 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.3352 -0.0735 0.0000	</row1>
+					<row2>	0.0000 0.0735 0.3352 0.0000	</row2>
+					<row3>	0.0188 0.1709 0.3496 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS106_YGLL_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.7640 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.7640 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.7640 0.0000	</row2>
+					<row3>	-0.1397 0.0913 -0.0927 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS107_YGLR_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.7640 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.7640 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.7640 0.0000	</row2>
+					<row3>	0.1397 0.0913 -0.0927 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_deadShape.vertices	</vertices>
+			<primitive>	Turret_deadShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/FSB107_Lyon/gun/FGS003_130_45_Mle_1932_twin_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1906 -0.0328 -0.2578	</min>
+		<max>	0.1906 0.2067 0.3769	</max>
+	</boundingBox>
+</FGS003_130_45_Mle_1932_twin_dead.visual>

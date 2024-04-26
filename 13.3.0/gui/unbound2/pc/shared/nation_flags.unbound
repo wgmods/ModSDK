@@ -1,0 +1,30 @@
+(def element NationFlagsBig (_shipCountry:str, _width:number="null", _height:number="null", _alpha:number="null")
+	(style
+		(backgroundSize = "fill")
+		(bind width		"_width ? _width : '694px'")
+		(bind height	"_height ? _height : '426px' ")
+		(bind alpha		"_alpha ? _alpha : '1' ")
+		(bind backgroundImage "_shipCountry ? 'url:../nation_flags/big/flag_' + _shipCountry + '.png' : ''")
+	)
+)
+
+(def element NationFlagsSmall (_shipCountry:str, _width:number="null", _height:number="null", _alpha:number="null")
+	(style
+		(backgroundSize = "fill")
+		(bind width		"_width ? _width : '117px'")
+		(bind height	"_height ? _height : '72px' ")
+		(bind alpha		"_alpha ? _alpha : '1' ")
+		(bind backgroundImage "_shipCountry ? 'url:../nation_flags/small/flag_' + _shipCountry + '.png' : ''")
+	)
+)
+
+(def element NationFlagsTiny (_shipCountry:str)
+	(style
+		(backgroundSize = "fill")
+		(marginBottom = -5px)
+		(marginTop = -5px)
+		(width = 27px)
+		(height = 27px)
+		(bind backgroundImage "_shipCountry ? 'url:../nation_flags/tiny/flag_' + _shipCountry + '.png' : ''")
+	)
+)

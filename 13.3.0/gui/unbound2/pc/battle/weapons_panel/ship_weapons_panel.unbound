@@ -1,0 +1,156 @@
+(def constant PANEL_APPEAR_Y_OFFSET 15)
+(def constant PANEL_ITEM_MARGIN 5)
+(def constant PANEL_GROUP_MARGIN 15)
+
+
+(def macro WEAPON_PANEL_ANIMATION (isVisible:expression)
+	(alpha = "isVisible ? 1 : 0")
+	(controller $Animation
+		(bindcall play 	duration=0.15
+						from="{ alpha: 0}" 
+						to="{ alpha: 1}"
+						action="killAll"
+						reverse="!(isVisible)"
+						(bind trigger "isVisible")
+		)
+	)
+)
+
+(def element ShipWeaponsPanel () layout=true
+	(scope
+		(var atbaEntity:gfx = "$datahub.getSingleEntity(CC.shipATBA)")
+
+		(var consumablesCollection:gfx = "$datahub.getCollection(CC.battleConsumable)")
+		(var shipConsumablesCollection:gfx = "consumablesCollection.getChildByPath('shipConsumables')")
+		(var shipConsumablesCollectionByViewTypes:gfx = "shipConsumablesCollection ? shipConsumablesCollection.getChildByPath('byViewType') : null")
+		(var shipConsumablesCollectionByViewTypesLength:number = "shipConsumablesCollectionByViewTypes.childrenCount" (event "shipConsumablesCollectionByViewTypes.evChildrenCountChanged"))
+
+		(var fireModeEntity:gfx = "$datahub.getSingleEntity(CC.fireModeSlot)")
+
+		(var rageModesCollection:gfx = "$datahub.getCollection(CC.rageMode)")
+		(var rageModesCollectionLength:gfx = "rageModesCollection.items.length")
+
+		
+		(var aircarrier:gfx = "$datahub.getSingleComponent(CC.aircarrier)")
+		(var squadronCameraMode:str = "aircarrier.squadronCameraMode" (event "aircarrier.evSquadronCameraModeChanged"))
+		(var activeSquadron:number = "aircarrier.activeSquadron" (event "aircarrier.evStateChanged"))
+
+		(var avatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var isAircarrier:bool = "avatarEntity.avatar ? (avatarEntity.avatar.ship.ref.ship.subtype == ShipTypes.AIRCARRIER) : false")
+
+		(var showPanel:bool = "aircarrier == null || (activeSquadron == ActiveSquadron.NONE && squadronCameraMode == SquadronCameraModes.DEFAULT)")
+	)
+
+	(macro WEAPON_PANEL_ANIMATION "showPanel")
+
+	(style
+		(bind hitTest "showPanel")
+		(flow = "horizontal")
+		(align = "bottom")
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(bottom = 0)
+			(left = "-SLOT_ATBA_ICON_WIDTH - PANEL_GROUP_MARGIN")
+		)
+		(controller $Instance renderer='ATBAIndicator'
+			(bind enabled "atbaEntity")
+			(args "atbaEntity.id")
+		)
+	)
+
+	
+	(block
+		
+		(element ShipWeaponSlots)
+	)
+
+	
+	(controller $Instance renderer='RageModeWeaponGroup'
+		(bind enabled "rageModesCollectionLength > 0")
+		(args
+			isAircarrier = "isAircarrier"
+		)
+		(exprs
+			(scope
+				(bind _collection "rageModesCollection")
+			)
+		)
+	)
+
+	
+	(block
+		(style (flow = "horizontal"))
+		(controller $Instance renderer='FireModeSwitcher'
+			(bind enabled "fireModeEntity")
+		)
+	)
+
+	
+	(controller $Instance renderer='ConsumableWeaponGroup'
+		(bind enabled "shipConsumablesCollectionByViewTypesLength > 0")
+		(args
+			isAircarrier = "isAircarrier"
+			_children = "shipConsumablesCollectionByViewTypes"
+		)
+	)
+
+)
+
+(def constant CONSUMABLE_WEAPON_RENDER_MAP "['CommonConsumableWeaponGroup', 'ModifierConsumableWeaponGroup']")
+
+(def element ConsumableWeaponGroup (_children:gfx, isAircarrier:bool = false) layout=true
+	(style (flow = "horizontal"))
+
+	(controller $Repeat layout=true
+		(bind count "_children.childrenCount" (event "_children.evChildrenCountChanged"))
+		(exprs
+			(controller $Instance renderer="CONSUMABLE_WEAPON_RENDER_MAP[$index]"
+				(args
+					isAircarrier = "isAircarrier"
+					_collection = "_children.child($index)"
+				)
+			)
+		)
+	)
+)
+
+(def element CommonConsumableWeaponGroup (_collection:gfx, isAircarrier:bool = false) layout=true
+	(style (flow = "horizontal"))
+
+	(controller $Repeat renderer='SlotConsumableRenderer' layout=true
+		(bind count "_collection.items.length" (event "_collection.evAdded") (event "_collection.evRemoved"))
+		(args
+			isAircarrier = "isAircarrier"
+			totalCount = "_collection.items.length"
+			_col = "_collection"
+		)
+		(exprs
+			(scope
+				(bind col "_collection")
+			)
+		)
+		(bind enabled "_collection != null") 
+	)
+)
+
+(def element RageModeWeaponGroup (isAircarrier:bool = false) layout=true
+	(scope
+		(var _collection:gfx = null)
+	)
+	(style (flow = "horizontal"))
+
+	(controller $Repeat renderer='SlotRageModeRenderer' layout=true
+		(bind count "_collection.length")
+		(args _col = "_collection" totalCount="_collection.length")
+		(exprs
+			(scope
+				(bind col "_collection")
+			)
+		)
+		(bind enabled "_collection != null")
+	)
+)
+

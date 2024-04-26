@@ -1,0 +1,87 @@
+(def element MapScenarioObjectMarker (_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number) layout=true
+	(scope
+		(macro GET_SCENARIO_OBJECT_VIEW "_markerEntity.scenarioObject" "_markerEntity")
+
+		(event evShow)
+		(event evHide)
+	)
+
+	(dispatch evShow on=addedToStage)
+	(dispatch evHide (event "_markerEntity.scenarioObject.evHide"))
+
+	(macro BIND_FAIR_SCALE "_itemScale / _mapScale")
+
+	(style 
+		(position = "absolute")
+		(width = "0px")
+		(height = "0px")
+		(align = "center|middle")
+	)
+
+	(block
+		(style
+			(position = "absolute") (top = "-13px") (left = "-13px") (width = 25px) (height = 25px)
+			(bind backgroundImage "'url:../battle_hud/markers/scenario_markers/map/scenario_minimap_marker_' + toLower(SC.Battle.SCENARIO_MARKER_VALUE.VALUE_TO_NAME[type]) + '.png'")
+		)
+
+		(controller $Animation
+			(bindcall  play
+				duration=0.3
+				from={alpha: 0, scaleX: 0, scaleY: 0}
+				to={alpha: 1, scaleX: 1, scaleY: 1}
+				easing="Easing.quint_in"
+				(event "evShow")
+			)
+			(bindcall  play
+				duration=0.3
+				from={alpha: 1, scaleX: 1, scaleY: 1}
+				to={alpha: 0, scaleX: 0, scaleY: 0}
+				easing="Easing.quint_in"
+				(event "evHide")
+			)
+		)
+	)
+)
+
+(def constant SCENARIO_TAGS_CIRCLE_COLORS "[
+	{color: 0x000000, alpha: 0},	#SC.Battle.SCENARIO_TAG_VALUE.EMPTY
+	{color: 0x4CE8AA, alpha: 0.36},	#SC.Battle.SCENARIO_TAG_VALUE.DEFEND
+	{color: 0xe75153, alpha: 0.36},	#SC.Battle.SCENARIO_TAG_VALUE.ATTACK
+	{color: 0x4CE8AA, alpha: 0.36},	#SC.Battle.SCENARIO_TAG_VALUE.ESCORT
+	{color: 0x000000, alpha: 0},	#SC.Battle.SCENARIO_TAG_VALUE.REPAIR
+	{color: 0xe75153, alpha: 036}	#SC.Battle.SCENARIO_TAG_VALUE.MAIN_MONSTER
+]")
+
+(def element MapMarkerScenarioTag (_markerEntity:gfx) layout=true
+	(scope
+		(var isAlive:bool = "_markerEntity.health.isAlive" (event "_markerEntity.health.evIsAliveChanged"))
+
+		(macro GET_SCENARIO_OBJECT_VIEW "_markerEntity.scenarioTag" "_markerEntity")
+		(var circleSettings:dict = "SCENARIO_TAGS_CIRCLE_COLORS[type]")
+
+		(event evShow)
+	)
+	(dispatch evShow on=addedToStage)
+
+	(bind visible "isAlive")
+	(bind alpha "circleSettings.alpha")
+	(style (position = "absolute"))
+
+	(block
+		(controller $Sector
+			(bind arc "360")
+			(bind color "circleSettings.color")
+			(bind radius "12")
+		)
+
+		(controller $Animation		
+			(bindcall  play
+				duration=0.3
+				from={alpha: 0, scaleX: 0, scaleY: 0}
+				to={alpha: 1, scaleX: 1, scaleY: 1}
+				easing="Easing.quint_in"
+				(event "evShow")
+			)
+		)	
+	)
+)

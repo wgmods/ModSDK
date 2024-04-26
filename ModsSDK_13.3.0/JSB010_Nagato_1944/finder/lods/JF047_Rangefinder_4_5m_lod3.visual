@@ -1,0 +1,56 @@
+<JF047_Rangefinder_4_5m_lod3.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Rangefinder	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS206_YDSS_S_1	</identifier>
+				<transform>
+					<row0>	0.0000 0.9319 0.0000 0.0000	</row0>
+					<row1>	-0.9319 0.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.9319 0.0000	</row2>
+					<row3>	-0.0646 0.0367 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS206_YDSS_S_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.0000 -0.9319 0.0000 0.0000	</row0>
+					<row1>	0.9319 0.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.9319 0.0000	</row2>
+					<row3>	0.0646 0.0367 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Rangefinder	</node>
+		<geometry>
+			<vertices>	Rangefinder_lodShape3.vertices	</vertices>
+			<primitive>	Rangefinder_lodShape3.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSB010_Nagato_1944/finder/JF047_Rangefinder_4_5m.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1633 -0.0004 -0.0774	</min>
+		<max>	0.1633 0.0750 0.0774	</max>
+	</boundingBox>
+</JF047_Rangefinder_4_5m_lod3.visual>

@@ -1,0 +1,2476 @@
+(def css $TabsSampleActionBtnInstructionText ()
+	(alpha = "TC")
+	(width = 100%)
+	(marginBottom = "SXS")
+	(textAlign = "center")
+	(hitTest = false)
+)
+
+(def element UICompendiumControlsContentInsetUb2 () layout=true dispatch_size_change=true
+	(scope
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+	)
+
+	(style (bind width "stageWidth"))
+
+	(element Ub2CompendiumCommonControls
+		(style (marginBottom = "MS"))
+	)
+	(element Ub2CompendiumDefaultButtons
+		(style (marginBottom = "MS"))
+	)
+	(element Ub2CompendiumTabs
+		(style (marginBottom = "MS"))
+	)
+)
+
+(def element Ub2CompendiumDefaultButtons () layout=true
+	(scope
+		(var buttonDefault:dict =					"{ _label: 'ENABLED',		_focusIndex: 1, _defaultFocused: true, _enabled: true }")
+		(var buttonDefaultDisabled:dict =			"{ _label: 'DISABLED',		_focusIndex: 1, _defaultFocused: true, _enabled: false }")
+		(var buttonDefaultExternal:dict =			"{ _label: 'EXTERNAL',		_focusIndex: 1, _defaultFocused: true, _enabled: true,	_isExternal: true }")
+		(var buttonDefaultExternalDisabled:dict =	"{ _label: 'EXT DISABLED',	_focusIndex: 1, _defaultFocused: true, _enabled: false,	_isExternal: true }")
+
+		(var buttonDefaultS:dict =					"{ _size: SIZE.SMALL, _label: 'ENABLED',		_focusIndex: 1, _defaultFocused: true, _enabled: true }")
+		(var buttonDefaultDisabledS:dict =			"{ _size: SIZE.SMALL, _label: 'DISABLED',		_focusIndex: 1, _defaultFocused: true, _enabled: false }")
+		(var buttonDefaultExternalS:dict =			"{ _size: SIZE.SMALL, _label: 'EXTERNAL',		_focusIndex: 1, _defaultFocused: true, _enabled: true,	_isExternal: true }")
+		(var buttonDefaultExternalDisabledS:dict =	"{ _size: SIZE.SMALL, _label: 'EXT DISABLED',	_focusIndex: 1, _defaultFocused: true, _enabled: false,	_isExternal: true }")
+
+		(var buttonDefaultL:dict =					"{ _size: SIZE.LARGE, _label: 'ENABLED',		_focusIndex: 1, _defaultFocused: true, _enabled: true }")
+		(var buttonDefaultDisabledL:dict =			"{ _size: SIZE.LARGE, _label: 'DISABLED',		_focusIndex: 1, _defaultFocused: true, _enabled: false }")
+		(var buttonDefaultExternalL:dict =			"{ _size: SIZE.LARGE, _label: 'EXTERNAL',		_focusIndex: 1, _defaultFocused: true, _enabled: true,	_isExternal: true }")
+		(var buttonDefaultExternalDisabledL:dict =	"{ _size: SIZE.LARGE, _label: 'EXT DISABLED',	_focusIndex: 1, _defaultFocused: true, _enabled: false,	_isExternal: true }")
+
+
+		(var buttonAccent:dict =					"{ _type: SC.Ui_styles.BUTTON_TYPE.ACCENT, _label: 'ENABLED',		_focusIndex: 1, _defaultFocused: true, _enabled: true }")
+		(var buttonAccentDisabled:dict =			"{ _type: SC.Ui_styles.BUTTON_TYPE.ACCENT, _label: 'DISABLED',		_focusIndex: 1, _defaultFocused: true, _enabled: false }")
+		(var buttonAccentExternal:dict =			"{ _type: SC.Ui_styles.BUTTON_TYPE.ACCENT, _label: 'EXTERNAL',		_focusIndex: 1, _defaultFocused: true, _enabled: true,	_isExternal: true }")
+		(var buttonAccentExternalDisabled:dict =	"{ _type: SC.Ui_styles.BUTTON_TYPE.ACCENT, _label: 'EXT DISABLED',	_focusIndex: 1, _defaultFocused: true, _enabled: false,	_isExternal: true }")
+
+		(var buttonAccentS:dict =					"{ _type: SC.Ui_styles.BUTTON_TYPE.ACCENT, _size: SIZE.SMALL, _label: 'ENABLED',		_focusIndex: 1, _defaultFocused: true, _enabled: true }")
+		(var buttonAccentDisabledS:dict =			"{ _type: SC.Ui_styles.BUTTON_TYPE.ACCENT, _size: SIZE.SMALL, _label: 'DISABLED',		_focusIndex: 1, _defaultFocused: true, _enabled: false }")
+		(var buttonAccentExternalS:dict =			"{ _type: SC.Ui_styles.BUTTON_TYPE.ACCENT, _size: SIZE.SMALL, _label: 'EXTERNAL',		_focusIndex: 1, _defaultFocused: true, _enabled: true,	_isExternal: true }")
+		(var buttonAccentExternalDisabledS:dict =	"{ _type: SC.Ui_styles.BUTTON_TYPE.ACCENT, _size: SIZE.SMALL, _label: 'EXT DISABLED',	_focusIndex: 1, _defaultFocused: true, _enabled: false,	_isExternal: true }")
+
+		(var buttonAccentL:dict =					"{ _type: SC.Ui_styles.BUTTON_TYPE.ACCENT, _size: SIZE.LARGE, _label: 'ENABLED',		_width: XLL, _focusIndex: 1, _defaultFocused: true, _enabled: true }")
+		(var buttonAccentDisabledL:dict =			"{ _type: SC.Ui_styles.BUTTON_TYPE.ACCENT, _size: SIZE.LARGE, _label: 'DISABLED',		_width: XLL, _focusIndex: 1, _defaultFocused: true, _enabled: false }")
+		(var buttonAccentExternalL:dict =			"{ _type: SC.Ui_styles.BUTTON_TYPE.ACCENT, _size: SIZE.LARGE, _label: 'EXTERNAL',		_width: XLL, _focusIndex: 1, _defaultFocused: true, _enabled: true,	_isExternal: true }")
+		(var buttonAccentExternalDisabledL:dict =	"{ _type: SC.Ui_styles.BUTTON_TYPE.ACCENT, _size: SIZE.LARGE, _label: 'EXT DISABLED',	_width: XLL, _focusIndex: 1, _defaultFocused: true, _enabled: false,	_isExternal: true }")
+
+
+		(var buttonSecondary:dict =					"{ _type: SC.Ui_styles.BUTTON_TYPE.SECONDARY, _label: 'ENABLED',			_focusIndex: 1, _defaultFocused: true, _enabled: true }")
+		(var buttonSecondaryDisabled:dict =			"{ _type: SC.Ui_styles.BUTTON_TYPE.SECONDARY, _label: 'DISABLED',			_focusIndex: 1, _defaultFocused: true, _enabled: false }")
+		(var buttonSecondaryExternal:dict =			"{ _type: SC.Ui_styles.BUTTON_TYPE.SECONDARY, _label: 'EXTERNAL',			_focusIndex: 1, _defaultFocused: true, _enabled: true,	_isExternal: true }")
+		(var buttonSecondaryExternalDisabled:dict =	"{ _type: SC.Ui_styles.BUTTON_TYPE.SECONDARY, _label: 'EXTERNAL DISABLED',	_focusIndex: 1, _defaultFocused: true, _enabled: false,	_isExternal: true }")
+
+		(var buttonSecondaryS:dict =					"{ _type: SC.Ui_styles.BUTTON_TYPE.SECONDARY, _size: SIZE.SMALL, _label: 'ENABLED',				_focusIndex: 1, _defaultFocused: true, _enabled: true }")
+		(var buttonSecondaryDisabledS:dict =			"{ _type: SC.Ui_styles.BUTTON_TYPE.SECONDARY, _size: SIZE.SMALL, _label: 'DISABLED',			_focusIndex: 1, _defaultFocused: true, _enabled: false }")
+		(var buttonSecondaryExternalS:dict =			"{ _type: SC.Ui_styles.BUTTON_TYPE.SECONDARY, _size: SIZE.SMALL, _label: 'EXTERNAL',			_focusIndex: 1, _defaultFocused: true, _enabled: true,	_isExternal: true }")
+		(var buttonSecondaryExternalDisabledS:dict =	"{ _type: SC.Ui_styles.BUTTON_TYPE.SECONDARY, _size: SIZE.SMALL, _label: 'EXTERNAL DISABLED',	_focusIndex: 1, _defaultFocused: true, _enabled: false,	_isExternal: true }")
+
+		(var buttonSecondaryL:dict =					"{ _type: SC.Ui_styles.BUTTON_TYPE.SECONDARY, _size: SIZE.LARGE, _label: 'ENABLED',				_focusIndex: 1, _defaultFocused: true, _enabled: true }")
+		(var buttonSecondaryDisabledL:dict =			"{ _type: SC.Ui_styles.BUTTON_TYPE.SECONDARY, _size: SIZE.LARGE, _label: 'DISABLED',			_focusIndex: 1, _defaultFocused: true, _enabled: false }")
+		(var buttonSecondaryExternalL:dict =			"{ _type: SC.Ui_styles.BUTTON_TYPE.SECONDARY, _size: SIZE.LARGE, _label: 'EXTERNAL',			_focusIndex: 1, _defaultFocused: true, _enabled: true,	_isExternal: true }")
+		(var buttonSecondaryExternalDisabledL:dict =	"{ _type: SC.Ui_styles.BUTTON_TYPE.SECONDARY, _size: SIZE.LARGE, _label: 'EXTERNAL DISABLED',	_focusIndex: 1, _defaultFocused: true, _enabled: false,	_isExternal: true }")
+
+
+		(var buttonParamsAdd:dict =				"{ _type: SC.Ui_styles.BUTTON_TYPE.ICON, _icon: SC.Ui_styles.BUTTON_ICON.ADD,			_enabled: true }")
+		(var buttonParamsInfo:dict =			"{ _type: SC.Ui_styles.BUTTON_TYPE.ICON, _icon: SC.Ui_styles.BUTTON_ICON.INFO,			_enabled: true }")
+		(var buttonParamsChat:dict =			"{ _type: SC.Ui_styles.BUTTON_TYPE.ICON, _icon: SC.Ui_styles.BUTTON_ICON.CHAT,			_enabled: true }")
+		(var buttonParamsNotification:dict =	"{ _type: SC.Ui_styles.BUTTON_TYPE.ICON, _icon: SC.Ui_styles.BUTTON_ICON.NOTIFICATION,	_enabled: true }")
+
+
+		(var contextBtnDivisionInvite:dict =	"{ _enabled: true, _width: 23, _height: 23, _backgroundImage: 'url:../service_kit/buttons/context/division_invite.png' }")
+		(var contextBtnDivisionInvite2:dict =	"{ _enabled: true, _width: 23, _height: 23, _backgroundImage: 'url:../service_kit/buttons/context/division_invite.png', _hitAreaMargin: [-S] }")
+		(var contextBtnAddContact:dict =		"{ _enabled: true, _width: 23, _height: 23, _backgroundImage: 'url:../service_kit/buttons/context/add_contact.png' }")
+		(var contextBtnStartChat:dict =			"{ _enabled: true, _width: 23, _height: 23, _backgroundImage: 'url:../service_kit/buttons/context/start_chat.png' }")
+		(var contextBtnPencil:dict =			"{ _enabled: true, _width: 23, _height: 23, _backgroundImage: 'url:../service_kit/buttons/context/pencil.png' }")
+		(var contextBtnSearch:dict =			"{ _enabled: true, _width: 18, _height: 18, _backgroundImage: 'url:../service_kit/buttons/context/search.png' }")
+		(var contextBtnSearch2:dict =			"{ _enabled: true, _width: 18, _height: 18, _backgroundImage: 'url:../service_kit/buttons/context/search.png', _hitAreaMargin: [-S] }")
+		(var contextBtnUpdate:dict =			"{ _enabled: false, _width: 18, _height: 18, _backgroundImage: 'url:../service_kit/buttons/context/update.png' }")
+
+		(var dockBtn1:dict =	"{ _label: 'Button One', _methods: [], _isTextBold: false }")
+		(var dockBtn2:dict =	"{ _label: 'Button Two', _methods: [], _isTextBold: false }")
+		(var dockBtn3:dict =	"{ _label: 'Button Three', _methods: [], _isTextBold: true }")
+
+		(var defaultBtnsData:array = "[	buttonDefault,
+										buttonDefaultDisabled,
+										buttonDefaultExternal,
+										buttonDefaultExternalDisabled ]")
+		(var defaultBtnsDataS:array = "[buttonDefaultS,
+										buttonDefaultDisabledS,
+										buttonDefaultExternalS,
+										buttonDefaultExternalDisabledS ]")
+		(var defaultBtnsDataL:array = "[buttonDefaultL,
+										buttonDefaultDisabledL,
+										buttonDefaultExternalL,
+										buttonDefaultExternalDisabledL ]")
+
+		(var accentBtnsData:array = "[	buttonAccent,
+										buttonAccentDisabled,
+										buttonAccentExternal,
+										buttonAccentExternalDisabled ]")
+		(var accentBtnsDataS:array = "[	buttonAccentS,
+										buttonAccentDisabledS,
+										buttonAccentExternalS,
+										buttonAccentExternalDisabledS ]")
+		(var accentBtnsDataL:array = "[	buttonAccentL,
+										buttonAccentDisabledL,
+										buttonAccentExternalL,
+										buttonAccentExternalDisabledL ]")
+
+		(var secondaryBtnsData:array = "[	buttonSecondary,
+											buttonSecondaryDisabled,
+											buttonSecondaryExternal,
+											buttonSecondaryExternalDisabled ]")
+		(var secondaryBtnsDataS:array = "[	buttonSecondaryS,
+											buttonSecondaryDisabledS,
+											buttonSecondaryExternalS,
+											buttonSecondaryExternalDisabledS ]")
+		(var secondaryBtnsDataL:array = "[	buttonSecondaryL,
+											buttonSecondaryDisabledL,
+											buttonSecondaryExternalL,
+											buttonSecondaryExternalDisabledL ]")
+
+		(var iconBtnsData:array = "[ buttonParamsAdd,
+									 buttonParamsInfo,
+									 buttonParamsChat,
+									 buttonParamsNotification ]")
+
+		(var contextBtnsData:array = "[	contextBtnDivisionInvite,
+										contextBtnDivisionInvite2,
+										contextBtnAddContact,
+										contextBtnStartChat,
+										contextBtnPencil,
+										contextBtnSearch,
+										contextBtnSearch2,
+										contextBtnUpdate ]")
+
+		(var dockBtnsData:array = "[	dockBtn1,
+										dockBtn2,
+										dockBtn3 ]")
+	)
+
+	(style
+		(flow = "tile_horizontal")
+		(width = 100%)
+	)
+
+	(hblock
+		(style
+			(marginBottom = "L")
+			(marginRight = "XL")
+		)
+
+		(block
+			(style (marginRight = "MS"))
+			(block
+				(element Ub2CompendiumTestBlockSampleHeader 'BUTTON_TYPE.DEFAULT' 'MEDIUM')
+				(controller $Repeat count="defaultBtnsData.length" renderer='Ub2CompendiumButtonRepeater'
+					(args
+						_buttonElement = 'DefaultButton'
+						_elementArgs = "defaultBtnsData[$index]"
+					)
+				)
+			)
+		)
+
+		(block
+			(style (marginRight = "MS"))
+			(block
+				(element Ub2CompendiumTestBlockSampleHeader 'BUTTON_TYPE.DEFAULT' 'LARGE')
+				(controller $Repeat count="defaultBtnsDataL.length" renderer='Ub2CompendiumButtonRepeater'
+					(args
+						_buttonElement = 'DefaultButton'
+						_elementArgs = "defaultBtnsDataL[$index]"
+					)
+				)
+			)
+		)
+
+		(block
+			(block
+				(element Ub2CompendiumTestBlockSampleHeader 'BUTTON_TYPE.DEFAULT' 'SMALL')
+				(controller $Repeat count="defaultBtnsDataS.length" renderer='Ub2CompendiumButtonRepeater'
+					(args
+						_buttonElement = 'DefaultButton'
+						_elementArgs = "defaultBtnsDataS[$index]"
+					)
+				)
+			)
+		)
+	)
+
+	(hblock
+		(style
+			(marginBottom = "L")
+			(marginRight = "XL")
+		)
+
+		(block
+			(style (marginRight = "MS"))
+			(block
+				(element Ub2CompendiumTestBlockSampleHeader 'BUTTON_TYPE.ACCENT' 'MEDIUM')
+				(controller $Repeat count="accentBtnsData.length" renderer='Ub2CompendiumButtonRepeater'
+					(args
+						_buttonElement = 'DefaultButton'
+						_elementArgs = "accentBtnsData[$index]"
+					)
+				)
+			)
+		)
+
+		(block
+			(style (marginRight = "MS"))
+			(block
+				(element Ub2CompendiumTestBlockSampleHeader 'BUTTON_TYPE.ACCENT' 'LARGE (fixed width)')
+				(controller $Repeat count="accentBtnsDataL.length" renderer='Ub2CompendiumButtonRepeater'
+					(args
+						_buttonElement = 'DefaultButton'
+						_elementArgs = "accentBtnsDataL[$index]"
+					)
+				)
+			)
+		)
+
+		(block
+			(block
+				(element Ub2CompendiumTestBlockSampleHeader 'BUTTON_TYPE.ACCENT' 'SMALL')
+				(controller $Repeat count="accentBtnsDataS.length" renderer='Ub2CompendiumButtonRepeater'
+					(args
+						_buttonElement = 'DefaultButton'
+						_elementArgs = "accentBtnsDataS[$index]"
+					)
+				)
+			)
+		)
+	)
+
+	(hblock
+		(style
+			(marginBottom = "L")
+			(marginRight = "XL")
+		)
+
+		(block
+			(style (marginRight = "MS"))
+			(block
+				(element Ub2CompendiumTestBlockSampleHeader 'BUTTON_TYPE.SECONDARY' 'MEDIUM')
+				(controller $Repeat count="secondaryBtnsData.length" renderer='Ub2CompendiumButtonRepeater'
+					(args
+						_buttonElement = 'DefaultButton'
+						_elementArgs = "secondaryBtnsData[$index]"
+					)
+				)
+			)
+		)
+
+		(block
+			(style (marginRight = "MS"))
+			(block
+				(element Ub2CompendiumTestBlockSampleHeader 'BUTTON_TYPE.SECONDARY' 'LARGE')
+				(controller $Repeat count="secondaryBtnsDataL.length" renderer='Ub2CompendiumButtonRepeater'
+					(args
+						_buttonElement = 'DefaultButton'
+						_elementArgs = "secondaryBtnsDataL[$index]"
+					)
+				)
+			)
+		)
+
+		(block
+			(block
+				(element Ub2CompendiumTestBlockSampleHeader 'BUTTON_TYPE.SECONDARY' 'SMALL')
+				(controller $Repeat count="secondaryBtnsDataS.length" renderer='Ub2CompendiumButtonRepeater'
+					(args
+						_buttonElement = 'DefaultButton'
+						_elementArgs = "secondaryBtnsDataS[$index]"
+					)
+				)
+			)
+		)
+	)
+
+	(hblock
+		(style
+			(marginBottom = "L")
+			(marginRight = "M")
+		)
+
+		(block
+			(style (marginRight = "MS"))
+			(block
+				(element Ub2CompendiumTestBlockSampleHeader 'BUTTON_TYPE.ICON' '')
+				(controller $Repeat count="iconBtnsData.length" renderer='Ub2CompendiumButtonRepeater'
+					(args
+						_buttonElement = 'DefaultButton'
+						_elementArgs = "iconBtnsData[$index]"
+					)
+				)
+			)
+		)
+	)
+
+	(hblock
+		(style
+			(marginBottom = "L")
+			(marginRight = "M")
+		)
+
+		(block
+			(style (marginRight = "MS"))
+			(block
+				(element Ub2CompendiumTestBlockSampleHeader 'ContextButtons' '')
+				(controller $Repeat count="contextBtnsData.length" renderer='Ub2CompendiumButtonRepeater'
+					(args
+						_buttonElement = 'ImageButton'
+						_elementArgs = "contextBtnsData[$index]"
+					)
+				)
+			)
+		)
+	
+		(block
+			(style (marginRight = "MS"))
+			(block
+				(element Ub2CompendiumTestBlockSampleHeader 'DockButtons' '')
+				(controller $Repeat count="dockBtnsData.length" renderer='Ub2CompendiumButtonRepeater'
+					(args
+						_buttonElement = 'DockButton'
+						_elementArgs = "dockBtnsData[$index]"
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element Ub2CompendiumCommonControls () layout=true
+	(style
+		(flow = "tile_horizontal")
+		(width = 100%)
+	)
+
+	(element Ub2CheckboxesLayout)
+	(element Ub2SwitchesLayout)
+	(element Ub2SlidersLayout)
+	(element Ub2DropdownsLayout)
+)
+
+(def element Ub2CompendiumTestBlockSampleHeader (_headerText:str, _subheaderText:str)
+	(tf
+		(class $TextDefaultBold17NM)
+		(style
+			(marginBottom = "S")
+			(alpha = "TA")
+		)
+		(bind text "_headerText")
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(style
+			(marginBottom = "M")
+			(alpha = "TC")
+		)
+		(bind text "_subheaderText")
+	)
+)
+
+(def element Ub2CompendiumButtonRepeater (_buttonElement:str, _elementArgs:dict)
+	(style (marginBottom = "S"))
+
+	(block
+		(bind visible "_buttonElement == 'DefaultButton'")
+
+		(element DefaultButton
+			_name = "'_name' in _elementArgs ? _elementArgs._name : ''"
+			_enabled = "'_enabled' in _elementArgs ? _elementArgs._enabled : false"
+			_type = "'_type' in _elementArgs ? _elementArgs._type : 'default'"
+			_isExternal = "'_isExternal' in _elementArgs ? _elementArgs._isExternal : false"
+			_isTransactionBtn = "'_isTransactionBtn' in _elementArgs ? _elementArgs._isTransactionBtn : false"
+			_icon = "'_icon' in _elementArgs ? _elementArgs._icon : ''"
+			_size = "'_size' in _elementArgs ? _elementArgs._size : SIZE.MEDIUM"
+			_width = "'_width' in _elementArgs ? _elementArgs._width : 0"
+			_label = "'_label' in _elementArgs ? _elementArgs._label : ''"
+			_focusIndex = "'_focusIndex' in _elementArgs ? _elementArgs._focusIndex : 0"
+			_clickInterval = "'_clickInterval' in _elementArgs ? _elementArgs._clickInterval : 0"
+			_defaultFocused = "'_defaultFocused' in _elementArgs ? _elementArgs._defaultFocused : false"
+			_dispatchedEv = "'_dispatchedEv' in _elementArgs ? _elementArgs._dispatchedEv : ''"
+			_dispatchParams = "'_dispatchParams' in _elementArgs ? _elementArgs._dispatchParams : {}"
+			_methods = "'_methods' in _elementArgs ? _elementArgs._methods : []"
+		)
+	)
+
+	(block
+		(bind visible "_buttonElement == 'ImageButton'")
+
+		(element ImageButton
+			_name = "'_name' in _elementArgs ? _elementArgs._name : ''"
+			_enabled = "'_enabled' in _elementArgs ? _elementArgs._enabled : false"
+			_width = "'_width' in _elementArgs ? _elementArgs._width : 0"
+			_height = "'_height' in _elementArgs ? _elementArgs._height : 0"
+			_backgroundImage = "'_backgroundImage' in _elementArgs ? _elementArgs._backgroundImage : ''"
+			_hitAreaMargin = "'_hitAreaMargin' in _elementArgs ? _elementArgs._hitAreaMargin : [0]"
+			_soundSet = "'_soundSet' in _elementArgs ? _elementArgs._soundSet : ''"
+			_dispatchedEv = "'_dispatchedEv' in _elementArgs ? _elementArgs._dispatchedEv : ''"
+			_dispatchParams = "'_dispatchParams' in _elementArgs ? _elementArgs._dispatchParams : {}"
+			_methods = "'_methods' in _elementArgs ? _elementArgs._methods : []"
+		)
+	)
+
+	(block
+		(bind visible "_buttonElement == 'DockButton'")
+
+		(element DockButton
+			_label = "'_label' in _elementArgs ? _elementArgs._label : ''"
+			_methods = "'_methods' in _elementArgs ? _elementArgs._methods : []"
+			_isTextBold = "'_isTextBold' in _elementArgs ? _elementArgs._isTextBold : false"
+
+			(style (marginTop = "$index ? S : 0"))
+		)
+	)
+)
+
+(def element Ub2SwitchesLayout () layout=true
+	(scope
+		(event switchWithRightLabelToggle)
+		(event switchWithLeftLabelToggle)
+		(event switchWithoutLabelToggle)
+
+		(var rightLabeledSwitchState:bool = false)
+		(var leftLabeledSwitchState:bool = true)
+		(var noLabeledSwitchState:bool = true)
+		(bind rightLabeledSwitchState "!rightLabeledSwitchState" init=false watch=false (event "switchWithRightLabelToggle"))
+		(bind leftLabeledSwitchState "!leftLabeledSwitchState" init=false watch=false (event "switchWithLeftLabelToggle"))
+		(bind noLabeledSwitchState "!noLabeledSwitchState" init=false watch=false (event "switchWithoutLabelToggle"))
+	)
+
+	(style (marginRight = "MS"))
+
+	(element Ub2CompendiumTestBlockSampleHeader 'Switch' '')
+
+	(block
+		(style (marginBottom = "SXS"))
+		(controller $Instance renderer='SwitchWithRightLabel'
+			(args
+				_label = 'I am SwitchWithRightLabel'
+				_state = "rightLabeledSwitchState"
+				_dispatchedEv = 'switchWithRightLabelToggle'
+			)
+		)
+	)
+
+	(block
+		(style (marginBottom = "SXS"))
+		(controller $Instance renderer='SwitchWithLeftLabel'
+			(args
+				_label = 'I am SwitchWithLeftLabel'
+				_state = "leftLabeledSwitchState"
+				_dispatchedEv = 'switchWithLeftLabelToggle'
+			)
+		)
+	)
+	
+	(block
+		(style (marginBottom = "SXS"))
+		(controller $Instance renderer='SwitchWithRightLabel'
+			(args
+				_label = 'I am active and unchangeable'
+				_enabled = "false"
+				_state = "true"
+			)
+		)
+	)
+
+	(block
+		(style (marginBottom = "SXS"))
+		(controller $Instance renderer='SwitchWithRightLabel'
+			(args
+				_label = 'I am inactive and unchangeable'
+				_enabled = "false"
+				_state = "false"
+			)
+		)
+	)
+	
+	(block
+		(style (marginBottom = "SXS"))
+		(controller $Instance renderer='SwitchWithLeftLabel'
+			(args
+				_label = 'I am active and unchangeable'
+				_enabled = "false"
+				_state = "true"
+			)
+		)
+	)
+
+	(block
+		(style (marginBottom = "SXS"))
+		(controller $Instance renderer='SwitchWithLeftLabel'
+			(args
+				_label = 'I am inactive and unchangeable'
+				_enabled = "false"
+				_state = "false"
+			)
+		)
+	)
+
+	(block
+		(style (marginBottom = "SXS"))
+		(controller $Instance renderer='SwitchWithoutLabel'
+			(args
+				_state = "noLabeledSwitchState"
+				_dispatchedEv = 'switchWithoutLabelToggle'
+			)
+		)
+	)
+)
+
+(def element Ub2CheckboxesLayout () layout=true
+	(scope
+		(event checkboxWithLabelToggle)
+		(event checkboxWithLabelToggle2)
+		(event checkboxWithLabelToggle3)
+		(event checkboxWithLabelToggle4)
+
+		(var cb1:bool = false)
+		(var cb2:bool = false)
+		(var cb3:bool = false)
+		(var cb4:bool = false)
+		(bind cb1 "!cb1" init=false watch=false (event "checkboxWithLabelToggle"))
+		(bind cb2 "!cb2" init=false watch=false (event "checkboxWithLabelToggle2"))
+		(bind cb3 "!cb3" init=false watch=false (event "checkboxWithLabelToggle3"))
+		(bind cb4 "!cb4" init=false watch=false (event "checkboxWithLabelToggle4"))
+	)
+
+	(style (marginRight = "MS"))
+
+	(element Ub2CompendiumTestBlockSampleHeader 'CheckBox' '')
+
+	(block
+		(style (marginBottom = "SXS"))
+		(element CheckBox
+			_label = "'CB with label'"
+			_isChecked = "cb1"
+			_dispatchedEv = 'checkboxWithLabelToggle'
+		)
+	)
+
+	(block
+		(style (marginBottom = "SXS"))
+		(element CheckBox
+			_label = "'CB with label 2'"
+			_isChecked = "cb2"
+			_dispatchedEv = 'checkboxWithLabelToggle2'
+		)
+	)
+
+	(block
+		(style (marginBottom = "SXS"))
+		(element CheckBox
+			_label = "'CB unchecked (Disabled)'"
+			_enabled = "false"
+			_isChecked = "false"
+		)
+	)
+
+	(block
+		(style (marginBottom = "SXS"))
+		(element CheckBox
+			_label = "'CB checked (Disabled)'"
+			_enabled = "false"
+			_isChecked = "true"
+		)
+	)
+
+	(block
+		(style (marginBottom = "SXS"))
+		(element CheckBox
+			_label = "'CB with label 2 (Disabled)'"
+			_enabled = "false"
+			_isChecked = "cb2"
+			_dispatchedEv = 'checkboxWithLabelToggle2'
+		)
+	)
+
+	(block
+		(style (marginBottom = "SXS"))
+		(element CheckBox
+			_isChecked = "cb3"
+			_dispatchedEv = 'checkboxWithLabelToggle3'
+		)
+	)
+
+	(block
+		(style (marginBottom = "SXS"))
+		(element CheckBox
+			_isChecked = "cb4"
+			_dispatchedEv = 'checkboxWithLabelToggle4'
+		)
+	)
+)
+
+(def element Ub2SlidersLayout () layout=true
+	(style (marginRight = "MS"))
+
+	(element Ub2CompendiumTestBlockSampleHeader 'Sliders' '')
+
+	(element CompendiumSlider
+		_value = 0
+		_intervalsCount = 200
+		_isContextual = false
+		(style (marginBottom = "MS"))
+	)
+
+	(element CompendiumSlider
+		_value = 0
+		_intervalsCount = 200
+		(style (marginBottom = "MS"))
+	)
+
+	(element CompendiumSlider
+		_value = 60
+		_intervalsCount = 210
+		_minValue = 30
+		(style (marginBottom = "MS"))
+	)
+
+	(element CompendiumSlider
+		_value = 0
+		_intervalsCount = 210
+		_minValue = -80
+		(style (marginBottom = "MS"))
+	)
+
+	(element CompendiumSlider
+		_value = 42
+		_intervalsCount = 210
+		_minValue = -80
+		(style (marginBottom = "MS"))
+	)
+
+	(element CompendiumSlider
+		_value = -42
+		_intervalsCount = 150
+		_minValue = -80
+		(style (marginBottom = "MS"))
+	)
+
+	(element CompendiumSlider
+		_value = 0
+		_intervalsCount = 9
+		_minValue = -8
+		_width = 100
+	)
+)
+
+(def element CompendiumSlider (_value:number, _intervalsCount:number, _isValueDisplayed:bool=true, _isContextual:bool=true, _minValue:number=0, _unitsInStepInterval:number=1, _multiplier:number=1, _measure:str='', _width:number=200)
+	(scope
+		(event evScrollChangedUp)
+
+		(var value:number = "_value - _minValue" watch=false)
+		(bind value "$event.value" init=false watch=false (event "evScrollChangedUp"))
+	)
+
+	(element DefaultSlider
+		_value = "value"
+		_intervalsCount = "_intervalsCount"
+		_isValueDisplayed = "_isValueDisplayed"
+		_isContextual = "_isContextual"
+		_minValue = "_minValue"
+		_unitsInStepInterval = "_unitsInStepInterval"
+		_multiplier = "_multiplier"
+		_measure = "_measure"
+		_width = "_width"
+	)
+)
+
+(def element Ub2DropdownsLayout () layout=true
+	(scope
+		(var pokemons:array = "['Bulbasaur', 'Ivysaur', 'Venousaur', 'Charmander', 'Lickylonglongtongue']")
+		(var pokemons2:array = "['Lugia']")
+
+		(var pokemons3:array = "['Bulbasaur', 'Ivysaur', 'Venousaur', 'Charmander', 'Charmeleon', 'Charizard', 'Squirtle', 'Wartortle', 'Blasoise', 'Caterpie', 'Metapod', 'Butterfree', 'Weedle', 'Kakuna', 'Beedrill',
+								'Pidgey', 'Pidgeotto', 'Pidgeot', 'Rattata', 'Raticate', 'Spearow', 'Fearow', 'Ekans', 'Arbok', 'Pikachu', 'Raichu', 'Sandshrew', 'Sandslash', 'Nidoran', 'Nidorina', 'Nidoqueen',
+								'Nidoran', 'Nidorino', 'Nidoking', 'Clefairy', 'Clefable', 'Vulpix', 'Ninetales', 'Jigglypuff', 'Wigglytuff', 'Zubat', 'Golbat', 'Oddish', 'Gloom', 'Vileplume', 'Paras', 'Parasect',
+								'Venonat', 'Venomoth', 'Diglett', 'Dugtrio', 'Meowth', 'Persian', 'Psyduck', 'Golduck', 'Mankey', 'Primeape', 'Growlithe', 'Arcanine', 'Poliwag', 'Poliwhirl', 'Poliwrath', 'Abra',
+								'Kadabra', 'Alakazam', 'Machop', 'Machoke', 'Machamp', 'Bellsprout', 'Weepinbell', 'Victreebel', 'Tentacool', 'Tentacruel', 'Geodude', 'Graveler', 'Golem', 'Ponyta', 'Rapidash',
+								'Slowpoke', 'Slowbro', 'Magnemite', 'Magneton', 'Farfetch\'d', 'Doduo', 'Dodrio', 'Seel', 'Dewgong', 'Grimer', 'Muk', 'Shellder', 'Cloyster', 'Gastly', 'Haunter', 'Gengar', 'Onix',
+								'Drowzee', 'Hypno', 'Krabby', 'Kingler', 'Voltorb', 'Electrode', 'Exeggcute', 'Exeggutor', 'Cubone', 'Marowak', 'Hitmonlee', 'Hitmonchan', 'Lickitung', 'Koffing', 'Weezing', 'Rhuhorn',
+								'Rhydon', 'Chansey', 'Tangela']")
+
+		(event ItemChooser_TestDropdownClicked0)
+		(event ItemChooser_TestDropdownClicked1)
+		(event ItemChooser_TestDropdownClicked2)
+		(event ItemChooser_TestDropdownClicked3)
+		(event ItemChooser_TestDropdownClicked4)
+		(event ItemChooser_TestDropdownClicked5)
+
+
+		(var selectedItem0:number = 0)
+		(bind selectedItem0 "$event.selectedIndex" init=false (event "ItemChooser_TestDropdownClicked0"))
+		(var selectedItem1:number = 1)
+		(bind selectedItem1 "$event.selectedIndex" init=false (event "ItemChooser_TestDropdownClicked1"))
+		(var selectedItem2:number = 2)
+		(bind selectedItem2 "$event.selectedIndex" init=false (event "ItemChooser_TestDropdownClicked2"))
+		(var selectedItem3:number = 3)
+		(bind selectedItem3 "$event.selectedIndex" init=false (event "ItemChooser_TestDropdownClicked3"))
+		(var selectedItem4:number = 0)
+		(bind selectedItem4 "$event.selectedIndex" init=false (event "ItemChooser_TestDropdownClicked4"))
+		(var selectedItem5:number = 0)
+		(bind selectedItem5 "$event.selectedIndex" init=false (event "ItemChooser_TestDropdownClicked5"))
+	)
+
+	(style (marginRight = "MS"))
+
+	(element Ub2CompendiumTestBlockSampleHeader 'Dropdowns' '')
+
+	(block
+		(style
+			(align = "left")
+			(width = 200)
+			(marginBottom = "M")
+			(backgroundColor = 0x10000000)
+		)
+
+		(block
+			(style (marginBottom = "S"))
+			(element ItemChooser
+				_items = "pokemons"
+				_listItemRenderer = "'TextListItemRenderer'"
+				_choosedItemRenderer = "'DefaultItemChooserPickedItemRenderer'"
+				_onItemSelectedEvent = "'TestDropdownClicked0'"
+				_selectedMaxWidth = 120
+				_dropDownWidth = 250
+				_maxDropDownHeight = 90
+				_curIndex = "selectedItem0"
+			)
+		)
+
+		(block
+			(style (marginBottom = "S"))
+			(element ItemChooser
+				_items = "pokemons"
+				_listItemRenderer = "'TextListItemRenderer'"
+				_choosedItemRenderer = "'DefaultItemChooserPickedItemRenderer'"
+				_onItemSelectedEvent = "'TestDropdownClicked1'"
+				_curIndex = "selectedItem1"
+			)
+		)
+
+		(block
+			(style (marginBottom = "S"))
+			(element ItemChooser
+				_items = "pokemons"
+				_listItemRenderer = "'TextListItemRenderer'"
+				_choosedItemRenderer = "'DefaultItemChooserPickedItemRenderer'"
+				_onItemSelectedEvent = "'TestDropdownClicked2'"
+				_itemChooserTooltipText = "'Here you can find activities to practise your reading skills. Reading will help you to improve your understanding of the language and build your vocabulary.'"
+				_selectedMaxWidth = 140
+				_curIndex = "selectedItem2"
+			)
+		)
+
+		(block
+			(style (marginBottom = "S"))
+			(element ItemChooser
+				_items = "pokemons"
+				_listItemRenderer = "'TextListItemRenderer'"
+				_choosedItemRenderer = "'DefaultItemChooserPickedItemRenderer'"
+				_selectedMaxWidth = 80
+				_dropDownWidth = 150
+				_maxDropDownHeight = 60
+				_onItemSelectedEvent = "'TestDropdownClicked3'"
+				_curIndex = "selectedItem3"
+			)
+		)
+
+		(block
+			(style (marginBottom = "S"))
+			(element ItemChooser
+				_items = "pokemons2"
+				_listItemRenderer = "'TextListItemRenderer'"
+				_choosedItemRenderer = "'DefaultItemChooserPickedItemRenderer'"
+				_selectedMaxWidth = 120
+				_onItemSelectedEvent = "'TestDropdownClicked4'"
+				_curIndex = "selectedItem4"
+			)
+		)
+
+		(block
+			(style (marginBottom = "S"))
+			(element ItemChooser
+				_items = "pokemons3"
+				_listItemRenderer = "'TextListItemRenderer'"
+				_choosedItemRenderer = "'DefaultItemChooserPickedItemRenderer'"
+				
+				_onItemSelectedEvent = "'TestDropdownClicked5'"
+				_curIndex = "selectedItem5"
+				_maxDropDownHeight = 150
+			)
+		)
+	)
+)
+
+
+(def element Ub2CompendiumTabs () layout=true
+	(style
+		(flow = "tile_horizontal")
+		(width = 100%)
+	)
+
+	(block
+		(style
+			(width = 800)
+			(paddingLeft = "SXS")
+			(paddingRight = "SXS")
+		)
+		(element Ub2MainTabsLayout160)
+	)
+	
+	(element Ub2AsideTabsLayout)
+	(element Ub2SecondaryTabsLayout)
+)
+
+(def element Ub2AsideTabsLayout () layout=true
+	(scope
+		(var tabNames:array = "['First tab', 'Tab 2', 'Tab 3', 'Tab 4', 'Quite long tab name n a m e n a m e n a m e n a m e n a m e', 'Quite long tab name n a m e n a m e n a m e n a m e n a m e', 'Quite long tab nana', 'Bulbasaur tab']")
+
+		(event evTabSelected)
+		(event evNewToggler)
+		(event evAttentionToggler)
+		(event evTabCounterChange)
+		(event evDisableToggler)
+		(event evGoldenToggler)
+
+		(var selectedItem:number = 0)
+		(bind selectedItem "$event.index" init=false (event "evTabSelected"))
+
+		(var newMarker0:bool = true)
+		(bind newMarker0 "$event.index == 0 ? !newMarker0 : newMarker0" init=false watch=false (event "evNewToggler"))
+		(var newMarker1:bool = false)
+		(bind newMarker1 "$event.index == 1 ? !newMarker1 : newMarker1" init=false watch=false (event "evNewToggler"))
+		(var newMarker2:bool = false)
+		(bind newMarker2 "$event.index == 2 ? !newMarker2 : newMarker2" init=false watch=false (event "evNewToggler"))
+		(var newMarker3:bool = true)
+		(bind newMarker3 "$event.index == 3 ? !newMarker3 : newMarker3" init=false watch=false (event "evNewToggler"))
+
+		(var newMarker4:bool = false)
+		(bind newMarker4 "$event.index == 4 ? !newMarker4 : newMarker4" init=false watch=false (event "evNewToggler"))
+		(var newMarker5:bool = false)
+		(bind newMarker5 "$event.index == 5 ? !newMarker5 : newMarker5" init=false watch=false (event "evNewToggler"))
+		(var newMarker6:bool = false)
+		(bind newMarker6 "$event.index == 6 ? !newMarker6 : newMarker6" init=false watch=false (event "evNewToggler"))
+		(var newMarker7:bool = false)
+		(bind newMarker7 "$event.index == 7 ? !newMarker7 : newMarker7" init=false watch=false (event "evNewToggler"))
+
+
+		(var attentionMarker0:bool = false)
+		(bind attentionMarker0 "$event.index == 0 ? !attentionMarker0 : attentionMarker0" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker1:bool = true)
+		(bind attentionMarker1 "$event.index == 1 ? !attentionMarker1 : attentionMarker1" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker2:bool = false)
+		(bind attentionMarker2 "$event.index == 2 ? !attentionMarker2 : attentionMarker2" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker3:bool = true)
+		(bind attentionMarker3 "$event.index == 3 ? !attentionMarker3 : attentionMarker3" init=false watch=false (event "evAttentionToggler"))
+
+		(var attentionMarker4:bool = true)
+		(bind attentionMarker4 "$event.index == 4 ? !attentionMarker4 : attentionMarker4" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker5:bool = false)
+		(bind attentionMarker5 "$event.index == 5 ? !attentionMarker5 : attentionMarker5" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker6:bool = false)
+		(bind attentionMarker6 "$event.index == 6 ? !attentionMarker6 : attentionMarker6" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker7:bool = false)
+		(bind attentionMarker7 "$event.index == 7 ? !attentionMarker7 : attentionMarker7" init=false watch=false (event "evAttentionToggler"))
+
+
+		(var counterTab0:number = 0)
+		(bind counterTab0 "$event.index == 0	? $event.evName == 'incr'	? (counterTab0 + 1)
+																			: (counterTab0 - 1) > 0 ? (counterTab0 - 1) : 0
+												: counterTab0" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab1:number = 0)
+		(bind counterTab1 "$event.index == 1	? $event.evName == 'incr'	? (counterTab1 + 1)
+																			: (counterTab1 - 1) > 0 ? (counterTab1 - 1) : 0
+												: counterTab1" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab2:number = 0)
+		(bind counterTab2 "$event.index == 2	? $event.evName == 'incr'	? (counterTab2 + 1)
+																			: (counterTab2 - 1) > 0 ? (counterTab2 - 1) : 0
+												: counterTab2" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab3:number = 0)
+		(bind counterTab3 "$event.index == 3	? $event.evName == 'incr'	? (counterTab3 + 1)
+																			: (counterTab3 - 1) > 0 ? (counterTab3 - 1) : 0
+												: counterTab3" init=false watch=false (event "evTabCounterChange"))
+
+		(var counterTab4:number = 0)
+		(bind counterTab4 "$event.index == 4	? $event.evName == 'incr'	? (counterTab4 + 1)
+																			: (counterTab4 - 1) > 0 ? (counterTab4 - 1) : 0
+												: counterTab4" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab5:number = 0)
+		(bind counterTab5 "$event.index == 5	? $event.evName == 'incr'	? (counterTab5 + 1)
+																			: (counterTab5 - 1) > 0 ? (counterTab5 - 1) : 0
+												: counterTab5" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab6:number = 0)
+		(bind counterTab6 "$event.index == 6	? $event.evName == 'incr'	? (counterTab6 + 1)
+																			: (counterTab6 - 1) > 0 ? (counterTab6 - 1) : 0
+												: counterTab6" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab7:number = 0)
+		(bind counterTab7 "$event.index == 7	? $event.evName == 'incr'	? (counterTab7 + 1)
+																			: (counterTab7 - 1) > 0 ? (counterTab7 - 1) : 0
+												: counterTab7" init=false watch=false (event "evTabCounterChange"))
+
+
+		(var isTab3Disabled:bool = true)
+		(bind isTab3Disabled "!isTab3Disabled" init=false watch=false (event "evDisableToggler"))
+
+		(var isGoldenTab0:bool = false)
+		(bind isGoldenTab0 "$event.index == 0 ? !isGoldenTab0 : isGoldenTab0" init=false watch=false (event "evGoldenToggler"))
+		(var isGoldenTab1:bool = false)
+		(bind isGoldenTab1 "$event.index == 1 ? !isGoldenTab1 : isGoldenTab1" init=false watch=false (event "evGoldenToggler"))
+		(var isGoldenTab2:bool = false)
+		(bind isGoldenTab2 "$event.index == 2 ? !isGoldenTab2 : isGoldenTab2" init=false watch=false (event "evGoldenToggler"))
+		(var isGoldenTab3:bool = false)
+		(bind isGoldenTab3 "$event.index == 3 ? !isGoldenTab3 : isGoldenTab3" init=false watch=false (event "evGoldenToggler"))
+		(var isGoldenTab4:bool = false)
+		(bind isGoldenTab4 "$event.index == 4 ? !isGoldenTab4 : isGoldenTab4" init=false watch=false (event "evGoldenToggler"))
+		(var isGoldenTab5:bool = false)
+		(bind isGoldenTab5 "$event.index == 5 ? !isGoldenTab5 : isGoldenTab5" init=false watch=false (event "evGoldenToggler"))
+		(var isGoldenTab6:bool = false)
+		(bind isGoldenTab6 "$event.index == 6 ? !isGoldenTab6 : isGoldenTab6" init=false watch=false (event "evGoldenToggler"))
+		(var isGoldenTab7:bool = true)
+		(bind isGoldenTab7 "$event.index == 7 ? !isGoldenTab7 : isGoldenTab7" init=false watch=false (event "evGoldenToggler"))
+	)
+
+	(style
+		(marginRight = "L")
+		(marginLeft = "L")
+		(width = 800px)
+	)
+
+	(element Ub2CompendiumTestBlockSampleHeader 'Level 2 tabs' '')
+
+	(block
+		(style (flow = "horizontal") (marginTop = 20px))
+
+		(block
+			(style (width = 320px) (marginRight = "XL"))
+
+			(element SideTabButton
+				_label = "tabNames[0]"
+				_isSelected = "selectedItem == 0"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 0 }"
+				_isNewMarker = "newMarker0"
+				_isAttentionMarker = "attentionMarker0"
+				_newContentCounter = "counterTab0"
+				_unifiedStatus = "isGoldenTab0 ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			)
+			(element SideTabButton
+				_label = "tabNames[1]"
+				_isSelected = "selectedItem == 1"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 1 }"
+				_isNewMarker = "newMarker1"
+				_isAttentionMarker = "attentionMarker1"
+				_newContentCounter = "counterTab1"
+				_unifiedStatus = "isGoldenTab1 ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			)
+			(element SideTabButton
+				_label = "tabNames[2]"
+				_isSelected = "selectedItem == 2"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 2 }"
+				_isDisabled = "isTab3Disabled"
+				_isNewMarker = "newMarker2"
+				_isAttentionMarker = "attentionMarker2"
+				_newContentCounter = "counterTab2"
+				_unifiedStatus = "isGoldenTab2 ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			)
+			(element SideTabButton
+				_label = "tabNames[3]"
+				_isSelected = "selectedItem == 3"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 3 }"
+				_isNewMarker = "newMarker3"
+				_isAttentionMarker = "attentionMarker3"
+				_newContentCounter = "counterTab3"
+				_unifiedStatus = "isGoldenTab3 ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			)
+
+			(element SideTabButton
+				_label = "tabNames[4]"
+				_isSelected = "selectedItem == 4"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 4 }"
+				_isNewMarker = "newMarker4"
+				_isAttentionMarker = "attentionMarker4"
+				_newContentCounter = "counterTab4"
+				_image = "{	renderer:	'SideTabButtonNationFlagRenderer',
+							data:		{ shipCountry: 'Europe' } }"
+				_unifiedStatus = "isGoldenTab4 ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			)
+			(element SideTabButton
+				_label = "tabNames[5]"
+				_isSelected = "selectedItem == 5"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 5 }"
+				_isNewMarker = "newMarker5"
+				_isAttentionMarker = "attentionMarker5"
+				_newContentCounter = "counterTab5"
+				_hasInlineCounter = true
+				_inlineCounter = "42"
+				_image = "{	renderer:	'SideTabButtonNationFlagRenderer',
+							data:		{ shipCountry: 'Russia' } }"
+				_unifiedStatus = "isGoldenTab5 ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			)
+			(element SideTabButton
+				_label = "tabNames[6]"
+				_isSelected = "selectedItem == 6"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 6 }"
+				_isNewMarker = "newMarker6"
+				_isAttentionMarker = "attentionMarker6"
+				_newContentCounter = "counterTab6"
+				_hasInlineCounter = true
+				_inlineCounter = "42"
+				_paddingRight = "LM"
+				_unifiedStatus = "isGoldenTab6 ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			)
+			(element SideTabButton
+				_label = "tabNames[7]"
+				_isSelected = "selectedItem == 7"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 7 }"
+				_isNewMarker = "newMarker7"
+				_isAttentionMarker = "attentionMarker7"
+				_newContentCounter = "counterTab7"
+				_hasInlineCounter = true
+				_inlineCounter = "228"
+				_paddingRight = "LM"
+				_unifiedStatus = "isGoldenTab7 ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			)
+		)
+
+
+		(block
+			(style (align = "center|middle"))
+
+			(block
+				(style
+					(align = "center")
+					(width = 150)
+					(marginBottom = "MS")
+				)
+
+				(tf
+					(class $TextDefault13NM)
+					(class $TabsSampleActionBtnInstructionText)
+
+					(bind text "'Click this button to toggle \'NEW\' marker on current tab'")
+				)
+
+				(element DefaultButton
+					_label = 'Toggle NEW'
+					_dispatchedEv = 'evNewToggler'
+					_dispatchParams = "{ index: selectedItem }"
+				)
+			)
+
+			(block
+				(style
+					(align = "center")
+					(width = 150)
+					(marginBottom = "MS")
+				)
+
+				(tf
+					(class $TextDefault13NM)
+					(class $TabsSampleActionBtnInstructionText)
+
+					(bind text "'Click this button to toggle \'[ ! ]\' marker on current tab'")
+				)
+
+				(element DefaultButton
+					_label = 'Toggle [ ! ]'
+					_dispatchedEv = 'evAttentionToggler'
+					_dispatchParams = "{ index: selectedItem }"
+				)
+			)
+
+			(block
+				(style
+					(align = "center")
+					(width = 250)
+					(marginBottom = "MS")
+				)
+
+				(tf
+					(class $TextDefault13NM)
+					(class $TabsSampleActionBtnInstructionText)
+
+					(bind text "'Click these buttons to increase / decrease new items amount inside a current tab'")
+				)
+
+				(hblock
+					(controller $Instance renderer='DefaultButton'
+						(exprs
+							(style (marginRight = 12))
+						)
+						(args
+							_width = 36
+							_label = '-'
+							_dispatchedEv = 'evTabCounterChange'
+							_dispatchParams = "{ index: selectedItem, evName: 'decr' }"
+						)
+					)
+					(controller $Instance renderer='DefaultButton'
+						(args
+							_width = 36
+							_label = '+'
+							_dispatchedEv = 'evTabCounterChange'
+							_dispatchParams = "{ index: selectedItem, evName: 'incr' }"
+						)
+					)
+				)
+			)
+
+			(block
+				(style
+					(align = "center")
+					(width = 200)
+					(marginBottom = "MS")
+				)
+
+				(tf
+					(class $TextDefault13NM)
+					(class $TabsSampleActionBtnInstructionText)
+
+					(bind text "'Click this button to toggle disable state of TAB 3'")
+				)
+
+				(element DefaultButton
+					_label = 'Toggle disable 3'
+					_dispatchedEv = 'evDisableToggler'
+					_dispatchParams = "{ index: 2 }"
+				)
+			)
+
+			(block
+				(style
+					(align = "center")
+					(width = 150)
+					(marginBottom = "MS")
+				)
+
+				(tf
+					(class $TextDefault13NM)
+					(class $TabsSampleActionBtnInstructionText)
+
+					(bind text "'Click this button to toggle current tab golden'")
+				)
+
+				(element DefaultButton
+					_label = 'Toggle Golden'
+					_dispatchedEv = 'evGoldenToggler'
+					_dispatchParams = "{ index: selectedItem }"
+				)
+			)
+		)
+	)
+)
+
+(def element Ub2SecondaryTabsLayout () layout=true
+	(style (paddingTop = "XL") (paddingLeft = "SXS") (paddingRight = "SXS"))
+
+	(element Ub2SecondaryTabsLayoutAllStatic)
+	(element Ub2SecondaryTabsLayoutAllDynamic)
+	(element Ub2SecondaryTabsLayoutMixed)
+	(element Ub2SecondaryTabsLayoutAllPercentaged)
+	(element Ub2SecondaryTabsForSysMessages)
+)
+
+(def element Ub2MainTabsLayout160 () layout=true
+	(scope
+		(var tabNames:array = "['First tab', 'Tab 2', 'Tab 3', 'Tab 4']")
+
+		(event evTabSelected)
+		(event evNewToggler)
+		(event evAttentionToggler)
+		(event evTabCounterChange)
+		(event evDisableToggler)
+
+		(var selectedItem:number = 0)
+		(bind selectedItem "$event.index" init=false (event "evTabSelected"))
+
+		(var newMarker0:bool = true)
+		(bind newMarker0 "$event.index == 0 ? !newMarker0 : newMarker0" init=false watch=false (event "evNewToggler"))
+		(var newMarker1:bool = false)
+		(bind newMarker1 "$event.index == 1 ? !newMarker1 : newMarker1" init=false watch=false (event "evNewToggler"))
+		(var newMarker2:bool = false)
+		(bind newMarker2 "$event.index == 2 ? !newMarker2 : newMarker2" init=false watch=false (event "evNewToggler"))
+		(var newMarker3:bool = true)
+		(bind newMarker3 "$event.index == 3 ? !newMarker3 : newMarker3" init=false watch=false (event "evNewToggler"))
+
+		(var attentionMarker0:bool = false)
+		(bind attentionMarker0 "$event.index == 0 ? !attentionMarker0 : attentionMarker0" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker1:bool = true)
+		(bind attentionMarker1 "$event.index == 1 ? !attentionMarker1 : attentionMarker1" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker2:bool = false)
+		(bind attentionMarker2 "$event.index == 2 ? !attentionMarker2 : attentionMarker2" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker3:bool = true)
+		(bind attentionMarker3 "$event.index == 3 ? !attentionMarker3 : attentionMarker3" init=false watch=false (event "evAttentionToggler"))
+
+		(var counterTab0:number = 0)
+		(bind counterTab0 "$event.index == 0	? $event.evName == 'incr'	? (counterTab0 + 1)
+																			: (counterTab0 - 1) > 0 ? (counterTab0 - 1) : 0
+												: counterTab0" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab1:number = 0)
+		(bind counterTab1 "$event.index == 1	? $event.evName == 'incr'	? (counterTab1 + 1)
+																			: (counterTab1 - 1) > 0 ? (counterTab1 - 1) : 0
+												: counterTab1" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab2:number = 0)
+		(bind counterTab2 "$event.index == 2	? $event.evName == 'incr'	? (counterTab2 + 1)
+																			: (counterTab2 - 1) > 0 ? (counterTab2 - 1) : 0
+												: counterTab2" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab3:number = 0)
+		(bind counterTab3 "$event.index == 3	? $event.evName == 'incr'	? (counterTab3 + 1)
+																			: (counterTab3 - 1) > 0 ? (counterTab3 - 1) : 0
+												: counterTab3" init=false watch=false (event "evTabCounterChange"))
+
+		(var isTab3Disabled:bool = true)
+		(bind isTab3Disabled "!isTab3Disabled" init=false watch=false (event "evDisableToggler"))
+	)
+
+	(element Ub2CompendiumTestBlockSampleHeader 'Level 1 tabs' '160px per tab')
+
+	(element MAIN_TAB_BUTTONS_BLOCK
+		(style (marginBottom = "M"))
+
+		(block
+			(element MainTabButton
+				_label = "tabNames[0]"
+				_width = "MAIN_TAB_BUTTON_WIDTH.TINY"
+				_isSelected = "selectedItem == 0"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 0 }"
+				_isNewMarker = "newMarker0"
+				_isAttentionMarker = "attentionMarker0"
+				_newContentCounter = "counterTab0"
+			)
+
+			(controller $Tooltip
+				(bind enabled "selectedItem != 0 || attentionMarker0")
+				(bind renderer "'SimpleStatusTooltip'")
+				(args
+					_text = "attentionMarker0	? 'Something is bad inside Tab 1'
+												: 'Click to proceed in Tab 1'"
+					_unifiedStatus = "attentionMarker0	? SC.Ui_styles.UNIFIED_STATUS.ATTENTION
+														: SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			)
+		)
+
+		(block
+			(element MainTabButton
+				_label = "tabNames[1]"
+				_width = "MAIN_TAB_BUTTON_WIDTH.TINY"
+				_isSelected = "selectedItem == 1"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 1 }"
+				_isNewMarker = "newMarker1"
+				_isAttentionMarker = "attentionMarker1"
+				_newContentCounter = "counterTab1"
+			)
+
+			(controller $Tooltip
+				(bind enabled "selectedItem != 1 || attentionMarker1")
+				(bind renderer "'SimpleStatusTooltip'")
+				(args
+					_text = "attentionMarker1	? 'Something is bad inside Tab 2'
+												: 'Click to proceed in Tab 2'"
+					_unifiedStatus = "attentionMarker1	? SC.Ui_styles.UNIFIED_STATUS.ATTENTION
+														: SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			)
+		)
+
+		(block
+			(element MainTabButton
+				_label = "tabNames[2]"
+				_width = "MAIN_TAB_BUTTON_WIDTH.TINY"
+				_isSelected = "selectedItem == 2"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 2 }"
+				_isDisabled = "isTab3Disabled"
+				_isNewMarker = "newMarker2"
+				_isAttentionMarker = "attentionMarker2"
+				_newContentCounter = "counterTab2"
+			)
+
+			(controller $Tooltip
+				(bind enabled "attentionMarker2 || (selectedItem != 2 && !isTab3Disabled)")
+				(bind renderer "'SimpleStatusTooltip'")
+				(args
+					_text = "attentionMarker2	? 'Something is bad inside Tab 3'
+												: 'Click to proceed in Tab 3'"
+					_unifiedStatus = "attentionMarker2	? SC.Ui_styles.UNIFIED_STATUS.ATTENTION
+														: SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			)
+		)
+
+		(block
+			(element MainTabButton
+				_label = "tabNames[3]"
+				_width = "MAIN_TAB_BUTTON_WIDTH.TINY"
+				_isSelected = "selectedItem == 3"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 3 }"
+				_isNewMarker = "newMarker3"
+				_isAttentionMarker = "attentionMarker3"
+				_newContentCounter = "counterTab3"
+				_isLast = true
+			)
+
+			(controller $Tooltip
+				(bind enabled "selectedItem != 3 || attentionMarker3")
+				(bind renderer "'SimpleStatusTooltip'")
+				(args
+					_text = "attentionMarker3	? 'Something is bad inside Tab 4'
+												: 'Click to proceed in Tab 4'"
+					_unifiedStatus = "attentionMarker3	? SC.Ui_styles.UNIFIED_STATUS.ATTENTION
+														: SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			)
+		)
+	)
+
+
+	(block
+		(style
+			(align = "center|middle")
+			(flow = "horizontal")
+		)
+
+		(block
+			(style
+				(align = "center")
+				(width = 150)
+				(marginRight = "S")
+			)
+
+			(tf
+				(class $TextDefault13NM)
+				(class $TabsSampleActionBtnInstructionText)
+
+				(bind text "'Click this button to toggle \'NEW\' marker on current tab'")
+			)
+
+			(element DefaultButton
+				_label = 'Toggle NEW'
+				_dispatchedEv = 'evNewToggler'
+				_dispatchParams = "{ index: selectedItem }"
+			)
+		)
+
+		(block
+			(style
+				(align = "center")
+				(width = 150)
+				(marginRight = "S")
+			)
+
+			(tf
+				(class $TextDefault13NM)
+				(class $TabsSampleActionBtnInstructionText)
+
+				(bind text "'Click this button to toggle \'[ ! ]\' marker on current tab'")
+			)
+
+			(element DefaultButton
+				_label = 'Toggle [ ! ]'
+				_dispatchedEv = 'evAttentionToggler'
+				_dispatchParams = "{ index: selectedItem }"
+			)
+		)
+
+		(block
+			(style
+				(align = "center")
+				(width = 250)
+			)
+
+			(tf
+				(class $TextDefault13NM)
+				(class $TabsSampleActionBtnInstructionText)
+
+				(bind text "'Click these buttons to increase / decrease new items amount inside a current tab'")
+			)
+
+			(hblock
+				(controller $Instance renderer='DefaultButton'
+					(exprs
+						(style (marginRight = 12))
+					)
+					(args
+						_width = 36
+						_label = '-'
+						_dispatchedEv = 'evTabCounterChange'
+						_dispatchParams = "{ index: selectedItem, evName: 'decr' }"
+					)
+				)
+				(controller $Instance renderer='DefaultButton'
+					(args
+						_width = 36
+						_label = '+'
+						_dispatchedEv = 'evTabCounterChange'
+						_dispatchParams = "{ index: selectedItem, evName: 'incr' }"
+					)
+				)
+			)
+		)
+
+		(block
+			(tf
+				(class $TextDefault13NM)
+				(class $TabsSampleActionBtnInstructionText)
+
+				(bind text "'Click this button to toggle disable state of TAB 3'")
+			)
+
+			(element DefaultButton
+				_label = 'Toggle disable 3'
+				_dispatchedEv = 'evDisableToggler'
+				_dispatchParams = "{ index: 2 }"
+			)
+		)
+	)
+)
+
+(def element Ub2SecondaryTabsLayoutAllStatic () layout=true
+	(scope
+		(var tabNames:array = "['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4']")
+
+		(event evTabSelected)
+		(event evNewToggler)
+		(event evAttentionToggler)
+		(event evTabCounterChange)
+		(event evDisableToggler)
+
+		(var selectedItem:number = 0)
+		(bind selectedItem "$event.index" init=false (event "evTabSelected"))
+
+		(var newMarker0:bool = true)
+		(bind newMarker0 "$event.index == 0 ? !newMarker0 : newMarker0" init=false watch=false (event "evNewToggler"))
+		(var newMarker1:bool = false)
+		(bind newMarker1 "$event.index == 1 ? !newMarker1 : newMarker1" init=false watch=false (event "evNewToggler"))
+		(var newMarker2:bool = false)
+		(bind newMarker2 "$event.index == 2 ? !newMarker2 : newMarker2" init=false watch=false (event "evNewToggler"))
+		(var newMarker3:bool = true)
+		(bind newMarker3 "$event.index == 3 ? !newMarker3 : newMarker3" init=false watch=false (event "evNewToggler"))
+
+		(var attentionMarker0:bool = false)
+		(bind attentionMarker0 "$event.index == 0 ? !attentionMarker0 : attentionMarker0" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker1:bool = true)
+		(bind attentionMarker1 "$event.index == 1 ? !attentionMarker1 : attentionMarker1" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker2:bool = false)
+		(bind attentionMarker2 "$event.index == 2 ? !attentionMarker2 : attentionMarker2" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker3:bool = true)
+		(bind attentionMarker3 "$event.index == 3 ? !attentionMarker3 : attentionMarker3" init=false watch=false (event "evAttentionToggler"))
+
+		(var counterTab0:number = 0)
+		(bind counterTab0 "$event.index == 0	? $event.evName == 'incr'	? (counterTab0 + 1)
+																			: (counterTab0 - 1) > 0 ? (counterTab0 - 1) : 0
+												: counterTab0" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab1:number = 0)
+		(bind counterTab1 "$event.index == 1	? $event.evName == 'incr'	? (counterTab1 + 1)
+																			: (counterTab1 - 1) > 0 ? (counterTab1 - 1) : 0
+												: counterTab1" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab2:number = 0)
+		(bind counterTab2 "$event.index == 2	? $event.evName == 'incr'	? (counterTab2 + 1)
+																			: (counterTab2 - 1) > 0 ? (counterTab2 - 1) : 0
+												: counterTab2" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab3:number = 0)
+		(bind counterTab3 "$event.index == 3	? $event.evName == 'incr'	? (counterTab3 + 1)
+																			: (counterTab3 - 1) > 0 ? (counterTab3 - 1) : 0
+												: counterTab3" init=false watch=false (event "evTabCounterChange"))
+
+		(var isTab3Disabled:bool = true)
+		(bind isTab3Disabled "!isTab3Disabled" init=false watch=false (event "evDisableToggler"))
+	)
+
+	(style (width = 800))
+
+	(element Ub2CompendiumTestBlockSampleHeader 'Secondary tabs' 'Static sizes')
+
+	(block
+		(style
+			(flow = "horizontal")
+			(width = 100%)
+			(marginBottom = "M")
+		)
+
+		(block
+			(element TabButton
+				_label = "tabNames[0]"
+				_width = '125'
+				_isSelected = "selectedItem == 0"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 0 }"
+				_isNewMarker = "newMarker0"
+				_isAttentionMarker = "attentionMarker0"
+				_newContentCounter = "counterTab0"
+			)
+
+			(controller $Tooltip
+				(bind enabled "selectedItem != 0 || attentionMarker0")
+				(bind renderer "'SimpleStatusTooltip'")
+				(args
+					_text = "attentionMarker0	? 'Something is bad inside Tab 1'
+												: 'Click to proceed in Tab 1'"
+					_unifiedStatus = "attentionMarker0	? SC.Ui_styles.UNIFIED_STATUS.ATTENTION
+														: SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			)
+		)
+
+		(block
+			(element TabButton
+				_label = "tabNames[1]"
+				_width = '125'
+				_isSelected = "selectedItem == 1"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 1 }"
+				_isNewMarker = "newMarker1"
+				_isAttentionMarker = "attentionMarker1"
+				_newContentCounter = "counterTab1"
+			)
+
+			(controller $Tooltip
+				(bind enabled "selectedItem != 1 || attentionMarker1")
+				(bind renderer "'SimpleStatusTooltip'")
+				(args
+					_text = "attentionMarker1	? 'Something is bad inside Tab 2'
+												: 'Click to proceed in Tab 2'"
+					_unifiedStatus = "attentionMarker1	? SC.Ui_styles.UNIFIED_STATUS.ATTENTION
+														: SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			)
+		)
+
+		(block
+			(element TabButton
+				_label = "tabNames[2]"
+				_width = '125'
+				_isSelected = "selectedItem == 2"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 2 }"
+				_isDisabled = "isTab3Disabled"
+				_isNewMarker = "newMarker2"
+				_isAttentionMarker = "attentionMarker2"
+				_newContentCounter = "counterTab2"
+			)
+
+			(controller $Tooltip
+				(bind enabled "attentionMarker2 || (selectedItem != 2 && !isTab3Disabled)")
+				(bind renderer "'SimpleStatusTooltip'")
+				(args
+					_text = "attentionMarker2	? 'Something is bad inside Tab 3'
+												: 'Click to proceed in Tab 3'"
+					_unifiedStatus = "attentionMarker2	? SC.Ui_styles.UNIFIED_STATUS.ATTENTION
+														: SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			)
+		)
+
+		(block
+			(element TabButton
+				_label = "tabNames[3]"
+				_width = '125'
+				_isSelected = "selectedItem == 3"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 3 }"
+				_isNewMarker = "newMarker3"
+				_isAttentionMarker = "attentionMarker3"
+				_newContentCounter = "counterTab3"
+			)
+
+			(controller $Tooltip
+				(bind enabled "selectedItem != 3 || attentionMarker3")
+				(bind renderer "'SimpleStatusTooltip'")
+				(args
+					_text = "attentionMarker3	? 'Something is bad inside Tab 4'
+												: 'Click to proceed in Tab 4'"
+					_unifiedStatus = "attentionMarker3	? SC.Ui_styles.UNIFIED_STATUS.ATTENTION
+														: SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			)
+		)
+
+		(element HorizontalDividerTwoPx
+			(style
+				(position = "absolute")
+				(width = 100%)
+				(bottom = 0)
+			)
+		)
+	)
+
+
+	(block
+		(style
+			(align = "center|middle")
+			(flow = "horizontal")
+			(width = 100%)
+		)
+
+		(block
+			(style
+				(align = "center")
+				(width = 150)
+				(marginRight = "S")
+			)
+
+			(tf
+				(class $TextDefault13NM)
+				(class $TabsSampleActionBtnInstructionText)
+
+				(bind text "'Click this button to toggle \'NEW\' marker on current tab'")
+			)
+
+			(element DefaultButton
+				_label = 'Toggle NEW'
+				_dispatchedEv = 'evNewToggler'
+				_dispatchParams = "{ index: selectedItem }"
+			)
+		)
+
+		(block
+			(style
+				(align = "center")
+				(width = 150)
+				(marginRight = "S")
+			)
+
+			(tf
+				(class $TextDefault13NM)
+				(class $TabsSampleActionBtnInstructionText)
+
+				(bind text "'Click this button to toggle \'[ ! ]\' marker on current tab'")
+			)
+
+			(element DefaultButton
+				_label = 'Toggle [ ! ]'
+				_dispatchedEv = 'evAttentionToggler'
+				_dispatchParams = "{ index: selectedItem }"
+			)
+		)
+
+		(block
+			(style
+				(align = "center")
+				(width = 250)
+			)
+
+			(tf
+				(class $TextDefault13NM)
+				(class $TabsSampleActionBtnInstructionText)
+
+				(bind text "'Click these buttons to increase / decrease new items amount inside a current tab'")
+			)
+
+			(hblock
+				(controller $Instance renderer='DefaultButton'
+					(exprs
+						(style (marginRight = 12))
+					)
+					(args
+						_width = 36
+						_label = '-'
+						_dispatchedEv = 'evTabCounterChange'
+						_dispatchParams = "{ index: selectedItem, evName: 'decr' }"
+					)
+				)
+				(controller $Instance renderer='DefaultButton'
+					(args
+						_width = 36
+						_label = '+'
+						_dispatchedEv = 'evTabCounterChange'
+						_dispatchParams = "{ index: selectedItem, evName: 'incr' }"
+					)
+				)
+			)
+		)
+
+		(block
+			(tf
+				(class $TextDefault13NM)
+				(class $TabsSampleActionBtnInstructionText)
+
+				(bind text "'Click this button to toggle disable state of TAB 3'")
+			)
+
+			(element DefaultButton
+				_label = 'Toggle disable 3'
+				_dispatchedEv = 'evDisableToggler'
+				_dispatchParams = "{ index: 2 }"
+			)
+		)
+	)
+)
+
+(def element Ub2SecondaryTabsLayoutAllDynamic () layout=true
+	(scope
+		(event evTabSelected)
+		(event evNewToggler)
+		(event evAttentionToggler)
+		(event evTabCounterChange)
+
+		(var selectedItem:number = 0)
+		(bind selectedItem "$event.index" init=false (event "evTabSelected"))
+
+		(var newMarker0:bool = true)
+		(bind newMarker0 "$event.index == 0 ? !newMarker0 : newMarker0" init=false watch=false (event "evNewToggler"))
+		(var newMarker1:bool = false)
+		(bind newMarker1 "$event.index == 1 ? !newMarker1 : newMarker1" init=false watch=false (event "evNewToggler"))
+		(var newMarker2:bool = false)
+		(bind newMarker2 "$event.index == 2 ? !newMarker2 : newMarker2" init=false watch=false (event "evNewToggler"))
+		(var newMarker3:bool = true)
+		(bind newMarker3 "$event.index == 3 ? !newMarker3 : newMarker3" init=false watch=false (event "evNewToggler"))
+
+		(var attentionMarker0:bool = false)
+		(bind attentionMarker0 "$event.index == 0 ? !attentionMarker0 : attentionMarker0" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker1:bool = true)
+		(bind attentionMarker1 "$event.index == 1 ? !attentionMarker1 : attentionMarker1" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker2:bool = false)
+		(bind attentionMarker2 "$event.index == 2 ? !attentionMarker2 : attentionMarker2" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker3:bool = true)
+		(bind attentionMarker3 "$event.index == 3 ? !attentionMarker3 : attentionMarker3" init=false watch=false (event "evAttentionToggler"))
+
+		(var counterTab0:number = 0)
+		(bind counterTab0 "$event.index == 0	? $event.evName == 'incr'	? (counterTab0 + 1)
+																			: (counterTab0 - 1) > 0 ? (counterTab0 - 1) : 0
+												: counterTab0" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab1:number = 0)
+		(bind counterTab1 "$event.index == 1	? $event.evName == 'incr'	? (counterTab1 + 1)
+																			: (counterTab1 - 1) > 0 ? (counterTab1 - 1) : 0
+												: counterTab1" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab2:number = 0)
+		(bind counterTab2 "$event.index == 2	? $event.evName == 'incr'	? (counterTab2 + 1)
+																			: (counterTab2 - 1) > 0 ? (counterTab2 - 1) : 0
+												: counterTab2" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab3:number = 0)
+		(bind counterTab3 "$event.index == 3	? $event.evName == 'incr'	? (counterTab3 + 1)
+																			: (counterTab3 - 1) > 0 ? (counterTab3 - 1) : 0
+												: counterTab3" init=false watch=false (event "evTabCounterChange"))
+	)
+
+	(style
+		(width = 600)
+		(marginTop = "MS")
+	)
+
+	(element Ub2CompendiumTestBlockSampleHeader 'Secondary tabs' 'Dynamic sizes')
+
+	(block
+		(style
+			(flow = "horizontal")
+			(width = 100%)
+			(marginBottom = "M")
+		)
+
+		(element TabButton
+			_label = "'Tab 1'"
+			_isSelected = "selectedItem == 0"
+			_dispatchedEv = "'evTabSelected'"
+			_dispatchParams = "{ index: 0 }"
+			_isNewMarker = "newMarker0"
+			_isAttentionMarker = "attentionMarker0"
+			_newContentCounter = "counterTab0"
+			_image = "'url:../service_kit/currencies/icon_exp.png'"
+		)
+
+		(element TabButton
+			_label = "'2 second Tab'"
+			_isSelected = "selectedItem == 1"
+			_dispatchedEv = "'evTabSelected'"
+			_dispatchParams = "{ index: 1 }"
+			_isNewMarker = "newMarker1"
+			_isAttentionMarker = "attentionMarker1"
+			_newContentCounter = "counterTab1"
+		)
+
+		(element TabButton
+			_label = "'Disabled :('"
+			_isSelected = "selectedItem == 2"
+			_dispatchedEv = "'evTabSelected'"
+			_dispatchParams = "{ index: 2 }"
+			_isDisabled = true
+			_isNewMarker = "newMarker2"
+			_isAttentionMarker = "attentionMarker2"
+			_newContentCounter = "counterTab2"
+		)
+
+		(element TabButton
+			_label = "'Fourth Tab'"
+			_isSelected = "selectedItem == 3"
+			_dispatchedEv = "'evTabSelected'"
+			_dispatchParams = "{ index: 3 }"
+			_isNewMarker = "newMarker3"
+			_isAttentionMarker = "attentionMarker3"
+			_newContentCounter = "counterTab3"
+		)
+
+		(element HorizontalDividerTwoPx
+			(style
+				(position = "absolute")
+				(width = 100%)
+				(bottom = 0)
+			)
+		)
+	)
+
+	(block
+		(style
+			(align = "center|middle")
+			(flow = "horizontal")
+			(width = 100%)
+		)
+
+		(block
+			(style
+				(align = "center")
+				(width = 150)
+				(marginRight = "S")
+			)
+
+			(tf
+				(class $TextDefault13NM)
+				(class $TabsSampleActionBtnInstructionText)
+
+				(bind text "'Click this button to toggle \'NEW\' marker on current tab'")
+			)
+
+			(element DefaultButton
+				_label = 'Toggle NEW'
+				_dispatchedEv = 'evNewToggler'
+				_dispatchParams = "{ index: selectedItem }"
+			)
+		)
+
+		(block
+			(style
+				(align = "center")
+				(width = 150)
+				(marginRight = "S")
+			)
+
+			(tf
+				(class $TextDefault13NM)
+				(class $TabsSampleActionBtnInstructionText)
+
+				(bind text "'Click this button to toggle \'[ ! ]\' marker on current tab'")
+			)
+
+			(element DefaultButton
+				_label = 'Toggle [ ! ]'
+				_dispatchedEv = 'evAttentionToggler'
+				_dispatchParams = "{ index: selectedItem }"
+			)
+		)
+
+		(block
+			(style
+				(align = "center")
+				(width = 250)
+			)
+
+			(tf
+				(class $TextDefault13NM)
+				(class $TabsSampleActionBtnInstructionText)
+
+				(bind text "'Click these buttons to increase / decrease new items amount inside a current tab'")
+			)
+
+			(hblock
+				(controller $Instance renderer='DefaultButton'
+					(exprs
+						(style (marginRight = 12))
+					)
+					(args
+						_width = 36
+						_label = '-'
+						_dispatchedEv = 'evTabCounterChange'
+						_dispatchParams = "{ index: selectedItem, evName: 'decr' }"
+					)
+				)
+				(controller $Instance renderer='DefaultButton'
+					(args
+						_width = 36
+						_label = '+'
+						_dispatchedEv = 'evTabCounterChange'
+						_dispatchParams = "{ index: selectedItem, evName: 'incr' }"
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element Ub2SecondaryTabsLayoutMixed () layout=true
+	(scope
+		(var tabNames:array = "['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4']")
+
+		(event evTabSelected)
+		(event evNewToggler)
+		(event evAttentionToggler)
+		(event evTabCounterChange)
+
+		(var selectedItem:number = 0)
+		(bind selectedItem "$event.index" init=false (event "evTabSelected"))
+
+		(var newMarker0:bool = true)
+		(bind newMarker0 "$event.index == 0 ? !newMarker0 : newMarker0" init=false watch=false (event "evNewToggler"))
+		(var newMarker1:bool = false)
+		(bind newMarker1 "$event.index == 1 ? !newMarker1 : newMarker1" init=false watch=false (event "evNewToggler"))
+		(var newMarker2:bool = false)
+		(bind newMarker2 "$event.index == 2 ? !newMarker2 : newMarker2" init=false watch=false (event "evNewToggler"))
+		(var newMarker3:bool = true)
+		(bind newMarker3 "$event.index == 3 ? !newMarker3 : newMarker3" init=false watch=false (event "evNewToggler"))
+
+		(var attentionMarker0:bool = false)
+		(bind attentionMarker0 "$event.index == 0 ? !attentionMarker0 : attentionMarker0" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker1:bool = true)
+		(bind attentionMarker1 "$event.index == 1 ? !attentionMarker1 : attentionMarker1" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker2:bool = false)
+		(bind attentionMarker2 "$event.index == 2 ? !attentionMarker2 : attentionMarker2" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker3:bool = true)
+		(bind attentionMarker3 "$event.index == 3 ? !attentionMarker3 : attentionMarker3" init=false watch=false (event "evAttentionToggler"))
+
+		(var counterTab0:number = 0)
+		(bind counterTab0 "$event.index == 0	? $event.evName == 'incr'	? (counterTab0 + 1)
+																			: (counterTab0 - 1) > 0 ? (counterTab0 - 1) : 0
+												: counterTab0" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab1:number = 0)
+		(bind counterTab1 "$event.index == 1	? $event.evName == 'incr'	? (counterTab1 + 1)
+																			: (counterTab1 - 1) > 0 ? (counterTab1 - 1) : 0
+												: counterTab1" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab2:number = 0)
+		(bind counterTab2 "$event.index == 2	? $event.evName == 'incr'	? (counterTab2 + 1)
+																			: (counterTab2 - 1) > 0 ? (counterTab2 - 1) : 0
+												: counterTab2" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab3:number = 0)
+		(bind counterTab3 "$event.index == 3	? $event.evName == 'incr'	? (counterTab3 + 1)
+																			: (counterTab3 - 1) > 0 ? (counterTab3 - 1) : 0
+												: counterTab3" init=false watch=false (event "evTabCounterChange"))
+	)
+
+	(style
+		(width = 600)
+		(marginTop = "MS")
+	)
+
+	(element Ub2CompendiumTestBlockSampleHeader 'Secondary tabs' 'Mixed sizes')
+
+	(block
+		(style
+			(flow = "horizontal")
+			(width = 100%)
+			(marginBottom = "-XXS")
+		)
+
+		(element TabButton
+			_label = "tabNames[0]"
+			_width = '125'
+			_isSelected = "selectedItem == 0"
+			_dispatchedEv = "'evTabSelected'"
+			_dispatchParams = "{ index: 0 }"
+			_isNewMarker = "newMarker0"
+			_isAttentionMarker = "attentionMarker0"
+			_newContentCounter = "counterTab0"
+		)
+
+		(element TabButton
+			_label = "tabNames[1]"
+			_width = '125'
+			_isSelected = "selectedItem == 1"
+			_dispatchedEv = "'evTabSelected'"
+			_dispatchParams = "{ index: 1 }"
+			_isNewMarker = "newMarker1"
+			_isAttentionMarker = "attentionMarker1"
+			_newContentCounter = "counterTab1"
+		)
+
+		(element TabButton
+			_label = "tabNames[2]"
+			_width = '125'
+			_isSelected = "selectedItem == 2"
+			_dispatchedEv = "'evTabSelected'"
+			_dispatchParams = "{ index: 2 }"
+			_isDisabled = true
+			_isNewMarker = "newMarker2"
+			_isAttentionMarker = "attentionMarker2"
+			_newContentCounter = "counterTab2"
+		)
+
+		(element TabButton
+			_label = "'Fourth Tab Item'"
+			_isSelected = "selectedItem == 3"
+			_dispatchedEv = "'evTabSelected'"
+			_dispatchParams = "{ index: 3 }"
+			_isNewMarker = "newMarker3"
+			_isAttentionMarker = "attentionMarker3"
+			_newContentCounter = "counterTab3"
+		)
+	)
+
+	(element HorizontalDividerTwoPx
+		(style
+			(marginBottom = "M")
+			(width = 100%)
+		)
+	)
+
+	(block
+		(style
+			(align = "center|middle")
+			(flow = "horizontal")
+			(width = 100%)
+		)
+
+		(block
+			(style
+				(align = "center")
+				(width = 150)
+				(marginRight = "S")
+			)
+
+			(tf
+				(class $TextDefault13NM)
+				(class $TabsSampleActionBtnInstructionText)
+
+				(bind text "'Click this button to toggle \'NEW\' marker on current tab'")
+			)
+
+			(element DefaultButton
+				_label = 'Toggle NEW'
+				_dispatchedEv = 'evNewToggler'
+				_dispatchParams = "{ index: selectedItem }"
+			)
+		)
+
+		(block
+			(style
+				(align = "center")
+				(width = 150)
+				(marginRight = "S")
+			)
+
+			(tf
+				(class $TextDefault13NM)
+				(class $TabsSampleActionBtnInstructionText)
+
+				(bind text "'Click this button to toggle \'[ ! ]\' marker on current tab'")
+			)
+
+			(element DefaultButton
+				_label = 'Toggle [ ! ]'
+				_dispatchedEv = 'evAttentionToggler'
+				_dispatchParams = "{ index: selectedItem }"
+			)
+		)
+
+		(block
+			(style
+				(align = "center")
+				(width = 250)
+			)
+
+			(tf
+				(class $TextDefault13NM)
+				(class $TabsSampleActionBtnInstructionText)
+
+				(bind text "'Click these buttons to increase / decrease new items amount inside a current tab'")
+			)
+
+			(hblock
+				(controller $Instance renderer='DefaultButton'
+					(exprs
+						(style (marginRight = 12))
+					)
+					(args
+						_width = 36
+						_label = '-'
+						_dispatchedEv = 'evTabCounterChange'
+						_dispatchParams = "{ index: selectedItem, evName: 'decr' }"
+					)
+				)
+				(controller $Instance renderer='DefaultButton'
+					(args
+						_width = 36
+						_label = '+'
+						_dispatchedEv = 'evTabCounterChange'
+						_dispatchParams = "{ index: selectedItem, evName: 'incr' }"
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element Ub2SecondaryTabsLayoutAllPercentaged () layout=true
+	(scope
+		(var tabNames:array = "['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4']")
+
+		(event evTabSelected)
+		(event evNewToggler)
+		(event evAttentionToggler)
+		(event evTabCounterChange)
+
+		(var selectedItem:number = 0)
+		(bind selectedItem "$event.index" init=false (event "evTabSelected"))
+
+		(var newMarker0:bool = true)
+		(bind newMarker0 "$event.index == 0 ? !newMarker0 : newMarker0" init=false watch=false (event "evNewToggler"))
+		(var newMarker1:bool = false)
+		(bind newMarker1 "$event.index == 1 ? !newMarker1 : newMarker1" init=false watch=false (event "evNewToggler"))
+		(var newMarker2:bool = false)
+		(bind newMarker2 "$event.index == 2 ? !newMarker2 : newMarker2" init=false watch=false (event "evNewToggler"))
+		(var newMarker3:bool = true)
+		(bind newMarker3 "$event.index == 3 ? !newMarker3 : newMarker3" init=false watch=false (event "evNewToggler"))
+
+		(var attentionMarker0:bool = false)
+		(bind attentionMarker0 "$event.index == 0 ? !attentionMarker0 : attentionMarker0" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker1:bool = true)
+		(bind attentionMarker1 "$event.index == 1 ? !attentionMarker1 : attentionMarker1" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker2:bool = false)
+		(bind attentionMarker2 "$event.index == 2 ? !attentionMarker2 : attentionMarker2" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker3:bool = true)
+		(bind attentionMarker3 "$event.index == 3 ? !attentionMarker3 : attentionMarker3" init=false watch=false (event "evAttentionToggler"))
+
+		(var counterTab0:number = 0)
+		(bind counterTab0 "$event.index == 0	? $event.evName == 'incr'	? (counterTab0 + 1)
+																			: (counterTab0 - 1) > 0 ? (counterTab0 - 1) : 0
+												: counterTab0" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab1:number = 0)
+		(bind counterTab1 "$event.index == 1	? $event.evName == 'incr'	? (counterTab1 + 1)
+																			: (counterTab1 - 1) > 0 ? (counterTab1 - 1) : 0
+												: counterTab1" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab2:number = 0)
+		(bind counterTab2 "$event.index == 2	? $event.evName == 'incr'	? (counterTab2 + 1)
+																			: (counterTab2 - 1) > 0 ? (counterTab2 - 1) : 0
+												: counterTab2" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab3:number = 0)
+		(bind counterTab3 "$event.index == 3	? $event.evName == 'incr'	? (counterTab3 + 1)
+																			: (counterTab3 - 1) > 0 ? (counterTab3 - 1) : 0
+												: counterTab3" init=false watch=false (event "evTabCounterChange"))
+	)
+
+	(style
+		(width = 600)
+		(marginTop = "MS")
+	)
+
+	(element Ub2CompendiumTestBlockSampleHeader 'Secondary tabs' 'Percentaged sizes')
+
+	(block
+		(style
+			(flow = "horizontal")
+			(width = 100%)
+		)
+
+		(element TabButton
+			_label = "tabNames[0]"
+			_width = '25%'
+			_isSelected = "selectedItem == 0"
+			_dispatchedEv = "'evTabSelected'"
+			_dispatchParams = "{ index: 0 }"
+			_isNewMarker = "newMarker0"
+			_isAttentionMarker = "attentionMarker0"
+			_newContentCounter = "counterTab0"
+		)
+
+		(element TabButton
+			_label = "tabNames[1]"
+			_width = '25%'
+			_isSelected = "selectedItem == 1"
+			_dispatchedEv = "'evTabSelected'"
+			_dispatchParams = "{ index: 1 }"
+			_isNewMarker = "newMarker1"
+			_isAttentionMarker = "attentionMarker1"
+			_newContentCounter = "counterTab1"
+		)
+
+		(element TabButton
+			_label = "tabNames[2]"
+			_width = '25%'
+			_isSelected = "selectedItem == 2"
+			_dispatchedEv = "'evTabSelected'"
+			_dispatchParams = "{ index: 2 }"
+			_isDisabled = true
+			_isNewMarker = "newMarker2"
+			_isAttentionMarker = "attentionMarker2"
+			_newContentCounter = "counterTab2"
+		)
+
+		(element TabButton
+			_label = "tabNames[3]"
+			_width = '25%'
+			_isSelected = "selectedItem == 3"
+			_image = "'url:../service_kit/currencies/icon_coal.png'"
+			_dispatchedEv = "'evTabSelected'"
+			_dispatchParams = "{ index: 3 }"
+			_isNewMarker = "newMarker3"
+			_isAttentionMarker = "attentionMarker3"
+			_newContentCounter = "counterTab3"
+		)
+	)
+
+	(element HorizontalDividerTwoPx
+		(style
+			(marginTop = "-XXS")
+			(marginBottom = "M")
+			(width = 100%)
+		)
+	)
+
+	(block
+		(style
+			(align = "center|middle")
+			(flow = "horizontal")
+			(width = 100%)
+		)
+
+		(block
+			(style
+				(align = "center")
+				(width = 150)
+				(marginRight = "S")
+			)
+
+			(tf
+				(class $TextDefault13NM)
+				(class $TabsSampleActionBtnInstructionText)
+
+				(bind text "'Click this button to toggle \'NEW\' marker on current tab'")
+			)
+
+			(element DefaultButton
+				_label = 'Toggle NEW'
+				_dispatchedEv = 'evNewToggler'
+				_dispatchParams = "{ index: selectedItem }"
+			)
+		)
+
+		(block
+			(style
+				(align = "center")
+				(width = 150)
+				(marginRight = "S")
+			)
+
+			(tf
+				(class $TextDefault13NM)
+				(class $TabsSampleActionBtnInstructionText)
+
+				(bind text "'Click this button to toggle \'[ ! ]\' marker on current tab'")
+			)
+
+			(element DefaultButton
+				_label = 'Toggle [ ! ]'
+				_dispatchedEv = 'evAttentionToggler'
+				_dispatchParams = "{ index: selectedItem }"
+			)
+		)
+
+		(block
+			(style
+				(align = "center")
+				(width = 250)
+			)
+
+			(tf
+				(class $TextDefault13NM)
+				(class $TabsSampleActionBtnInstructionText)
+
+				(bind text "'Click these buttons to increase / decrease new items amount inside a current tab'")
+			)
+
+			(hblock
+				(controller $Instance renderer='DefaultButton'
+					(exprs
+						(style (marginRight = 12))
+					)
+					(args
+						_width = 36
+						_label = '-'
+						_dispatchedEv = 'evTabCounterChange'
+						_dispatchParams = "{ index: selectedItem, evName: 'decr' }"
+					)
+				)
+				(controller $Instance renderer='DefaultButton'
+					(args
+						_width = 36
+						_label = '+'
+						_dispatchedEv = 'evTabCounterChange'
+						_dispatchParams = "{ index: selectedItem, evName: 'incr' }"
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element Ub2SecondaryTabsForSysMessages () layout=true
+	(scope
+		(event evTabSelected)
+		(event evNewToggler)
+		(event evAttentionToggler)
+		(event evTabCounterChange)
+		(event evDisableToggler)
+
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE)
+
+		(var selectedItem:number = 0)
+		(bind selectedItem "$event.index" init=false (event "evTabSelected"))
+
+		(var newMarker0:bool = true)
+		(bind newMarker0 "$event.index == 0 ? !newMarker0 : newMarker0" init=false watch=false (event "evNewToggler"))
+		(var newMarker1:bool = false)
+		(bind newMarker1 "$event.index == 1 ? !newMarker1 : newMarker1" init=false watch=false (event "evNewToggler"))
+		(var newMarker2:bool = false)
+		(bind newMarker2 "$event.index == 2 ? !newMarker2 : newMarker2" init=false watch=false (event "evNewToggler"))
+
+		(var attentionMarker0:bool = false)
+		(bind attentionMarker0 "$event.index == 0 ? !attentionMarker0 : attentionMarker0" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker1:bool = true)
+		(bind attentionMarker1 "$event.index == 1 ? !attentionMarker1 : attentionMarker1" init=false watch=false (event "evAttentionToggler"))
+		(var attentionMarker2:bool = false)
+		(bind attentionMarker2 "$event.index == 2 ? !attentionMarker2 : attentionMarker2" init=false watch=false (event "evAttentionToggler"))
+
+		(var counterTab0:number = 5)
+		(bind counterTab0 "$event.index == 0	? $event.evName == 'incr'	? (counterTab0 + 1)
+																			: (counterTab0 - 1) > 0 ? (counterTab0 - 1) : 0
+												: counterTab0" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab1:number = 10)
+		(bind counterTab1 "$event.index == 1	? $event.evName == 'incr'	? (counterTab1 + 1)
+																			: (counterTab1 - 1) > 0 ? (counterTab1 - 1) : 0
+												: counterTab1" init=false watch=false (event "evTabCounterChange"))
+		(var counterTab2:number = 999)
+		(bind counterTab2 "$event.index == 2	? $event.evName == 'incr'	? (counterTab2 + 99)
+																			: (counterTab2 - 999) > 0 ? (counterTab2 - 999) : 0
+												: counterTab2" init=false watch=false (event "evTabCounterChange"))
+
+		(var isTab3Disabled:bool = true)
+		(bind isTab3Disabled "!isTab3Disabled" init=false watch=false (event "evDisableToggler"))
+	)
+
+	(style (marginTop = "MS"))
+
+	(element Ub2CompendiumTestBlockSampleHeader 'Secondary tabs' 'Version with counters')
+
+	(block
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP)
+
+		(style (width = 320))
+
+		(block
+			(style
+				(flow = "horizontal")
+				(width = 100%)
+				(marginBottom = "M")
+			)
+
+			(element TabButton
+				_label = '5'
+				_width = '33.33%'
+				_isSelected = "selectedItem == 0"
+				_image = "'url:../service_kit/currencies/icon_exp.png'"
+				_isNewMarker = "newMarker0"
+				_isAttentionMarker = "attentionMarker0"
+				_newContentCounter = "counterTab0"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 0 }"
+			)
+
+			(element TabButton
+				_label = '10'
+				_width = '33.33%'
+				_isSelected = "selectedItem == 1"
+				_image = "'url:../service_kit/currencies/icon_coal.png'"
+				_isNewMarker = "newMarker1"
+				_isAttentionMarker = "attentionMarker1"
+				_newContentCounter = "counterTab1"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 1 }"
+			)
+
+			(element TabButton
+				_label = '3'
+				_width = '33.33%'
+				_isSelected = "selectedItem == 2"
+				_isDisabled = "isTab3Disabled"
+				_image = "'url:../service_kit/currencies/icon_bpPoints.png'"
+				_isNewMarker = "newMarker2"
+				_isAttentionMarker = "attentionMarker2"
+				_newContentCounter = "counterTab2"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{ index: 2 }"
+			)
+
+			(element HorizontalDividerTwoPx
+				(style
+					(position = "absolute")
+					(width = 100%)
+					(bottom = 0)
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%) (height = 120px) (paddingLeft = "SXS"))
+
+			(controller $Instance renderer='DefaultButton'
+				(exprs
+					(style (marginBottom = "XS"))
+				)
+				(args
+					_type = "SC.Ui_styles.BUTTON_TYPE.SECONDARY"
+					_label = 'Increase'
+					_dispatchedEv = 'evTabCounterChange'
+					_dispatchParams = "{ index: selectedItem, evName: 'incr' }"
+				)
+			)
+
+			(controller $Instance renderer='DefaultButton'
+				(exprs
+					(style (marginBottom = "XS"))
+				)
+				(args
+					_type = "SC.Ui_styles.BUTTON_TYPE.SECONDARY"
+					_label = 'Decrease'
+					_dispatchedEv = 'evTabCounterChange'
+					_dispatchParams = "{ index: selectedItem, evName: 'decr' }"
+				)
+			)
+
+			(controller $Instance renderer='DefaultButton'
+				(args
+					_type = "SC.Ui_styles.BUTTON_TYPE.SECONDARY"
+					_label = 'Toggle disable 3'
+					_dispatchedEv = 'evDisableToggler'
+					_dispatchParams = "{ index: 2 }"
+				)
+			)
+		)
+	)
+)

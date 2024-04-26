@@ -1,0 +1,1332 @@
+(def css $TooltipItemWithoutPaddings ()
+	(width = 100%)
+	(paddingLeft = "-M")
+	(paddingRight = "-M")
+)
+
+(def constant SYS_MESSAGE_INFOTIP_PIN_SETTINGS
+	{
+		'left'		: "DEFAULT_PINS_OFFSETS",
+		'right'		: "DEFAULT_PINS_OFFSETS",
+		'top'		: "DEFAULT_PINS_OFFSETS",
+		'bottom'	: {pinTop: 0, pinBottom: "-XXS", pinLeft: 0, pinRight: 0}
+	}
+)
+
+(def constant NOTIFICATION_RENDER_ITEM_LIST	{	CC.sysMessageHeader:				'SystemNotificationHeader',
+												CC.sysEmergencyMessageHeader:		'SystemEmergencyMessageHeader',
+												CC.sysMessageDescription:			'SystemNotificationDescription',
+												CC.sysMessageHTMLDescription:		'SystemNotificationHtmlDescription',
+												CC.sysMessageResourcesChanges:		'SystemNotificationResourcesChanges',
+												CC.sysMessageShipInfo:				'SystemNotificationShipInfo',
+												CC.sysMessageShipInfoWithTitle:		'SystemNotificationShipInfoWithTitle',
+												CC.sysMessageShipRangeInfo:			'SystemNotificationShipRangeInfo',
+												CC.sysMessageCounterInfo:			'SystemNotificationCounterInfo',
+												CC.sysMessageTimePeriodInfo:		'SystemNotificationTimePeriodInfo',
+												CC.sysMessageTimeLeftInfo:			'SystemNotificationTimeLeftInfo',
+												CC.sysMessageDateInfo:				'SystemNotificationDateInfo',
+												CC.postBattleSysMessage:			'SystemNotificationPostBattle',
+												CC.sysMessageCampaignInfo:			'SystemNotificationCampaignInfo',
+												CC.sysMessageCampaignMissionInfo:	'SystemNotificationCampaignMissionInfo',
+												CC.sysMessageCampaignTaskInfo:		'SystemNotificationCampaignTaskInfo',
+												CC.sysMessageStatusLineInfo:		'SystemNotificationStatusLineInfo',
+												CC.rewardsStack:					'SystemNotificationRewardInfo',
+												CC.sysMessageButtons:				'SystemNotificationButtonContainer'
+											})
+(def constant SYSTEM_MESSAGE_GROUP_LIST_WITH_VERSION_UPDATE	"[	SC.Ui_common.SYSTEM_MESSAGE_GROUP.BATTLE_RESULTS,
+																SC.Ui_common.SYSTEM_MESSAGE_GROUP.STORAGE_CHANGES,
+																SC.Ui_common.SYSTEM_MESSAGE_GROUP.INFO,
+																SC.Ui_common.SYSTEM_MESSAGE_GROUP.VERSION_UPDATERS
+															]")
+
+(def constant SYSTEM_MESSAGE_GROUP_LIST_DEFAULT	"[	SC.Ui_common.SYSTEM_MESSAGE_GROUP.BATTLE_RESULTS,
+													SC.Ui_common.SYSTEM_MESSAGE_GROUP.STORAGE_CHANGES,
+													SC.Ui_common.SYSTEM_MESSAGE_GROUP.INFO
+												]")
+
+(def constant SYSTEM_MESSAGES_OFFSET 200)
+(def constant INFOTIP_WIDTH 326)
+
+(def constant SYSTEM_MESSAGE_ITEM_HEIGHT 37)
+(def constant SYSTEM_MESSAGE_ITEM_LABEL_WIDTH 250)
+
+(def constant REWARDS_STACK_LIMIT 3)
+(def constant CONTENT_ENTITY_HEADER_ID 0)
+
+(def css SysEmergencyMessagesStyleInNormalStageSize()
+	(position = "flow")
+)
+
+(def css SysEmergencyMessagesStyleInMinimalStageSize()
+	(position = "absolute")
+	(right = 16px)
+	(bottom = 48px)
+	(align = "right|bottom")
+)
+
+(def css SystemMessagesScrollThumbUpStyle() (backgroundColor = 0xFF000000) )
+(def css SystemMessagesScrollThumbHoverStyle() (backgroundColor = 0xFFFFFFFF) )
+(def css SystemMessagesScrollThumbPressStyle() (backgroundColor = 0xFF888888) )
+(def css SystemMessagesScrollThumbDisabledStyle() (backgroundColor = 0xFF111111) )
+
+(def constant SYS_MSG_SCROLL_THUMB_STATES {
+		up : 'SystemMessagesScrollThumbUpStyle',
+		over : 'SystemMessagesScrollThumbHoverStyle',
+		down : 'SystemMessagesScrollThumbPressStyle',
+		disabled : 'SystemMessagesScrollThumbDisabledStyle' })
+
+(def css SystemMessagesScrollTrackUpStyle() (backgroundColor = 0x01000000))
+(def css SystemMessagesScrollTrackHoverStyle() )
+(def css SystemMessagesScrollTrackPressStyle() )
+(def css SystemMessagesScrollTrackDisabledStyle() )
+
+(def constant SYS_MSG_SCROLL_TRACK_STATES {
+		up : 'SystemMessagesScrollTrackUpStyle',
+		over : 'SystemMessagesScrollTrackHoverStyle',
+		down : 'SystemMessagesScrollTrackPressStyle',
+		disabled : 'SystemMessagesScrollTrackDisabledStyle' }
+)
+
+(def element SystemMessagesScrollThumb() layout=true
+	(bind class "SYS_MSG_SCROLL_THUMB_STATES[$event.state]" init=false on='stateChanged')
+	(style
+		(width = 6px)
+		(padding = 1px)
+		(height = 80px)
+		(backgroundColor = 0x10FFFFFF)
+	)
+	(block
+		(class $Fullsize)
+		(style (backgroundColor = 0x66000000))
+	)
+)
+
+(def element SystemMessagesScrollTrack() layout=true
+	(style
+		(width = 7px)
+		(height = 100%)
+	)
+	(bind class "SYS_MSG_SCROLL_TRACK_STATES[$event.state]" init=false on='stateChanged')
+	(mouseEnabled = false)
+)
+
+(def element SystemMessagesScrollBarV () layout=true
+	(scope
+		(event systemMessagesScrollValueChanged)
+		(event systemMessagesScrollCanScrollChanged)
+	)
+
+	(scroll_bar
+		(orientation="vertical")
+		(track = 'SystemMessagesScrollTrack')
+		(thumb = 'SystemMessagesScrollThumb')
+		(singleStep="54")
+		(scrollDuration="700")
+		(dispatch 'systemMessagesScrollValueChanged' dir="EventDirection.UP" args="$event" on='valueChanged')
+		(dispatch 'systemMessagesScrollCanScrollChanged' dir="EventDirection.UP" args="$event" on='canScrollChanged')
+	)
+)
+
+(def element ButtonNotifications () layout=true dispatch_size_change=true
+	(scope
+		(event evStartShowInfotip)
+		(event evHideInfotip)
+		(event evClearMessagesQueue)
+	)
+
+	(bindcall externalCall "'direct.action'" "['onNotificationsPanelOpen', {}]" init=false watch=false (event "evStartShowInfotip"))
+	(bindcall externalCall "'direct.action'" "['onClearMessagesQueue', {}]" init=false watch=false (event "evClearMessagesQueue"))
+	(bindcall externalCall "'direct.action'" "['onNotificationsPanelClose', {}]" init=false watch=false (event "evHideInfotip"))
+
+	(element DefaultButton
+		_type = "SC.Ui_styles.BUTTON_TYPE.ICON"
+		_icon = "SC.Ui_styles.BUTTON_ICON.NOTIFICATION"
+		_name = 'ButtonNotificationsInbox'
+
+		(controller $Tooltip
+			(renderer = 'ButtonNotificationsTooltip')
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			(align="top|left")
+			(offset = {	x: 6, y: 13})
+		)
+
+		(controller $Tooltip
+			(renderer='SystemMessagesInfotip')
+			(macro NOTIFICATIONS_INFOTIP_BEHAVIOUR "1")
+			(dispatch "'evStartShowInfotip'"	dir="EventDirection.UP" init=false watch=false on='leftClick')
+			(dispatch "'evClearMessagesQueue'"	dir="EventDirection.UP" init=false watch=false on='rightClick')
+			(dispatch "'evHideInfotip'"			dir="EventDirection.UP" init=false watch=false on='evClickOutside')
+		)
+	)
+)
+
+(def element ButtonNotificationsTooltip () layout=true
+	(style (hitTest = false) (width = "DEFAULT_TOOLTIP_WIDTH"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemStatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_RIGHT"
+				_text = 'IDS_CLEAR_SYSTEM_MESSAGES_QUEUE'
+)
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+				_text = 'IDS_OPEN_SYSTEM_MESSAGES'
+		)
+	)
+)
+
+(def element SystemMessagesInfotip () layout=true
+	(scope
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE "true")
+		
+		(event evPinPositionChanged)	
+										
+		(var pinParams:dict = "SYS_MESSAGE_INFOTIP_PIN_SETTINGS['bottom']" watch=false)
+		(bind pinParams "SYS_MESSAGE_INFOTIP_PIN_SETTINGS[$event.pinPosition]" init=false (event "evPinPositionChanged"))
+		
+		(event evAddedToStage)
+		(event evGroupClick)
+		(event evSetActiveGroup)
+
+		(var sysPanelComponent:gfx = "$datahub.getSingleComponent(CC.sysMessagePanel)")
+		(var sysPanelHeight:number = "sysPanelComponent.panelHeight" (event "sysPanelComponent.evPanelHeightChanged"))
+		(var isSysPanelDragged:bool = "sysPanelComponent.isDragging" (event "sysPanelComponent.evIsDraggingChanged"))
+
+		(var systemMessageCollection:gfx = "$datahub.getCollection(CC.sysMessageCore)")
+		(var isVersionUpdatedMessagesEnable:bool = "systemMessageCollection ? systemMessageCollection.getChildByPath('byMessageGroup.' + SC.Ui_common.SYSTEM_MESSAGE_GROUP.VERSION_UPDATERS).items.length > 0
+																			: false" (event "systemMessageCollection.evAdded"))
+
+		(var groupList:array = "isVersionUpdatedMessagesEnable ? SYSTEM_MESSAGE_GROUP_LIST_WITH_VERSION_UPDATE : SYSTEM_MESSAGE_GROUP_LIST_DEFAULT")
+		(var activeGroup:number = "$event ? groupList[$event.groupIndex] : SC.Ui_common.SYSTEM_MESSAGE_GROUP.BATTLE_RESULTS" (event "evSetActiveGroup"))
+
+		(var systemMessageSubCollection:gfx = "systemMessageCollection ? systemMessageCollection.getChildByPath('byMessageGroup.' + activeGroup) : null")
+		(var systemMessageSubCollectionArray:array = "systemMessageSubCollection ? systemMessageSubCollection.items : []" (event "systemMessageSubCollection.evAdded"))
+		(var subCollectionContainsItems:bool = "systemMessageSubCollectionArray.length > 0")
+
+		(var isBattleResultGroup:bool = "activeGroup == SC.Ui_common.SYSTEM_MESSAGE_GROUP.BATTLE_RESULTS")
+
+		(var isHitTest:bool = false)
+		(bind isHitTest "true" init=false watch=false (event "evShow"))
+		(bind isHitTest "false" init=false watch=false (event "evStartHide"))
+	)
+	(style (width = "INFOTIP_WIDTH") (bind hitTest "isHitTest"))
+	(dispatch evAddedToStage on='addedToStage')
+	(bindcall externalCall 'direct.action' "['systemMessagesPanel.forceResize', []]" init=false watch=false (event "evAddedToStage"))
+
+	(dispatch evSetActiveGroup dir="EventDirection.NONE" args="$event" delay=0.01 (event "evGroupClick"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP "true")
+
+	(element INFOTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = 100%) (marginBottom = "XXS"))
+			(element SystemNotificationsInfotipDragGripper)
+		)
+
+		
+		(hblock
+			(style (width = "100%"))
+
+			(controller $Repeat renderer='SystemMessagesInfotipTabButtonWrapper'
+				(bind count "groupList.length")
+				(args
+					_activeGroup = "activeGroup"
+					_groupList = "groupList"
+					_isSysPanelDragged = "isSysPanelDragged"
+				)
+			)
+
+			(element HorizontalDividerTwoPx
+				(style
+					(position = "absolute")
+					(width = 100%)
+					(bottom = 0)
+				)
+			)
+		)
+
+		(scrollArea
+			(bind visible "subCollectionContainsItems")
+			(style
+				(width = "100%")
+				(bind height "sysPanelHeight")
+			)
+
+			(verticalSlider='SystemMessagesScrollBarV')
+			(hscrollPolicy='off')
+			(vscrollPolicy='auto')
+			(repeatController='systemMessageContainer')
+			(scrollPerItem = "true")
+
+			(wheelScrollSpeed = "1.0")
+			(wheelScrollAcceleration = "0.9")
+			(maxScrollingAnimatedDistance = "150")
+
+			(activeControlsAlpha = "1")
+			(inactiveControlsAlpha = "0.5")
+			(animationDuration = "0.2")
+			(animationEasing = "Easing.cubic_out")
+
+			(content
+				(style
+					(width = "INFOTIP_WIDTH") 
+				)
+				(element INFOTIP_SYSTEM_DEFAULT_CONTAINER
+					(reverse
+						(style (width = "100%"))
+						(controller $Repeat renderer='SystemMessageWrapper' name='systemMessageContainer'
+							(bind count "systemMessageSubCollectionArray ? systemMessageSubCollectionArray.length : 0")
+							(reuseElements = "true")
+
+							(itemHeight = "SYSTEM_MESSAGE_ITEM_HEIGHT")
+							(itemWidth = "100%")
+							(itemOffset = "SYSTEM_MESSAGES_OFFSET")
+
+							(args
+								_messageCollection = "systemMessageSubCollection"
+								_isBattleResultGroup = "isBattleResultGroup"
+							)
+						)
+					)
+				)
+			)
+			(bindcall scrollToBegin animated=false (event "evGroupClick") (event "evAddedToStage"))
+		)
+
+		(block
+			(bind visible "!subCollectionContainsItems")
+			(style (width = "100%") (bind height "sysPanelHeight") (align = "center|middle"))
+			(tf
+				(class $TextDefault17NM)
+				(style (alpha = "TC"))
+				(bind text "'IDS_NO_NEW_SYSTEM_MESSAGES'")
+			)
+		)
+	)
+
+	(element InfotipPins "pinParams" "false")
+)
+
+(def element SystemMessagesInfotipTabButtonWrapper (_activeGroup:number, _groupList:array, _isSysPanelDragged:bool)
+	(scope
+		(var tabIcons:array = "['url:../service_kit/sys_messages/battle.png',
+								'url:../service_kit/sys_messages/inventory.png',
+								'url:../service_kit/sys_messages/info.png',
+								'url:../service_kit/sys_messages/version_updater.png']")
+
+		(var tooltipContentItems:array = "[ 'IDS_SYS_MESSAGE_GROUP_BATTLE_RESULTS_DESCRIPTION',
+											'IDS_SYS_MESSAGE_GROUP_STORAGE_CHANGES_DESCRIPTION',
+											'IDS_SYS_MESSAGE_GROUP_INFO_DESCRIPTION',
+											'IDS_SYS_MESSAGE_GROUP_VERSION_UPDATERS_DESCRIPTION' ]")
+	)
+
+	(style
+		(bind width "toString(100 / _groupList.length) + '%'")
+	)
+
+	(element TabButton
+		_isSelected = "_activeGroup == _groupList[$index]"
+		_isDisabled = "_isSysPanelDragged"
+		_width = "'100%'"
+		_image = "tabIcons[$index]"
+		_dispatchedEv = "'evGroupClick'"
+		_dispatchParams = "{ groupIndex: $index }"
+		_name = "tooltipContentItems[$index]"
+	)
+
+	(controller $Tooltip
+		(bind renderer "'SimpleStatusTooltip'")
+		(args
+			_text = "tooltipContentItems[$index]"
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element SystemMessageWrapper (_messageCollection:gfx, _isBattleResultGroup:bool) layout=true
+	(scope
+		(event evAddedToStage)
+		(event evMouseUp)
+		(var _messageEntity:gfx = "_messageCollection.items[$index]" (event "_messageCollection.evUpdated") (event "evAddedToStage"))
+
+		
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var sysMessageCoreComponent:gfx = "_messageEntity ? _messageEntity.sysMessageCore : null")
+		(var requestName:str = "sysMessageCoreComponent && sysMessageCoreComponent.eventName ? sysMessageCoreComponent.eventName : ''" (event "sysMessageCoreComponent.evEventNameChanged"))
+		(var requestArgs:dict = "sysMessageCoreComponent && sysMessageCoreComponent.eventArgs ? sysMessageCoreComponent.eventArgs : {}" (event "sysMessageCoreComponent.evEventArgsChanged"))
+		(var isClickableArea:bool = "requestName && requestArgs != null && requestArgs != {}")
+	)
+	(macro MOUSE_EVENTS_DISPATCHER)
+	(dispatch evAddedToStage on='addedToStage')
+	(dispatch evMouseUp on='mouseUp' args="{isDown: false}")
+
+	
+	(bindcall externalCall "isClickableArea ? 'inputMapping.onRequest' : ''" "[requestName, requestArgs]" init=false watch=false on='leftClick')
+
+	(style
+		(width = 100%)
+		(height = "SYSTEM_MESSAGE_ITEM_HEIGHT")
+	)
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style (paddingTop = 1))
+
+		(block
+			(class $Fullsize)
+			(style
+				(scale9grid = [1, 2, 122, 12])
+				(backgroundImage = 'url:../service_kit/buttons/dock_submenu_over.png')
+				(bind alpha "0" (event "evAddedToStage"))
+			)
+
+			(controller $Animation
+				(bindcall play  duration=0.1
+								to = "{alpha: 0}"
+								(event "evRollOut")
+				)
+				(bindcall play  duration=0.1
+								to = "{alpha: 1}"
+								(event "evRollOver")
+								(event "evMouseUp")
+				)
+				(bindcall play  duration=0.05
+								action="kill"
+								to = "{alpha: 0.4}"
+								(event "evMouseDown")
+								(bind enabled "isClickableArea && rollOver")
+				)
+			)
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+
+		(controller $Instance
+			(bind renderer "_isBattleResultGroup ? 'SystemMessagePostBattle' : 'SystemMessageDefault'")
+			(bind enabled "_messageEntity != null")
+			(args
+				_messageEntity = "_messageEntity"
+			)
+		)
+	)
+
+	(block
+		(style (width = 100%) (position = "absolute") (bottom = 0))
+		(element HorizontalDividerTwoPx)
+	)
+
+	(controller $Tooltip
+		(renderer = 'SystemMessageTooltip')
+		(bind enabled "_messageEntity != null")
+		(args
+			_messageEntity = "_messageEntity"
+		)
+		(cache = false)
+		(macro SYSTEM_MESSAGE_TOOLTIP_BEHAVIOUR "1")
+	)
+)
+
+(def element SystemMessageDefault (_messageEntity:gfx)
+	(scope
+		(var sysMessageCoreComponent:gfx = "_messageEntity ? _messageEntity.sysMessageCore : null")
+		(var contentEntitiesIds:array = "sysMessageCoreComponent ? sysMessageCoreComponent.contentEntitiesIds : []" (event "sysMessageCoreComponent.evContentEntitiesIdsChanged"))
+		
+		(var contentHeaderEntityId:number = "contentEntitiesIds.length > 0 ? contentEntitiesIds[CONTENT_ENTITY_HEADER_ID] : null")
+		(var contentHeaderEntity:gfx = "$datahub.getEntity(contentHeaderEntityId)")
+		
+		(var notificationHeaderComponent:gfx = "contentHeaderEntity && contentHeaderEntity.hasComponent(CC.sysMessageHeader) ? contentHeaderEntity.getComponent(CC.sysMessageHeader) : null")
+		(var emergencyHeaderComponent:gfx = "contentHeaderEntity && contentHeaderEntity.hasComponent(CC.sysEmergencyMessageHeader) ? contentHeaderEntity.getComponent(CC.sysEmergencyMessageHeader) : null")
+		
+		(var contentHeaderComponent:gfx = "	notificationHeaderComponent ? notificationHeaderComponent :
+											emergencyHeaderComponent	? emergencyHeaderComponent
+																		: null" (event "notificationHeaderComponent.evChanged"))
+
+		(var contentHeader:str = "contentHeaderComponent ? tr(contentHeaderComponent.header) : ''" (event "notificationHeaderComponent.evChanged"))
+		(var unifiedStatus:str = "contentHeaderComponent ? contentHeaderComponent.unifiedStatus : SC.Ui_styles.UNIFIED_STATUS.DEFAULT" (event "notificationHeaderComponent.evChanged"))
+		
+		(var serverTime:number = "currentServerSeconds()" (event "evInfrequent"))
+		(var isMoreThanDayAgo:bool = "_messageEntity ? serverTime - sysMessageCoreComponent.localTimestamp > DAY_IN_SEC : false")
+
+		(var timeStamp:str = "_messageEntity ? formatTime(sysMessageCoreComponent.localTimestamp, isMoreThanDayAgo ? 'd.MM.yy hh:mm' : 'hh:mm', '', true)
+											: ''")
+	)
+	(bind name "contentHeaderComponent ? 'SMC_' + contentHeaderComponent.header : ''")
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "unifiedStatus" "'textColor'" "'textAlpha'")
+	(class $Fullsize)
+
+	(tf
+		(class $TextDefaultBoldNM)
+		(style
+			(position = "absolute")
+			(left = "M")
+			(top = "SXS")
+			(alpha = "TA")
+			(width = "SYSTEM_MESSAGE_ITEM_LABEL_WIDTH")
+			(letterSpacing = "0")
+			(multiline = "false")
+			(elideMode = true)
+			(bind textColor "textColor")
+		)
+		(bind text "contentHeader")
+	)
+
+	(tf
+		(class $TextDefault13NM)
+		(style
+			(position = "absolute")
+			(right = "M")
+			(top = 13px)
+			(alpha = "TC")
+		)
+		(bind text "timeStamp")
+	)
+)
+
+(def element SystemMessagePostBattle (_messageEntity:gfx)
+	(scope
+		(var sysMessageCoreComponent:gfx = "_messageEntity ? _messageEntity.sysMessageCore : null")
+		(var contentEntitiesIds:array = "sysMessageCoreComponent ? sysMessageCoreComponent.contentEntitiesIds : []" (event "sysMessageCoreComponent.evContentEntitiesIdsChanged"))
+		
+		(var headerEntityId:number = "contentEntitiesIds.length > 0 ? contentEntitiesIds[CONTENT_ENTITY_HEADER_ID] : null")
+		(var headerEntity:gfx = "$datahub.getEntity(headerEntityId)")
+		(var headerComponent:gfx = "headerEntity ? headerEntity.getComponent(CC.sysMessageHeader) : null")
+		(var unifiedStatus:str = "headerComponent ? headerComponent.unifiedStatus : SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+		(var contentHeader:str = "headerComponent ? headerComponent.header : ''")
+		
+		(var timeStamp:str = "_messageEntity ? formatTime(_messageEntity.sysMessageCore.localTimestamp, 'hh:mm', '', true) : ''")
+
+		(var postBattleDataEntityId:number = "contentEntitiesIds.length > 0 ? contentEntitiesIds[1] : null")
+		(var postBattleDataEntity:gfx = "$datahub.getEntity(postBattleDataEntityId)")
+		(var postBattleDataComponent:gfx = "postBattleDataEntity ? postBattleDataEntity.getComponent(CC.postBattleSysMessage) : null")
+
+		(var postBattleData:dict = "postBattleDataComponent ? postBattleDataComponent.data : null")
+		(var isSpectator:bool = "'isSpectator' in postBattleData ? postBattleData.isSpectator : false")
+		(var shipId:number = "postBattleData ? postBattleData.shipId : null")
+	)
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "unifiedStatus" "'textColor'" "'textAlpha'")
+
+	(class $Fullsize)
+	(style (flow = "horizontal"))
+	
+	(tf
+		(class $TextDefaultBoldNM)
+		(style
+			(position = "absolute")
+			(left = "M")
+			(top = "SXS")
+			(width = "SYSTEM_MESSAGE_ITEM_LABEL_WIDTH")
+			(bind textColor "textColor")
+			(letterSpacing = "0")
+			(multiline = "false")
+			(bind alpha "textAlpha")
+		)
+		(bind text "contentHeader")
+	)
+
+	
+	
+	(block
+		(bind visible "!isSpectator")
+		(style (height = 0px) (alpha = 0) (paddingLeft = "M") (paddingRight = "SXS"))
+
+		(tf
+			(class $TextDefaultBoldNM)
+			(bind text "'IDS_VICTORY'")
+		)
+		
+		(tf
+			(class $TextDefaultBoldNM)
+			(bind text "'IDS_DEFEAT'")
+		)
+
+		(tf
+			(class $TextDefaultBoldNM)
+			(bind text "'IDS_DRAW'")
+		)
+	)
+
+	(block
+		(bind visible "!isSpectator")
+		(style
+			(width = "100%")
+			(marginTop = "SXS")
+		)
+
+		(controller $Instance renderer='ShipLineItemNM'
+			(bind enabled "shipId")
+			(args
+				_shipId = "shipId"
+				_withFlag = "false"
+				_fontClass = "'$TextDefaultBoldNM'"
+			)
+		)
+	)
+
+	(tf
+		(class $TextDefault13NM)
+		(style
+			(marginTop = 13px)
+			(marginRight = "M")
+			(alpha = "TC")
+		)
+
+		(bind text "timeStamp")
+	)
+)
+
+(def element SystemMessageTooltip (_messageEntity:gfx) layout=true
+	(scope
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE)
+		(var sysMessageCoreComponent:gfx = "_messageEntity ? _messageEntity.sysMessageCore : null")
+		(var contentEntitiesIds:array = "sysMessageCoreComponent ? sysMessageCoreComponent.contentEntitiesIds : []" (event "sysMessageCoreComponent.evContentEntitiesIdsChanged"))
+	)
+	(style (width = "DEFAULT_TOOLTIP_WIDTH") (hitTest = "false"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(controller $Repeat renderer = 'NotificationItem'
+			(bind count "contentEntitiesIds.length")
+			(args
+				_entityItemId = "contentEntitiesIds[$index]"
+				_isTooltip = "true"
+			)
+		)
+	)
+)
+
+
+(def element SystemNotificationContainer () layout=true dispatch_size_change=true
+	(scope
+		(macro USER_PREF_DATA)
+		(macro CAROUSEL_HEIGHT_SCOPE)
+		(macro STAGE_SIZE)
+
+		(var emergencyStyleClass:str = "stageHeight < 1000	? 'SysEmergencyMessagesStyleInMinimalStageSize'
+															: 'SysEmergencyMessagesStyleInNormalStageSize'" (event "stageComponent.evStageSizeChanged"))
+
+		(var systemNotificationCollection:gfx = "$datahub.getCollection(CC.renderedSysMsg).getChildByPath('byClassId.' + CC.notificationSysMsgToBeRendered)")
+		(var emergencyAlertsCollection:gfx = "$datahub.getCollection(CC.renderedSysMsg).getChildByPath('byClassId.' + CC.emergencySysMsgToBeRendered)")
+		(var emergencyAlertsCollectionLength:number = "emergencyAlertsCollection ? emergencyAlertsCollection.items.length : 0")
+	)
+	(style
+		(bind width "stageWidth")
+		(bind height "stageHeight")
+		(align = "right|bottom")
+		(paddingRight = 31px)
+		(bind paddingBottom "carouselHeight")
+	)
+	
+	(block
+		(controller $Repeat renderer = 'SystemNotification'
+			(bind count "systemNotificationCollection ? systemNotificationCollection.items.length : 0")
+			(bindcall addChildAt	"$event[1]" (event "systemNotificationCollection.evAdded"))
+			(bindcall removeChildAt	"$event[1]" (event "systemNotificationCollection.evRemoved"))
+			(args
+				_collection = "systemNotificationCollection"
+			)
+		)
+	)
+	(block
+		(bind class "emergencyStyleClass")
+		(controller $Repeat renderer = 'SystemNotification'
+			(bind count "emergencyAlertsCollectionLength")
+			(bindcall "'addChildAt'"	"$event[1]" (event "emergencyAlertsCollection.evAdded"))
+			(bindcall "'removeChildAt'"	"$event[1]" (event "emergencyAlertsCollection.evRemoved"))
+			(args
+				_collection = "emergencyAlertsCollection"
+				_isEmergency = true
+			)
+		)
+	)
+)
+
+(def element SystemNotification (_collection:gfx, _isEmergency:bool=false) layout=true
+	(scope
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE)
+		(event evStartHideNotification)
+
+		(var notificationEntity:gfx = "_collection.items[$index]" watch=false)
+		(var sysMessageCoreComponent:gfx = "notificationEntity ? notificationEntity.sysMessageCore : null")
+		(var timeToLiveComponent:gfx = "notificationEntity ? notificationEntity.timeToLive : null" (event "notificationEntity.evAdded") (event "notificationEntity.evRemoved"))
+		(var contentEntitiesIds:array = "sysMessageCoreComponent ? sysMessageCoreComponent.contentEntitiesIds : []" (event "sysMessageCoreComponent.evContentEntitiesIdsChanged"))
+		(var isRemoving:bool = "timeToLiveComponent ? timeToLiveComponent.isRemoving : false" (event "timeToLiveComponent.evRemove"))
+
+		
+		(var isShowing:bool = true)
+		(var isSystemNotificationVisible:bool = "sysMessageCoreComponent && ((!isRemoving && !isShowing))" )
+
+		
+		(macro MOUSE_HANDLER_SCOPE)
+		(var requestName:str = "sysMessageCoreComponent && sysMessageCoreComponent.eventName ? sysMessageCoreComponent.eventName : ''" (event "sysMessageCoreComponent.evEventNameChanged"))
+		(var requestArgs:dict = "sysMessageCoreComponent && sysMessageCoreComponent.eventArgs ? sysMessageCoreComponent.eventArgs : {}" (event "sysMessageCoreComponent.evEventArgsChanged"))
+		(var isClickableArea:bool = "requestName && requestArgs != null && requestArgs != {}")
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER)
+	
+	(bindcall externalCall "'inputMapping.onRequest'" "[requestName, requestArgs]" init=false watch=false on='leftClick')
+
+	
+	(dispatch evStartHideNotification on='rightClick')
+	(bindcall externalCall "'direct.action'" "[_isEmergency ? 'closeEmergency' : 'closeNotification', {}]"	init=false watch=false (event "evStartHideNotification"))
+
+	(bindcall externalCall "isSystemNotificationVisible && !_isEmergency ? 'direct.action' : ''" "['rollOverNotification', {}]"	init=false watch=false (event "evRollOver"))
+	(bindcall externalCall "isSystemNotificationVisible && !_isEmergency ? 'direct.action' : ''" "['rollOutNotification', {}]"	init=false watch=false (event "evRollOut"))
+	
+	(dispatch "'evBlurStartShow'" dir="EventDirection.DOWN" init=false on='addedToStage')
+	(dispatch "'evBlurStartHide'" dir="EventDirection.DOWN" init=false (event "timeToLiveComponent.evRemove"))
+
+	(style (bind hitTest "isSystemNotificationVisible"))
+
+	(block
+		(style	(width = "DEFAULT_TOOLTIP_WIDTH") (paddingTop = "XS") (paddingBottom = "XS") (backgroundColor = "0x01000000"))
+		(alpha = 0)
+		
+		(controller $Animation
+			(play
+				from = 		"{alpha: 0, y: 15}"
+				to =		"{alpha: 1, y: 0}"
+				easing =	"Easing.quad_in"
+				delay =		"0.05 + 0.03 * $index"
+				duration =	"0.2"
+			)
+			(bind isShowing false init=false on=evAnimEnded)
+		)
+
+		
+		(controller $Animation
+			(bindcall play
+				to =		"{alpha: 0, y: -15}"
+				easing =	"Easing.quad_out"
+				duration =	"SC.Ui_common.SYSTEM_MESSAGES_SHOW_CONFIG.LIFE_TIME_AFTER_HIDING-0.05"
+				delay =		"0.03 * $index"
+				action="kill"
+				(event "timeToLiveComponent.evRemove")
+			)
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP)
+			(controller $Animation
+				(bindcall play
+					from =		"{alpha: 1}"
+					to =		"{alpha: 1.5}"
+					easing =	"Easing.sine_in"
+					duration =	"0.1"
+					reverse =	"!rollOver"
+					action =	"killAll"
+					(bind trigger "rollOver")
+				)
+			)
+		)
+		
+		(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+			(controller $Repeat renderer = 'NotificationItem'
+				(bind count "contentEntitiesIds.length")
+				(args
+					_entityItemId = "contentEntitiesIds[$index]"
+				)
+			)
+		)
+	)
+)
+
+(def element NotificationItem (_entityItemId:number, _isTooltip:bool="false") layout=true
+	(scope
+		(event evAddedToStage)
+		(var notificationItemEntity:gfx = "$datahub.getEntity(_entityItemId)" (event "evAddedToStage"))
+		(var messageContentTypeComponent:gfx = "notificationItemEntity ? notificationItemEntity.sysMessageContentType : null")
+		(var notificationContentType:number = "messageContentTypeComponent ? messageContentTypeComponent.contentType : null")
+		(var notificationContentComponent:gfx = "notificationContentType ? notificationItemEntity.getComponent(notificationContentType) : null")
+
+		(var isTooltipEmergencyHeader:bool = "notificationContentType && notificationContentType == CC.sysEmergencyMessageHeader && _isTooltip")
+		(var customRenderElement:str = "isTooltipEmergencyHeader ? NOTIFICATION_RENDER_ITEM_LIST[CC.sysMessageHeader] : null")
+
+		(var isTooltipButtons:bool = "notificationContentType && notificationContentType == CC.sysMessageButtons && _isTooltip")
+
+		(var renderElement:str = "	customRenderElement			? customRenderElement :
+									notificationContentType		? NOTIFICATION_RENDER_ITEM_LIST[notificationContentType]
+																: null")
+	)
+	(style (width = "100%"))
+	(dispatch evAddedToStage on='addedToStage')
+
+	(block
+		(style (width = "100%"))
+		(controller $Instance renderer = 'TooltipSystemHorizontalDivider' (bind enabled "!($index == 0 || isTooltipButtons)"))
+	)
+	
+	(block
+		(style (width = "100%"))
+		(controller $Instance
+			(bind renderer "renderElement")
+			(bind enabled "renderElement && !isTooltipButtons")
+			(args
+				_notificationContentComponent = "notificationContentComponent"
+			)
+		)
+	)
+)
+
+
+(def element SystemNotificationHeader (_notificationContentComponent:gfx) layout=true
+	(scope
+		(var header:str = "_notificationContentComponent.header" (event "_notificationContentComponent.evChanged"))
+		(var subHeader:str = "_notificationContentComponent.subHeader" (event "_notificationContentComponent.evChanged"))
+		(var unifiedStatus:str = "_notificationContentComponent.unifiedStatus" (event "_notificationContentComponent.evChanged"))
+
+		(var hasSubHeader:bool = "subHeader && subHeader != ''")
+	)
+	(style (width = "100%") (hitTest = "false"))
+	(bind name "header")
+
+	
+	(element TOOLTIP_SYSTEM_ELEMENTS_GROUP
+		(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+			(element TooltipSystemHeaderSubheaderText
+				_headerText = "header"
+				_unifiedStatus = "unifiedStatus"
+			)
+		)
+		(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+			(bind visible "hasSubHeader")
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "hasSubHeader")
+				(args
+					_descriptionText = "subHeader"
+				)
+			)
+		)
+	)
+)
+
+
+(def element SystemEmergencyMessageHeader (_notificationContentComponent:gfx) layout=true
+	(scope
+		(var header:str = "_notificationContentComponent.header" (event "_notificationContentComponent.evChanged"))
+		(var subHeader:str = "_notificationContentComponent.subHeader" (event "_notificationContentComponent.evChanged"))
+		(var unifiedStatus:str = "_notificationContentComponent.unifiedStatus" (event "_notificationContentComponent.evChanged"))
+		(var hasSubHeader:bool = "subHeader && subHeader != ''")
+	)
+	(style (width = "100%"))
+	(bind name "header")
+	
+	
+	(element TOOLTIP_SYSTEM_ELEMENTS_GROUP
+		(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+			(style (width = 100%) (minHeight = 12px) (flow = "horizontal") (align = "middle") (hitTest = true))
+
+			(element TooltipSystemHeaderSubheaderText
+				_headerText = "header"
+				_unifiedStatus = "unifiedStatus"
+			)
+
+			(block
+				(style (height = 100%) (align = "top") (paddingRight = "-XS"))
+				(name = 'CloseNotificationButton')
+				(element CloseButton
+					_dispatchedEv = 'evStartHideNotification'
+					_tooltipText = 'IDS_CLOSE_NOTIFICATION'
+				)
+			)
+		)
+		(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+			(bind visible "hasSubHeader")
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "hasSubHeader")
+				(args
+					_descriptionText = "subHeader"
+				)
+			)
+		)
+	)
+)
+
+
+(def element SystemNotificationDescription (_notificationContentComponent:gfx) layout=true
+	(scope
+		(var description:str = "_notificationContentComponent.description" (event "_notificationContentComponent.evDescriptionChanged"))
+	)
+	(style (width = "100%") (hitTest = "false"))
+	(name = 'SystemNotificationDescription')
+
+	(controller $Instance renderer='TooltipSystemDescriptionText'
+		(bind enabled "_notificationContentComponent")
+		(args
+			_descriptionText = "description"
+		)
+	)
+)
+
+
+(def element SystemNotificationHtmlDescription (_notificationContentComponent:gfx) layout=true
+	(scope
+		(var description:str = "_notificationContentComponent.description" (event "_notificationContentComponent.evDescriptionChanged"))
+	)
+	(style (width = "100%") (hitTest = "false"))
+
+	(controller $Instance renderer='TooltipSystemHtmlDescriptionText'
+		(bind enabled "_notificationContentComponent")
+		(args
+			_descriptionText = "description"
+		)
+	)
+)
+
+
+(def element SystemNotificationResourcesChanges (_notificationContentComponent:gfx) layout=true
+	(scope
+		(var title:str = "_notificationContentComponent.title" (event "_notificationContentComponent.evChanged"))
+		(var resourcesChanges:dict = "_notificationContentComponent.resourcesChanges" (event "_notificationContentComponent.evChanged"))
+	)
+	(style (width = "100%") (hitTest = "false"))
+
+	(controller $Instance renderer='TooltipSystemPriceTagLine'
+		(bind enabled "_notificationContentComponent")
+		(args
+			_title = "title"
+			_priceInfo = "resourcesChanges"
+		)
+	)
+)
+
+
+(def element SystemNotificationShipInfo (_notificationContentComponent:gfx) layout=true
+	(scope
+		(var shipId:number = "_notificationContentComponent.shipId" (event "_notificationContentComponent.evShipIdChanged"))
+	)
+	(style (width = "100%") (hitTest = "false"))
+
+	(controller $Instance renderer='TooltipSystemShipLine'
+		(bind enabled "_notificationContentComponent")
+		(args
+			_shipId = "shipId"
+		)
+	)
+)
+
+
+(def element SystemNotificationShipInfoWithTitle (_notificationContentComponent:gfx) layout=true
+	(scope
+		(var title:str = "_notificationContentComponent.title" (event "_notificationContentComponent.evTitleChanged"))
+		(var shipId:number = "_notificationContentComponent.shipId" (event "_notificationContentComponent.evShipIdChanged"))
+	)
+	(style (width = "100%") (hitTest = "false"))
+
+	(controller $Instance renderer='TooltipSystemShipWithTitle'
+		(bind enabled "_notificationContentComponent")
+		(args
+			_title = "title"
+			_shipId = "shipId"
+			_withFlag = true
+		)
+	)
+)
+
+(def element SystemNotificationShipRangeInfo (_notificationContentComponent:gfx) layout=true
+	(scope
+		(var title:str = "_notificationContentComponent.title" (event "_notificationContentComponent.evTitleChanged"))
+		(var startShipId:number = "_notificationContentComponent.startShipId" (event "_notificationContentComponent.evStartShipIdChanged"))
+		(var finishShipId:number = "_notificationContentComponent.finishShipId" (event "_notificationContentComponent.evFinishShipIdChanged"))
+	)
+	(style (width = "100%") (hitTest = "false"))
+
+	(controller $Instance renderer='TooltipSystemShipsRange'
+		(bind enabled "_notificationContentComponent")
+		(args
+			_startShipId = "startShipId"
+			_endShipId = "finishShipId"
+		)
+	)
+)
+
+
+(def element SystemNotificationCounterInfo (_notificationContentComponent:gfx) layout=true
+	(scope
+		(var counterInfo:dict = "_notificationContentComponent.counterInfo" (event "_notificationContentComponent.evCountChanged"))
+	)
+	(style (width = "100%") (hitTest = "false"))
+
+	(controller $Instance renderer='TooltipSystemCounterLine'
+		(bind enabled "_notificationContentComponent")
+		(args
+			_title = "counterInfo.title"
+			_count = "counterInfo.count"
+			_measurement = "counterInfo.measurement"
+		)
+	)
+)
+
+
+(def element SystemNotificationTimePeriodInfo (_notificationContentComponent:gfx) layout=true
+	(style (width = "100%") (hitTest = "false"))
+	(controller $Instance renderer='TooltipSystemStaticTimeLeftStatusLine'
+		(bind enabled "_notificationContentComponent")
+		(args
+			_timeLeftTimeStamp =	"_notificationContentComponent.delta"
+			_substTextIDS =		"_notificationContentComponent.textLine"
+		)
+	)
+)
+
+
+(def element SystemNotificationTimeLeftInfo (_notificationContentComponent:gfx) layout=true
+	(style (width = "100%") (hitTest = "false"))
+	(name = 'SystemNotificationTimeLeftInfo')
+	(controller $Instance renderer='TooltipSystemTimeLeftStatusLine'
+		(bind enabled "_notificationContentComponent")
+		(args
+			_timeLeftTimeStamp =	"_notificationContentComponent.timestamp"
+			_substTextIDS =		"_notificationContentComponent.textLine"
+			_zeroTimeTextIDS = "_notificationContentComponent.zeroTextLine"
+		)
+	)
+)
+
+
+(def element SystemNotificationDateInfo (_notificationContentComponent:gfx) layout=true
+	(scope
+		(var timestamp:number = "_notificationContentComponent.timestamp" (event "_notificationContentComponent.evTimestampChanged"))
+		(var textLine:str = "_notificationContentComponent.textLine")
+	)
+	(style (width = "100%") (hitTest = "false"))
+
+	(controller $Instance renderer='TooltipSystemDueDateStatusLine'
+		(bind enabled "_notificationContentComponent")
+		(args
+			_dueDateTimeStamp =	"timestamp"
+			_substTextIDS =		"textLine"
+		)
+	)
+)
+
+
+(def element SystemNotificationPostBattle (_notificationContentComponent:gfx) layout=true
+	(scope
+		(var battleData:dict = "_notificationContentComponent.data" (event "_notificationContentComponent.evChanged"))
+		(var economicCurrency:array = "'economicCurrency' in battleData ? battleData.economicCurrency : []")
+		(var hasRewardsCurrency:bool = "economicCurrency.length > 0")
+
+		(var shipId:number = "battleData ? battleData.shipId : null")
+		(var damage:str = "'damage' in battleData ? formatSeparator(battleData.damage) : ''")
+		(var shipsKilled:str = "'shipsKilled' in battleData ? formatSeparator(battleData.shipsKilled) : ''")
+		(var achievements:array = "battleData ? battleData.achievements : []")
+		(var hasAchievements:bool = "achievements.length > 0")
+
+		(var battleStats:array = " battleData	?	[	{	measure: '',
+															measuredValue: damage,
+															attributeIDS: 'IDS_SYS_MSG_BATTLE_STATS_DAMAGE',
+															category: 'neutral'
+														},
+														{	measure: '',
+															measuredValue: shipsKilled,
+															attributeIDS: 'IDS_SYS_MSG_BATTLE_STATS_SHIPS_KILLED',
+															category: 'neutral'
+														}
+													]
+												:	[]")
+
+		(var isSpectator:bool = "'isSpectator' in battleData ? battleData.isSpectator : false")
+	)
+	(style (width = "100%") (hitTest = "false"))
+
+	(block
+		(bind visible "!isSpectator")
+		(style (width = "100%"))
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='ShipLineItemNM'
+				(bind enabled "shipId")
+				(args
+					_shipId = "shipId"
+					_withFlag = "true"
+					_fontClass = "'$TextDefaultBoldNM'"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer = 'TooltipSystemHorizontalDivider' (bind enabled "hasRewardsCurrency"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemSecondaryHeaderText'
+				(bind enabled "hasRewardsCurrency")
+				(args
+					_headerText = "tr('IDS_SYS_MSG_BATTLE_STATS_TAKEN_TILL_BATTLE')"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer = 'TooltipSystemHorizontalDivider' (bind enabled "hasRewardsCurrency"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemRewardsList'
+				(bind enabled "hasRewardsCurrency")
+				(args
+					_rewards = "economicCurrency"
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer = 'TooltipSystemHorizontalDivider' (bind enabled "battleStats"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemSecondaryHeaderText'
+				(bind enabled "battleStats")
+				(args
+					_headerText = "tr('IDS_SYS_MSG_BATTLE_EFFICIENCY')"
+				)
+			)
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer = 'TooltipSystemHorizontalDivider' (bind enabled "battleStats"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemParamsModifiersList'
+				(bind enabled "battleStats")
+				(args
+					_attributesNeutral = "battleStats"
+				)
+			)
+		)
+		
+
+		
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer = 'TooltipSystemHorizontalDivider' (bind enabled "hasAchievements"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemSecondaryHeaderText'
+				(bind enabled "hasAchievements")
+				(args
+					_headerText = "tr('IDS_SYS_MSG_BATTLE_ACHIEVEMENTS')"
+				)
+			)
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer = 'TooltipSystemHorizontalDivider' (bind enabled "hasAchievements"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemAchievementsList'
+				(bind enabled "hasAchievements")
+				(args
+					_achievementsIds = "achievements"
+				)
+			)
+		)
+		
+	)
+)
+
+
+(def element SystemNotificationCampaignInfo (_notificationContentComponent:gfx) layout=true
+	(scope
+		(var campaignEntity:gfx = "$datahub.getPrimaryEntity(CC.campaignParams, _notificationContentComponent.campaignId)")
+		(var campaignParams:gfx = "campaignEntity ? campaignEntity.campaignParams : null")
+		(var campaignName:str = "campaignParams.name")
+		(var headerText:str = "tr('IDS_' + campaignName + '_TITLE')")
+		(var subheaderText:str = "tr('IDS_CAMPAIGN')")
+	)
+	(style (width = 100%) (hitTest = "false"))
+
+	(element TooltipSystemHeaderWithIconAndText
+		_imageHeight = 		"80"
+		_imageWidth = 		"80"
+		_headerText =		"headerText"
+		_subheaderText =	"subheaderText"
+		_headerIconType = 	"SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.CAMPAIGN"
+		_data =				"{	entityId: _notificationContentComponent.campaignId,
+								iconType: SC.Ui_common.CAMPAIGN_TYPE.CAMPAIGN }"
+	)
+)
+
+
+(def element SystemNotificationCampaignMissionInfo (_notificationContentComponent:gfx) layout=true
+	(scope
+		(var campaignMissionEntity:gfx = "$datahub.getPrimaryEntity(CC.campaignMissionParams, _notificationContentComponent.missionId)")
+		(var campaignMissionParams:gfx = "campaignMissionEntity ? campaignMissionEntity.campaignMissionParams : null")
+		(var uiNumber:str = "campaignMissionParams.uiNumber")
+		(var headerText:str = "tr(subst('IDS_CAMPAIGN_MISSION_NUMBER', [], { _missionNumber: uiNumber }))")
+
+		(var campaignEntity:gfx = "$datahub.getPrimaryEntity(CC.campaignParams, campaignMissionParams.campaignID)")
+		(var campaignParams:gfx = "campaignEntity ? campaignEntity.campaignParams : null")
+		(var campaignName:str = "campaignParams.name")
+		(var campaignNameIDS:str = "'IDS_' + campaignName + '_TITLE'")
+	)
+	(style (width = 100%) (hitTest = "false"))
+
+	(element TooltipSystemHeaderWithIconAndText
+		_imageHeight = 		"80"
+		_imageWidth = 		"80"
+		_headerText =		"headerText"
+		_subheaderText =	"campaignNameIDS"
+		_headerIconType = 	"SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.CAMPAIGN"
+		_data =				"{	entityId: _notificationContentComponent.missionId,
+								iconType: SC.Ui_common.CAMPAIGN_TYPE.MISSION }"
+	)
+)
+
+
+(def element SystemNotificationCampaignTaskInfo (_notificationContentComponent:gfx) layout=true
+	(scope
+		(var campaignTaskEntity:gfx = "$datahub.getPrimaryEntity(CC.campaignTaskParams, _notificationContentComponent.taskId)")
+		(var campaignTaskParams:gfx = "campaignTaskEntity ? campaignTaskEntity.campaignTaskParams : null")
+		(var taskNumber:number = "campaignTaskParams.taskNumber")
+		(var isMainTask:bool = "campaignTaskParams.isMainTask")
+
+		(var headerText:str = "isMainTask 	? tr('IDS_FINAL_TASK')
+											: tr(subst('IDS_CAMPAIGN_TASK_NUMBER', [], { _taskNumber: taskNumber }))")
+
+		(var campaignEntity:gfx = "$datahub.getPrimaryEntity(CC.campaignParams, campaignTaskParams.campaignID)")
+		(var campaignParams:gfx = "campaignEntity ? campaignEntity.campaignParams : null")
+		(var campaignName:str = "campaignParams.name")
+		(var campaignNameIDS:str = "'IDS_' + campaignName + '_TITLE'")
+	)
+	(style (width = 100%) (hitTest = "false"))
+
+	(element TooltipSystemHeaderWithIconAndText
+		_imageHeight = 		"80"
+		_imageWidth = 		"80"
+		_headerText =		"headerText"
+		_subheaderText =	"campaignNameIDS"
+		_headerIconType = 	"SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.CAMPAIGN"
+		_data =				"{	entityId: _notificationContentComponent.taskId,
+								iconType: SC.Ui_common.CAMPAIGN_TYPE.TASK }"
+	)
+)
+
+
+(def element SystemNotificationRewardInfo (_notificationContentComponent:gfx) layout=true
+	(scope
+		(var rewards:array = "_notificationContentComponent.rewards" (event "_notificationContentComponent.evChanged"))
+		(var isManyRewards:bool = "rewards.length > REWARDS_STACK_LIMIT")
+		(var diffCount:number = "isManyRewards ? rewards.length - REWARDS_STACK_LIMIT : 0")
+		(var reseivedManyRewardsIDS:str = "subst('IDS_SYS_MSG_PL_RECEIVED_REWARDS', [], { _countRestRewards: diffCount }, diffCount)")
+	)
+	(style (width = "100%") (hitTest = "false"))
+
+	(block
+		(style (width = "100%") (paddingTop = "-S") (paddingBottom = "-S"))
+
+		(controller $Repeat renderer = 'RewardContainerTooltipItem'
+			(bind count "isManyRewards ? REWARDS_STACK_LIMIT : rewards.length")
+			(args
+				_reward = "$datahub.getEntity(rewards[$index]).rewardComponent"
+			)
+		)
+	)
+
+	(block
+		(style (width = "100%") (marginTop = "SXS"))
+		(bind visible "isManyRewards")
+		(tf
+			(class $TextDefaultNM)
+			(style (alpha = "TC"))
+			(bind text "reseivedManyRewardsIDS")
+		)
+	)
+)
+
+
+(def element SystemNotificationStatusLineInfo (_notificationContentComponent:gfx) layout=true
+	(style (width = "100%") (hitTest = "false"))
+
+	(controller $Instance renderer='TooltipSystemStatusLine'
+		(args
+			_unifiedStatus = "_notificationContentComponent.unifiedStatus"
+			_text = "_notificationContentComponent.textLine"
+		)
+	)
+)
+
+(def element SystemNotificationsInfotipDragGripper ()
+	(scope
+		(macro MOUSE_HANDLER_SCOPE _prefix="'grip_'")
+	)
+
+	(bindcall externalCall 'direct.action' "['systemMessagesPanel.onDragFieldMouseOver', []]"	on='rollOver')
+	(bindcall externalCall 'direct.action' "['systemMessagesPanel.onDragFieldMouseOut', []]"	on='rollOut')
+	(bindcall externalCall 'direct.action' "['systemMessagesPanel.dragStart', []]"	init=false watch=false on='mouseDown')
+	(bindcall externalCall 'direct.action' "['systemMessagesPanel.dragEnd', []]"	init=false watch=false on='stageMouseUp')
+
+	(style
+		(width = 100%)
+		(height = 6px)
+		(align = "center")
+	)
+	
+	(block
+		(style
+			(width = 21px)
+			(height = 4px)
+			(marginTop = "XXS")
+			(bind backgroundImage "	grip_mouseDown	? 'url:../service_kit/buttons/drag_gripper/down.png' :
+									grip_rollOver	? 'url:../service_kit/buttons/drag_gripper/over.png'
+													: 'url:../service_kit/buttons/drag_gripper/default.png'")
+		)
+	)
+
+	(macro MOUSE_HANDLER _prefix="'grip_'")
+)
+
+(def element SystemNotificationButtonContainer (_notificationContentComponent:gfx) layout=true
+	(scope
+		(var buttons:array = "_notificationContentComponent.buttons" (event "_notificationContentComponent.evChanged"))
+	)
+	(style (width = 100%) (flow = "horizontal") (align = "center"))
+
+	(block
+		(style (bind marginRight "buttons.length > 1 ? S : 0"))
+		(controller $Instance renderer='DefaultButton'
+			(bind enabled "buttons.length > 0")
+			(args
+				_name = "buttons[0].name"
+				_enabled = "buttons[0].enabled"
+				_type = "buttons[0].type"
+				_isExternal = "buttons[0].isExternal"
+				_width = "140"
+				_label = "buttons[0].label"
+				_methods = "buttons[0].methods"
+			)
+		)
+	)
+
+	(block
+		(controller $Instance renderer='DefaultButton'
+			(bind enabled "buttons.length > 1")
+			(args
+				_name = "buttons[1].name"
+				_enabled = "buttons[1].enabled"
+				_type = "buttons[1].type"
+				_isExternal = "buttons[1].isExternal"
+				_width = "140"
+				_label = "buttons[1].label"
+				_methods = "buttons[1].methods"
+			)
+		)
+	)
+)

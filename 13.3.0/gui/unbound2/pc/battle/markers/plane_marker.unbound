@@ -1,0 +1,479 @@
+(def constant HEALTH_BAR_FILL_PADDING 1)
+(def constant HEALTH_BAR_DIVIDER_WIDTH 1)
+(def constant HEALTH_BAR_DIVIDER_HEIGHT 2)
+
+(def constant PLANE_ICON_SIZE {
+	width: 20,
+	height: 19
+})
+
+(def element PlaneMarkerIconItem (_markerEntity:gfx, _rotation:number) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'squadron')
+		(macro GET_MARKER_ENTITY_COMPONENT 'ownSquadron')
+		(macro GET_MARKER_ENTITY_COMPONENT 'plane')
+		(macro GET_MARKER_ENTITY_COMPONENT 'relation')
+
+		(var planeTypeInt:number = "planeComponent.planeType")
+		(var ammoType:number = "planeComponent.ammoType")
+		(var ammoTypeName:str = "SC.Common.PLANE_AMMO_TYPES.VALUE_TO_NAME[ammoType]")
+		(var isModified:bool = "planeComponent.isModified")
+
+		(var isConsumable:bool = "planeComponent.isConsumable && !planeComponent.isAirSupport")
+
+		(var ammoPostfix:str = "ammoTypeName in SC.Common.PLANE_AMMO_TYPES.SHORT_NAMES && !isConsumable	? SC.Common.PLANE_AMMO_TYPES.SHORT_NAMES[ammoTypeName]
+																										: ''"
+		)
+		(var planeCathegoryFolder:str = "	planeComponent.isAirSupport		? 'airsupport/' :
+											planeComponent.isConsumable		? 'consumables/'
+																			: 'controllable/'"
+		)
+		(var postfix:str = "isModified ? '_upgrade' : ''")
+		(var planeIconPath:str = "planeCathegoryFolder + PLANE_TYPE_TO_STR[planeTypeInt] + ammoPostfix + postfix")
+
+		(var ownerEntity:gfx = "squadronComponent ? squadronComponent.owner.ref : null")
+		(var ownerAvatar:gfx = "ownerEntity.avatar")
+		(var ownerDivision:gfx = "ownerEntity.divisionMember")
+
+		(var isSelf:bool = "relationComponent && relationComponent.value == SC.Battle.PLAYER_RELATION.SELF")
+		(var isAlly:bool = "relationComponent && relationComponent.value == SC.Battle.PLAYER_RELATION.ALLY")
+		(var tkStatus:bool = "ownerAvatar && ownerAvatar.tkStatus && isAlly" (event "ownerAvatar.evTeamkillStatusChanged"))
+		(var isInSameDivision:bool = "ownerDivision && ownerDivision.isInSameDivision" (event "ownerDivision.evDivisionChanged"))
+
+		(var ownCarrierEntity:gfx = "$datahub.getSingleEntity(CC.aircarrier)")
+		(var activeSquadron:number = "ownCarrierEntity ? ownCarrierEntity.aircarrier.activeSquadron : -1" (event "ownCarrierEntity.aircarrier.evStateChanged"))
+		(var isControlledByPlayer:bool = "isSelf && ownSquadronComponent && ownSquadronComponent.id == activeSquadron")
+
+		(var markerPlaneIconPath:str = "
+			isSelf
+				? isControlledByPlayer
+					? 'own_tactical_map'
+					: planeIconPath + '_own'
+				: isAlly
+					? isInSameDivision
+						? planeIconPath + '_division'
+						: tkStatus 
+							? planeIconPath + '_teamkiller'
+							: planeIconPath + '_ally'
+					: planeIconPath + '_enemy'"
+		)
+		(var markerIcon:str = "'url:../battle_hud/markers/plane/' + markerPlaneIconPath + '.png'")
+	)
+
+	(class $WorldMarkerItemMargins)
+	(style
+		(width = "PLANE_ICON_SIZE.width")
+		(height = "PLANE_ICON_SIZE.height")
+		(align = "center|middle")
+	)
+
+	(block
+		(style
+			(width = 0) (height = 0)
+			(align = "center|middle")
+			(bind rotation "_rotation")
+		)
+		(block
+			(style
+				(bind backgroundImage "markerIcon")
+				(backgroundSize = "autosize")
+			)
+		)
+	)
+)
+
+
+(def element PlaneOwnerShipNameItem (_markerEntity:gfx) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'squadron')
+
+		(var ownerEntity:gfx = "squadronComponent ? squadronComponent.owner.ref : null")
+		(var shipName:str = "ownerEntity.avatar ? ownerEntity.avatar.ship.ref.ship.nameUpper : ''")
+	)
+
+	(controller $Instance renderer='SimpleMarkerTextItem'
+		(bind enabled "shipName != ''")
+		(args "shipName")
+	)
+)
+
+
+(def element PlaneOwnerNameItem (_markerEntity:gfx) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'squadron')
+
+		(var ownerEntity:gfx = "squadronComponent ? squadronComponent.owner.ref : null")
+		(var avatarName:str = "ownerEntity.avatar ? ownerEntity.avatar.name : ''")
+		(var buildingName:str = "ownerEntity.building   ? ownerEntity.building.name ? ownerEntity.building.name
+																					: ownerEntity.building.typeIDS
+														: ''")
+		(var playerName:str = "avatarName ? avatarName : toUpper(buildingName)")
+	)
+	(element SimpleMarkerTextItem "playerName" "avatarName != ''")
+)
+
+
+(def element PlaneMarkerHealthBarItem (_markerEntity:gfx) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'health')
+		(var healthValue:number = "healthComponent ? healthComponent.value : 0" (event "healthComponent.evValueChanged"))
+		(var healthMax:number = "healthComponent ? healthComponent.max : 0" (event "healthComponent.evMaxChanged"))
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'relation')
+		(var relationValue:number = "relationComponent ? relationComponent.value : 0" (event "relationComponent.evChanged"))
+		(var relationStr:str = "toLower(SC.Battle.PLAYER_RELATION.VALUE_TO_NAME[relationValue])")
+
+		(var sizes:array = "HEALTH_BAR_SIZE[0]") 
+		(var healthBarWidthMax:number = "sizes[0] - 2 * HEALTH_BAR_FILL_PADDING")
+
+		(var dividersCount:number = "healthMax - 1")
+		(var dividerScaleSize:number = "healthBarWidthMax / healthMax")
+		(var healthBarWidth:number = "dividerScaleSize * healthValue")
+
+		(var markerColorTransform:dict = "TWO_TEAMS_COLOR_TRANSFORMS[relationStr]")  
+	)
+
+	(block
+		(class $WorldMarkerItemMargins)
+		(style
+			(bind width "sizes[0]")
+			(bind height "sizes[1]")
+		)
+
+		
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(backgroundImage = "'url:../battle_hud/markers/bar/bar_bg.png'")
+				(backgroundSize = "fill")
+				(scale9grid = [1, 1, 44, 2])
+			)
+		)
+
+		
+		(block
+			(class $FullsizeAbsolute)
+			(style (padding = "HEALTH_BAR_FILL_PADDING"))
+
+			
+			(block
+				(class $FullsizeAbsolute)
+
+				(alpha = 1.17)
+				(style
+					(width = "healthBarWidth")
+					(bind backgroundColor "0xFFFFFFFF")
+					(backgroundSize = "fill")
+				)
+
+				(controller $Animation
+					(bindcall play  duration = "DAMAGE_BAR_TWEEN_DURATION"
+									action="kill"
+									watch=false
+									easing="Easing.quad_in"
+									to = "{ width: healthBarWidth }"
+									(event "healthComponent.evValueChanged")
+					)
+				)
+			)
+
+			
+			(block
+				(bind colorTransform "markerColorTransform")
+				(class $FullsizeAbsolute)
+
+				(style
+					(bind width "healthBarWidth")
+					(bind backgroundColor "0xFFFFFFFF")
+					(backgroundSize = "fill")
+				)
+			)
+
+			(block
+				(class $FullsizeAbsolute)
+				(controller $Repeat renderer='MarkerHealthBarDivider'
+					(bind count "dividersCount")
+					(args "dividerScaleSize")
+				)
+			)
+		)
+	)
+)
+
+(def element MarkerHealthBarDivider (_dividerScaleSize:number) layout=true
+	(style
+		(position = "absolute")
+		(bind left "_dividerScaleSize * ($index + 1)")
+		(width = "HEALTH_BAR_DIVIDER_WIDTH") (height = "HEALTH_BAR_DIVIDER_HEIGHT")
+		(backgroundImage = 'url:../battle_hud/markers/bar/bar_divider.png')
+	)
+)
+
+(def layout WorldPlaneMarkerContainer (_markerEntity:gfx)
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'plane')
+
+		(var planeTypeInt:number = "planeComponent.planeType")
+		(var markerElement:gfx = "planeTypeInt == SC.Battle.PLANES_TYPES.AIRSHIP ? 'WorldAirshipMarker' : 'WorldPlaneMarker'")
+	)
+	(controller $Instance
+		(bind renderer "markerElement")
+		(args "_markerEntity")
+		(bind enabled "_markerEntity != null")
+	)
+)
+
+(def layout WorldPlaneMarker (_markerEntity:gfx)
+	(scope
+		(event evMarkerShow)
+		(event evMarkerHide)
+		(event evUpdateRotation)
+
+		
+		(var timer:gfx = "$datahub.getSingleComponent(CC.timer)")
+		(macro GET_MARKER_ENTITY_COMPONENT 'ownSquadron')
+		(macro GET_MARKER_ENTITY_COMPONENT 'relation')
+		(macro GET_MARKER_ENTITY_COMPONENT 'distance')
+		(macro GET_MARKER_ENTITY_COMPONENT 'health')
+		(macro GET_MARKER_ENTITY_COMPONENT 'mapPosition')
+
+		
+		(macro ALT_VISION_SCOPE)
+
+		
+		(var distanceIndex:number = "distanceComponent ? distanceComponent.distanceIndex : DistanceType.NEAR" (event "distanceComponent.evDistanceIndexChanged"))
+		(var isSelf:bool = "relationComponent && relationComponent.value == SC.Battle.PLAYER_RELATION.SELF")
+		(var ownCarrierEntity:gfx = "$datahub.getSingleEntity(CC.aircarrier)")
+		(var activeSquadron:number = "ownCarrierEntity ? ownCarrierEntity.aircarrier.activeSquadron : -1" (event "ownCarrierEntity.aircarrier.evStateChanged"))
+		(var isControlledByPlayer:bool = "isSelf && ownSquadronComponent && ownSquadronComponent.id == activeSquadron")
+
+		
+		(dispatch evUpdateRotation args={} (event "timer.evFrequent") (bind enabled "isTactical && isControlledByPlayer"))
+		(var planeRotation:number = "mapPositionComponent ? radToGrad(mapPositionComponent.yaw) : 0" (event "evUpdateRotation"))
+		(var iconRotation:number = "isTactical && isControlledByPlayer ? planeRotation - 90 : 0") 
+
+		
+		(var isAlive:bool = "healthComponent && healthComponent.isAlive" (event "healthComponent.evIsAliveChanged"))
+
+		(var distanceType:number = "isTactical						? DistanceType.TACTICAL :
+									isFullAltVisionMode || isSelf	? DistanceType.NEAR
+																	: distanceIndex")
+
+		(var distanceItemVisibility:bool = "(!(isIn(distanceType, [DistanceType.TACTICAL, DistanceType.FARTHEST])) || isAdaptiveAltVisionMode) && !(isControlledByPlayer)")
+
+		(var healthBarItemVisible:bool = "((isAdaptiveAltVisionMode && distanceType <= DistanceType.FARTHEST) || (distanceType == DistanceType.NEAR)) && !(isControlledByPlayer)")
+		
+		(var farAdaptiveAltVisionMode:bool = "isAdaptiveAltVisionMode && distanceType <= DistanceType.FAR")
+
+		(var ownerNameItemVisibility:bool = "distanceType != DistanceType.TACTICAL && farAdaptiveAltVisionMode && !(isControlledByPlayer) && !(isSelf)")
+		(var ownerShipNameItemVisibility:bool = "((distanceType != DistanceType.TACTICAL && farAdaptiveAltVisionMode) || (distanceType == DistanceType.TACTICAL && isAdaptiveAltVisionMode)) && !(isControlledByPlayer) && !(isSelf)")
+
+		(var planeIconScaled:bool = "(distanceType >= DistanceType.FAR && !(isAdaptiveAltVisionMode)) || (distanceType == DistanceType.FARTHEST && !(isFullAltVisionMode))")
+		(macro SCOPE_HIGHLIGHT_MARKER_ON_WORLD_MOUSE_OVER)
+	)
+
+	(dispatch evMarkerShow args="{}" on='addedToStage')
+
+	(style
+		(width = 0) (height = 0)
+		(bind align "isTactical ? center|middle
+								: center|bottom")
+	)
+	
+	(controller $Animation
+		(bindcall play	duration="DEATH_ANIMATION_DURATION"
+						from="{alpha: 0}"
+						to="{alpha: 1}"
+						init=false
+						watch=false
+						action="killAll"
+						reverse="!(isAlive)"
+						(bind trigger "isAlive")
+		)
+	)
+
+	
+	(block
+		(style
+			(width = 0) (zindex = 0)
+			(align = "center|bottom")
+			(bind position "isTactical ? absolute : flow")
+			(bind bottom "isTactical ? SHIP_ICON_SIZE.HEIGHT / 2 : 0")
+		)
+
+		(block
+			(element TargetAnimationItem "_markerEntity"
+				(style
+					(position = "absolute")
+					(top = 0) (left = 50%)
+				)
+			)
+		)
+
+		(element PlaneOwnerShipNameItem "_markerEntity"
+			(bind visible "ownerShipNameItemVisibility")
+		)
+	)
+
+	
+	(block
+		(macro EFFECT_HIGHLIGHT_MARKER_ON_MOUSE_OVER)
+		(element PlaneMarkerIconItem "_markerEntity" "iconRotation"
+			(macro BIND_SCALE "planeIconScaled ? 0.7 : 1")
+		)
+	)
+
+	(element PlaneOwnerNameItem "_markerEntity"
+		(bind visible "ownerNameItemVisibility")
+	)
+
+	
+	(element PlaneMarkerHealthBarItem 
+		_markerEntity="_markerEntity"
+		(bind visible "healthBarItemVisible")
+	)
+
+	
+	(block
+		(style
+			(width = 0)
+			(align = "center|top")
+			(bind position "isTactical ? absolute : flow")
+			(bind top "isTactical ? SHIP_ICON_SIZE.HEIGHT / 2 : 0")
+		)
+		(element DistanceItem "_markerEntity"
+			(bind visible "distanceItemVisibility")
+		)	
+	)
+)
+(def layout WorldAirshipMarker (_markerEntity:gfx)
+	(scope
+		(event evMarkerShow)
+		(event evMarkerHide)
+		(event evUpdateRotation)
+
+		
+		(var timer:gfx = "$datahub.getSingleComponent(CC.timer)")
+		(macro GET_MARKER_ENTITY_COMPONENT 'ownSquadron')
+		(macro GET_MARKER_ENTITY_COMPONENT 'relation')
+		(macro GET_MARKER_ENTITY_COMPONENT 'distance')
+		(macro GET_MARKER_ENTITY_COMPONENT 'mapPosition')
+		(macro GET_MARKER_ENTITY_COMPONENT 'plane')
+		(macro GET_MARKER_ENTITY_COMPONENT 'squadron')
+
+		
+		(macro ALT_VISION_SCOPE)
+
+		
+		(dispatch evUpdateRotation args={} (event "timer.evFrequent") (bind enabled "isTactical"))
+		(var planeRotation:number = "mapPositionComponent ? radToGrad(mapPositionComponent.yaw) : 0" (event "evUpdateRotation"))
+		(var iconRotation:number = "isTactical ? planeRotation - 90 : 0") 
+
+		
+
+		(var planeTypeInt:number = "planeComponent.planeType")
+
+		(macro VAR_RELATION "_markerEntity")
+		(var isSelf:bool = "relationComponent && relationComponent.value == SC.Battle.PLAYER_RELATION.SELF")
+		(var isAlly:bool = "relationComponent.value == SC.Battle.PLAYER_RELATION.ALLY")
+		(var relationStr:str = "toLower(SC.Battle.PLAYER_RELATION.VALUE_TO_NAME[relationComponent.value])")
+
+		
+		(var distanceIndex:number = "distanceComponent ? distanceComponent.distanceIndex : DistanceType.NEAR" (event "distanceComponent.evDistanceIndexChanged"))
+		(var distanceType:number = "isTactical						? DistanceType.TACTICAL :
+									isFullAltVisionMode || isSelf	? DistanceType.NEAR
+																	: distanceIndex")
+		(var distanceItemVisibility:bool = "(!(isIn(distanceType, [DistanceType.TACTICAL, DistanceType.FARTHEST])) || isAdaptiveAltVisionMode)")
+		(var farAdaptiveAltVisionMode:bool = "isAdaptiveAltVisionMode && distanceType <= DistanceType.FAR")
+		(var planeIconScaled:bool = "(distanceType >= DistanceType.FAR && !(isAdaptiveAltVisionMode)) || (distanceType == DistanceType.FARTHEST && !(isFullAltVisionMode))")
+
+		(var statusLabel:str = "isAlly ? 'IDS_AIRSHIP_STATE_FOLLOW' : 'IDS_AIRSHIP_STATE_SLOW_DOWN'")
+		(event evShowAirshipMarkerTips)
+	)
+
+	(dispatch evShowAirshipMarkerTips on='addedToStage')
+
+	
+	(dispatch evMarkerShow args="{}" on='addedToStage')
+	(style
+		(width = 0) (height = 0)
+		(bind align "isTactical ? center|middle
+								: center|bottom")
+	)
+
+	(block
+		(style
+			(alpha = "0")
+			(width = "0")
+			(marginBottom = "2")
+			(align = "center|top")
+		)
+
+		(controller $Animation
+			(bindcall play to={alpha:1} from={alpha:0} duration=1.5 delay=5 easing="Easing.quint_out" (event "evShowAirshipMarkerTips"))
+			(bindcall play to={alpha:0} from={alpha:1} duration=1.5 delay=90 easing="Easing.quint_out" (event "evShowAirshipMarkerTips"))
+		)
+
+		(tf
+			(class $TextDefaultBold13NM)
+			(bind class "isAlly ? '$TextColorAlly' : '$TextColorEnemy'")
+			(bind text "statusLabel")
+		)
+	)
+
+	
+	(block
+		(style
+			(width = 0) (zindex = 0)
+			(align = "center|bottom")
+			(bind position "isTactical ? absolute : flow")
+			(bind bottom "isTactical ? 22 : 0")
+		)
+
+		(block
+			(element TargetAnimationItem "_markerEntity"
+				(style
+					(position = "absolute")
+					(top = 0) (left = 50%)
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(class $WorldMarkerItemMargins)
+		(style
+			(width = "44") (height = "44")
+			(align = "center|middle")
+		)
+		(macro BIND_SCALE "planeIconScaled ? 0.7 : 1")
+		(block
+			(style
+				(width = "0")
+				(height = "0")
+				(align = "center|middle")
+				(bind rotation "iconRotation")
+			)
+			(block
+				(style
+					(bind backgroundImage "'svg:../battle_hud/markers/convoy_airships/marker_airship_' + relationStr + '.svg'")
+					(backgroundSize = "autosize")
+					(align = "center|middle")
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(style
+			(width = "0")
+			(marginTop = "8")
+			(align = "center|top")
+		)
+		(element DistanceItem "_markerEntity"
+			(bind visible "distanceItemVisibility")
+		)	
+	)
+)

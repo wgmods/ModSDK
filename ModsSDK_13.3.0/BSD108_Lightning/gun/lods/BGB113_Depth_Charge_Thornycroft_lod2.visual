@@ -1,0 +1,47 @@
+<BGB113_Depth_Charge_Thornycroft_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	ZGB121_Depth_Charge_Thrower_Single	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	HP_gunFire1	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.6613 -0.7501 0.0000	</row1>
+					<row2>	0.0000 0.7501 0.6613 0.0000	</row2>
+					<row3>	0.0000 0.0629 0.0426 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	ZGB121_Depth_Charge_Thrower_Single	</node>
+		<geometry>
+			<vertices>	ZGB121_Depth_Charge_Thrower_Single_lod2Shape.vertices	</vertices>
+			<primitive>	ZGB121_Depth_Charge_Thrower_Single_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/BSD108_Lightning/gun/BGB113_Depth_Charge_Thornycroft.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0153 -0.0022 -0.0275	</min>
+		<max>	0.0153 0.0628 0.0394	</max>
+	</boundingBox>
+</BGB113_Depth_Charge_Thornycroft_lod2.visual>

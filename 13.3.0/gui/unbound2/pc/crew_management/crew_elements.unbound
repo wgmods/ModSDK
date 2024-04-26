@@ -1,0 +1,494 @@
+(def element CrewStereotypeWithName (_crewId:number, _shipClass:str, _size:number = "SIZE.SMALL", _isRentIconHidden:bool = false, _hideSkillPoints:bool=false) layout=true
+	(style (width = "100%"))
+
+	(element CrewStereotype
+		_crewId = "_crewId"
+		_shipClass = "_shipClass"
+		_hideSkillPoints = "_hideSkillPoints"
+		_size = "_size"
+		
+		(style (marginBottom = "SXS"))
+	)
+
+	(element CrewNameWithIcon
+		_crewId = "_crewId"
+		_isBig = "_size != SIZE.SMALL"
+		_isRentIconHidden = "_isRentIconHidden"
+	)
+)
+
+(def element CrewStereotype (_crewId:number = "null", _crewHistoryId:number = "null", _shipClass:str = '', _size:number = "SIZE.SMALL", _showRentIcon:bool=false, _hideSkillPoints:bool=false, _isAnimated:bool=true) layout=true dispatch_size_change=true
+	(scope
+		(var crewEntity:gfx = "$datahub.getPrimaryEntity(CC.crew, _crewId)")
+		(var crewHistoryEntity:gfx = "$datahub.getPrimaryEntity( CC.crewHistoryInfo, _crewHistoryId)")
+		(var isCrewHistory:bool = "crewHistoryEntity != null")
+
+		(var crewInfo:gfx = "crewEntity ? crewEntity.crew : null"	(event "crewEntity.crew.evChanged")
+																	(event "crewEntity.crew.evLevelUp"))
+		(var crewHistoryInfo:gfx = "crewHistoryEntity ? crewHistoryEntity.crewHistoryInfo : null")
+		(var crew:gfx = "isCrewHistory ? crewHistoryInfo : crewInfo")
+		(var allSkillPoints:number = "crew ? crew.allSkillPoints : 0" (event "crew.evLevelUp"))
+		(var isElite:bool =	"crew ? crew.isElite : false" (event "crew.evLevelUp"))
+
+		(var skillTreeEntity:gfx = "_crewId ? $datahub.getPrimaryEntity(CC.skillTree, toString(_crewId) + '_' + _shipClass) : null")
+		(var skillTreeComponent:gfx = "skillTreeEntity ? skillTreeEntity.skillTree : null")
+
+		(var freeSkillPoints:number = "	skillTreeComponent	? skillTreeComponent.freeSkillPoints :
+										isCrewHistory		? 0
+															: allSkillPoints"	(event "skillTreeComponent.evFreeSkillPointsChanged"))
+
+		(var timeRent:number = "isCrewHistory ? crew.rentUntil : crew.timeRent" (event "crew.evTimeRentChanged"))
+
+
+		(var portraitWidth:number = "	_size == SIZE.SMALL		? 76 :
+										_size == SIZE.MEDIUM	? 125 :
+										_size == SIZE.LARGE		? 160
+																: 76")
+
+		(var portraitHeight:number = "	_size == SIZE.SMALL		? 70 :
+										_size == SIZE.MEDIUM	? 114 :
+										_size == SIZE.LARGE		? 147
+																: 70")
+
+		(var portraitBorderSize:number = "_size == SIZE.SMALL ? XXS : XS")
+	)
+
+	(block
+		(style (backgroundColor = "0x01000000"))
+
+		(element CrewPortraitWithBGR
+			_baseUrl = "crew.baseUrl"
+			_overlayUrl = "crew.overlayUrl"
+			_classificationId = "crew.classificationId"
+			_portraitWidth = "portraitWidth"
+			_portraitHeight = "portraitHeight"
+			_borderSize = "portraitBorderSize"
+			_isAnimated = "_isAnimated"
+		)
+
+		(controller $Tooltip
+			(renderer='CrewTooltip')
+			(args
+				_crewId = "_crewId"
+				_crewHistoryId = "_crewHistoryId"
+				_noMouseInstruction = "true"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(bind bottom	"portraitBorderSize")
+			(bind right		"portraitBorderSize")
+		)
+
+		(controller $Instance renderer='CrewSkillPointsView'
+			(bind enabled "allSkillPoints > 0 && (crew.skillMatrixId || _crewHistoryId) && !_hideSkillPoints")
+			(args
+				_allSkillPoints = "allSkillPoints"
+				_freeSkillPoints = "freeSkillPoints"
+				_isBig = "_size != SIZE.SMALL"
+				_isEliteCrew = "isElite"
+				_isLockSkills = "!crew.canLearnSkills"
+			)
+		)
+	)
+
+	(block
+		(style (position = "absolute") (hitTest = "false") (width = "21px") (height = "21px") (left = "1px") (bottom = "1px"))
+		(controller $Instance renderer='RentIcon'
+			(bind enabled "(timeRent || crew.rentDuration) && _showRentIcon")
+			(args
+				_timeRent = "timeRent"
+				_daysRent = "crew.rentDuration"
+			)
+		)
+	)
+)
+
+(def element RentIcon (_timeRent:number, _daysRent:number) layout=true
+	(scope
+		(var serverTime:number = "currentServerSeconds()" (event "evInfrequent"))
+		(var rentTimeLeft:number = "_timeRent - serverTime")
+	)
+
+	(style
+		(width = "21px")
+		(height = "21px")
+		(bind backgroundImage "rentTimeLeft > DAY_IN_SEC || _daysRent	? 'url:../service_kit/icons/icon_rent_white.png'
+																		: 'url:../service_kit/icons/icon_rent_orange.png'")
+	)
+)
+
+(def element CrewNameWithIcon (_crewId:number= "null", _crewHistoryId:number = "null", _isRentIconHidden:bool = "false", _isTTX:bool = "false", _isBig:bool = "false", _hideRank:bool = "false") layout=true
+	(scope
+		(event evAddedToStage)
+		(var crewEntity:gfx = "$datahub.getPrimaryEntity(CC.crew, _crewId)")
+		(var crewHistoryEntity:gfx = "$datahub.getPrimaryEntity( CC.crewHistoryInfo, _crewHistoryId)")
+		(var isCrewHistory:bool = "crewHistoryEntity != null")
+
+		(var crewInfo:gfx = "crewEntity ? crewEntity.crew : null")
+		(var crewHistoryInfo:gfx = "crewHistoryEntity ? crewHistoryEntity.crewHistoryInfo : null")
+		(var crew:gfx = "isCrewHistory ? crewHistoryInfo : crewInfo")
+
+		(var classificationId:number = "crew ? crew.classificationId : null")
+
+		(var isSpecial:bool = "	classificationId == SC.Common.COMMANDER_CLASSIFICATIONS.UNIQUE ||
+								classificationId == SC.Common.COMMANDER_CLASSIFICATIONS.ADVANCED ")
+
+		(var iconName:str = "	!isSpecial														? 'common.png' :
+								classificationId == SC.Common.COMMANDER_CLASSIFICATIONS.UNIQUE	? 'unique.png'
+																								: 'advanced.png'")
+
+		(var textColor:str = "	!crew															? SC.Ui_styles.SERVICE_COLORS.ORANGE :
+								classificationId == SC.Common.COMMANDER_CLASSIFICATIONS.UNIQUE	? SC.Ui_styles.SERVICE_COLORS.YELLOW
+																								: SC.Ui_styles.SERVICE_COLORS.WHITE")
+
+		(var nameTextAlpha:number = "textColor == SC.Ui_styles.SERVICE_COLORS.WHITE	? TA : 1")
+		(var rankTextAlpha:number = "textColor == SC.Ui_styles.SERVICE_COLORS.WHITE	? TC : 1")
+
+		(var hasRank:bool = "crew ? crew.hasRank : false")
+		(var rankIDS:str = "crew ? crew.rankIDS : ''")
+		(var crewRank:str = "crew	?	hasRank	? toUpper(rankIDS)
+												: 'IDS_CREW_RANK_COMMON'
+									:	null")
+
+		(var crewName:str = "crew	? crew.fullName
+									: tr('IDS_NO_CREW')")
+
+		(var timeRent:number = "isCrewHistory ? crew.rentUntil : crew.timeRent" (event "crew.evTimeRentChanged"))
+		(var rentDuration:number = "isCrewHistory ? crew.rentDuration : null")
+		(var isRental:bool = "(timeRent || rentDuration) && !_isRentIconHidden")
+	)
+	(name = "crewName")
+	(style (width = "100%"))
+	(dispatch evAddedToStage on=addedToStage)
+
+	(hblock
+		(style (width = "100%") (marginBottom = "S") (bind marginLeft "_isTTX && isSpecial ? -20 : 0"))
+
+		(block
+			(bind visible "isSpecial")
+			(style
+				(width = "27px")
+				(height = "27px")
+				(marginLeft = "-9px")
+				(marginBottom = "-10px")
+				(bind marginTop "_isBig ? -6 : -8px")
+				(bind marginRight "_isTTX ? 2 : -4px")
+				(bind backgroundImage "'url:../crew_commander/icons/' + iconName")
+			)
+		)
+		(tf
+			(bind name "'Commander_' + crewName")
+			(bind class "_isBig ? '$TextDefaultBold21NM' : '$TextDefaultBold17NM'")
+			(bind alpha "nameTextAlpha")
+
+			(style
+				(bind textColor "textColor")
+				(bind multiline "_isTTX ? false : true")
+				(maxWidth = "100%") 
+				(leading = "-4")
+			)
+			(bind text "crewName")
+		)
+		(block
+			(bind visible "isRental")
+			(style
+				(width = "21px")
+				(height = "21px")
+				(marginBottom = "-7px")
+				(marginLeft = "S")
+				(bind marginTop "_isBig ? '-3px' : '-4px'")
+			)
+
+			(controller $Instance renderer='RentIcon'
+				(bind enabled "isRental")
+				(args
+					_timeRent = "timeRent"
+					_daysRent = "crew.rentDuration"
+				)
+			)
+		)
+	)
+
+	(block
+		(bind visible "crewRank")
+
+		(controller $Animation
+			(bindcall play
+				from =	"{alpha: 1,	ubScaleY: 1, scaleY: 1}"
+				to =	"{alpha: 0,	ubScaleY: 0, scaleY: 0}"
+				reverse = "!_hideRank"
+				duration = "0.09"
+				easing="Easing.quad_in"
+				(event "evAddedToStage")
+				(bind trigger "_hideRank")
+			)
+		)
+
+		(tf
+			(class $TextDefaultNM)
+			(style (bind textColor "textColor"))
+			(bind alpha "rankTextAlpha")
+			(bind text "crewRank")
+		)
+	)
+)
+
+(def element CrewSkillPoints (_crewId:number, _shipClass:str, _isBig:bool = "false") layout=true
+	(scope
+		(var crewEntity:gfx = 	"$datahub.getPrimaryEntity(CC.crew, _crewId)")
+		(var crew:gfx =			"crewEntity ? crewEntity.crew : null"		(event "crewEntity.crew.evDismissDelayChanged")
+																			(event "crewEntity.crew.evLevelUp")
+																			(event "crewEntity.crew.evExpChanged")
+																			(event "crewEntity.crew.evShipChanged")
+																			(event "crewEntity.crew.evSkillsChanged")
+																			(event "crewEntity.crew.evResetCostChanged")
+																			(event "crewEntity.crew.evAdaptationUpdated")
+																			(event "crewEntity.crew.evChanged")
+																			(event "crewEntity.crew.evRecentnessUpdated")
+																			(event "crewEntity.crew.evIsPenaltiesActiveChanged"))
+
+		(var skillTreeEntity:gfx = "$datahub.getPrimaryEntity(CC.skillTree, toString(_crewId) + '_' + _shipClass)")
+		(var freeSkillPoints:number = "	!!skillTreeEntity	? skillTreeEntity.skillTree.freeSkillPoints
+															: crew.allSkillPoints"	(event "skillTreeEntity.skillTree.evFreeSkillPointsChanged"))
+		(var isElite:bool =	"crew ? crew.isElite : false" (event "crew.evLevelUp"))
+	)
+
+	(element CrewSkillPointsView
+		_allSkillPoints = "crew.allSkillPoints"
+		_freeSkillPoints = "freeSkillPoints"
+		_isBig = "_isBig"
+		_isEliteCrew = "isElite"
+		_isLockSkills = "!crew.canLearnSkills"
+	)
+)
+
+(def element CrewSkillPointsView (_allSkillPoints:number, _freeSkillPoints:number, _isBig:bool, _isEliteCrew:bool, _isLockSkills:bool) layout=true
+	(scope
+		(var levelText:str = "	!_isEliteCrew 	? _allSkillPoints :
+								_isBig			? ('[el_left]' + _allSkillPoints + '[el_right]')
+												: ('[el_left_sm]' + _allSkillPoints + '[el_right_sm]')")
+		
+		(var substituteMap:dict = "{	'[el_left]':	'elite_wreath_left',
+										'[el_right]':   'elite_wreath_right',
+										'[el_left_sm]': 'elite_wreath_left_small',
+										'[el_right_sm]':'elite_wreath_right_small'	}")
+
+		(var isMarkerVisible:bool = "!(!_freeSkillPoints || _isLockSkills)")
+		(var markerRendererItems:array = "['MarkerNewCounterBig', 'MarkerNewCounter']")
+		(var markerRendererId:number = "_isBig	? 0
+												: 1")
+	)
+	
+	(controller $Tooltip
+		(renderer='CrewSkillPointsTooltip')
+		(args
+			_isEliteCrew = "_isEliteCrew"
+			_crewLevel = "_allSkillPoints"
+			_freeSkillPoints = "_freeSkillPoints"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+	)
+
+	(block
+		(style
+			(align = "center")
+			(backgroundImage = "'url:../service_kit/panel_backgrounds/counter.png'")
+			(scale9grid = 4)
+			(bind minWidth "_isBig ? 32 : 24")
+		)
+
+		(tf
+			(bind class "_isBig ? '$TextDefaultBold21NM' : '$TextDefaultBold17NM'")
+			(style
+				(alpha = "TA")
+				(marginLeft = "XS")
+				(bind marginTop		"_isBig ? 6 : XS")
+				(bind marginBottom	"_isBig ? 6 : XS")
+				(bind marginRight	"_isEliteCrew ? XXS : XS")
+			)
+
+			(bindcall substitute imageOffset="_isBig ? 7 : 6"  substitutionMap="substituteMap" 	sourceText="levelText"  postfix='' init=true) 
+		)
+	)
+	(block
+		(style
+			(position = "absolute")
+			(backgroundColor = "0x01000000")
+			(bind top "_isBig ? -19 : -16px")
+			(bind right "_isBig ? -5 : -9")
+		)
+		(controller $Instance
+			(bind renderer "markerRendererItems[markerRendererId]")
+			(bind enabled "isMarkerVisible")
+			(args
+				_newContentCounter = "_freeSkillPoints"
+			)
+		)
+	)
+)
+
+(def element CrewSkillPointsTooltip (_crewLevel:number, _freeSkillPoints:number, _isEliteCrew:bool = "false") layout=true
+	(scope
+		(var headerText:str = "_isEliteCrew	? tr('IDS_ELITE_CREW_STATUS') : subst('IDS_CREW_LEVEL', [], {crewLevel: toString(_crewLevel)})")
+	)
+	(style (hitTest = "false") (width = "300px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "headerText"
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_freeSkillPoints > 0"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer = 'TooltipSystemStatusLine'
+				(bind enabled "_freeSkillPoints > 0")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+					_text = "tr('IDS_FREE_SKILLPOINTS_LEFT') + ' ' +  _freeSkillPoints"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_isEliteCrew"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer = 'TooltipSystemDescriptionText'
+				(bind enabled "_isEliteCrew")
+				(args
+					_descriptionText = "'IDS_ELITE_CREW_TOOLTIP_DESCRIPTION'"
+				)
+			)
+		)
+	)
+)
+
+
+
+(def element ShipWithLabel (_shipId:number, _unifiedStatus:str, _label:str) layout=true
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "_unifiedStatus" "'textColor'" "'textAlpha'")
+	(style (width = "100%") (backgroundColor = "0x01000000"))
+
+	(tf
+		(style (width = "100%") (marginRight = "SXS") (bind textColor "textColor"))
+		(class $TextDefaultNM)
+		(bind alpha "textAlpha")
+		(bind text "_label")
+	)
+
+	(block
+		(bind visible "_shipId")
+		(style (marginTop = "SXS"))
+
+		(controller $Instance renderer='ShipLineItemNM'
+			(bind enabled "_shipId")
+			(args
+				_shipId = "_shipId"
+				_withFlag = "true"
+			)
+		)
+	)
+)
+
+(def element CrewExperienceBar (_crewId:number) layout=true
+	(scope
+		(var crewEntity:gfx = "$datahub.getPrimaryEntity(CC.crew, _crewId)")
+		(var crew:gfx = "_crewId ? crewEntity.crew : crewEntity.crewHistoryInfo")
+		
+		(var isInAdaptation:bool = "crewEntity && crewEntity.hasComponent(CC.retraining)" (event "crewEntity.evAdded") (event "crewEntity.evRemoved"))
+		(var crewRetraining:gfx = "isInAdaptation ? crewEntity.retraining : null")
+
+		(var adaptationExperienceEarned:number = "crewRetraining ? crewRetraining.adaptationExperienceEarned : 0" (event "crewRetraining.evRetrainingUpdated"))
+		(var adaptationExperiencePenalty:number = "crewRetraining ? crewRetraining.adaptationExperiencePenalty : 0" (event "crewRetraining.evRetrainingUpdated"))
+
+		(var crewExperience:number = "crew ? crew.experience : 0" (event "crew.evExpChanged"))
+		(var experienceToRichNextLevel:number = "crew ? crew.experienceToRichNextLevel : 0" (event "crew.evLevelUp"))
+		(var isEliteStatusVisible:bool = "crew.isElite && !isInAdaptation" (event "crew.evLevelUp"))
+		
+		(var curXpValue:number = "	isInAdaptation 	? adaptationExperienceEarned
+													: crewExperience")
+
+		(var maxXpValue:number = "	isInAdaptation 	? adaptationExperiencePenalty
+													: experienceToRichNextLevel")
+
+		(var tooltipText:str = "isInAdaptation 	? 'IDS_HINT_CREWEXP_TO_ADAPTATION'
+												: 'IDS_HINT_CREWEXP_TO_NEXT_SKILLPOINT'")
+
+		(var unifiedStatus:str = "	isInAdaptation	? SC.Ui_styles.UNIFIED_STATUS.ATTENTION
+													: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+
+		(var progressBarColor:str = "	isInAdaptation	? SC.Ui_styles.SERVICE_COLORS.ORANGE
+														: SC.Ui_styles.SERVICE_COLORS.YELLOW")
+	)
+	(style (width = "100%"))
+	
+	(block
+		(bind visible "!isEliteStatusVisible")
+		(style (width = "100%"))
+
+		(element DefaultProgressBar
+			_progress = "curXpValue/maxXpValue"
+			_color = "progressBarColor"
+			
+			(style (marginBottom = "XS"))
+
+			(controller $Tooltip 
+				(renderer = 'SimpleStatusTooltip')
+				(args 
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+					_text = "tooltipText"
+				)
+				(align="top|center")
+				(position="border")
+				(offset=[0, 6])
+				(screenBoundsOffset={left:10, top:10, right:10, bottom:10})
+				(macro SIMPLE_TOOLTIP_ANIMATION)
+			)
+		)
+
+		
+		(element DefaultDividedCounter
+			_curValueTextClass = "'$TextDefaultNM'"
+			_curValue = "curXpValue"
+			_maxValue = "maxXpValue"
+			_unifiedStatus = "unifiedStatus"
+		)
+	)
+
+	(tf
+		(bind visible "isEliteStatusVisible")
+		(style (alpha = "TC") (marginTop = "S"))
+		(class $TextDefaultNM)
+		(text = "'IDS_ELITE_CREW_STATUS'")
+	)
+)
+
+(def element CrewSkillIconView (_name:str, _isLearned:bool) layout=true
+	(class $Fullsize)
+	(style (backgroundSize = "fill") (bind backgroundImage "'url:../crew_commander/skills/' + _name + '.png'"))
+	(bind colorTransform "_isLearned ? COLOR_TRANSFORM_WHITE_TO_YELLOW : {}")
+)
+
+(def element CrewSkillEpicIcon () layout=true
+	(style
+		(position = "absolute")
+		(width = "14px")
+		(height = "14px")
+		(bind backgroundImage "'url:../service_kit/item_types/icon_modernization_special.png'")
+		(hitTest = "false") 
+	)
+)

@@ -1,0 +1,56 @@
+<RD025_Dir_TA_ITA_lod1.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	RD025_Dir_TA_ITA	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS200_YDCS_M_1	</identifier>
+				<transform>
+					<row0>	0.2525 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.2525 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.2525 0.0000	</row2>
+					<row3>	0.0000 0.0620 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS203_YDSS_M_1	</identifier>
+				<transform>
+					<row0>	0.0000 0.2520 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.0000 0.2520 0.0000	</row1>
+					<row2>	0.2520 0.0000 0.0000 0.0000	</row2>
+					<row3>	0.0000 0.0545 -0.0041 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	RD025_Dir_TA_ITA	</node>
+		<geometry>
+			<vertices>	RD025_Dir_TA_ITA_lod1Shape.vertices	</vertices>
+			<primitive>	RD025_Dir_TA_ITA_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/RSD409_Pr_20i_Tashkent/director/RD025_Dir_TA_ITA.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0151 -0.0018 -0.0138	</min>
+		<max>	0.0186 0.0956 0.0127	</max>
+	</boundingBox>
+</RD025_Dir_TA_ITA_lod1.visual>

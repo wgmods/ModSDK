@@ -1,0 +1,34 @@
+<crewAnimations.xml>
+	<!-- Each scenario.name attribute should have a unique value -->
+	<shipName name = "PASB509">
+		<animation model = 'content/gameplay/common/misc/CM610/CM610.model' animation = 'NC610_table' isLoop = "true" />
+	</shipName>
+	<shipName name = "PAES128_LEXINGTON_HOCKEY">
+		<animation model = 'content/gameplay/common/character/CH005_Hockey_Player_8/CH005_Hockey_Player_8.model' animation = 'idle' isLoop = "true" />
+		<animation model = 'content/gameplay/common/character/CH006_Goalkeeper/CH006_Goalkeeper.model' animation = 'idle' isLoop = "true" />
+	</shipName>
+	<shipName name = "PGES368_Bismark_Sam,PGES358_Bismark_SamHistorical">
+		<scenario tag = 'cat' name = 'BismarkSamIdle1' randomPauseStart = '8' randomPauseEnd = '20'/>
+		<scenario tag = 'cat' name = 'BismarkSamIdle2' randomPauseStart = '8' randomPauseEnd = '20'/>
+		<scenario tag = 'cat' name = 'BismarkSamIdle3' randomPauseStart = '8' randomPauseEnd = '20'/>
+		<animation model = 'content/gameplay/common/character/CH007_Cat/CH007_Cat.model' animation = 'bismarck2' isLoop = "false" scenario = "BismarkSamIdle2" />
+		<animation model = 'content/gameplay/common/character/CH007_Cat/CH007_Cat.model' animation = 'bismarck3' isLoop = "false" scenario = "BismarkSamIdle3" />
+		<animation model = 'content/gameplay/common/character/CH007_Cat/CH007_Cat.model' animation = 'bismarck4' isLoop = "false" scenario = "BismarkSamIdle1" />
+	</shipName>
+	<shipName name = "PBES116_Ark_Royal_Sam,PBES106_Ark_Royal_SamHistorical">
+		<scenario tag = 'cat' name = 'ArkRoyalSamIdle1' randomPauseStart = '1' randomPauseEnd = '2'/>
+		<scenario tag = 'cat' name = 'ArkRoyalSamIdle2' randomPauseStart = '1' randomPauseEnd = '2'/>
+		<scenario tag = 'cat' name = 'ArkRoyalSamIdle3' randomPauseStart = '1' randomPauseEnd = '2'/>
+		<animation model = 'content/gameplay/common/character/CH007_Cat/CH007_Cat.model' animation = 'arkroyal1' isLoop = "false" scenario = "ArkRoyalSamIdle1" />
+		<animation model = 'content/gameplay/common/character/CH007_Cat/CH007_Cat.model' animation = 'arkroyal2' isLoop = "false" scenario = "ArkRoyalSamIdle2" />
+		<animation model = 'content/gameplay/common/character/CH007_Cat/CH007_Cat.model' animation = 'arkroyal3' isLoop = "false" scenario = "ArkRoyalSamIdle3" />
+	</shipName>
+	<shipName name = "PBES528_Cossack_Sam,PBES518_Cossack_SamHistorical">
+		<scenario tag = 'cat' name = 'CossackSamIdle1' randomPauseStart = '1' randomPauseEnd = '2'/>
+		<scenario tag = 'cat' name = 'CossackSamIdle2' randomPauseStart = '1' randomPauseEnd = '2'/>
+		<scenario tag = 'cat' name = 'CossackSamIdle3' randomPauseStart = '1' randomPauseEnd = '2'/>
+		<animation model = 'content/gameplay/common/character/CH007_Cat/CH007_Cat.model' animation = 'cossack1' isLoop = "false" scenario = "CossackSamIdle1" />
+		<animation model = 'content/gameplay/common/character/CH007_Cat/CH007_Cat.model' animation = 'cossack2' isLoop = "false" scenario = "CossackSamIdle2" />
+		<animation model = 'content/gameplay/common/character/CH007_Cat/CH007_Cat.model' animation = 'cossack3' isLoop = "false" scenario = "CossackSamIdle3" />
+	</shipName>
+</crewAnimations.xml>

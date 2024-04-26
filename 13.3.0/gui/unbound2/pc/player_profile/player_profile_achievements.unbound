@@ -1,0 +1,212 @@
+(def element AchievementsScrollBarV () layout=true
+	(scope
+		(event achievementsScrollValueChanged)
+		(event achievementsScrollCanScrollChanged)
+	)
+
+	(scroll_bar
+		(orientation="vertical")
+		(track = 'SBVTrackLight')
+		(thumb = 'SBVThumbLight')
+		(singleStep="54")
+		(scrollDuration="700")
+		(dispatch 'achievementsScrollValueChanged' dir="EventDirection.UP" args="$event" on='valueChanged')
+		(dispatch 'achievementsScrollCanScrollChanged' dir="EventDirection.UP" args="$event" on='canScrollChanged')
+	)
+)
+
+(def element PlayerAchievementsContainer () layout=true dispatch_size_change=true
+	(scope
+		(macro STAGE_SIZE)
+		(var achievementGroups:array = "SC.Achievements_classifications.ACHIEVEMENT_GROUP.SORT_ORDER")
+
+		(var containerWidth:number = "	stageWidth > 1550	? 1056 :
+										stageWidth > 1400	? 944
+															: 832")
+		
+		
+		
+		(var containerHeight:number = "stageHeight - 170")
+	)
+	(style (bind width "containerWidth") (bind height "containerHeight") (paddingBottom = "L"))
+
+	(scrollArea
+		(style (width = 100%) (height = 100%) (backgroundColor = "0x01000000"))
+
+		(verticalSlider = 'AchievementsScrollBarV')
+
+		(hscrollPolicy='off')
+		(vscrollPolicy='auto')
+
+		(wheelScrollSpeed = "1.0")
+		(wheelScrollAcceleration = "0.9")
+		(maxScrollingAnimatedDistance = "150")
+
+		(topShadow='ScrollAreaShadowTop')
+		(bottomShadow='ScrollAreaShadowBottom')
+
+		(activeControlsAlpha = "1")
+		(inactiveControlsAlpha = "0.5")
+		(animationDuration = "0.2")
+		(animationEasing = "Easing.cubic_out")
+
+		(content
+			(style (bind width "containerWidth"))
+
+			(controller $Repeat renderer='AchievementGroup'
+				(bind count "achievementGroups.length")
+			)
+		)
+	)
+)
+
+
+
+
+(def element AchievementGroup () layout=true
+	(scope
+		(event evGroupClick)
+		(macro MOUSE_HANDLER_SCOPE "'btn_'")
+		(var selectedGroup:str = "SC.Achievements_classifications.ACHIEVEMENT_GROUP.SORT_ORDER[$index]")
+		(var groupCollectionString:str = "'all_achievements.' + selectedGroup")
+		(var achievementGroupName:str = "toUpper(selectedGroup) + '_ACHIEVEMENT'")
+
+		(var achievementCollection:gfx = "$datahub.getCollection(CC.achievement)")
+		(var groupCollection:gfx = "achievementCollection.getChildByPath(groupCollectionString)")
+		(var groupArray:array = "groupCollection.items" (event "groupCollection.evAdded"))
+
+		(var userPrefsComponent:gfx = "$datahub.getSingleComponent(CC.userPrefs)")
+		(var userPrefs:dict = "userPrefsComponent.userPrefs" (event "userPrefsComponent.evUserPrefsChanged"))
+		(var isExpanded:bool = "userPrefs['achievementsGroupExpand'][achievementGroupName]" (event "userPrefsComponent.evUserPrefsChanged"))
+
+		(var subGroupSortOrder:array = "SC.Achievements_classifications[achievementGroupName].SUBGROUP_SORT_ORDER")
+	)
+
+	(bind visible "groupArray.length > 0")
+	(bind name "selectedGroup + '_achievements'")
+	(style (width = "100%") (backgroundColor = "0x01000000"))
+	(bindcall externalCall 'inputMapping.onAction' "['setUserPref', {name: 'achievementsGroupExpand', subName: achievementGroupName, value: !isExpanded}]" init=false watch=false (event "evGroupClick"))
+
+	(hblock
+		(style (marginLeft = "13") (height = "LS") (align = "middle") (backgroundColor = "0x01000000"))
+
+		(element ButtonExpand
+			_isInOverState="btn_rollOver && !btn_mouseDown"
+			_isInDownState="btn_rollOver && btn_mouseDown"
+			_expanded="isExpanded"
+
+			(style (marginRight = "14"))
+		)
+
+		(tf
+			(class $TextDefaultBold25NM)
+			(style (alpha = "TA"))
+			(bind text "'IDS_ACHIEVEMENT_GROUP_' + toUpper(selectedGroup)")
+		)
+
+		(macro MOUSE_HANDLER
+			_prefix = "'btn_'"
+			_dispatchedEv = "'evGroupClick'"
+			_soundSet = "'dropdown'"
+		)
+	)
+
+	(element HorizontalDividerTwoPx)
+	
+	(block
+		(style
+			(width = "100%")
+			(marginLeft = "LS")
+			(alpha = "isExpanded ? 1 : 0")
+			(ubScaleY = "isExpanded ? 1 : 0")
+		)
+		(block
+			(class $FullsizeAbsolute)
+			(isMask = true)
+			(style
+				(backgroundColor = 0xFFFFFFFF)
+			)
+		)
+		(controller $Animation
+			(bindcall play to="{ubScaleY:0}" duration=0.5 easing="Easing.quint_out" action="kill" (bind enabled "!isExpanded"))
+			(bindcall play to="{ubScaleY:1}" duration=0.5 easing="Easing.quint_out" action="kill" (bind enabled "isExpanded"))
+		)
+		(controller $Animation
+			(bindcall play to="{alpha:0, visible:false}" delay=0.1 duration=0.3 easing="Easing.quint_out" action="kill" (bind enabled "!isExpanded"))
+			(bindcall play to="{alpha:1, visible:true}" duration=0.3 easing="Easing.quint_out" action="kill" (bind enabled "isExpanded"))
+		)
+		
+		(block
+			(style (width = "100%") (marginTop = "-S") (marginBottom = "XL"))
+			(controller $Repeat renderer='AchievementSubgroup'
+				(bind count "subGroupSortOrder.length")
+				(args
+					_groupName = "selectedGroup"
+					_subGroupSortOrder = "subGroupSortOrder"
+				)
+			)
+		)
+	)
+)
+
+
+(def element AchievementSubgroup (_groupName:str, _subGroupSortOrder:array) layout=true
+	(scope
+		(event evAddedToStage)
+		(var userPrefsComponent:gfx = "$datahub.getSingleComponent(CC.userPrefs)")
+		(var userPrefs:dict = "userPrefsComponent.userPrefs" (event "userPrefsComponent.evUserPrefsChanged"))
+		(var selectedSortingType:number = "userPrefs['achievementsSortOrder'] ? userPrefs['achievementsSortOrder'] : 0" (event "userPrefsComponent.evUserPrefsChanged"))
+
+		(var sortOrder:str = "	selectedSortingType == 0	? '.byDefault' : 
+								selectedSortingType == 1	? '.byTime'
+															: '.byAmount'")
+		
+		(var selectedSubGroup:str = "_subGroupSortOrder[$index]")
+		(var achievementsList:str = "'all_achievements.' + _groupName + '.bySubgroup.' + selectedSubGroup + sortOrder")
+		(var subgroupName:str = "toUpper(_groupName + '_' + selectedSubGroup)")
+
+		(var achievementCollection:gfx = "$datahub.getCollection(CC.achievement)")
+		(var subGroupCollection:gfx = "achievementCollection.getChildByPath(achievementsList)")
+		(var subGroupArray:array = "subGroupCollection.items" (event "subGroupCollection.evAdded") (event "subGroupCollection.evMoved"))
+	)
+	(bind visible "subGroupArray.length > 0")
+	(bind name "'group_' + _groupName + '_subgroup_' + selectedSubGroup")
+	(dispatch evAddedToStage on='addedToStage')
+
+	(style (width = "100%") (marginTop = "XL"))
+
+	(tf
+		(class $TextDefaultBold19NM)		
+		(style (marginBottom = "L") (alpha = "TC"))
+		(bind text "'IDS_ACHIEVEMENT_SUBGROUP_' + subgroupName")
+	)
+
+	(htile
+		(style (width = "100%") (padding = "-M"))
+		
+		(controller $Repeat renderer='AchievementListItem'
+			(bind count "subGroupArray.length")
+			(args
+				_achievementEntity = "subGroupArray[$index]"
+			)
+		)
+	)
+)
+
+(def element AchievementListItem (_achievementEntity:gfx) layout=true
+	(scope
+		(var amount:number = "_achievementEntity.achievement.amount" (event "_achievementEntity.achievement.evChanged"))
+	)
+	(style (padding = "M"))
+
+	(controller $Instance renderer='AchievementIcon'
+		(args
+			_id = "_achievementEntity.id"
+			_progressWidth = '50px'
+			_amount = "amount"
+			_size = '80px'
+			_isDesaturated = "amount > 0 ? false : true"
+			_showProgress = "true"
+		)
+	)
+)

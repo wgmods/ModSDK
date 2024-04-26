@@ -1,0 +1,175 @@
+(def constant KEY_ENTER 13)
+(def constant KEY_TAB 0x0F)
+
+
+
+
+
+(def element CombatLogTextInput (_isChatAvailable:bool) layout=true
+	(scope
+		(event evKeyDown)
+		(event evSendMessage)
+		(event evClearInput)
+		(event evFocusChangedWithDelay)
+
+		
+		(var battleChatAndLog:gfx = "$datahub.getSingleComponent(CC.battleChatAndLog)")
+		(var isInputFocused:bool = "battleChatAndLog.isInputFocused" (event "battleChatAndLog.evIsInputFocusedChanged"))
+
+		
+		(var internalFocused:bool = "false" watch=false)
+
+		
+		(var keyCode:number = "$event.keyCode" init=false (event "evKeyDown"))
+		(bind keyCode 0 (event "evClearInput"))
+
+		(var textInput:str = '')
+		(bind textInput '' watch=false init=false (event "evClearInput"))
+		(var resultMessage:str = "(textInput && textInput != '' && textInput != ' ' && textInput != '\n') ? textInput : ''")
+
+		(var delayedHitTest:bool = "false")
+		
+		(controller $Animation
+			(bindcall play duration=0.3 to="{delayedHitTest:false}" action="kill" (bind enabled "!isInputFocused"))
+			(bindcall play duration=0.01 to="{delayedHitTest:true}" action="kill" (bind enabled "isInputFocused"))
+		)
+	)
+	(bindcall externalCall 'inputMapping.onAction' "['battleChat.outgoingMessage', { message: resultMessage }]" init=false watch=false (event "evSendMessage"))
+	(bindcall externalCall 'inputMapping.onAction' "['battleChat.inputFocusChanged', { focused: internalFocused }]" init=false watch=false (event "evFocusChangedWithDelay"))
+
+	(dispatch evSendMessage watch=false (bind enabled "keyCode == KEY_ENTER") (event "evKeyDown"))
+	(dispatch evClearInput args="{}" (event "evSendMessage")) 
+	(dispatch evClearInput args="{}" init=false (bind enabled "!internalFocused") (bind trigger "internalFocused")) 
+
+	
+	(dispatch evFocusChangedWithDelay args="{}" delay=0.01 init=false (bind trigger "internalFocused"))
+
+	(style (width = 100%))
+	
+	(block
+		(style
+			(width = 100%)
+		)
+		(mc battle_chat_text_area_input
+			(name = 'txa_input')
+
+			(bind visible "_isChatAvailable")
+			(bind enabled "_isChatAvailable")
+
+			(bind maxChars 140)
+
+			(style (width = 100%) (forceResize=true))
+
+			(sync textInput "'text'" on='change')
+			(bind text '' (event "evClearInput"))
+			(controller $Focus tabEnabled=false
+				(bind clickFocus "!internalFocused")
+				(bind internalFocused "$event" init=false on='evFocused')
+				(bindcall setFocus "isInputFocused" init=false watch=false (bind trigger "isInputFocused"))
+			)
+			(dispatch evKeyDown args="{ keyCode: $event ? $event.keyCode : 0 }" on='keyDown' init=false)
+		)
+	)
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundColor = 0x01000000)
+			(bind hitTest "delayedHitTest")
+		)
+	)
+)
+
+
+
+(def element CombatChatMuteButton (_isInputFocused:bool, _isGloballyMuted:bool) layout=true
+	(scope
+		(event evOnButtonClicked)
+
+		(macro MOUSE_HANDLER_SCOPE "'btn_'")
+
+		(var isInOverState:bool = "btn_rollOver && !btn_mouseDown")
+		(var isInDownState:bool = "btn_rollOver && btn_mouseDown")
+		(var isVisible:bool = "btn_rollOver || _isInputFocused || _isGloballyMuted")
+
+		(var postfix:str = "_isGloballyMuted ? 'on' : 'off'")
+
+		(var hitTestDelayed:bool = "_isInputFocused || _isGloballyMuted" watch=false)
+		(controller $Animation
+			(bindcall play	duration=0.15	to="{hitTestDelayed: false}"	action="kill"	(bind enabled "!_isInputFocused && !_isGloballyMuted && !isInDownState"))
+			(bindcall play	duration=0.03	to="{hitTestDelayed: true}"		action="kill"	(bind enabled "_isInputFocused || _isGloballyMuted || isInDownState"))
+		)
+	)
+
+	(name = 'mute_button')
+
+	(style
+		(alpha = "	isInDownState	? 0.5 :
+					isInOverState	? 1 :
+					isVisible		? 0.7
+									: 0")
+		(width = 24px) (height = 23px)
+		(bind hitTest "hitTestDelayed")
+		(bind backgroundImage "'url:../service_kit/buttons/chat/mute_'+ postfix +'.png'")
+	)
+
+	(macro MOUSE_HANDLER
+		_prefix = "'btn_'"
+		_methods = "[ { type: 'direct.action', name: 'option.set', args: ['ui.enableBattleChat', _isGloballyMuted] } ]"
+		_soundSet = "'default_button'"
+	)
+
+	(controller $Animation
+		(bindcall play	duration=0.15	to="{alpha: 1}"		action="kill"	(bind enabled "isInOverState"))
+		(bindcall play	duration=0.15	to="{alpha: 0.7}"	action="kill"	(bind enabled "!isInOverState && !isInDownState && isVisible"))
+		(bindcall play	duration=0.15	to="{alpha: 0}"		action="kill"	(bind enabled "!isInOverState && !isInDownState && !isVisible"))
+		(bindcall play	duration=0.15	to="{alpha: 0.5}"	action="kill"	(bind enabled "isInDownState"))
+	)
+
+	(controller $Tooltip (renderer = 'SimpleStatusTooltip')
+		(bind enabled "isVisible")
+		(args
+			_text = "_isGloballyMuted	? 'IDS_CHAT_ENABLE_HINT'
+										: 'IDS_CHAT_DISABLE_HINT'"
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+	)
+)
+
+
+(def element VoiceChatOutgoingIcon () layout=true
+	(scope
+		(var selfAvatarWatcher:gfx = "$datahub.getFirstWatcher(CC.playerAvatar)")
+		(var selfAvatarEntity:gfx = "selfAvatarWatcher.entity" (event "selfAvatarWatcher.event"))
+		(var pureName:str = "selfAvatarEntity ? selfAvatarEntity.avatar.pureName : null")
+
+		(var playerVoiceChatWatcher:gfx = "$datahub.getPrimWatcher(CC.playerVoiceState, pureName)")
+		(var playerVoiceChatEntity:gfx = "playerVoiceChatWatcher.entity" (event "playerVoiceChatWatcher.event"))
+		(var isSpeaking:bool = "playerVoiceChatEntity ? playerVoiceChatEntity.playerVoiceState.isSpeaking : false" (event "playerVoiceChatEntity.playerVoiceState.evIsSpeakingChanged"))
+
+		(var voiceChat:gfx = "$datahub.getSingleComponent(CC.voiceChat)")
+		(var outgoing:bool = "voiceChat.outgoing" (event "voiceChat.evOutgoingChanged"))
+	)
+	(style (hitTest = false))
+
+	(macro CHANGE_ALPHA_BY_TRIGGER_ANIM _duration="0.1" _fromAlpha=0 _toAlpha=1 _triggerExpression="outgoing")
+
+	(controller $Tooltip
+		(bind enabled "outgoing")
+		(renderer = 'SimpleStatusTooltip')
+		(args
+			_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			_text="'IDS_VOICE_CHAT_OUTGOING_STATE_HINT'"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+	)
+	
+	(block
+		(style
+			(backgroundImage = 'url:../battle_hud/combat_log/icon_voice_chat.png')
+			(backgroundSize = "autosize")
+		)
+		(macro CHANGE_ALPHA_BY_TRIGGER_ANIM _duration="0.1" _fromAlpha=0.6 _toAlpha=1 _triggerExpression="isSpeaking")
+	)
+)
+

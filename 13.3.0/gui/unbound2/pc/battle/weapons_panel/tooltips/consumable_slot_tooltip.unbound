@@ -1,0 +1,56 @@
+(def element BattleConsumableTooltip (_consumableViewData:gfx, _battleConsumable:gfx=null, _parameterOwnerId:number=0) layout=true
+	(scope
+		(var iconPath:str = "'url:' + _consumableViewData.iconPath")
+		(var title:str = "_consumableViewData.title")
+		(var subHeader:str = "_consumableViewData.subheader")
+		(var description:str = "_consumableViewData.description")
+		(var isDescriptionProvided:bool = "description != ' '")
+		(var attributesNegative:array = "_consumableViewData.attributes.negative")
+		(var attributesPositive:array = "_consumableViewData.attributes.positive")
+		(var attributesNeutral:array = "_consumableViewData.attributes.neutral" (event "_battleConsumable.evConsumeNumChanged") (event "_battleConsumable.evReloadTimeCoeffChanged") (event "_battleConsumable.evWorkTimeCoeffChanged"))
+	)
+	(style (width = 340) (hitTest = false))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHeaderWithIconAndText'
+				(args
+					_imageUrl = "iconPath"
+					_imageWidth = 60
+					_imageHeight = 60
+					_unifiedStatus = ''
+					_headerText = "title"
+					_subheaderText = "subHeader"
+				)
+			)
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isDescriptionProvided"))
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemDescriptionText' (bind enabled "isDescriptionProvided")
+				(args
+					_descriptionText="description"
+				)
+			)
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider')
+		(block
+			(style
+			 (width = 100%)
+			)
+			(controller $Instance renderer='TooltipSystemParamsModifiersList'
+				(args
+					_attributesNegative="attributesNegative"
+					_attributesPositive="attributesPositive"
+					_attributesNeutral="attributesNeutral"
+					_ownerId="_parameterOwnerId"
+				)
+			)
+		)
+	)
+)

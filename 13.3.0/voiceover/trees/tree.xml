@@ -1,0 +1,67 @@
+<tree.xml
+		name="speaker"
+		type="Speaker">
+	<Node
+			name="queue"
+			type="PriorityQueue"
+			capacity="3"
+			discardOnOverflow="false"
+			runSemantics="true"
+			allowFollowingMessages="true">
+		<Node
+				name="telegraph"
+				type="Delay"
+				delay="1.0000"
+				allowDiscard="true"
+				checkPriority="false" />
+		<Node
+				name="autopilot"
+				type="Delay"
+				delay="0.5000"
+				allowDiscard="true"
+				checkPriority="false" />
+		<Node
+				name="anime-hsf"
+				type="AntiSpam"
+				cooldown="5.0000"
+				maxCount="2" />
+		<Node
+				name="quick-commands-receive"
+				type="AntiSpam"
+				cooldown="5.0000"
+				maxCount="1" />
+		<Node
+				name="defective-module"
+				type="AntiSpam"
+				cooldown="2.0000"
+				maxCount="2" />
+		<Node
+				name="friendly-fire"
+				type="AntiSpam"
+				cooldown="5.0000"
+				maxCount="1" />
+		<Node
+				name="quick-commands-port"
+				type="AntiSpam"
+				cooldown="0.0000"
+				maxCount="1" />
+		<Node
+				name="feedback-good-hit"
+				type="AntiSpam"
+				cooldown="5.0000"
+				maxCount="1" />
+	</Node>
+	<Node
+			name="quick-commands-queue"
+			type="PriorityQueue"
+			capacity="1"
+			discardOnOverflow="false"
+			runSemantics="true"
+			allowFollowingMessages="true">
+		<Node
+				name="quick-commands"
+				type="AntiSpam"
+				cooldown="1.0000"
+				maxCount="2" />
+	</Node>
+</tree.xml>

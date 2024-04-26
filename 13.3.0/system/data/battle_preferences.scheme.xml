@@ -1,0 +1,111 @@
+<battle_preferences.scheme.xml>
+  <scheme>
+    <battle storage="remote">
+      <altVision>
+        <mode key="altVisionMode" localization="IDS_ALTERNATE_INTERFACE"> DISABLED
+          <constraints>
+            <DISABLED localization="IDS_ALT_VISION_MODE_0">0</DISABLED>
+            <ADAPTIVE localization="IDS_ALT_VISION_MODE_1">1</ADAPTIVE>
+            <ENABLED localization="IDS_ALT_VISION_MODE_2">2</ENABLED>
+          </constraints>
+        </mode>
+      </altVision>
+
+      <autoPilot>
+        <mode key="autoPilotMode" localization="IDS_COLLISION_AUTOPILOT"> ALWAYS
+          <constraints>
+            <DISABLED localization="IDS_AUTOPILOTMODE_0">0</DISABLED>
+            <BINOCULAR localization="IDS_AUTOPILOTMODE_1">1</BINOCULAR>
+            <ALWAYS localization="IDS_AUTOPILOTMODE_2">2</ALWAYS>
+          </constraints>
+        </mode>
+      </autoPilot>
+
+      <ears>
+      	<enabled key="enableEars">False</enabled>
+      </ears>
+
+      <ui>
+        <crosshair>
+      	  <isDynamic key="isDynamicMode">False</isDynamic>
+      	  <indexStatic key="indexStaticMode">1</indexStatic>
+      	  <indexDynamic key="indexDynamicMode">0</indexDynamic>
+        </crosshair>
+
+        <showAssistedDamage>
+      	  <enabled key="showAssistedDamageMode">False</enabled>
+        </showAssistedDamage>
+        <showBlockedDamage>
+      	  <enabled key="showBlockedDamageMode">False</enabled>
+        </showBlockedDamage>
+      </ui>
+
+      <camera>
+        <wheelTransition>
+      	  <enabled key="wheelTransitionMode">True</enabled>
+        </wheelTransition>
+        <autoChangePosition>
+      	  <enabled key="autoChangePositionMode" localization="IDS_OPTIONS_AUTO_MAINGUN_CAMERA_SWITCH">True</enabled>
+        </autoChangePosition>
+        <yawBarrierTorpedoes>
+      	  <enabled key="yawBarrierTorpedoesMode" localization="IDS_OPTIONS_TORPEDO_CAMERA_LIMIT">False</enabled>
+        </yawBarrierTorpedoes>
+        <signY>
+      	  <inverted key="signYMode" localization="IDS_OPTIONS_INVERT_Y">False</inverted>
+        </signY>
+        <startBattleTps>
+      	  <enabled key="startBattleTpsMode">True</enabled>
+        </startBattleTps>
+        <autoTrackTarget>
+      	  <enabled key="autoTrackTargetMode" localization="IDS_OPTIONS_FOLLOW_TARGET">True</enabled>
+        </autoTrackTarget>
+        <observeYawRestore>
+      	  <enabled key="observeYawRestoreMode" localization="IDS_OPTIONS_RESTORE_CAMERA_AFTER_OVERVIEW_MODE">True</enabled>
+        </observeYawRestore>
+        <damageEffect>
+      	  <enabled key="damageEffectMode" localization="IDS_OPTIONS_CAMERA_DAMAGE_FEEDBACK">True</enabled>
+        </damageEffect>
+        <fov type="Float" localization="IDS_OPTIONS_FOV" min="0.7" max="1.2">0.74
+          <constraints type="interval" min="0.7" max="1.2"/><!-- [WWSD-201221] copypasted min / max -->
+        </fov>
+        <height type="Float" localization="IDS_OPTIONS_CAMERA_HEIGHT" min="-1.0" max="1.0">0.0
+          <constraints type="interval" min="-1.0" max="1.0"/><!-- [WWSD-201221] copypasted min / max -->
+        </height>
+      </camera>
+
+      <smoke>
+        <indicator>
+          <enabled key="showSmokeIndicator">True</enabled>
+        </indicator>
+      </smoke>
+
+      <terrain>
+        <shooting>
+          <mode key="terrainShootingMode" localization="IDS_TERRAIN_SHOOT_INDICATOR"> ENABLED
+            <constraints>
+              <ENABLED localization="IDS_TERRAIN_SHOOTING_MODE_0">0</ENABLED>
+              <TARGET_ENABLE localization="IDS_TERRAIN_SHOOTING_MODE_1">1</TARGET_ENABLE>
+              <DISABLED localization="IDS_TERRAIN_SHOOTING_MODE_2">2</DISABLED>
+            </constraints>
+          </mode>
+        </shooting>
+      </terrain>
+
+      <tutorial>
+        <aircarrier>
+          <shown key="aircarrierTutorialShown">False</shown>
+        </aircarrier>
+        <submarine>
+          <shown key="submarineTutorialShown">False</shown>
+        </submarine>
+      </tutorial>
+
+      <weapon>
+        <indicator>
+          <simultaneousReload key="simultaneousReload" localization="IDS_SIMULTANEOUS_RELOAD">False</simultaneousReload>
+        </indicator>
+      </weapon>
+
+    </battle>
+  </scheme>
+</battle_preferences.scheme.xml>

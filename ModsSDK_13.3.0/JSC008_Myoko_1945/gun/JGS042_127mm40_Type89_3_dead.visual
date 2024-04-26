@@ -1,0 +1,97 @@
+<JGS042_127mm40_Type89_3_dead.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	shield_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	SP_YMS100_YGBS_M_1_INDEX_2	</identifier>
+					<transform>
+						<row0>	0.4913 -0.0004 -0.0075 0.0000	</row0>
+						<row1>	0.0000 0.4907 -0.0250 0.0000	</row1>
+						<row2>	0.0075 0.0250 0.4906 0.0000	</row2>
+						<row3>	-0.0221 0.1424 -0.0377 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	SP_YMS100_YGBS_M_1_INDEX_3	</identifier>
+					<transform>
+						<row0>	0.4911 0.0007 -0.0157 0.0000	</row0>
+						<row1>	-0.0015 0.4907 -0.0246 0.0000	</row1>
+						<row2>	0.0157 0.0247 0.4905 0.0000	</row2>
+						<row3>	0.0226 0.1404 -0.0563 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	SP_YMS104_YGRS_M_1_INDEX_2	</identifier>
+					<transform>
+						<row0>	0.4085 0.0006 -0.0131 0.0000	</row0>
+						<row1>	-0.0012 0.4082 -0.0205 0.0000	</row1>
+						<row2>	0.0130 0.0205 0.4080 0.0000	</row2>
+						<row3>	0.0329 0.1567 0.2680 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	SP_YMS104_YGRS_M_1_INDEX_3	</identifier>
+					<transform>
+						<row0>	0.4087 -0.0004 -0.0063 0.0000	</row0>
+						<row1>	0.0000 0.4082 -0.0208 0.0000	</row1>
+						<row2>	0.0063 0.0208 0.4081 0.0000	</row2>
+						<row3>	-0.0177 0.1570 0.2487 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	shield_dead	</node>
+		<geometry>
+			<vertices>	shield_deadShape.vertices	</vertices>
+			<primitive>	shield_deadShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSC008_Myoko_1945/gun/JGS042_127mm40_Type89_3_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	turret_dead	</node>
+		<geometry>
+			<vertices>	turret_deadShape.vertices	</vertices>
+			<primitive>	turret_deadShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_Gun1Dead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSC008_Myoko_1945/gun/JGS009_127mm40_Type_89_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1750 -0.0076 -0.1727	</min>
+		<max>	0.1911 0.2595 0.2974	</max>
+	</boundingBox>
+</JGS042_127mm40_Type89_3_dead.visual>

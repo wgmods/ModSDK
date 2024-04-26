@@ -1,0 +1,50 @@
+(def element HUDModalWindowsContainer () layout=true
+	(scope
+		(var avatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var playerAvatarComponent:gfx = "avatarEntity.playerAvatar")
+		(var isAlive:bool = "playerAvatarComponent ? playerAvatarComponent.isAlive : false" (event "playerAvatarComponent.evIsAliveChanged"))
+
+		(var battleInfoEntity:gfx = "$datahub.getSingleEntity(CC.battleInfo)")
+		(var clientBuildInfoEntity:gfx = "$datahub.getSingleEntity(CC.clientBuildInfo)")
+		(var isReplayPlaying:bool = "battleInfoEntity.battleInfo.isReplayPlaying")
+		(var isEnableClientReplayUi:bool = "clientBuildInfoEntity.clientBuildInfo.isEnableClientReplayUi")
+
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+
+		(var shipParamsCmdEntity:gfx = "$datahub.getPrimaryEntity(CC.commandMappingCommandName, 'CMD_SHIP_PARAMS')")
+		(var isShipParamsVisible:bool = "shipParamsCmdEntity.commandMappingCommand.isDown && isAlive" (event "shipParamsCmdEntity.commandMappingCommand.evIsDownChanged"))
+
+		(macro IS_SPECTATOR_MODE)
+		(var isSpectateModalWindowVisible:bool = "isSpectator && spectatorState != SC.Common.SPECTATOR_STATE.PRE_SPECTATOR")
+	)
+
+	(style
+		(bind width "stageWidth")
+		(bind height "stageHeight")
+	)
+
+	(block
+		(alpha = "isShipParamsVisible ? 1 : 0")
+		(visible = "isShipParamsVisible")
+		(controller $Animation
+			(bindcall play duration=0.1 from={alpha:0, visible: false} to={alpha:1, visible: true} (bind enabled "isShipParamsVisible"))
+			(bindcall play duration=0.1 to={alpha:0, visible: false} (bind enabled "!isShipParamsVisible"))
+		)
+		(class $FullsizeAbsolute)
+		(controller $Instance renderer='ModalShipBattleParams'
+			(bind enabled "avatarEntity != null")
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(controller $Instance renderer='SpectateModalWindow' (bind enabled "isSpectateModalWindowVisible"))
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(controller $Instance renderer='PlaybackPanel' (bind enabled "isReplayPlaying && isEnableClientReplayUi"))
+	)
+)

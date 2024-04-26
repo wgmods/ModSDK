@@ -1,0 +1,76 @@
+
+(def constant FOGHORN_ANIMATION_DELAY 4)
+
+(def constant FOGHORN_ANIMATION_SPEED 1.6)
+
+(def constant FOGHORN_ANIMATION_COMBINED_TIMING "FOGHORN_ANIMATION_DELAY + FOGHORN_ANIMATION_SPEED")
+
+
+(def layout FogHornIndicator ()
+	(scope
+		(var selfVehicleEntity:gfx =		"$datahub.getSingleEntity(CC.selfVehicle)")
+		(var foghornMaxValue:number =		"selfVehicleEntity.fogHorn.max")
+		(var foghornMaxRegenTime:number =	"selfVehicleEntity.fogHorn.maxRegenTime")
+		(var foghornValue:number =			"selfVehicleEntity.fogHorn.value"			(event "selfVehicleEntity.fogHorn.evFoghornStateChanged"))
+		(var foghornDuration:number =		"max(0.01, foghornValue)")
+
+		
+		(var animationTime:number = "max(0.1, (foghornMaxRegenTime - (foghornValue / foghornMaxValue) * foghornMaxRegenTime))")
+		(var visibilityAnimationDelay:number = "(animationTime > FOGHORN_ANIMATION_COMBINED_TIMING) ? FOGHORN_ANIMATION_DELAY : 0")
+		(var visibilityAnimationDuration:number = "max(FOGHORN_ANIMATION_SPEED, animationTime)")
+		(var progressBarWidth:number = "((foghornValue / foghornMaxValue) * 253)")
+
+		(var isHorning:bool =			"selfVehicleEntity.fogHorn.isHorning"		(event "selfVehicleEntity.fogHorn.evFoghornStateChanged"))
+		(var isRegenerating:bool =		"selfVehicleEntity.fogHorn.isRegenerating"	(event "selfVehicleEntity.fogHorn.evFoghornStateChanged"))
+
+		(var animatedProgressWidth:number = "progressBarWidth" watch=false)
+		(bind animatedProgressWidth "progressBarWidth" init=false watch=false (bind enabled "!isHorning"))
+		(controller $Animation
+			(bindcall play	id='horning_anim'
+							from="{animatedProgressWidth:progressBarWidth}"
+							to="{animatedProgressWidth:0}"
+							duration="foghornDuration"
+							easing="Easing.line"
+							action="kill"
+					(bind enabled "isHorning")
+			)
+			(bindcall stop	id='horning_anim' (bind enabled "!isHorning"))
+
+			(bindcall play	id='regenerating_anim'
+							from="{animatedProgressWidth:progressBarWidth}"
+							to="{animatedProgressWidth:253}"
+							duration="animationTime"
+							easing="Easing.line"
+							action="kill"
+					(bind enabled "isRegenerating")
+			)
+			(bindcall stop	id='regenerating_anim' (bind enabled "!isRegenerating"))
+		)
+	)
+	
+	(style
+		(width = 255px)
+		(height = 3px)
+		(backgroundImage = 'url:../service_kit/progress_bars/bar_default_bg.png')
+		(scale9grid = "[2, 2, 2, 2]")
+		(backgroundSize = "fill")
+	)
+
+	(alpha = "isHorning ? 1 : 0")
+	(controller $Animation
+		(bindcall play to="{alpha:1}" duration=0.4 easing="Easing.line" action="kill" (bind enabled "isHorning"))
+		(bindcall play from="{alpha:1}" to="{alpha:0}" duration="visibilityAnimationDuration" delay="visibilityAnimationDelay" easing="Easing.line" action="kill" (bind enabled "isRegenerating"))
+	)
+
+	
+	(block
+		(style
+			(height = 1px)
+			(bind width "animatedProgressWidth")
+			(left = 1px)
+			(top = 1px)
+			(backgroundColor = "SC.Ui_styles.SERVICE_COLORS.GREEN")
+			(position = "absolute")
+		)
+	)
+)

@@ -1,0 +1,23 @@
+(def element MobilityTTX (shipTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(class $TTXSecondaryPanel)
+
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAXSPEED'
+									_value = "shipTTX.mobility.speed"
+									_valueConfig = "VALUE_CONFIG.KNOT_FLOAT"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_MAXSPEED' 'IDS_TOOLTIP_MAXSPEED')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TURNINGRADIUS'
+									_value = "shipTTX.mobility.turningRadius"
+									_valueConfig = "VALUE_CONFIG.METER_NEGATIVE"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_TURNINGRADIUS' 'IDS_TOOLTIP_TURNINGRADIUS')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_RUDDER_TIME'
+									_value = "shipTTX.mobility.rudderTime"
+									_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_RUDDER_TIME' 'IDS_TOOLTIP_RUDDER_TIME')
+	)
+)

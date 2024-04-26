@@ -1,0 +1,1170 @@
+(def constant SHIP_PARAMS_PANEL_WIDTH "340px")
+(def constant SHIP_PARAMS_PANEL_HEIGHT "600px")
+(def constant SHIP_ACTIVE_STATES_WIDTH "720px")
+(def constant SHIP_ACTIVE_STATES_HEIGHT "600px")
+
+(def constant MODAL_SHIP_PARAMS_STATE_ICON_SIZE 60)
+(def constant MODAL_SHIP_PARAMS_STATE_ICON_CONTAINER_SIZE 92)
+
+(def constant SHIP_PARAMS_RENDERER_TYPES [
+	'ShipParamContextRenderer',
+	'ShipParamContextBaseRenderer',
+	'ShipParamContextMaxRenderer',
+	'ShipParamContextMaxColorRenderer',
+	'ShipParamCoefficientRenderer',
+	'ShipParamCurrentNoDiffRenderer'
+])
+
+(def constant PLANE_PARAMS_SET [	
+	{paramName: "SC.Battle.PARAMETER.health", level: 0, title: 'IDS_SHIP_PARAM_DURABILITY', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_MAX_COLOR",
+		children: [
+			{paramName: "SC.Battle.PARAMETER.attackPrepareTime", title: 'IDS_SHIP_PARAM_PLANE_PREPARE_TIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+			{paramName: "SC.Battle.PARAMETER.attackProcessTime", title: 'IDS_SHIP_PARAM_PLANE_PROCESS_TIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+			{paramName: "SC.Battle.PARAMETER.attackReloadTime", title: 'IDS_SHIP_PARAM_PLANE_RELOAD_TIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+		
+			{paramName: "SC.Battle.PARAMETER.attackPrepareTimeAlt", title: 'IDS_SHIP_PARAM_PLANE_PREPARE_TIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+			{paramName: "SC.Battle.PARAMETER.attackProcessTimeAlt", title: 'IDS_SHIP_PARAM_PLANE_PROCESS_TIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+			{paramName: "SC.Battle.PARAMETER.attackReloadTimeAlt", title: 'IDS_SHIP_PARAM_PLANE_RELOAD_TIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false}
+		], 
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.health", title: 'IDS_SHIP_PARAM_SQUADRON_VITALITY', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_MAX_COLOR"},
+			{paramName: "SC.Battle.PARAMETER.numPlanesInSquadron", title: 'IDS_SHIP_PARAM_NUM_PLANES_IN_SQUADRON', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.numPlanesInSquadronAlt", title: 'IDS_SHIP_PARAM_NUM_PLANES_IN_SQUADRON', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.attackerSize", title: 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.attackerSizeAlt", title: 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.torpedoMaxDist", level: 0, title: 'IDS_SHIP_PARAM_TORPEDY', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true, isZeroBaseValueHidden: true,
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.torpedoMaxDist", title: 'IDS_SHIP_PARAM_TORPEDO_MAX_DIST', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true, isZeroBaseValueHidden: true}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.maxSpeed", level: 0, title: 'IDS_SHIP_PARAM_SQUADRON_SPEED', measure: 'IDS_KNOT_SPACE', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,
+		tooltip: [
+				{paramName: "SC.Battle.PARAMETER.cruiseSpeed", title: 'IDS_SHIP_PARAM_SQUADRON_CRUISE_SPEED', measure: 'IDS_KNOT_SPACE', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+				{paramName: "SC.Battle.PARAMETER.maxSpeed", title: 'IDS_SHIP_PARAM_SQUADRON_SPEED_MAX', measure: 'IDS_KNOT_SPACE', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true}
+		]
+	},		
+	{paramName: "SC.Battle.PARAMETER.maxSpeedAlt", level: 0, title: 'IDS_SHIP_PARAM_SQUADRON_SPEED', measure: 'IDS_KNOT_SPACE', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,
+		tooltip: [
+				{paramName: "SC.Battle.PARAMETER.cruiseSpeedAlt", title: 'IDS_SHIP_PARAM_SQUADRON_CRUISE_SPEED', measure: 'IDS_KNOT_SPACE', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+				{paramName: "SC.Battle.PARAMETER.maxSpeedAlt", title: 'IDS_SHIP_PARAM_SQUADRON_SPEED_MAX', measure: 'IDS_KNOT_SPACE', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.visibilityRange", level: 0, title: 'IDS_SHIP_PARAM_SQUADRON_VISIBILITY', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false,
+			tooltip: [
+				{paramName: "SC.Battle.PARAMETER.visibilityRange", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_SHIP', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+				{paramName: "SC.Battle.PARAMETER.visibilityPlaneRange", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_PLANE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false}
+			]
+	},
+	{paramName: "SC.Battle.PARAMETER.visibilityRangeAlt", level: 0, title: 'IDS_SHIP_PARAM_SQUADRON_VISIBILITY', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false,
+			tooltip: [
+				{paramName: "SC.Battle.PARAMETER.visibilityRangeAlt", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_SHIP', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+				{paramName: "SC.Battle.PARAMETER.visibilityPlaneRangeAlt", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_PLANE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false}
+			]
+	},
+	{paramName: "SC.Battle.PARAMETER.visionRange", level: 0, title: 'IDS_SHIP_PARAM_VISION_RANGE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.visionRange", title: 'IDS_PARAM_SELF_VISIBLE_RANGE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.visionRangeAlt", level: 0, title: 'IDS_SHIP_PARAM_VISION_RANGE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.visionRangeAlt", title: 'IDS_PARAM_SELF_VISIBLE_RANGE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true}
+		]
+	}
+])
+
+(def constant SHIP_PARAMS_SET [
+	{paramName: "SC.Battle.PARAMETER.health", level: 0, title: 'IDS_SHIP_PARAM_DURABILITY', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_MAX_COLOR",
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.health", title: 'IDS_SHIP_PARAM_HEALTH', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_MAX_COLOR"},
+			{paramName: "SC.Battle.PARAMETER.shootShift", title: 'IDS_SHIP_PARAM_SHOOT_SHIFT', measure: 'IDS_PERCENT', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.COEFFICIENT", isPositive:true, isCurrentEqualBaseValueHidden: true} 
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.artilleryMaxDist", level: 0, title: 'IDS_SHIP_PARAM_MAIN_GUN', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true, isZeroBaseValueHidden: true, canBeDead: true,
+		children: [
+			{paramName: "SC.Battle.PARAMETER.damageHE", title: 'IDS_SHIP_PARAM_AMMO_HE', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,
+				tooltip: [
+					{paramName: "SC.Battle.PARAMETER.damageHE", title: 'IDS_SHIP_PARAM_DAMAGE', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,},
+					{paramName: "SC.Battle.PARAMETER.HEBurnProbability", title: 'IDS_SHIP_PARAM_ARTILLERY_BURN_PROB', measure: 'IDS_PERCENT_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true, isZeroBaseValueHidden: true},
+					{paramName: "SC.Battle.PARAMETER.floodGenerationProbHE_UI", title: 'IDS_SHIP_PARAM_ARTILLERY_FLOOD_GENERATION', measure: 'IDS_PERCENT_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true, isZeroBaseValueHidden: true},
+					{paramName: "SC.Battle.PARAMETER.alphaPiercingHE", title: 'IDS_SHIP_PARAM_ARTILLERY_ALPHA_PIERCING', measure: 'IDS_MILLIMETER_SPACE', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,}
+				]
+			},
+			{paramName: "SC.Battle.PARAMETER.damageHESecondary", title: 'IDS_SHIP_PARAM_AMMO_HE_SEC', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,
+				tooltip: [
+					{paramName: "SC.Battle.PARAMETER.damageHESecondary", title: 'IDS_SHIP_PARAM_DAMAGE', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,},
+					{paramName: "SC.Battle.PARAMETER.HEBurnProbabilitySecondary", title: 'IDS_SHIP_PARAM_ARTILLERY_BURN_PROB', measure: 'IDS_PERCENT_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true, isZeroBaseValueHidden: true},
+					{paramName: "SC.Battle.PARAMETER.alphaPiercingHESecondary", title: 'IDS_SHIP_PARAM_ARTILLERY_ALPHA_PIERCING', measure: 'IDS_MILLIMETER_SPACE', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,}
+				]
+			},
+			{paramName: "SC.Battle.PARAMETER.damageCS", title: 'IDS_SHIP_PARAM_AMMO_CS', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,
+				tooltip: [
+					{paramName: "SC.Battle.PARAMETER.damageCS", title: 'IDS_SHIP_PARAM_DAMAGE', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,},
+				]
+			},
+			{paramName: "SC.Battle.PARAMETER.damageCSSecondary", title: 'IDS_SHIP_PARAM_AMMO_CS_SEC', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,
+				tooltip: [
+					{paramName: "SC.Battle.PARAMETER.damageCSSecondary", title: 'IDS_SHIP_PARAM_DAMAGE', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,},
+				]
+			},
+			{paramName: "SC.Battle.PARAMETER.damageAP", title: 'IDS_SHIP_PARAM_AMMO_AP', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,
+				tooltip: [
+					{paramName: "SC.Battle.PARAMETER.damageAP", title: 'IDS_SHIP_PARAM_DAMAGE', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,},
+				]
+			},
+			{paramName: "SC.Battle.PARAMETER.damageAPSecondary", title: 'IDS_SHIP_PARAM_AMMO_AP_SEC', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,
+				tooltip: [
+					{paramName: "SC.Battle.PARAMETER.damageAPSecondary", title: 'IDS_SHIP_PARAM_DAMAGE', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,},
+				]
+			},
+		],
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.artilleryMaxDist", title: 'IDS_TOOLTIP_ARTILLERY_SHOOT_DIST', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.artilleryReloadTime", title: 'IDS_RELOADTIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+			{paramName: "SC.Battle.PARAMETER.artilleryMinSwitchTime", title: 'IDS_SHIP_PARAM_ARTILLERY_MIN_SWITCH_TIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+			{paramName: "SC.Battle.PARAMETER.GMIdealRadius", title: 'IDS_SHIP_PARAM_DISPERSION', measure: 'IDS_PERCENT', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.COEFFICIENT", isPositive:false, isCurrentEqualBaseValueHidden: true},
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.pingerMaxDist", level: 0, title: 'IDS_SHIP_PARAM_PINGER', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true, isZeroBaseValueHidden: true,
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.pingerMaxDist", title: 'IDS_SHIP_PARAM_WAVE_MAX_DIST', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.pingerReloadTime", title: 'IDS_RELOADTIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+			{paramName: "SC.Battle.PARAMETER.pingerDurationFirst", title: 'IDS_SHIP_PARAM_WAVE_DURATION_FIRST', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.pingerDurationSecond", title: 'IDS_SHIP_PARAM_WAVE_DURATION_SECOND', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.pingerWaveSpeed", title: 'IDS_SHIP_PARAM_WAVE_SPEED', measure: "' ' + tr('IDS_METER_SECOND')", roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.torpedoMaxDist", level: 0, title: 'IDS_SHIP_PARAM_TORPEDY', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CURRENT_NO_DIFF", isPositive:true, isZeroBaseValueHidden: true, canBeDead: true,
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.torpedoMaxDistConst", title: 'IDS_SHIP_PARAM_TORPEDO_MAX_DIST', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.torpedoDamage", title: 'IDS_SHIP_PARAM_TORPEDO_DAMAGE', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true, isCurrentEqualBaseValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.deepwaterTorpedoMaxDistConst", title: 'IDS_SHIP_PARAM_DEEPWATER_TORPEDO_MAX_DIST', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.torpedoDamageDeepwater", title: 'IDS_SHIP_PARAM_TORPEDO_DAMAGE', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true, isCurrentEqualBaseValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.alternativeTorpedoMaxDistConst", title: 'IDS_SHIP_PARAM_ALT_TORPEDO_MAX_DIST', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.torpedoDamageAlt", title: 'IDS_SHIP_PARAM_TORPEDO_DAMAGE', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true, isCurrentEqualBaseValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.torpedoReloadTime", title: 'IDS_RELOADTIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+			{paramName: "SC.Battle.PARAMETER.torpedoMinSwitchTime", title: 'IDS_SHIP_PARAM_TORPEDO_MIN_SWITCH_TIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.hangarSize", level: 0, title: 'IDS_SHIP_PARAM_AVIATION', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_MAX", isZeroBaseValueHidden: true,
+		childCollectionComponent: "CC.ownSquadron", collectionChildPath: 'byPlaneOrder',
+		childTemplate: {paramName: "SC.Battle.PARAMETER.hangarSize", measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_MAX",
+							tooltip: [
+							{paramName: "SC.Battle.PARAMETER.planeRespawnTime", title: 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_TIME', measure: 'IDS_SECOND_SPACE', 
+															roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+							{paramName: "SC.Battle.PARAMETER.cruiseSpeed", title: 'IDS_SHIP_PARAM_SQUADRON_SPEED', measure: 'IDS_KNOT_SPACE', 
+															roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+							{paramName: "SC.Battle.PARAMETER.maxSpeed", title: 'IDS_SHIP_PARAM_SQUADRON_SPEED_MAX', measure: 'IDS_KNOT_SPACE', 
+															roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+							{paramName: "SC.Battle.PARAMETER.visibilityRange", title: 'IDS_SHIP_PARAM_SQ_VISIBILITY_DIST_BY_SHIP', measure: 'IDS_KILOMETER_SPACE', 
+															roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+							{paramName: "SC.Battle.PARAMETER.visionRange", title: 'IDS_PARAM_SELF_VISIBLE_RANGE', measure: 'IDS_KILOMETER_SPACE', 
+															roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+							{paramName: "SC.Battle.PARAMETER.planeRespawnTimeAlt", title: 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_TIME', measure: 'IDS_SECOND_SPACE', 
+															roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+							{paramName: "SC.Battle.PARAMETER.cruiseSpeedAlt", title: 'IDS_SHIP_PARAM_SQUADRON_SPEED', measure: 'IDS_KNOT_SPACE', 
+															roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+							{paramName: "SC.Battle.PARAMETER.maxSpeedAlt", title: 'IDS_SHIP_PARAM_SQUADRON_SPEED_MAX', measure: 'IDS_KNOT_SPACE', 
+															roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+							{paramName: "SC.Battle.PARAMETER.visibilityRangeAlt", title: 'IDS_SHIP_PARAM_SQ_VISIBILITY_DIST_BY_SHIP', measure: 'IDS_KILOMETER_SPACE', 
+															roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+							{paramName: "SC.Battle.PARAMETER.visionRangeAlt", title: 'IDS_PARAM_SELF_VISIBLE_RANGE', measure: 'IDS_KILOMETER_SPACE', 
+															roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true}
+							]
+						},
+		tooltip:[
+			{paramName: "SC.Battle.PARAMETER.hangarSize", title: 'IDS_SHIP_PARAM_HANGAR_SIZE', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_MAX", isZeroBaseValueHidden: true}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.air_supportMaxDist", level: 0, title: 'IDS_SHIP_PARAM_AIR_SUPPORT', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE",  isPositive:true, isZeroBaseValueHidden: true,
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.air_supportMaxDist", title: 'IDS_SHIP_PARAM_AIR_SUPPORT_MAX_DIST', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true, isZeroCurrentValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.airSupportCharges", title: 'IDS_SHIP_PARAM_AIR_SUPPORT_NUM_SQUADRONS', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_MAX", isZeroBaseValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.air_supportReloadTime", title: 'IDS_SHIP_PARAM_AIR_SUPPORT_RELOAD_TIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.depthChargePacks", level: 0, title: 'IDS_SHIP_PARAM_DEPTH_CHARGE', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_MAX", isPositive:true, isZeroBaseValueHidden: true,
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.depthChargePacks", title: 'IDS_SHIP_PARAM_DEPTH_CHARGE_MAX_PACKS', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_MAX", isPositive:true, isZeroBaseValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.depthChargeNumBombsInPack", title: 'IDS_SHIP_PARAM_DEPTH_CHARGE_NUM_BOMBS_IN_PACK', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive: true},
+			{paramName: "SC.Battle.PARAMETER.depthChargePackReloadTime", title: 'IDS_SHIP_PARAM_DEPTH_CHARGE_RELOAD_TIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.duckySeaMinesPacks", level: 0, title: 'IDS_SHIP_PARAM_SEA_MINES', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_MAX", isPositive:true, isZeroBaseValueHidden: false,
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.duckySeaMinesPacks", title: 'IDS_SHIP_PARAM_SEA_MINES_MAX_PACKS', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_MAX", isPositive:true, isZeroBaseValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.duckySeaMinesNumBombsInPack", title: 'IDS_SHIP_PARAM_SEA_MINES_NUM_BOMBS_IN_PACK', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive: true},
+			{paramName: "SC.Battle.PARAMETER.duckySeaMinesPackReloadTime", title: 'IDS_SHIP_PARAM_SEA_MINES_RELOAD_TIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.atbaMaxDist", level: 0, title: 'IDS_SHIP_PARAM_ATBA_SHORT', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true, isZeroBaseValueHidden: true, canBeDead: true,
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.atbaMaxDist", title: 'IDS_SHIP_PARAM_ATBA_MAX_DIST', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.atbaReloadTime", title: 'IDS_RELOADTIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+			{paramName: "SC.Battle.PARAMETER.atbaState", title: 'IDS_SHIP_PARAM_EFFICIENCY', measure: 'IDS_PERCENT_SPACE', type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT"}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.aaRangeMax", level: 0, title: 'IDS_SHIP_PARAM_AA', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true, isZeroBaseValueHidden: true, canBeDead: true,
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.aaRangeMax", title: 'IDS_SHIP_PARAM_AA_MAX_DIST', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.airDefenseAverageDPS", title: 'IDS_SHIP_PARAM_AA_AVERAGE_CONST_DAMAGE', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.aaBubbleDPS", title: 'IDS_SHIP_PARAM_AA_BUBBLE_DAMAGE_IN_A_SECOND', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.airDefenseExplosionCount", title: 'IDS_SHIP_PARAM_AA_EXPL_COUNT', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.aaState", title: 'IDS_SHIP_PARAM_EFFICIENCY', measure: 'IDS_PERCENT_SPACE', type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT"}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.batteryCapacity", level: 0, title: 'IDS_SHIP_PARAM_BATTERY', measure: '', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_MAX",
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.batteryCapacity", title: 'IDS_SHIP_PARAM_BATTERY_MAX_CAPACITY', measure: '', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_MAX"},
+			{paramName: "SC.Battle.PARAMETER.batteryCurrentRate", title: 'IDS_SHIP_PARAM_BATTERY_CONSUMPTION_RATE', measure: 'IDS_UNITS_SECOND_SPACE', roundNumber: 2, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+			{paramName: "SC.Battle.PARAMETER.batteryRegenRate", title: 'IDS_SHIP_PARAM_BATTERY_REGEN_RATE', measure: 'IDS_UNITS_SECOND_SPACE', roundNumber: 2, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.maxSpeed", level: 0, title: 'IDS_SHIP_PARAM_MOBILITY', measure: 'IDS_KNOT_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.maxSpeed", title: 'IDS_SHIP_PARAM_MAXSPEED', measure: 'IDS_KNOT_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.rudderTime", title: 'IDS_SHIP_PARAM_RUDDER_TIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+			{paramName: "SC.Battle.PARAMETER.buoyancyRudderTime", title: 'IDS_SHIP_PARAM_BUOYANCY_RUDDER_TIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+			{paramName: "SC.Battle.PARAMETER.maxBuoyancySpeed", title: 'IDS_SHIP_PARAM_MAX_BUOYANCY_SPEED', measure: "' ' + tr('IDS_METER_SECOND')", roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.visibilityRange", level: 0, title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_SHIP', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false,
+		children: [
+			{paramName: "SC.Battle.PARAMETER.visibilityByShipRangeBase", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BASE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.visibilityInSmokeRangeGK", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_GK_IN_SMOKE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.visibilityAfterPingByShipRange", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_PINGER', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false}
+		],
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.visibilityRange", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_SHIP', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+			{paramName: "SC.Battle.PARAMETER.visibilityByShipRangeFire", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_FIRE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.artilleryMaxDist", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_GK', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.atbaMaxDist", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_ATBA', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.mgVisibilityTime", title: 'IDS_PARAM_HIGH_VISIBILITY_TIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.guaranteedVisibilityRange", title: 'IDS_SHIP_PARAM_GUARANTEED_VISIBILITY', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.maxVisibilityByDepth", level: 0, title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_FROM_DEPTH', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false,
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.visibilityByDepthPeriscope", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_FROM_DEPTH_PERISCOPE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+			{paramName: "SC.Battle.PARAMETER.visibilityByDepthInvulnerable", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_FROM_DEPTH_INVULNERABLE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.visibilityPlaneRange", level: 0, title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_PLANE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false,
+		children: [
+			{paramName: "SC.Battle.PARAMETER.visibilityByPlaneRangeBase", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BASE_PLANE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.visibilityByPlaneRangeGK", title: 'IDS_PARAM_VISIBILITY_GK', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true}
+		],
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.visibilityPlaneRange", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_PLANE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+			{paramName: "SC.Battle.PARAMETER.visibilityByPlaneRangeFire", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_FIRE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+			{paramName: "SC.Battle.PARAMETER.visibilityByPlaneRangeGK", title: 'IDS_PARAM_VISIBILITY_GK', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.mgVisibilityTime", title: 'IDS_PARAM_HIGH_VISIBILITY_TIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.visionRange", level: 0, title: 'IDS_SHIP_PARAM_VISION_RANGE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.visionRange", title: 'IDS_PARAM_SELF_VISIBLE_RANGE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.guaranteedShipDetection", title: 'IDS_SHIP_PARAM_GUARANTEED_SHIP_DETECTION', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.torpedoDetection", title: 'IDS_SHIP_PARAM_GUARANTEED_TORPEDO_DETECTION', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CURRENT_NO_DIFF", isPositive:true, isZeroCurrentValueHidden: true}
+		]
+	}
+])
+
+(def constant CARRIER_SQUADRON_PARAMS_SET [
+	{paramName: "SC.Battle.PARAMETER.health", level: 0, title: 'IDS_SHIP_PARAM_DURABILITY', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_MAX_COLOR",
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.health", title: 'IDS_SHIP_PARAM_HEALTH', measure: '', roundNumber: 0, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_MAX_COLOR"},
+			{paramName: "SC.Battle.PARAMETER.shootShift", title: 'IDS_SHIP_PARAM_SHOOT_SHIFT', measure: 'IDS_PERCENT', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.COEFFICIENT", isPositive:true, isCurrentEqualBaseValueHidden: true} 
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.visibilityRange", level: 0, title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_SHIP', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CURRENT_NO_DIFF", isPositive:false,
+		children: [
+			{paramName: "SC.Battle.PARAMETER.visibilityByShipRangeBase", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BASE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true}
+		],
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.visibilityRange", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_SHIP', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.visibilityByShipRangeFire", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_FIRE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.artilleryMaxDist", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_GK', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.mgVisibilityTime", title: 'IDS_PARAM_HIGH_VISIBILITY_TIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.guaranteedVisibilityRange", title: 'IDS_SHIP_PARAM_GUARANTEED_VISIBILITY', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.visibilityPlaneRange", level: 0, title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_PLANE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CURRENT_NO_DIFF", isPositive:false,
+		children: [
+			{paramName: "SC.Battle.PARAMETER.visibilityByPlaneRangeBase", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BASE_PLANE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true}
+		],
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.visibilityPlaneRange", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_PLANE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.visibilityByPlaneRangeFire", title: 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_FIRE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false},
+			{paramName: "SC.Battle.PARAMETER.visibilityByPlaneRangeGK", title: 'IDS_PARAM_VISIBILITY_GK', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true},
+			{paramName: "SC.Battle.PARAMETER.mgVisibilityTime", title: 'IDS_PARAM_HIGH_VISIBILITY_TIME', measure: 'IDS_SECOND_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:false, isZeroCurrentValueHidden: true}
+		]
+	},
+	{paramName: "SC.Battle.PARAMETER.visionRange", level: 0, title: 'IDS_SHIP_PARAM_VISION_RANGE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true,
+		tooltip: [
+			{paramName: "SC.Battle.PARAMETER.visionRange", title: 'IDS_PARAM_SELF_VISIBLE_RANGE', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.guaranteedShipDetection", title: 'IDS_SHIP_PARAM_GUARANTEED_SHIP_DETECTION', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CONTEXT_BASE", isPositive:true},
+			{paramName: "SC.Battle.PARAMETER.torpedoDetection", title: 'IDS_SHIP_PARAM_GUARANTEED_TORPEDO_DETECTION', measure: 'IDS_KILOMETER_SPACE', roundNumber: 1, type: "SC.Battle.SHIP_PARAMS_RENDERER_TYPE.CURRENT_NO_DIFF", isPositive:true, isZeroCurrentValueHidden: true}
+		]
+	}
+])
+
+(def element BattleParamsPlaneHeader (_ownSquadronEntity:gfx) layout=true
+	(scope
+		(var ammoType:number = "_ownSquadronEntity ? _ownSquadronEntity.plane.ammoType : SC.Common.PLANE_AMMO_TYPES.PROJECTILE")
+		(var ammoTypeIDS:str = "_ownSquadronEntity ? _ownSquadronEntity.plane.ammoTypeIDS : ''")
+
+		(var planeIconPath:str = "'url:../service_kit/plane_types/icon_default_plane_' + toLower(SC.Common.PLANE_AMMO_TYPES.VALUE_TO_NAME[ammoType]) + '.png'")
+	)
+
+	(style 
+		(width = 100%)
+		(flow = "horizontal")
+		(paddingLeft = "M")
+		(paddingRight = "M")
+		(paddingTop = "SXS")
+		(paddingBottom = "SXS")
+	)
+	(block
+		(style 
+			(width = "30")
+			(height = "30")
+			(marginLeft = "-6px")
+			(marginRight = "3px")
+			(marginBottom = "-10px")
+			(marginTop = "-10px")
+			(bind backgroundImage "planeIconPath")
+		)
+	)
+	(tf
+		(style (width = 100%) (multiline = false))
+		(alpha = "TA")
+		(class $TextDefaultBold19NM)
+		(bind text "ammoTypeIDS")
+	)
+)
+
+(def element ModalShipBattleParams () layout=true
+	(scope
+		(var selfAvatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var selfAvatarEntityId:number =  "selfAvatarEntity.id")
+		(var healthComponent:gfx = "selfAvatarEntity.health")
+		(var isShipAlive:bool = "healthComponent ? healthComponent.isAlive : false" (event "healthComponent.evIsAliveChanged"))
+
+		(var shipInfo:gfx = "$datahub.getEntity(selfAvatarEntity.vehicleInfo.shipInfoEntityId)")
+		(var shipSubType:str = "shipInfo.ship.subtype")
+		(var shipIconPath:str = "'url:../service_kit/ship_classes/icon_default_' + toLower(shipSubType) + '.png'")
+
+		
+		(var ownCarrierEntity:gfx = "$datahub.getSingleEntity(CC.aircarrier)")
+		(var activeSquadronId:number = "ownCarrierEntity ? ownCarrierEntity.aircarrier.activeSquadron : ActiveSquadron.NONE" (event "ownCarrierEntity.aircarrier.evStateChanged"))
+		(var ownSquadronEntity:gfx = "activeSquadronId != ActiveSquadron.NONE ? $datahub.getPrimaryEntity(CC.ownSquadron, activeSquadronId) : null" (event "ownCarrierEntity.aircarrier.evStateChanged"))
+
+		
+	)
+
+	(class $FullsizeAbsolute)
+	(style (align = "center|middle"))
+	(macro MODAL_WINDOW_BACKGROUND_BATTLE)
+
+	(hblock
+		(block
+			(style 
+				(width = "SHIP_PARAMS_PANEL_WIDTH")
+				(height = "SHIP_PARAMS_PANEL_HEIGHT")
+			)
+			
+			(block
+				(bind visible "ownSquadronEntity")
+				(style (width = 100%))
+
+				(block
+					(style (width = 100%))
+					(controller $Instance renderer='BattleParamsPlaneHeader' (bind enabled "ownCarrierEntity")
+						(args _ownSquadronEntity="ownSquadronEntity")
+					)
+				)
+				
+				(block
+					(style (width = 100%))
+					(controller $Repeat renderer='ShipParamsListElement' (bind enabled "ownCarrierEntity")
+						(bind count "PLANE_PARAMS_SET.length")
+						(args	_rowParams="PLANE_PARAMS_SET[$index]"
+								_paramOwner="ownSquadronEntity"
+								_horizontalPaddings="M")
+					)
+				)
+
+				(block
+					(style (width = 100%))
+					(element HorizontalDividerTwoPx)
+				)
+			)
+			
+			(block
+				(bind visible "isShipAlive")
+				(style (width = 100%))
+
+				(block
+					(style (width = 100%))
+
+					(hblock
+						(style 
+							(width = 100%) 
+							(paddingLeft = "SXS") 
+							(paddingRight = "M") 
+							(bind paddingTop "ownSquadronEntity ? MS : SXS") 
+							(paddingBottom = "SXS") 
+							(align = "middle")
+						)
+						(block
+							(style 
+								(width = "27")
+								(height = "27")
+								(marginTop = "-S")
+								(marginBottom = "-6px")
+								(marginRight = "XS")
+								(bind backgroundImage "shipIconPath")
+							)
+						)
+						(tf
+							(style (width = 100%) (multiline = false))
+							(class $TextDefaultBold19NM)
+							(alpha = "TA")
+							(bind text "shipInfo.ship.levelRome + ' ' + toUpper(tr(shipInfo.ship.nameIDS))")
+						)
+					)
+				)
+				(block
+					(bind visible "ownSquadronEntity")
+					(style (width = 100%))
+					(controller $Repeat renderer='ShipParamsListElement' (bind enabled "ownCarrierEntity")
+						(bind count "CARRIER_SQUADRON_PARAMS_SET.length")
+						(args	_rowParams="CARRIER_SQUADRON_PARAMS_SET[$index]"
+								_paramOwner="selfAvatarEntity"
+								_horizontalPaddings="M")
+					)
+				)
+				(block
+					(bind visible "!ownSquadronEntity")
+					(style (width = 100%))
+					(controller $Repeat renderer='ShipParamsListElement' 
+						(bind count "SHIP_PARAMS_SET.length")
+						(args	_rowParams="SHIP_PARAMS_SET[$index]"
+								_paramOwner="selfAvatarEntity"
+								_horizontalPaddings="M")
+					)
+				)
+				(block
+					(style (width = 100%))
+					(element HorizontalDividerTwoPx)
+				)
+			)
+		)
+		(block
+			(style 
+				(marginLeft = 40px) 
+				(width = "SHIP_ACTIVE_STATES_WIDTH")
+				(height = "SHIP_ACTIVE_STATES_HEIGHT")
+			)
+			(block
+				(bind visible "ownCarrierEntity")
+				(style (width = 100%) (marginBottom = "SXS"))
+				(controller $Instance renderer='ActiveElementList' (bind enabled "ownCarrierEntity")
+					(args _stateType="SC.Battle.IN_EVENT_BLOCK_STATE_CATEGORY.MODIFIERS_AND_EQUIPMENT_OF_SQUADRON" _filteringType='forModifiersAndEquipmentOfSquadron')
+				)
+			)
+			(block
+				(bind visible "isShipAlive || ownSquadronEntity")
+				(style (width = 100%) (marginBottom = "SXS"))
+				(controller $Instance renderer='ActiveElementList'
+					(args _stateType="SC.Battle.IN_EVENT_BLOCK_STATE_CATEGORY.MODIFIERS_OF_SHIP" _filteringType='forModifiersOfShipFiltering')
+				)
+			)
+			(block
+				(bind visible "isShipAlive")
+				(style (width = 100%))
+				(controller $Instance renderer='ActiveElementList'
+					(args _stateType="SC.Battle.IN_EVENT_BLOCK_STATE_CATEGORY.SHIP_STATE_AND_EQUIPMENT" _filteringType='forShipStatesAndEquipment')
+				)
+			)
+		)
+	)
+)
+
+
+(def element ActiveElementList (_stateType:number, _filteringType:str) layout=true
+	(scope
+		(var header:str = "'IDS_SHIP_PARAM_' + SC.Battle.IN_EVENT_BLOCK_STATE_CATEGORY.VALUE_TO_NAME[_stateType]")
+		(var emptyListLine:str = "'IDS_SHIP_PARAM_NO_ACTIVE_' + SC.Battle.IN_EVENT_BLOCK_STATE_CATEGORY.VALUE_TO_NAME[_stateType]")
+		
+		(var activeStatesCollection:gfx = "$datahub.getCollection(CC.state).getChildByPath('shipParamsChanged.forEventBlock.' + _filteringType + '.sorted')")
+
+		(var hasElementsToShow:bool = "activeStatesCollection.items.length" (event "activeStatesCollection.evRemoved") (event "activeStatesCollection.evAdded"))
+	)
+
+	(style (width = 100%))
+
+	(block
+		(style (width = 100%))
+		(block
+			(style (width = 100%) (marginLeft = "M") (marginTop = "SXS") (marginBottom = "SXS"))
+			(tf
+				(style (width = 100%))
+				(class $TextDefaultBold19NM )
+				(alpha = "TA")
+				(bind text "header")
+			)
+		)
+		(block
+			(style (width = 100%))
+			(element HorizontalDividerTwoPx)
+		)
+	)
+	(block
+		(style (width = 100%))
+		(macro INNER_PANEL_BACKGROUND)
+		(htile
+			(bind visible "hasElementsToShow")
+			(style (width = 100%) (paddingTop = "S") (paddingBottom = "S") (align = "center"))
+
+			(controller $Repeat renderer='ModalShipParamsModifierState'
+				(bind count "activeStatesCollection.items.length")
+				(bindcall removeChildAt "$event[1]" (event "activeStatesCollection.evRemoved"))
+				(bindcall addChildAt "$event[1]" (event "activeStatesCollection.evAdded"))
+				(args "activeStatesCollection")
+			)
+		)
+
+		(block
+			(bind visible "!hasElementsToShow")
+
+			(controller $Animation
+				(bindcall play 	duration=0.15
+								from="{alpha: 0}" 
+								to="{alpha: 1}"
+								action="killAll"
+								reverse="hasElementsToShow"
+								(bind trigger "hasElementsToShow")
+				)
+			)
+
+			(style (width = 100%) (padding = "MS"))
+
+			(block
+				(style (width = 100%) (height = "60px") (align = "center|middle"))
+				(tf
+					(class $TextDefaultBold19NM)
+					(alpha = "TS")
+					(bind text "emptyListLine")
+				)
+			)
+		)
+		(block
+			(style (width = 100%))
+			(element HorizontalDividerTwoPx)
+		)
+	)
+)
+
+(def element ModalShipParamsModifierState (_collection:gfx) layout=true
+	(scope
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+
+		(var stateEntity:gfx = "_collection.items[$index]" watch=false)
+		(var stateComponent:gfx = "stateEntity.state")
+		(var stateType:number = "stateComponent.type")
+
+		(var timeToLiveComponent:gfx = "stateEntity.timeToLive" (event "stateEntity.evAdded"))
+		(var isRemoving:bool = "timeToLiveComponent ? timeToLiveComponent.isRemoving : false" (event "timeToLiveComponent.evRemove") (event "timeToLiveComponent.evCancelRemoving"))
+
+		(var battleConsumable:gfx = "stateEntity.battleConsumable")
+		(var countDown:gfx = "stateEntity.countDown" (event "stateEntity.evAdded"))
+
+		(var dataComponent:gfx = "stateEntity.dataComponent")
+		(var data:gfx = "dataComponent.data" (event "dataComponent.evDataChanged"))
+
+		(var progressComponent:gfx = "stateEntity.progress" (event "stateEntity.evAdded"))
+		(var currentCount:number = "progressComponent ? progressComponent.value : 0" (event "progressComponent.evChanged"))
+		(var maxCount:number = "progressComponent ? progressComponent.max : 0" (event "progressComponent.evChanged"))
+	
+		(var remainTime:number = 	"countDown	? countDown.endTime - timerEntity.timer.currentTime 
+												: 0" (event "timerEntity.timer.evFrequent") (event "countDown.evEndTimeChanged"))
+		(macro HUMAN_READABLE_COUNTDOWN_SCOPE "remainTime")
+		(var isCountdownVisible:bool = "countDown && remainTime >= 0 && remainTime < 3600 && !isRemoving")
+		(var isInfinityVisible:bool = "countDown && remainTime >= 3600 && !isRemoving && currentCount == 0")
+
+		(var fireModeEntity:gfx = "$datahub.getSingleEntity(CC.fireModeSlot)")
+		(var fireModeComponent:gfx = "fireModeEntity.fireModeSlot")
+		(var fireModeIconPath:str = "fireModeComponent.iconPath")
+
+		(var backgroundImagePath:str = 	"	stateType == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_WEATHER				? 'url:../battle_hud/indicators/weather/' + data['weatherGpName'] + '.png' :
+											stateType == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_PERKS				? 'url:../crew_commander/skills/' + stateComponent.id + '.png' :
+											stateType == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_ATBA_ACCURACY_PERK 	? 'url:../crew_commander/skills/' + stateComponent.id + '.png' :
+											stateType == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_TALENTS				? 'url:../crew_commander/talents/' + stateComponent.id + '.png' :
+											stateType == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_CONSUMABLES			? 'url:' + battleConsumable.viewData.iconPath :
+											stateType == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_BUFFS				? 'url:../powerups/modifiers/icon_ship_modifier_' + stateComponent.id + '.png' :
+											stateType == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_INTERACTIVE_ZONE		? 'url:../battle_hud/indicators/interactive_zones/' + stateComponent.id + '.png' :
+											stateType == SC.Battle.ENTITY_STATES.REPAIR										? 'url:../battle_hud/indicators/interactive_zones/repair_zone.png' :
+											stateType == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_RAGE_MODE			? 'url:../consumables/' + stateComponent.id + '_preview.png' :
+											stateType == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_MODULES				? 'url:../battle_hud/indicators/modules/' + stateComponent.id + '.png' :
+											stateType == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_SPECIAL_MODULES		? 'url:../battle_hud/indicators/modules/' + stateComponent.id + '.png' :
+											stateType == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_NOT_SPECIAL_MODULES	? 'url:../battle_hud/indicators/interactive_zones/' + stateComponent.id + '.png' :
+											stateType == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_BATTERY_STATE		? 'url:../battle_hud/indicators/battery/icon_state_' + stateComponent.id + '.png' :
+											stateType == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_DEPTH				? 'url:../battle_hud/indicators/depths/depth_' + stateComponent.id + '.png' :
+											stateType == SC.Battle.ENTITY_STATES.EMERGENCY_SURFACING						? 'url:../battle_hud/indicators/modules/emergency_surfacing.png' :
+											stateType == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_ARTILLERY_FIRE_MODE 	? 'url:' + fireModeIconPath :
+											stateType == SC.Battle.ENTITY_STATES.BY_NIGHT									? 'url:../battle_hud/indicators/interactive_zones/night.png' :
+											stateType == SC.Battle.ENTITY_STATES.ILLUMINATED								? 'url:../battle_hud/indicators/interactive_zones/lighting_bomb.png' :
+											stateType == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_CONSUMABLE_LOCKER 	? 'url:../battle_hud/indicators/modules/consumables_block.png':
+											stateType == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_ANTI_ABUSE_SYSTEM	? 'url:../battle_hud/lower_log_alerts/mirror_damage_alert.png'
+																															: 'url:../crew_commander/skills/consumables_duration.png'")
+		
+		(var widthAnimated:number = "isRemoving ? 0 : MODAL_SHIP_PARAMS_STATE_ICON_CONTAINER_SIZE" watch=false)
+		
+		(controller $Animation
+			(play duration=0.25 from="{widthAnimated: 0}" to="{widthAnimated: MODAL_SHIP_PARAMS_STATE_ICON_CONTAINER_SIZE}")
+			(bindcall play duration=0.25 to="{widthAnimated: MODAL_SHIP_PARAMS_STATE_ICON_CONTAINER_SIZE}" action="kill" (event "timeToLiveComponent.evCancelRemoving"))
+			(bindcall play duration=0.25 delay=0.1 to="{widthAnimated: 0}" (event "timeToLiveComponent.evRemove"))
+		)
+		
+	)
+
+	(style
+		(bind width "widthAnimated")
+		(bind height "MODAL_SHIP_PARAMS_STATE_ICON_CONTAINER_SIZE")
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(bind left "widthAnimated/2")
+			(top = "MODAL_SHIP_PARAMS_STATE_ICON_CONTAINER_SIZE/2")
+		)
+
+		(alpha = "isRemoving ? 0 : 1")
+
+		(controller $Animation
+			(play	duration=0.3
+					from={alpha:0, scaleX: 2.5, scaleY: 2.5, visible:false}
+					to={alpha:1, scaleX: 1, scaleY: 1, visible:true}
+					easing="Easing.cubic_in")
+			(bindcall play	duration=0.3
+					to={alpha:1, scaleX: 1, scaleY: 1, visible:true}
+					action="kill"
+					easing="Easing.cubic_in"
+					(event "timeToLiveComponent.evCancelRemoving"))
+					
+			(bindcall play	duration=0.3
+							to={alpha:0, scaleX: 0, scaleY: 0, visible:false}
+							easing="Easing.cubic_in"
+							(event "timeToLiveComponent.evRemove"))
+		)
+
+		(block
+			(style
+				(width = 0) (height = 0)
+				(align = "center|middle")
+			)
+
+			(block
+				(style
+					(width = "MODAL_SHIP_PARAMS_STATE_ICON_SIZE")
+					(height = "MODAL_SHIP_PARAMS_STATE_ICON_SIZE")
+					(backgroundSize = "cover")
+					(bind backgroundImage "backgroundImagePath")
+				)
+
+				(controller $Tooltip (renderer = 'ShipStateAttributesTooltip')
+					(args _stateEntity="stateEntity")
+					(align="outerBottom|outerRight")
+					(position="trackMouse")
+					(offset=[9, 13])
+					(screenBoundsOffset={left:10, top:10, right:10, bottom:10})
+					(macro SIMPLE_TOOLTIP_ANIMATION)
+				)
+				
+				(block
+					(bind visible "currentCount > 1 && isCountdownVisible")
+
+					(style
+						(position = "absolute")
+						(backgroundColor = 0xAF000000)
+						(bottom = "0")
+						(right = "0")
+						(height = "16px")
+						(bind width "currentCount > 9 ? '18px' : '11px'")
+						(align = "middle|center")
+					)
+					(tf
+						(class $TextDefaultBoldNM)
+						(alpha = "TA")
+						(bind text "currentCount")
+					)
+				)
+
+				
+				(block
+					(style
+						(position = "absolute")
+						(width = "100%")
+						(bind bottom "isInfinityVisible ? -18 : -13")
+						(align = "center")
+					)
+					(alpha = "isRemoving ? 0 : 1")
+
+					(controller $Animation
+						(play	duration=0.15
+								delay=0.17
+								from={alpha:0, visible:false}
+								to={alpha:1, visible:true}
+								easing="Easing.cubic_in")
+						
+						(bindcall play	duration=0.3
+								to={alpha:1, visible:true}
+								action="kill"
+								easing="Easing.cubic_in"
+								(event "timeToLiveComponent.evCancelRemoving"))
+							
+						(bindcall play	duration=0.3
+								to={alpha:0, visible:false}
+								easing="Easing.cubic_in"
+								(event "timeToLiveComponent.evRemove"))
+						
+						(bind enabled "isInfinityVisible || isCountdownVisible || currentCount > 0")
+					)
+
+					(block
+						(bind visible "isInfinityVisible")
+						(style
+							(height = "22px")
+							(width = "22px")
+							(top = "6px")
+							(backgroundImage = "'url:../service_kit/hud_elements/amounts/infinity_sign.png'")
+						)
+					)
+
+					(tf
+						(bind visible "isCountdownVisible")
+						(class $TextDefaultNM)
+						(style (alpha = "TC"))
+						(bind text "countdownText")
+					)
+
+					(controller $Instance renderer='ShipParamContextMaxRenderer'
+						(bind enabled "currentCount > 0 && maxCount > 1 && !isCountdownVisible")
+						(args _rowParams=null _isBold=false)
+						(exprs
+							(scope
+								(bind baseValue "maxCount")
+								(bind currentValue "currentCount")
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)
+
+
+(def element ShipParamsListElement (_rowParams:dict, _paramOwner:gfx, _horizontalPaddings:number="SXS") layout=true
+	(scope
+		(var paramEntity:gfx = "_paramOwner ? $datahub.getPrimaryCompositeEntity(CC.parameter, _paramOwner.id, _rowParams.paramName)
+											: null")
+		(var paramCurrentValue:number = "paramEntity ? paramEntity.parameter.currentValue : 0" (event "paramEntity.parameter.evChanged"))
+		(var paramBaseValue:number = "paramEntity ? paramEntity.parameter.baseValue : 0" (event "paramEntity.parameter.evChanged"))
+		
+		(var isDead:bool = "('canBeDead' in _rowParams ? _rowParams.canBeDead : false) && paramCurrentValue == 0")
+
+		(var title:str = "	('title' in _rowParams						? _rowParams.title :
+							_paramOwner.hasComponent(CC.ownSquadron)	? _paramOwner.plane.ammoTypeIDS
+																		: _paramOwner.id )
+							+
+							(isDead 								? '_DEAD'
+																	: '')")
+
+		(var hasChildren:bool = "'children' in _rowParams")
+		(var hasTemplatedChildren:bool = "'childCollectionComponent' in _rowParams")
+
+		(var rowLevel:bool = "'level' in _rowParams ? _rowParams.level : 1")
+		(var isHiddenWhenZeroCurrentValue:bool 	= "'isZeroCurrentValueHidden' 		in _rowParams ? paramCurrentValue == 0 : false")
+		(var isHiddenWhenZeroBaseValue:bool 	= "'isZeroBaseValueHidden' 			in _rowParams ? paramBaseValue == 0 : false")
+		(var isHiddenWhenEqualBaseValue:bool 	= "'isCurrentEqualBaseValueHidden'	in _rowParams ? paramCurrentValue == paramBaseValue : false")
+		(var isHiddenWhenBothZeroValue:bool 	= "'isBothZeroValueHidden'			in _rowParams ? paramCurrentValue == paramBaseValue && paramBaseValue == 0 : false")
+
+		(var isVisible:bool = "paramEntity && !isHiddenWhenZeroCurrentValue && !isHiddenWhenZeroBaseValue && !isHiddenWhenEqualBaseValue")
+	)
+
+	(bind visible "isVisible")
+
+	(style (width = 100%))
+	
+	(block
+		(bind visible "rowLevel == 0")
+		(style (width = 100%))
+		(element HorizontalDividerTwoPx)
+	)
+	
+	(hblock
+		(style
+			(width = 100%)
+			(backgroundColor = "0x01000000")
+			(bind paddingBottom "SXS")
+			(bind paddingTop "rowLevel == 0 ? SXS : 0")
+			(bind paddingRight "_horizontalPaddings")
+			(bind paddingLeft "_horizontalPaddings")
+		)
+		
+		(tf
+			(bind class "rowLevel == 0 ? '$TextDefaultBoldNM' : '$TextDefaultNM'")
+			(style
+				(width = 100%)
+				(leading = -3)
+				(marginRight = "6px")
+				(bind textColor "isDead	? SC.Ui_styles.SERVICE_COLORS.RED
+										: SC.Ui_styles.SERVICE_COLORS.WHITE")
+			)
+
+			(bind alpha "rowLevel == 0 ? TA : TC")
+			(bind text "title")
+		)
+
+		(block
+			(bind visible "!isDead")
+
+			(controller $Instance 
+				(bind renderer "SHIP_PARAMS_RENDERER_TYPES[_rowParams.type]")
+				(args _rowParams="_rowParams" _isBold = "rowLevel == 0")
+				(exprs
+					(scope
+						(bind baseValue "paramBaseValue")
+						(bind currentValue "paramCurrentValue")
+					)
+				)
+			)
+		)
+		
+		(controller $Tooltip (renderer='ShipBattleParamTooltip') (bind enabled "!isDead")
+			(args _header="title" _paramArray="_rowParams['tooltip']" _paramOwner="_paramOwner")
+			(align="outerBottom|outerRight")
+			(position="trackMouse")
+			(offset=[9, 13])
+			(screenBoundsOffset={left:10, top:10, right:10, bottom:10})
+			(macro SIMPLE_TOOLTIP_ANIMATION)
+		)
+	)
+
+	(block
+		(style (width = 100%))
+
+		(controller $Instance renderer='ShipParamsChildList'
+			(bind enabled "hasChildren && !isDead")
+			(args _paramsList="_rowParams.children" _horizontalPaddings="_horizontalPaddings" _paramOwner="_paramOwner")
+		)
+	)
+
+	(block
+		(style (width = 100%))
+
+		(controller $Instance renderer='ShipParamsTemplatedChildList'
+			(bind enabled "hasTemplatedChildren && !isDead")			
+			(args _rowParams="_rowParams" _horizontalPaddings="_horizontalPaddings")
+		)
+	)
+)
+
+(def element ShipParamsChildList (_paramsList:array, _horizontalPaddings:number, _paramOwner:gfx) layout=true
+	(style (width = 100%))
+
+	(block
+		(style (width = 100%))
+		(element HorizontalDividerTwoPx)
+	)
+	(block
+		(style (width = 100%))
+
+		(macro INNER_PANEL_BACKGROUND)
+		(block
+			(style (width = 100%) (paddingTop = "SXS"))
+
+			(controller $Repeat renderer='ShipParamsListElement' 
+				(bind count "_paramsList.length")
+				(args _rowParams="_paramsList[$index]" _paramOwner="_paramOwner" _horizontalPaddings="_horizontalPaddings")
+			)
+		)
+	)
+)
+
+(def element ShipParamsTemplatedChildList (_rowParams:dict, _horizontalPaddings:number) layout=true
+	(scope
+		(var childCollection:gfx = "'collectionChildPath' in _rowParams && _rowParams.collectionChildPath.length > 0 ?
+												$datahub.getCollection(_rowParams.childCollectionComponent).getChildByPath(_rowParams.collectionChildPath) :
+												$datahub.getCollection(_rowParams.childCollectionComponent)")
+		(var childItemsArray:array = "childCollection.items")
+		(var childTemplate:dict = "_rowParams.childTemplate")
+	)
+
+	(style (width = 100%))
+
+	(block
+		(style (width = 100%))
+		(element HorizontalDividerTwoPx)
+	)
+
+	(block
+		(style (width = 100%))
+		(macro INNER_PANEL_BACKGROUND)
+
+		(block
+			(style (width = 100%) (paddingTop = "SXS"))
+
+			(controller $Repeat renderer='ShipParamsListElement' 
+				(bind count "childItemsArray.length")
+				(args _rowParams="childTemplate" _paramOwner="childItemsArray[$index]" _horizontalPaddings="_horizontalPaddings")
+			)
+		)
+	)
+)
+
+
+(def element ShipParamContextRenderer (_rowParams:dict, _isBold:bool="false") layout=true
+	(scope
+		(var baseValue:number = 1)
+		(var currentValue:number = 1)
+		(var measure:str = "_rowParams ? _rowParams.measure : ' '")
+		
+		(var percentValue:number = "baseValue != 0 ? floor((currentValue / baseValue) * 100) : floor((currentValue / 1.0) * 100)")
+		(var percentValueColor:str = "	percentValue > 80	? SC.Ui_styles.SERVICE_COLORS.GREEN :
+										percentValue > 30	? SC.Ui_styles.SERVICE_COLORS.YELLOW
+															: SC.Ui_styles.SERVICE_COLORS.RED")
+	)
+
+	(style (flow = "horizontal"))
+
+	(tf
+		(bind class "_isBold ? '$TextDefaultBoldNM' : '$TextDefaultNM'")
+		(style (bind textColor "percentValueColor"))
+		(bind alpha "_isBold ? TA : TC")
+		(bind text "percentValue")
+	)
+	(tf
+		(class $TextDefaultNM)
+		(style (marginLeft = "XXS") (bind textColor "percentValueColor"))
+		(alpha = "TS")
+		(bind text "measure")
+	)
+)
+
+(def element ShipParamContextBaseRenderer (_rowParams:dict, _isBold:bool="false") layout=true
+	(scope
+		(var baseValue:number = 1)
+		(var currentValue:number = 1)
+		(var measure:str = "_rowParams.measure ? _rowParams.measure : ' '")
+
+		(var isPositive:bool = "_rowParams.isPositive")
+		
+		(var roundNumber:number = "_rowParams ? _rowParams.roundNumber : 0")
+
+		(var diffValue:number = "roundNumber == 0 	? (round(currentValue) - round(baseValue))
+													: (currentValue - baseValue)")
+
+		(var diffSign:str = "	diffValue > 0	? '+' :
+								diffValue < 0	? '-'
+												: ''")
+		(var diffColor:str = "isPositive 	? diffValue > 0	? SC.Ui_styles.SERVICE_COLORS.GREEN 
+															: SC.Ui_styles.SERVICE_COLORS.RED
+											: diffValue < 0 ? SC.Ui_styles.SERVICE_COLORS.GREEN 
+															: SC.Ui_styles.SERVICE_COLORS.RED")
+
+		(var diffVisible:bool = "abs(diffValue) >= 0.04")
+		
+		(var currentRoundedValue:number = "roundNumber == 0	? round(currentValue)
+															: round(currentValue * pow(10, roundNumber)) / pow(10, roundNumber)")
+		(var currentMeasuredValue:str = "formatFloatingPoint(currentRoundedValue, roundNumber)")
+
+		(var diffRoundedValue:number = "roundNumber == 0	? abs(diffValue)
+															: round(abs(diffValue) * pow(10, roundNumber)) / pow(10, roundNumber)")
+		(var diffMeasuredValue:str = "formatFloatingPoint(diffRoundedValue, roundNumber)")
+	)
+
+	(style (flow = "horizontal"))
+	
+	(tf
+		(bind visible "diffVisible")
+		(class $TextDefaultNM)
+		(alpha = "TS")
+		(bind text "'( '")
+	)
+
+	(tf
+		(bind visible "diffVisible")
+		(class $TextDefaultNM)
+		(style (bind textColor "diffColor"))
+		(alpha = "TA")
+		(bind text "diffSign + diffMeasuredValue")
+	)
+
+	(tf
+		(bind visible "diffVisible")
+		(class $TextDefaultNM)
+		(alpha = "TS")
+		(bind text "' )  '")
+	)
+
+	(tf
+		(bind class "_isBold ? '$TextDefaultBoldNM' : '$TextDefaultNM'")
+		(bind alpha "_isBold ? TA : TC")
+		(bind text "currentMeasuredValue")
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(style (marginLeft = "XXS"))
+		(alpha = "TS")
+		(bind text "measure")
+	)
+)
+
+(def element ShipParamContextMaxRenderer (_rowParams:dict, _isBold:bool="false") layout=true
+	(scope
+		(var baseValue:number = 1)
+		(var currentValue:number = 1)
+		
+		(var roundNumber:number = "_rowParams ? _rowParams.roundNumber : 0")
+		(var currentRoundedValue:number = "roundNumber == 0	? round(currentValue)
+															: round(currentValue * pow(10, roundNumber)) / pow(10, roundNumber)")
+		(var baseRoundedValue:number = "roundNumber == 0	? round(baseValue)
+															: round(baseValue * pow(10, roundNumber)) / pow(10, roundNumber)")
+	)
+
+	(style (flow = "horizontal"))
+	
+	(tf
+		(class $TextDefaultBoldNM)
+		(bind alpha "_isBold ? TA : TC")
+		(bind text "formatFloatingPoint(currentRoundedValue, roundNumber)")
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(alpha = "TC")
+		(bind text "' / '")
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(alpha = "TC")
+		(bind text "formatFloatingPoint(baseRoundedValue, roundNumber)")
+	)
+)
+
+(def element ShipParamContextMaxColorRenderer (_rowParams:dict, _isBold:bool="false") layout=true
+	(scope
+		(var baseValue:number = 1)
+		(var currentValue:number = 1)
+		(var relativeValue:number = "baseValue != 0 ? (currentValue / baseValue) : 1")
+		(var roundNumber:number = "_rowParams ? _rowParams.roundNumber : 0")
+		(var currentRoundedValue:number = "roundNumber == 0	? round(currentValue)
+															: round(currentValue * pow(10, roundNumber)) / pow(10, roundNumber)")
+		(var baseRoundedValue:number = "roundNumber == 0	? round(baseValue)
+															: round(baseValue * pow(10, roundNumber)) / pow(10, roundNumber)")
+	)
+
+	(style (flow = "horizontal"))
+	
+	(tf
+		(class $TextDefaultBoldNM)
+		(bind class "	relativeValue > 0.8 ? '$FontColorHealth' :
+						relativeValue > 0.3 ? '$FontColorWarning'
+											: '$FontColorCritical'")
+		(bind text "formatSeparator(currentRoundedValue)")
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(alpha = "TC")
+		(bind text "' / '")
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(alpha = "TC")
+		(bind text "formatSeparator(baseRoundedValue)")
+	)
+)
+
+(def element ShipParamCoefficientRenderer (_rowParams:dict, _isBold:bool="false") layout=true
+	(scope
+		(var baseValue:number = 1)
+		(var currentValue:number = 1)
+
+		(var isPositive:bool = "_rowParams.isPositive")
+
+		(var measure:str = "_rowParams.measure ? _rowParams.measure : ' '")
+		(var diffValue:number = "baseValue != 0 ? (currentValue / baseValue) * 100 - 100 : 100")
+
+		(var roundNumber:number = "_rowParams ? _rowParams.roundNumber : 0")
+		(var roundedValue:number = "roundNumber == 0 	? round(diffValue)
+														: round(diffValue * pow(10, roundNumber) ) / pow(10, roundNumber)")
+		(var measuredValue:str = "formatFloatingPoint(abs(roundedValue), roundNumber)")
+
+		(var diffSign:str = "	diffValue > 0	? '+' :
+								diffValue < 0	? '-'
+												: ''")
+												
+		(var diffColor:str = "isPositive 	? diffValue > 0	? SC.Ui_styles.SERVICE_COLORS.GREEN
+															: SC.Ui_styles.SERVICE_COLORS.RED
+											: diffValue < 0 ? SC.Ui_styles.SERVICE_COLORS.GREEN
+															: SC.Ui_styles.SERVICE_COLORS.RED")
+	)
+
+	(style (flow = "horizontal"))
+
+	(tf
+		(bind class "_isBold ? '$TextDefaultBoldNM' : '$TextDefaultNM'")
+		(style (bind textColor "diffColor"))
+		(bind alpha "_isBold ? TA : TC")
+		(bind text "diffSign + measuredValue + ' '")
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(style (marginLeft = "XXS") (bind textColor "diffColor"))
+		(alpha = "TS")
+		(bind text "measure")
+	)
+)
+
+(def element ShipParamCurrentNoDiffRenderer (_rowParams:dict, _isBold:bool="false") layout=true
+	(scope
+		(var baseValue:number = 1)
+		(var currentValue:number = 1)
+
+		(var measure:str = "_rowParams.measure ? _rowParams.measure : ' '")
+
+		(var roundNumber:number = "_rowParams ? _rowParams.roundNumber : 0")
+		(var roundedValue:number = "roundNumber > 0 	? round(currentValue * pow(10, roundNumber) ) / pow(10, roundNumber)
+														: round(currentValue)")
+		(var measuredValue:str = "roundNumber >= 0 		? formatFloatingPoint(roundedValue, roundNumber)
+														: currentValue")
+	)
+
+	(style (flow = "horizontal"))
+
+	(tf
+		(bind class "_isBold ? '$TextDefaultBoldNM' : '$TextDefaultNM'")
+		(bind alpha "_isBold ? TA : TC")
+		(bind text "measuredValue")
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(style (marginLeft = "XXS"))
+		(alpha = "TS")
+		(bind text "measure")
+	)
+
+)

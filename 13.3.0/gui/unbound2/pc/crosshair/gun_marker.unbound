@@ -1,0 +1,144 @@
+(def constant MIN_GUN_MARKER_SCALE 0.5)
+
+(def css $TextGunMarkerStyle()
+	(extends $FontEnableReadability)
+	(extends $FontFamilyDefaultBold)
+	(extends $BlockDropShadowFilter3)
+	(fontSize = 12)
+	(textColor = 0xC5C5C5)
+	(extends $TextMouseDisable)
+)
+
+
+(def constant GunMarkerThemeMap {
+	'1': 'ready',
+	'2': 'ready',
+	'3': 'warning',
+	'4': 'warning',
+	'5': 'warning',
+	'6': 'charging',
+	'7': 'crit',
+	'8': 'dead'
+})
+
+
+(def constant GunMarkerRenderMap {
+	'0': {
+		backgroundMC: 'crosshair_gun_marker_background',
+		markerMC: 'crosshair_gun_marker',
+		shootAnimMC: 'crosshair_gun_marker_shoot_anim',
+		sectorRadius: 15
+	},
+	'1': {
+		backgroundMC: 'crosshair_gun_marker_rect_background',
+		markerMC: 'crosshair_gun_marker_rect',
+		shootAnimMC: 'crosshair_gun_marker_rect_shoot_anim',
+		sectorRadius: 20
+	}
+})
+
+
+(def element GunMarker (_index:number, _markerType:number) layout=true
+	(scope
+		(event evShoot)
+
+		
+		(var _azimuth:number = 0)
+		(var _state:number = 0)
+		(var _blocked:bool = false)
+		(var _rotated:bool = true)
+		(var _progress:number = 1)
+
+		
+		(var renderSettings:dict = "GunMarkerRenderMap[_markerType]")
+		(var theme:str = "_blocked
+								?
+									_state == SC.Weapons.GUN_STATE.WORK		? 'shooting_alert' :
+									_state < SC.Weapons.GUN_STATE.CRITICAL	? 'alert'
+																			: GunMarkerThemeMap[_state]
+								:
+									_state == SC.Weapons.GUN_STATE.WORK						? 'ready' :
+									!(_rotated) && _state < SC.Weapons.GUN_STATE.CHARGE		? 'warning'
+																							: GunMarkerThemeMap[_state]")
+
+		(var markerScale:number = "1 - abs(_azimuth) * (1 - MIN_GUN_MARKER_SCALE) / 180")
+		(var d:number = "25")																
+		(var reloadAngle:number = "_progress * (90 - d) * 4")								
+		(var startArcOffset:number = "-90 - d / 2")
+		(var customAngle:number = "min(360, 0
+									+ d
+									+ (reloadAngle >= (90-d) ? d : 0)
+									+ (reloadAngle >= (90-d) * 2 ? d : 0)
+									+ (reloadAngle >= (90-d) *3 ? d : 0)
+									+ reloadAngle
+								 )")
+	)
+
+	(style (position = "absolute"))
+
+	
+	(tf $enabled="_index != 0"
+		(style
+			(width = 26) (height = 19)
+			(position="absolute")
+			(left = -13) (top = 4)
+			(textAlign="center")
+		)
+		(class $TextGunMarkerStyle)
+		(alpha = 0.6)
+
+		(bind text "_index")
+	)
+
+	
+	(mc "renderSettings.backgroundMC"
+		(style (position = "absolute"))
+
+		(bind scaleX "markerScale")
+		(bind scaleY "markerScale")
+
+		(bindcall setState "theme" false init=true)
+	)
+
+	
+	(block
+		(style (position = "absolute"))
+
+		(mc "renderSettings.markerMC"
+			(style (position = "absolute"))
+			(bind scaleX "markerScale")
+			(bind scaleY "markerScale")
+			(bindcall setState "theme" false init=true)
+		)
+
+		(block
+			(style (position = "absolute"))
+
+			(bind scaleX "markerScale")
+			(bind scaleY "markerScale")
+
+			(isMask = true)
+
+			(controller $Sector
+				(color = 0xFF000000)
+				(offset = "startArcOffset")
+				(bind arc "customAngle" )
+				(radius = "renderSettings.sectorRadius")
+			)
+		)
+	)
+
+	
+	(block
+		(style (position = "absolute"))
+
+		(mc "renderSettings.shootAnimMC"
+			(style (position = "absolute"))
+
+			(bind scaleX "markerScale")
+			(bind scaleY "markerScale")
+
+			(bindcall playAnim shoot init=false (event "evShoot"))
+		)
+	)
+)

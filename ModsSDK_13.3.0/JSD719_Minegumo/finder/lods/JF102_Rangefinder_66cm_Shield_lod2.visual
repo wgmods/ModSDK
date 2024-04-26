@@ -1,0 +1,47 @@
+<JF102_Rangefinder_66cm_Shield_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Rangefinder66cm_Shield	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS201_YDCS_M_2	</identifier>
+				<transform>
+					<row0>	0.4866 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.4866 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.4866 0.0000	</row2>
+					<row3>	0.0000 0.0098 -0.0164 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Rangefinder66cm_Shield	</node>
+		<geometry>
+			<vertices>	Rangefinder66cm_Shield_lod2Shape.vertices	</vertices>
+			<primitive>	Rangefinder66cm_Shield_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSD719_Minegumo/finder/JF102_Rangefinder_66cm_Shield.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0275 0.0000 -0.0152	</min>
+		<max>	0.0275 0.0412 0.0064	</max>
+	</boundingBox>
+</JF102_Rangefinder_66cm_Shield_lod2.visual>

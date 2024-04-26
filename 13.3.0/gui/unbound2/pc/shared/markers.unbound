@@ -1,0 +1,61 @@
+(def element MarkerNewCounter (_newContentCounter:number=0) layout=true
+	(scope
+		(var newContentCounter:number = "_newContentCounter == 0 ? 1 : _newContentCounter")
+	)
+
+	(style
+		(hitTest = false)
+		(scale9grid = 9)
+		(backgroundImage = 'url:../service_kit/markers/marker_bg.png')
+	)
+
+	(tf
+		(class $TextDefault12NM)
+		(style
+			(marginLeft = "S")
+			(marginRight = "S")
+			(marginTop = 6px)
+			(marginBottom = 6px)
+		)
+		(class $DropShadowDisabler)
+		(bind text "newContentCounter")
+	)
+)
+
+(def element MarkerNew () layout=true
+	(style
+		(hitTest = false)
+		(width = 37px)
+		(height = 20px)
+		(backgroundImage = 'url:../service_kit/markers/marker_new.png')
+	)
+)
+
+(def element MarkerAttention (_size:number="SIZE.SMALL")
+	(scope
+		(var markerSize:number = "	_size == SIZE.SMALL		? 19 :
+									_size == SIZE.MEDIUM	? 38 :
+									_size == SIZE.LARGE		? 80
+															: 19")
+		(var markerImage:str = "	_size == SIZE.SMALL		? 'url:../service_kit/markers/marker_attention.png' :
+									_size == SIZE.MEDIUM	? 'url:../service_kit/markers/marker_attention_big.png' :
+									_size == SIZE.LARGE		? 'url:../service_kit/markers/marker_attention_huge.png'
+															: 'url:../service_kit/markers/marker_attention.png'")
+	)
+
+	(style
+		(hitTest = false)
+		(bind width "markerSize")
+		(bind height "markerSize")
+		(bind backgroundImage "markerImage")
+	)
+)
+
+(def element RewardsMarkerAnimation ()
+	(style
+		(width = 17px)
+		(height = 12px)
+		(backgroundSize = "fill")
+		(bind backgroundImage "'url:../animations/spine/sparks/sparks.skel'")
+	)
+)

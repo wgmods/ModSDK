@@ -1,0 +1,416 @@
+(def element ConvoysListContainer() layout=true dispatch_size_change=true
+	(scope
+		(event evAddedToStage)
+		(event evRemoveHidedConvoyContainerItem)
+
+		(var missionVehiclesCollection:gfx = "$datahub.getCollection(CC.scenarioMissionParticipant)")
+		(var missionParticipantWatcher:gfx = "$datahub.getFirstWatcher(CC.scenarioMissionParticipant)")
+		(var hasVehiclesEntity:bool = "missionParticipantWatcher.entity" (event "missionParticipantWatcher.event"))
+		(var missionVehiclesByIndex:gfx = "hasVehiclesEntity ? missionVehiclesCollection.getChildByPath('byKeyObject').getChildByPath('byIndex') : null" (event "missionVehiclesCollection.evChildAdded"))
+		(var missionVehiclesCount:number = "missionVehiclesByIndex ? missionVehiclesByIndex.childrenCount : 0" (event "missionVehiclesByIndex.evChildrenCountChanged"))
+	)
+
+	(style
+		(align = "center")
+		(marginLeft = "SXS")
+		(marginRight = "SXS")
+		(alpha = "0")
+	)
+
+	(dispatch evAddedToStage on='addedToStage')
+
+	(controller $Animation
+		(bindcall play
+			duration = "0.25"
+			easing="Easing.quad_in"
+			from = "{alpha: 0}"
+			to = "{alpha: 1}"
+			delay = 1
+			(bind enabled "hasVehiclesEntity && missionVehiclesCount > 0")
+			(event "evAddedToStage")
+		)
+	)
+
+	(hblock $enabled = "hasVehiclesEntity"
+		(class $MiddleAlignedAbsolutely)
+		(controller $Repeat layout=true
+			(bind count "missionVehiclesCount")
+			(bindcall removeChildAt "$event.index" (event "evRemoveHidedConvoyContainerItem"))
+			(exprs
+				(controller $Instance renderer='ConvoyContainerItem'
+					(args
+						_collection = "missionVehiclesByIndex.child($index)"
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element ConvoyContainerItem(_collection:gfx) layout=true
+	(scope
+		(event evAddedToStage)
+		(event evHideBlock)
+
+		(var entity:gfx = "_collection ? _collection.items[0] : null" watch=false (event "_collection.evAdded") (event "_collection.evUpdated"))
+		(var relation:number = "_collection && entity.relation ? entity.relation.value : 0" (event "entity.relation.evChanged"))
+		(var relationStr:str = "toLower(SC.Battle.PLAYER_RELATION.VALUE_TO_NAME[relation])")
+		(var aliveVehiclesCollection:gfx = "_collection.getChildByPath('alive')" (event "_collection.evAdded"))
+		(var aliveVehiclesCollectionLength:number = "aliveVehiclesCollection ? aliveVehiclesCollection.items.length : 0" (event "aliveVehiclesCollection.evAdded") (event "aliveVehiclesCollection.evRemoved"))
+	)
+
+	(style
+		(align = "center|middle")
+		(marginLeft = "MS")
+		(marginRight = "MS")
+		(flow = "horizontal")
+	)
+
+	(dispatch evAddedToStage delay=3 on='addedToStage') 
+	(dispatch evHideBlock (event "evAddedToStage") (bind enabled "aliveVehiclesCollectionLength == 0") (bind trigger "aliveVehiclesCollectionLength")) 
+	(dispatch evRemoveHidedConvoyContainerItem delay=3 args="{index: $index}" dir="EventDirection.UP" (event "evHideBlock")) 
+
+	(controller $Animation
+		(bindcall play
+			keyframes =
+				"[
+					{
+						frame:0,
+						to:{alpha:1}
+					},
+					{
+						frame:15,
+						to:{alpha:0}
+					},
+					{
+						frame:16,
+						to:{ubScaleX: 1, marginLeft: MS, marginRight: MS}
+					},
+					{
+						frame:35,
+						to:{ubScaleX: 0, marginLeft: 0, marginRight: 0}
+					}
+				]"
+			delay = 1
+			(event "evHideBlock")
+		)
+	)
+
+	(block
+		(style
+			(width = "15px")
+			(height = "15px")
+			(marginTop = "3")
+			(align = "center|middle")
+		)
+		(controller $Instance renderer='MapPathStartMarker'
+			(args
+				_missionIndex = "$index"
+				_relation = "relation"
+				_lineAlpha = "1"
+			)
+		)
+	)
+
+	(hblock
+		(controller $Repeat renderer='ConvoyShipsItem' layout=false
+			(bind enabled "_collection != null")
+			(bind count "_collection.items.length" (event "_collection.evAdded") (event "_collection.evRemoved"))
+			(args "_collection")
+			(exprs
+				(scope
+					(bind _collection "_collection")
+				)
+			)
+		)
+	)
+)
+
+(def element ConvoyShipsItem(_collection:gfx) layout=true dispatch_size_change=true
+	(scope
+		(var keyObjectEntity:gfx = "_collection.items[$index]" (event "_collection.evAdded") (event "_collection.evRemoved") (event "_collection.evUpdated"))
+		(var maxHealth:number = "keyObjectEntity.keyObject ? ceil(keyObjectEntity.keyObject.maxValue) : 0" (event "keyObjectEntity.keyObject.evValueChanged"))
+		(var isVisible:bool = "keyObjectEntity.visibility ? keyObjectEntity.visibility.visible : false" (event "keyObjectEntity.visibility.evChanged"))
+		(var isAlive:bool = "keyObjectEntity.health ? keyObjectEntity.health.isAlive : false" (event "keyObjectEntity.health.evIsAliveChanged"))
+		(var avatarId:number = "keyObjectEntity.avatar ? keyObjectEntity.avatar.id : 0")
+		(var healthValue:number = "keyObjectEntity.keyObject && isAlive ? ceil(keyObjectEntity.keyObject.value) : 0" (event "keyObjectEntity.keyObject.evValueChanged"))
+		(var missionIndex:number = "keyObjectEntity.scenarioMissionParticipant ? keyObjectEntity.scenarioMissionParticipant.index : 0")
+		(var shipType:str = "keyObjectEntity.avatar.shipType")
+
+		(var relation:number = "keyObjectEntity.relation.value")
+		(var isAlly:bool = "relation == SC.Battle.PLAYER_RELATION.ALLY")
+
+		(var healthBarColor:gfx = "isAlly ? C_ALLY : C_ENEMY")
+
+		(var tooltipText:str = "isAlly	? 'IDS_CONVOY_QUICK_COMMAND_ALLY_VISIBLE'
+										: isVisible ? 'IDS_CONVOY_QUICK_COMMAND_ENEMY_VISIBLE' : 'IDS_CONVOY_QUICK_COMMAND_ENEMY_INVISIBLE'")
+
+		(var iconName:str = "(isAlly	? isAlive	? 'ally_' 
+													: 'sunk_'
+										: isAlive	? 'enemy_' 
+													: 'enemy_sunk_' ) + toLower(shipType)")
+
+		(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM_SCOPE)
+	)
+
+	(style
+		(paddingLeft = "SXS")
+		(backgroundColor = "0x01000000")
+		(bind hitTest "isAlive")
+	)
+
+	(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM "true")
+
+	
+	(bindcall externalCall 'direct.action' "['convoyMission.blinkPathByMission', [missionIndex]]" init=false watch=false on='mouseOver')
+	(bindcall externalCall 'direct.action' "['convoyMission.blinkPathByMission', [missionIndex]]" init=false watch=false on='mouseOut')
+
+	
+	(macro SEND_QUICK_COMMAND "avatarId" "Cmd.CMD_QUICK_TACTIC")
+
+	(hblock
+		(style 
+			(align = "middle")
+		)
+		(block
+			(style
+				(hitTest = "false")
+				(width = "SHIP_ICON_SIZE.WIDTH")
+				(height = "SHIP_ICON_SIZE.HEIGHT")
+				(marginLeft = "-4")
+				(marginRight = "-3")
+				(marginBottom = "-2")
+				(marginTop = "-2")
+				(backgroundSize = "cover")
+				(bind backgroundImage "'url:../battle_hud/markers/ship/icon_' + iconName + '.png'")
+			)
+		)
+
+		(tf
+			(style
+				(marginLeft = "XS")
+				(hitTest = "false")
+			)
+			(class $TextDefault13NM)
+			(class $TextColorHUDNeutral)
+			(bind text "keyObjectEntity.avatar.name")
+		)
+	)
+	(block
+		(style 
+			(hitTest = "false")
+		)
+		(controller $Instance (renderer='BattleProgressBar')
+			(bind enabled "keyObjectEntity.keyObject")
+			(args
+				_barWidth = "86"
+				_maxProgress = "maxHealth"
+				_valueProgress = "healthValue"
+				_color = "healthBarColor"
+			)
+			(exprs
+				(scope
+					(bind maxProgress "maxHealth")
+					(bind valueProgress "healthValue")
+					(bind color "healthBarColor")
+				)
+			)
+		)
+	)
+
+	(controller $Tooltip
+		(renderer='SimpleStatusTooltip')
+		(args
+			_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+			_text="tooltipText"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element PinataItem () layout = true
+	(scope
+		(var keyObjectCollection:gfx = "$datahub.getCollection(CC.keyObject)")
+		(var keyObjectEntity:gfx = "keyObjectCollection.items[0]" (event "keyObjectCollection.evAdded") (event "keyObjectCollection.evRemoved") (event "keyObjectCollection.evUpdated"))
+		(var maxHealth:number = "keyObjectEntity ? ceil(keyObjectEntity.keyObject.maxValue) : 0" (event "keyObjectEntity.keyObject.evValueChanged"))
+		(var isAlive:bool = "keyObjectEntity ? keyObjectEntity.health.isAlive : false" (event "keyObjectEntity.health.evIsAliveChanged"))
+		(var healthValue:number = "keyObjectEntity ? ceil(keyObjectEntity.keyObject.value) : 0" (event "keyObjectEntity.keyObject.evValueChanged"))
+		(var healthProgress:number = "healthValue && maxHealth ? healthValue / maxHealth : 1" (event "keyObjectEntity.keyObject.evValueChanged"))
+	)
+
+	(style
+		(hitTest = "false")
+		(paddingLeft = "SXS")
+		(paddingRight = "SXS")
+	)
+
+	(bind visible "isAlive")
+
+	(block
+		(style
+			(pivotX = "50%") (pivotY = "50%")
+			(align = "center|middle")
+		)
+
+		(block
+			(style
+				(bind backgroundImage "'url:../battle_hud/markers/pinata/hp_bar/pinata_track.png'")
+				(backgroundSize = "autosize")
+				(align = "center|middle")
+			)
+
+			(block
+				(class $FullsizeAbsolute)
+				(style (align = "center|middle"))
+
+				(block
+					(controller $Sector
+						(bind arc "-360 * healthProgress")
+						(offset = "-90")
+						(radius = "23")
+					)
+					(isMask = true)
+				)
+
+				(block
+					(class $FullsizeAbsolute)
+					(style (bind backgroundImage "'url:../battle_hud/markers/pinata/hp_bar/pinata_bar.png'"))
+				)
+			)
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style (align = "center|middle"))
+
+			(block
+				(style
+					(bind backgroundImage "'url:../battle_hud/markers/pinata/hp_bar/pinata_icon.png'")
+					(backgroundSize = "autosize")
+				)
+			)
+		)
+	)
+)
+
+(def element KeyObjectsContainer(_collection:gfx) layout=true
+	(scope
+		(var keyObjectCollection:gfx = "$datahub.getCollection(CC.keyObject)")
+	)
+
+	(style
+		(align = "center")
+		(marginLeft = "SXS")
+		(marginRight = "SXS")
+	)
+
+	(hblock
+		(controller $Repeat renderer='KeyObjectItem' layout=false
+			(bind count "keyObjectCollection.items.length" (event "keyObjectCollection.evAdded") (event "keyObjectCollection.evRemoved"))
+			(args "keyObjectCollection")
+			(exprs
+				(scope
+					(bind _collection "keyObjectCollection")
+				)
+			)
+		)
+	)
+)
+
+(def element KeyObjectItem(_collection:gfx) layout=true dispatch_size_change=true
+	(scope
+		(var keyObjectEntity:gfx = "_collection.items[$index]" (event "_collection.evAdded") (event "_collection.evRemoved") (event "_collection.evUpdated"))
+		(var isBuilding:bool = "keyObjectEntity.hasComponent(CC.building)")
+		(var maxHealth:number = "keyObjectEntity.keyObject ? ceil(keyObjectEntity.keyObject.maxValue) : 0" (event "keyObjectEntity.keyObject.evValueChanged"))
+		(var isAlive:bool = "keyObjectEntity.health ? keyObjectEntity.health.isAlive : false" (event "keyObjectEntity.health.evIsAliveChanged"))
+		(var healthValue:number = "keyObjectEntity.keyObject && isAlive ? ceil(keyObjectEntity.keyObject.value) : 0" (event "keyObjectEntity.keyObject.evValueChanged"))
+		(var relation:number = "keyObjectEntity.relation ? keyObjectEntity.relation.value : 0")
+		(var isAlly:bool = "relation == SC.Battle.PLAYER_RELATION.ALLY")
+
+		(var entityType:str = "isBuilding ? keyObjectEntity.building.type : keyObjectEntity.avatar.ship.ref.ship.subtype")
+		(var healthBarColor:gfx = "isAlly ? C_ALLY : C_ENEMY")
+
+		(var iconNamePrefix:str = "	isAlive ? isAlly	? 'ally_'
+														: 'enemy_'
+											: isBuilding	? 'dead_'
+															:  isAlly	? 'sunk_'
+																		: 'enemy_sunk_'")
+
+		(var iconName:str = "iconNamePrefix + toLower(entityType)")
+	)
+	(style
+		(hitTest = "false")
+		(paddingLeft = "SXS")
+		(paddingRight = "SXS")
+	)
+
+	(hblock
+		(style 
+			(width = "100%")
+			(align = "middle")
+			(marginBottom = "-3")
+		)
+		(block
+			(style
+				(width = "SHIP_ICON_SIZE.WIDTH")
+				(height = "SHIP_ICON_SIZE.HEIGHT")
+				(backgroundSize = "cover")
+				(bind backgroundImage "isBuilding ? 'url:../service_kit/building_icons/icon_' + iconName + '.png' : 'url:../battle_hud/markers/ship/icon_' + iconName + '.png'")
+				(marginLeft = "-XS")
+			)
+		)
+
+		(hblock
+			(style
+				(width = "100%")
+				(align = "right")
+				(paddingRight = "XXS")
+				(marginTop = "2")
+			)
+
+			(tf
+				(class $TextDefaultBold13NM)
+				(class $FontEnableReadability)
+				(bind text "formatSeparator(healthValue)")
+			)
+
+			(tf
+				(class $TextDefault13NM)
+				(class $FontEnableReadability)
+				(bind text "' /' + formatSeparator(maxHealth)")
+			)
+		)
+	)
+
+	(block
+		(controller $Instance (renderer='BattleProgressBar')
+			(bind enabled "keyObjectEntity.keyObject")
+			(args
+				_barWidth = "120"
+				_barHeight = "6"
+				_maxProgress = "maxHealth"
+				_valueProgress = "healthValue"
+				_color = "healthBarColor"
+			)
+			(exprs
+				(scope
+					(bind maxProgress "maxHealth")
+					(bind valueProgress "healthValue")
+					(bind color "healthBarColor")
+				)
+			)
+		)
+	)
+	(block
+		(style 
+			(width = "100%")
+			(align = "right")
+			(marginTop = "XS")
+			(paddingRight = "XXS")
+		)
+		(tf
+			(class $TextDefault13NM)
+			(bind text "isBuilding ? keyObjectEntity.building.name : keyObjectEntity.avatar.name")
+		)
+	)
+)

@@ -1,0 +1,124 @@
+<RF014_KDP2_3_Duplex_ITL.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	dardo	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	MP_RM088_Anemometer	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.1785 -0.1022 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_RM303_Redan2_radar	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.1676 -0.0892 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS201_YDCS_M_2	</identifier>
+				<transform>
+					<row0>	0.8771 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.8771 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.8771 0.0000	</row2>
+					<row3>	0.0000 0.1288 -0.0894 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS203_YDSS_M_1	</identifier>
+				<transform>
+					<row0>	0.4466 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.0000 0.4466 0.0000	</row1>
+					<row2>	0.0000 -0.4466 0.0000 0.0000	</row2>
+					<row3>	-0.1000 0.0713 0.0804 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS203_YDSS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.4466 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.0000 0.4466 0.0000	</row1>
+					<row2>	0.0000 -0.4466 0.0000 0.0000	</row2>
+					<row3>	0.1000 0.0713 0.0804 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS203_YDSS_M_1_INDEX_2	</identifier>
+				<transform>
+					<row0>	0.4466 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.0000 0.4466 0.0000	</row1>
+					<row2>	0.0000 -0.4466 0.0000 0.0000	</row2>
+					<row3>	-0.1000 0.1442 -0.0852 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS203_YDSS_M_1_INDEX_3	</identifier>
+				<transform>
+					<row0>	0.4466 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.0000 0.4466 0.0000	</row1>
+					<row2>	0.0000 -0.4466 0.0000 0.0000	</row2>
+					<row3>	0.1000 0.1442 -0.0852 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	dardo_wire	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	dardo	</node>
+		<geometry>
+			<vertices>	dardoShape.vertices	</vertices>
+			<primitive>	dardoShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/RSD409_Pr_20i_Tashkent/finder/RF014_KDP2_3_Duplex_ITL.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	dardo_wire	</node>
+		<geometry>
+			<vertices>	dardo_wireShape.vertices	</vertices>
+			<primitive>	dardo_wireShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPWIRE_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/RSD409_Pr_20i_Tashkent/finder/RF014_KDP2_3_Duplex_ITL_wire.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1298 0.0000 -0.1478	</min>
+		<max>	0.1298 0.1975 0.1339	</max>
+	</boundingBox>
+</RF014_KDP2_3_Duplex_ITL.visual>

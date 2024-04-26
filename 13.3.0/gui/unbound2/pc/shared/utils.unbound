@@ -1,0 +1,329 @@
+(def css $Fullsize ()
+	(width = 100%)
+	(height = 100%))
+
+(def css $FullsizeAbsolute ()
+	(width = 100%)
+	(height = 100%)
+	(position = "absolute"))
+
+(def css $MiddleAligned ()
+	(left = 50%)
+	(marginLeft = -50%))
+
+(def css $MiddleVAligned ()
+	(top = 50%)
+	(marginTop = -50%))
+	
+(def css $EyeLevelVAligned ()
+	
+	(marginTop = -50%))
+
+(def css $MiddleVHAbsolutely ()
+	(position = "absolute")
+	(left = 50%)
+	(top = 50%)
+	(marginTop = -50%)
+	(marginLeft = -50%)
+)
+
+(def css $AlignRight ()
+	(position = "absolute")
+	(right = 0))
+
+(def css $MiddleAlignedAbsolutely ()
+    (extends $MiddleAligned)
+    (position = "absolute"))
+
+(def css $MiddleVAlignedAbsolutely ()
+    (extends $MiddleVAligned)
+    (position = "absolute"))
+
+(def css $Quad ()
+
+
+)
+
+(def css $MouseDisable ()
+
+
+
+)
+
+(def css $ContextMenuListItemContent ()
+	(width = "198px")
+	(marginLeft = "6px")
+	(marginRight = "6px")
+)
+
+(def css $InfoLineBoundaries ()
+	(marginBottom = 6px)
+	(marginTop = 6px))
+
+(def css $InfoBlockHorizontalIndent ()
+	(width = 100%)
+	(paddingLeft = 12px)
+	(paddingRight = 12px)
+)
+(def css $InfoBlockIndent ()
+	(extends $InfoBlockHorizontalIndent)
+	(paddingTop = 9px)
+	(paddingBottom = 9px)
+)
+
+(def css $InfoBlockHorizontalIndentNoWidth ()
+	(marginLeft = 12px)
+	(marginRight = 12px)
+)
+
+(def css $DockPanelMargins ()
+	(marginLeft = 13px)
+	(marginRight = 13px)
+	
+)
+(def css $InfoBlockIndentNoWidth ()
+	(extends $InfoBlockHorizontalIndentNoWidth)
+	(marginTop = 9px)
+	(marginBottom = 9px)
+)
+
+(def css $ShipTechStats ()
+	(width = 312px)
+	(height = 100%)
+	(position = "absolute")
+	(top = 32px)
+	(right = 10px)
+)
+
+(def css $TextInputEnterButton ()
+	(position = "absolute")
+	(top = 50%)
+	(marginTop = -11px)
+	(width = 52px)
+	(height = 25px)
+	(right = 2px)
+)
+
+(def css $TextAreaEnterButton ()
+	(position = "absolute")
+	(bottom = 0px)
+	(width = 52px)
+	(height = 25px)
+	(right = 2px)
+)
+
+(def css $None ())
+
+(def css $PxHorizontalCorrection ()
+	(paddingLeft = 1px)
+	(paddingRight = 1px)
+)
+
+(def css $BottomMenu ()	
+	(height = 30px)
+	(position = "absolute")
+	(bottom = 0px)
+	(width = 100%)
+)
+
+(def element HorizontalDivider () layout=true
+	
+	(class $PxHorizontalCorrection)
+	(style 
+		(width = 100%) 
+		(height = 3px)
+		
+	)
+	(mc divider_h
+			(class $Fullsize))
+)
+
+(def element HorizontalDividerTwoPx () layout=true
+	(style
+		(width = 100%) (height = 2) (backgroundSize = "fill")
+		(backgroundImage = 'url:../service_kit/dividers/divider_h.png')
+	)
+)
+
+(def element DottedHorizontalDivider ()
+	(style
+		(width = 100%)
+		(height = 2)
+		(backgroundRepeatX = true)
+		(backgroundRepeatY = false)
+		(backgroundImage = 'url:../service_kit/dividers/divider_h_secondary.png')
+	)
+)
+
+(def element VerticalDivider () layout=true
+	(style
+		(height = "100%") (width = "3px") (backgroundSize = "fill")
+		(backgroundImage = 'url:../service_kit/dividers/divider_v.png')
+	)
+)
+
+(def element TableDivider () layout=true
+	(style
+		(backgroundImage = "'symbol:dotted_line'")
+		
+		(width = 100%)
+		(height = 1px)
+		(alpha = 0.1)
+	)
+)
+
+
+(def element DottedLine () layout=true
+	(style
+		(backgroundImage = 'url:../ui_render/dotted_line.dds')
+		(backgroundSize = "cover")
+		(width = 100%)
+		(height = 1px)
+	)
+	(alpha = 0.5)
+)
+
+
+
+
+
+(def macro BLUR_MAP()
+	(rendererString = blurMeBaby)
+	(macro BLUR_MAP_ANIMATION)
+)
+
+(def macro BLUR_MAP_ANIMATION ()
+	(controller $Animation
+		(bindcall play  duration=0.15
+						action="kill"
+						keyframes="[
+							{percent:0,		to:{ blurIntensity:0 }},
+							{percent:30,	to:{ blurIntensity:0.4 }},
+							{percent:50,	to:{ blurIntensity:0.8 }},
+							{percent:80,	to:{ blurIntensity:0.9 }},
+							{percent:100,	to:{ blurIntensity:1 }}
+						]"
+						watch=false
+						(event "evBlurStartShow")
+		)
+		(bindcall play  duration=0.1
+						action="kill"
+						to = "{ blurIntensity: 0 }"
+						watch=false
+						(event "evBlurStartHide")
+		)
+	)
+)
+
+(def macro BLUR_MAP_SCOPE ()
+	(event evBlurStartShow)
+	(event evBlurStartHide)
+
+	(macro GET_PREF 'isBlurOptionEnabled' "'graphics.GUI.blur'")
+)
+
+(def element TooltipSystemBlur () layout=true
+	(scope
+		(macro BLUR_MAP_SCOPE)
+	)
+	(bind visible "isBlurOptionEnabled")
+
+	(class $FullsizeAbsolute)
+	(mouseEnabled = false)
+	(mouseChildren = false)
+	(element DeclareBlurLayer)
+
+	(mc mc_blurmap_medium
+		(class $FullsizeAbsolute)
+		(macro BLUR_MAP)
+	)
+	
+	(mc inner_panel
+		(class $FullsizeAbsolute)
+		(alpha = 0.5)
+	)
+)
+
+(def element InfotipSystemBlur () layout=true
+	(scope
+		(macro BLUR_MAP_SCOPE)
+	)
+	(class $FullsizeAbsolute)
+	(element DeclareBlurLayer)
+
+	(mc mc_blurmap_gamemenu
+		(class $FullsizeAbsolute)
+		(macro BLUR_MAP)
+	)
+)
+
+(def element InfotipPinBlurmap () layout=true
+	(scope
+		(macro BLUR_MAP_SCOPE)
+	)
+	(mc mc_blurmap_infotip_arrow_vert
+		(style (position = "absolute") (width = 22px) (height = 12px))
+		(macro BLUR_MAP)
+	)
+)
+
+(def element BlurMapCustom (_map:str)
+	(scope
+		(macro BLUR_MAP_SCOPE)
+	)
+	(class $FullsizeAbsolute)
+	(mouseEnabled = false)
+	(mouseChildren = false)
+	(mc "_map"
+		(class $FullsizeAbsolute)
+		(macro BLUR_MAP)
+	)
+)
+
+(def element BlurMap ()
+	(scope
+		(macro BLUR_MAP_SCOPE)
+	)
+	(bind visible "isBlurOptionEnabled")
+
+	(style (hitTest = false))
+	(class $FullsizeAbsolute)
+	(mc mc_blurmap_medium
+		(class $FullsizeAbsolute)
+		(macro BLUR_MAP)
+	)
+	(mc inner_panel
+		(style (alpha = 0.2))
+		(class $FullsizeAbsolute)
+	)
+)
+
+(def element BlurMapLow () layout=true
+	(scope
+		(macro BLUR_MAP_SCOPE)
+	)
+	(style (hitTest = "false"))
+	(class $FullsizeAbsolute)
+
+	(mc mc_blurmap5
+		(class $FullsizeAbsolute)
+		(macro BLUR_MAP) 
+	)
+
+	(mc inner_panel
+		(class $FullsizeAbsolute)
+		(style (alpha = "0.2"))
+	)
+)
+
+(def element DeclareBlurLayer () layout=true
+	(scope
+		(macro BLUR_MAP_SCOPE)
+	)
+	(style (position = "absolute"))
+	(mc transparentPixel
+		(rendererString = blurLayer)
+	)
+)
+
+

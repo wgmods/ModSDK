@@ -1,0 +1,60 @@
+(def element ModalWindowCurrencySelector (_pricesIds:array=[]) dispatch_size_change=true
+	(scope
+		(event evMenuItemSelected)
+
+		(var menuItemIndex:number = "0")
+		(bind menuItemIndex "$event.selectedCurrencyIndex" init=false (event "evMenuItemSelected"))
+	)
+
+	(dispatch evCurrencyOptionSelected args="$event" dir="EventDirection.UP" (event "evMenuItemSelected"))
+
+	(bind visible "_pricesIds.length > 1") 
+	(style (width = "100%"))
+
+	(controller $Repeat renderer = 'ModalWindowCurrencySelectorOption'
+		(bind count "_pricesIds.length")
+		(args
+			_priceComponentId = "_pricesIds[$index]"
+		)
+		(exprs
+			(scope
+				(bind _isSelected "$index == menuItemIndex")
+			)
+		)
+	)
+)
+
+(def element ModalWindowCurrencySelectorOption (_priceComponentId:str) layout=true
+	(scope
+		(var priceEntity:gfx = "$datahub.getEntity(_priceComponentId)")
+		(var priceInfo:gfx = "priceEntity.itemPrice")
+
+		(var resourceEntity:gfx = "$datahub.getSingleEntity(CC.accountResource)")
+		(var accountResource:gfx = "resourceEntity.accountResource"	(event "resourceEntity.accountResource.evChangedGold")
+																	(event "resourceEntity.accountResource.evChangedCredit"))
+
+		(var currency:str = "priceInfo.currency")
+		(var deficit:number = "priceInfo.finalPrice - accountResource[currency]")
+		(var titleCurrency:str = "tr('IDS_CURRENCY_' + toUpper(currency))")
+		(var title:str = "tr('IDS_QUESTION_DO_PURCHASE_FOR') + ' ' + toLower(tr(titleCurrency))")
+		(var disableReasonText:str = "tr('IDS_NOT_ENOUGH_' + toUpper(currency))")
+
+		(var isAvailable:bool = "deficit <= 0")
+		(var _isSelected:bool = "false")
+	)
+
+	(style (width = 100%))
+
+	(controller $Instance renderer='SmallMenuItemWithPrice'
+		(args
+			_height = "42px"
+			_title = "title"
+			_disableReason = "disableReasonText"
+			_isAvailable = "isAvailable"
+			_isSelected = "_isSelected"
+			_priceInfo = "priceInfo"
+			_dispatchedEv = "'evMenuItemSelected'"
+			_dispatchParams = "{selectedCurrencyIndex: $index}"
+		)
+	)
+)

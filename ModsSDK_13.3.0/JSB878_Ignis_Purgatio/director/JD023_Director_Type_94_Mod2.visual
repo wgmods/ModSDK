@@ -1,0 +1,133 @@
+<JD023_Director_Type_94_Mod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	DirectorMod2	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	JD022	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+		<node>
+			<identifier>	Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Root_BlendBone	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 -1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	Rotate_Y	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0333 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	MP_JM006_Binocular_1	</identifier>
+					<transform>
+						<row0>	0.0000 0.0000 0.7524 0.0000	</row0>
+						<row1>	0.0000 0.7524 0.0000 0.0000	</row1>
+						<row2>	-0.7524 0.0000 0.0000 0.0000	</row2>
+						<row3>	0.0684 -0.0295 0.0289 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	MP_JM006_Binocular_1_INDEX_1	</identifier>
+					<transform>
+						<row0>	0.0000 0.0000 0.7524 0.0000	</row0>
+						<row1>	0.0000 0.7524 0.0000 0.0000	</row1>
+						<row2>	-0.7524 0.0000 0.0000 0.0000	</row2>
+						<row3>	-0.0686 -0.0293 0.0289 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	Rotate_Y_BlendBone	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 -1.0000 0.0000	</row2>
+						<row3>	0.0000 -0.0333 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	SP_YMS201_YDCS_M_2	</identifier>
+					<transform>
+						<row0>	1.2864 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.2864 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.2864 0.0000	</row2>
+						<row3>	0.0000 -0.0096 0.0784 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	SP_YMS203_YDSS_M_1	</identifier>
+					<transform>
+						<row0>	0.0000 2.3032 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.0000 -2.3032 0.0000	</row1>
+						<row2>	-2.3032 0.0000 0.0000 0.0000	</row2>
+						<row3>	0.0000 0.0144 0.0424 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+		<node>	Rotate_Y_BlendBone	</node>
+		<geometry>
+			<vertices>	DirectorMod2Shape.vertices	</vertices>
+			<primitive>	DirectorMod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director1_skinned	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSB878_Ignis_Purgatio/director/JD023_Director_Type_94_Mod2_skinned.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+		<node>	Rotate_Y_BlendBone	</node>
+		<geometry>
+			<vertices>	JD022Shape.vertices	</vertices>
+			<primitive>	JD022Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director_skinned	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/JSB878_Ignis_Purgatio/director/JD022_Director_Type_95_Mod1_skinned.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1166 -0.0084 -0.1166	</min>
+		<max>	0.1166 0.1137 0.1166	</max>
+	</boundingBox>
+</JD023_Director_Type_94_Mod2.visual>

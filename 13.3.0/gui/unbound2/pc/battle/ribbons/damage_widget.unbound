@@ -1,0 +1,158 @@
+(def css $DamageCounterDropShadowFilter ()
+	(filters 
+		(dropShadow 
+			(distance = 0.1)
+			(angle = 90)
+			(color = 0x000000)
+			(alpha = 1.0)
+			(blurX = 2.0)
+			(blurY = 2.0)
+			(strength = 0.7)
+			(quality = 1)
+		)
+	)
+)
+
+(def constant COUNTER_ICONS {
+	CAUSED_DAMAGE: 'caused_damage',
+	CAUSED_AVIA_DAMAGE: 'caused_avia_damage',
+	ASSISTED_DAMAGE: 'assisted_damage',
+	BLOCKED_DAMAGE: 'blocked_damage'
+})
+
+(def constant DAMAGE_COUNTER_TOOLTIP_WIDTH 320)
+
+(def element DamageWidget () layout=true
+	(scope
+		(macro GET_PREF 'showAdditionalDamageCounter' "'ui.showAdditionalDamageCounters'")
+		(var showAdditionalDamageCounters:bool = "showAdditionalDamageCounter")
+
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var battleDamage:gfx = "battleDataEntity.battleDamage" (event "battleDataEntity.evAdded"))
+
+		(var damageEnemy:number = "battleDamage.enemy" (event "battleDamage.evChanged"))
+		(var damageAvia:number = "battleDamage.avia" (event "battleDamage.evChanged"))
+		(var damageAssisted:number = "battleDamage.spot" (event "battleDamage.evChanged"))
+		(var damageBlocked:number = "battleDamage.aggro" (event "battleDamage.evChanged"))
+	)
+
+	(style
+		(align = "left")
+	)
+
+	
+	(block
+		(style (marginBottom = "XXS"))
+		(controller $Instance (renderer = 'DamageWidgetCounter')
+			(bind enabled "damageEnemy > 0")
+			(args "COUNTER_ICONS.CAUSED_DAMAGE" "damageEnemy" true)
+		)
+	)
+
+	
+	(block
+		(controller $Instance (renderer = 'DamageWidgetCounter')
+			(bind enabled "damageAvia > 0")
+			(args "COUNTER_ICONS.CAUSED_AVIA_DAMAGE" "damageAvia")
+		)
+	)
+
+	
+	(block
+		(controller $Instance (renderer = 'DamageWidgetCounter')
+			(bind enabled "showAdditionalDamageCounters && damageBlocked > 0")
+			(args "COUNTER_ICONS.BLOCKED_DAMAGE" "damageBlocked")
+		)
+	)
+
+	
+	(block
+		(controller $Instance (renderer = 'DamageWidgetCounter')
+			(bind enabled "showAdditionalDamageCounters && damageAssisted > 0")
+			(args "COUNTER_ICONS.ASSISTED_DAMAGE" "damageAssisted")
+		)
+	)
+)
+
+(def element DamageWidgetCounter (_counterType:str, _count:number, _big:bool=false) layout=true
+	(scope
+		(event evShow)
+
+		(var damageValue:number = 0)
+		(controller $Animation
+			(bindcall play	duration = 0.6
+							to = "{ damageValue: _count}"
+							easing="Easing.cubic_out"
+							(bind trigger "_count")
+							(event "evShow")
+			)
+		)
+		(var textFieldWidth:number = "	damageValue < 10000 	? 70 :
+										damageValue < 100000 	? 80 :
+										damageValue < 1000000	? 90
+																: 110")
+	)
+
+	(dispatch evShow on='addedToStage')
+
+	(style
+		(flow = "horizontal")
+		(align = "middle")
+		(bind marginTop "!(_big) ? -XS : 0")
+		(bind marginBottom "!(_big) ? -S : 0")
+	)
+
+	(controller $Tooltip
+		(renderer='DamageWidgetCounterTooltip')
+		(args "_counterType")
+		(align="bottom|left")
+		(position="trackMouse")
+		(offset={x:"5px", y:"0"})
+		(macro SIMPLE_TOOLTIP_ANIMATION)
+	)
+
+	
+	(block
+		(style
+			(width = 32) (height = 32)
+			(bind backgroundImage "'url:../battle_hud/damage_widget/icon_counter_' + _counterType + '.png'")
+			(marginRight = "XS")
+		)
+	)
+
+	
+	(block
+		(style
+			(bind width "textFieldWidth + (_big ? 0 : -36)")
+		)
+
+		(tf
+			(bind class "_big ? '$TextDefaultBold25NM' : '$TextDefaultBoldNM'")
+			(class $DamageCounterDropShadowFilter)
+			(bind text "formatSeparator(ceil(damageValue))")
+		)
+	)
+)
+
+(def element DamageWidgetCounterTooltip (_counterType:str) layout=true
+	(style (width = "DAMAGE_COUNTER_TOOLTIP_WIDTH") (hitTest = false))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(controller $Instance renderer='TooltipSystemHeaderSubheaderText'
+			(args
+				_headerText="toUpper('IDS_' + _counterType + '_HINT_HEADER')"
+				_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			)
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider')
+
+		(controller $Instance renderer='TooltipSystemDescriptionText'
+			(args
+				_descriptionText="toUpper('IDS_' + _counterType + '_HINT')"
+			)
+		)
+	)
+)

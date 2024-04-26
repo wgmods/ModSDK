@@ -1,0 +1,40 @@
+(def element UbObservedPlayerLabel() layout=true dispatch_size_change=true
+	(scope
+		(var cameraComponent:gfx = "$datahub.getSingleComponent(CC.camera)")
+		(var observedPlayerId:number = "cameraComponent.observedPlayerId" (event "cameraComponent.evObservedPlayerIdChanged"))
+
+		(var playerAvatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var avatarComponent:gfx = "playerAvatarEntity.avatar")
+		(var playerAvatarId:number = "avatarComponent ? avatarComponent.id : -1")
+		(var isSelfObserved:bool = "playerAvatarId == observedPlayerId")
+
+		(var observedAvatarEntity:gfx = "$datahub.getPrimaryEntity(CC.avatar, observedPlayerId)")
+		(var avatarName:str = "observedAvatarEntity && observedAvatarEntity.hasComponent(CC.avatar) ? observedAvatarEntity.avatar.name : null")
+		(var isAvatarBot:bool = "observedAvatarEntity && observedAvatarEntity.hasComponent(CC.avatar) ? observedAvatarEntity.avatar.isBot : true")
+
+		(var diplomacyCollection:gfx = "$datahub.getCollection(CC.diplomacyRelation)")
+		(var hasDiplomacyItems:bool = "diplomacyCollection.items.length > 0" (event "diplomacyCollection.evAdded"))
+	)
+
+	(bind visible "!isSelfObserved && !hasDiplomacyItems && (avatarName != null)")
+
+	(style
+		(width = "206px")
+		(height = "26px")
+		(align = "middle")
+	)
+
+	(tf
+		(class $TextDefaultBold17NM)
+		(class $FontEnableReadability)
+		(class $FontColorWhite)
+		(style
+			(textAlign = "center")
+			(width = 100%)
+			(elideMode = true)
+			(bind noTranslate "!isAvatarBot")
+		)
+
+		(bind text "avatarName")
+	)	
+)

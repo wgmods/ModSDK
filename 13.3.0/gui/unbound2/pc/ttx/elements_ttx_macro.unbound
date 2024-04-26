@@ -1,0 +1,113 @@
+(def css $TTXValueRowHorizontal ()
+	(width = 100%)
+	(marginTop = 8px)
+	(marginBottom = 8px)
+	(flow = "horizontal")
+	(backgroundColor = 0x01000000)
+)
+
+(def css $TextTTXLine ()
+	(extends $TextDefaultNM)
+	(leading = "-3px")
+)
+
+(def css $TextTTXLineBold ()
+	(extends $TextDefaultBoldNM)
+	(leading = "-3px")
+)
+
+(def macro TTX_INSTANCE (_elementName:str, _value:expression, _enabled:expression="true")
+	(block
+		(style (width = 100%))
+		(controller $Instance
+			(bind enabled "_enabled && _value != null")
+			(args "shipTTX" "_value")
+			(bind renderer "_elementName")
+		)
+	)
+)
+
+(def macro TTX_INSTANCE_SELECTOR (_elementName:expression, _value:expression, _enabled:expression="true")
+	(block
+		(style (width = 100%))
+		(controller $Instance
+			(bind enabled "_enabled && _value != null")
+			(args "shipTTX" "_value")
+			(bind renderer "_elementName")
+		)
+	)
+)
+
+(def macro TTX_REPEAT (_elementName:str, _array:expression)
+	(block
+		(style (width = 100%))
+		(controller $Repeat
+			(bind enabled "_array")
+			(bind count "_array ? _array.length : 0")
+			(bind renderer "_elementName")
+			(args "shipTTX" "_array[$index]")
+		)
+	)
+)
+
+(def macro TTX_AMMO_ROW (_title:expression, _ammoTTX:expression, _needTopDivider:expression="true")
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "_needTopDivider")
+		)
+	)
+	(element TooltipSystemInnerHeaderSubheaderText
+				_headerText="'IDS_' + toUpper(_ammoTTX.name)"
+				_subheaderText="_title"
+				_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+	)
+	(element TooltipSystemHorizontalDivider)
+)
+
+(def macro TTX_INNER_HEADER_ROW (_title:str)
+	(element TooltipSystemHorizontalDivider)
+	(element TooltipSystemInnerHeaderSubheaderText
+				_headerText="_title"
+				_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+	)
+	(element TooltipSystemHorizontalDivider)
+)
+
+(def macro TTX_HEADER_ROW (_title:expression, _descr:expression)
+	(element TooltipSystemHeaderSubheaderText
+				_headerText="_title"
+				_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+	)
+	(element TooltipSystemHorizontalDivider)
+	(element TooltipSystemDescriptionText
+				_descriptionText="_descr"
+	)
+)
+
+(def macro TTX_TOOLTIP (_elementName:str, _gunTTX:expression)
+	(controller $Tooltip
+		(renderer="_elementName")
+		(args "shipTTX" "_gunTTX")
+		(macro SIMPLE_TOOLTIP_ANIMATION)
+		(align="bottom|left")
+		(offset=[10, 0])
+		(screenBoundsOffset=50)
+	)
+)
+
+(def macro SIMPLE_TTX_TOOLTIP (_headerText:str, _descriptionText:str)
+	(controller $Tooltip
+		(renderer='SimpleTTXTooltip')
+		(args "_headerText" "_descriptionText")
+		(macro SIMPLE_TOOLTIP_ANIMATION)
+		(align="bottom|left")
+		(offset=[20, 0])
+		(screenBoundsOffset=50)
+	)
+)
+
+(def macro TTX_TOOLTIP_STYLE ()
+	(class $TTXTooltip)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+)

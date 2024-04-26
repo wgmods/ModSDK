@@ -1,0 +1,48 @@
+<hardware_preferences.scheme.xml>
+  <scheme>
+    <!-- this file contains the presets for system auto config.
+         The tags are organised like this:
+          CPU
+            score    - minimum CPU score according an internal benchmark
+          GPU
+            memory   - minimum total GPU Memory
+            score    - minimum GPU score according an internal benchmark
+          memory
+            physical - minimum RAM amount
+    -->
+    <hardware key="HARDWARE_QUALITY" > MINIMUM
+      <constraints>
+        <MAXIMUM>
+          <CPU score="1500000"/>
+          <GPU memory="3900" score="8000"/>
+          <memory physical="8000"/>
+        </MAXIMUM>
+        <VERY_HIGH>
+          <CPU score="600000"/>
+          <GPU memory="1900" score="5800"/>
+          <memory physical="6000"/>
+        </VERY_HIGH>
+        <HIGH>
+          <CPU score="520000"/>
+          <GPU memory="1900" score="3500"/>
+          <memory physical="6000"/>
+        </HIGH>
+        <MEDIUM>
+          <CPU score="250000"/>
+          <GPU memory="900" score="1600"/>
+          <memory physical="6000"/>
+        </MEDIUM>
+        <LOW>
+          <CPU score="150000"/>
+          <GPU memory="900" score="550"/>
+          <memory physical="4000"/>
+        </LOW>
+        <MINIMUM>
+          <CPU score="0"/>
+          <GPU memory="0" score="0"/>
+          <memory physical="0"/>
+        </MINIMUM>
+      </constraints>
+    </hardware>
+  </scheme>
+</hardware_preferences.scheme.xml>

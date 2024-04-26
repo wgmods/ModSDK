@@ -1,0 +1,50 @@
+(def constant AIRCRAFT_DEATH_TIMER_MARGIN_BOTTOM 6)
+(def constant AIRCRAFT_DEATH_TIMER_BAR_WIDTH 190)
+
+(def element AircraftDeathTimer() layout=true
+	(scope
+		(var avatar:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var willBeDeadAt:number =  "avatar.playerAvatar.willBeDeadAt" (event "avatar.playerAvatar.evWillDieSoon"))
+		(var timeToLive:number = "avatar.playerAvatar.timeToLive" (event "avatar.playerAvatar.evWillDieSoon"))
+
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+		
+		(var rawTimeLeftTemp:number = "willBeDeadAt - timerEntity.timer.currentServerTime" (event "timerEntity.timer.evFrequent"))
+		(var rawTimeLeft:number = "rawTimeLeftTemp < 0 ? 0 : rawTimeLeftTemp")
+		(var timeLeft:str = "countdownFormat(rawTimeLeft, 0, true)")
+
+		(var progressBarWidthPerc:number ="timeToLive? rawTimeLeft / timeToLive : 0")
+	)
+	(tf
+		(class $TextDefaultBold18NM)
+		(macro TFMouseEnabled value=false)
+		(style (textAlign = "center") (width = 100%) (marginBottom = "AIRCRAFT_DEATH_TIMER_MARGIN_BOTTOM"))
+		(bind text "toUpper(tr('IDS_AIRPLANE_DEATH_WARNING_BACK_TO_BASE'))")
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(macro TFMouseEnabled value=false)
+		(style (textAlign = "center") (width = 100%) (marginBottom = "AIRCRAFT_DEATH_TIMER_MARGIN_BOTTOM"))
+		(bind text "timeLeft")
+	)
+
+	(block
+		(style (width = "AIRCRAFT_DEATH_TIMER_BAR_WIDTH") (height = 2px))
+
+		(mc indicator_progress_bar_lightgreen
+			(style (width = 100%))
+			(bind value "0")
+			(bind maximum "1")
+		)
+
+		(block
+			(style (position = "absolute") (height = 2px) (left = 1px)(width = "AIRCRAFT_DEATH_TIMER_BAR_WIDTH") (top = 1px) (backgroundColor = 0xFF4CE8AA) )
+			(bind scaleX "progressBarWidthPerc")
+		)
+	)
+)

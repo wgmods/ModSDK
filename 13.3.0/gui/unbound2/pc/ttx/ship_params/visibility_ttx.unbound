@@ -1,0 +1,181 @@
+(def constant GUARANTEED_UNDERWATER_VISIBILITY "{
+	value: 2.0,
+	delta: 0
+}")
+
+(def element VisibilityTTX (shipTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(class $TTXSecondaryPanel)
+
+	(macro TTX_INSTANCE 'VisibilityByShipTTX' "shipTTX.visibility.visibilityByShip")
+	(macro TTX_INSTANCE 'VisibilityDepthTTX' "shipTTX.visibility.visibilityFromDepth")
+	(macro TTX_INSTANCE 'VisibilityByPlaneTTX' "shipTTX.visibility.visibilityByPlane")
+	(macro TTX_INSTANCE 'GuaranteedVisibilityTTX' "shipTTX.visibility.visibilityByShip")
+)
+
+(def element VisibilityByShipTTX (shipTTX:gfx, visibilityByShipTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_SHIP'
+									_value = "visibilityByShipTTX.normal"
+									_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro TTX_TOOLTIP 'VisibilityByShipTooltipTTX' "visibilityByShipTTX")
+	)
+)
+
+(def element VisibilityDepthTTX (shipTTX:gfx, visibilityFromDepthTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element ShipParameter_Range	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_FROM_DEPTH'
+									_valueMin = "visibilityFromDepthTTX.min"
+									_valueMax = "visibilityFromDepthTTX.max"
+									_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro TTX_TOOLTIP 'VisibilityDepthTooltipTTX' "visibilityFromDepthTTX")
+	)
+)
+
+(def element VisibilityByPlaneTTX (shipTTX:gfx, visibilityByPlaneTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_PLANE'
+									_value = "visibilityByPlaneTTX.normal"
+									_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro TTX_TOOLTIP 'VisibilityByPlaneTooltipTTX' "visibilityByPlaneTTX")
+	)
+)
+
+(def element GuaranteedVisibilityTTX (shipTTX:gfx, visibilityByShipTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_GUARANTEED_VISIBILITY'
+									_value = "GUARANTEED_UNDERWATER_VISIBILITY"
+									_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro TTX_TOOLTIP 'GuaranteedVisibilityTooltipTTX' "visibilityByShipTTX")
+	)
+)
+
+(def element VisibilityByShipTooltipTTX (shipTTX:gfx, visibilityByShipTTX:gfx) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW	_title = "'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_SHIP'"
+								_descr = "shipTTX.subtype == ShipTypes.SUBMARINE	? 'IDS_TOOLTIP_VISIBILITY_DIST_BY_SHIP_SUBMARINE'
+																					: 'IDS_TOOLTIP_VISIBILITY_DIST_BY_SHIP'"
+		)
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_GK'
+												_value = "visibilityByShipTTX.mg"
+												_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+												_zeroValueHidden = true
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_GK_IN_SMOKE'
+												_value = "visibilityByShipTTX.smoke"
+												_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+												 _zeroValueHidden = true
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_ATBA'
+												_value = "visibilityByShipTTX.atba"
+												_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+												 _zeroValueHidden = true
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_FIRE'
+												_value = "visibilityByShipTTX.fire"
+												_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+				)
+				(macro TTX_INSTANCE 'VisibilityByDepthTTX' "visibilityByShipTTX.byDepth")
+			)
+		)
+	)
+)
+
+(def element VisibilityByPlaneTooltipTTX (shipTTX:gfx, visibilityByPlaneTTX:gfx) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW	_title = "'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_PLANE'"
+								_descr = "shipTTX.subtype == ShipTypes.SUBMARINE	? 'IDS_TOOLTIP_VISIBILITY_DIST_BY_PLANE_SUBMARINE'
+																					: 'IDS_TOOLTIP_VISIBILITY_DIST_BY_PLANE'"
+		)
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_GK'
+												_value = "visibilityByPlaneTTX.mg"
+												_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+												_zeroValueHidden = true
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_FIRE'
+												_value = "visibilityByPlaneTTX.fire"
+												_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+				)
+				(macro TTX_INSTANCE 'VisibilityByDepthTTX' "visibilityByPlaneTTX.byDepth")
+			)
+		)
+	)
+)
+
+(def element VisibilityDepthTooltipTTX (shipTTX:gfx, visibilityFromDepthTTX:gfx) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW	_title = "'IDS_SHIP_PARAM_VISIBILITY_DIST_FROM_DEPTH'"
+								_descr = "shipTTX.subtype == ShipTypes.SUBMARINE	? 'IDS_TOOLTIP_VISIBILITY_DIST_FROM_DEPTH_SUBMARINE'
+																					: 'IDS_TOOLTIP_VISIBILITY_DIST_FROM_DEPTH'"
+		)
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_FROM_DEPTH_PERISCOPE'
+												_value = "visibilityFromDepthTTX.max"
+												_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_FROM_DEPTH_INVULNERABLE'
+												_value = "visibilityFromDepthTTX.min"
+												_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+				)
+			)
+		)
+	)
+)
+
+(def element GuaranteedVisibilityTooltipTTX (shipTTX:gfx, visibilityByShipTTX:gfx) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW	_title = "'IDS_SHIP_PARAM_GUARANTEED_VISIBILITY'"
+								_descr = "shipTTX.subtype == ShipTypes.SUBMARINE	? 'IDS_TOOLTIP_GUARANTEED_VISIBILITY_SUBMARINE'
+																					: 'IDS_TOOLTIP_GUARANTEED_VISIBILITY'"
+		)
+		(controller $Instance layout=true
+			(bind enabled "visibilityByShipTTX.smoke.value > 0")
+			(exprs
+				(style (width = 100%))
+				(element TooltipSystemHorizontalDivider)
+				(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+					(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+						(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_GK_IN_SMOKE'
+														_value = "visibilityByShipTTX.smoke"
+														_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+						)
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element VisibilityByDepthTTX (shipTTX:gfx, visibilityByDepthTTX:gfx)
+	(class $ParametersPanel)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_DEPTH_SURFACE'
+									_value = "visibilityByDepthTTX.surface"
+									_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+									_zeroValueHidden = true
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_DEPTH_PERISCOPE'
+									_value = "visibilityByDepthTTX.periscope"
+									_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+									_zeroValueHidden = true
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_DEPTH_INVULNERABLE'
+									_value = "visibilityByDepthTTX.invulnerable"
+									_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+	)
+)

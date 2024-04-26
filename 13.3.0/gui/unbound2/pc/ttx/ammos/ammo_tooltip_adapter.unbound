@@ -1,0 +1,73 @@
+
+(def constant AMMO_DESCRIPTOR_TO_RENDERER {
+	'AP'							: 'AmmoAP_Parameters',
+	'CS'							: 'AmmoCS_Parameters',
+	'HE'							: 'AmmoHE_Parameters',
+	'pinger'						: 'Pinger_Parameters',
+	'torpedo'						: 'Torpedo_Parameters',
+	'torpedo_deepwater'				: 'TorpedoDeepwater_Parameters',
+	'torpedo_alternative'			: 'TorpedoAlt_Parameters',
+	'depthcharge'					: 'DepthCharges_Parameters',
+	'airSupport_depthcharge'		: 'AirSupport_DC_Parameters',
+	'airSupport_HE'					: 'AirSupport_HE_Parameters',
+	'Squadron_Fighter'				: 'Squadron_Fighter_Parameters',
+	'Squadron_TorpedoBomber'		: 'Squadron_TorpedoBomber_Parameters',
+	'Squadron_DiveBomber'			: 'Squadron_DiveBomber_Parameters',
+	'Squadron_SkipBomber'			: 'Squadron_SkipBomber_Parameters',
+	'Squadron_Fighter_alt'			: 'Squadron_FighterAlt_Parameters',
+	'Squadron_TorpedoBomber_alt'	: 'Squadron_TorpedoBomberAlt_Parameters',
+	'Squadron_DiveBomber_alt'		: 'Squadron_DiveBomberAlt_Parameters',
+	'Squadron_SkipBomber_alt'		: 'Squadron_SkipBomberAlt_Parameters',
+	'Weapon_Fighter'				: 'Weapon_Fighter_Parameters',
+	'Weapon_TorpedoBomber'			: 'Weapon_TorpedoBomber_Parameters',
+	'Weapon_DiveBomber'				: 'Weapon_DiveBomber_Parameters',
+	'Weapon_SkipBomber'				: 'Weapon_SkipBomber_Parameters',
+	'Weapon_Fighter_alt'			: 'Weapon_FighterAlt_Parameters',
+	'Weapon_TorpedoBomber_alt'		: 'Weapon_TorpedoBomberAlt_Parameters',
+	'Weapon_DiveBomber_alt'			: 'Weapon_DiveBomberAlt_Parameters',
+	'Weapon_SkipBomber_alt'			: 'Weapon_SkipBomberAlt_Parameters'	
+})
+
+(def layout BattleAmmoParameters (_ttxDescriptor:str, _ownerId:number, _isSecondaryActive:bool, _shipTTX:gfx)
+	(scope
+		(var selfVehicleWatcher:gfx = "$datahub.getFirstWatcher(CC.selfVehicle)")
+		(var selfVehicle:gfx = "selfVehicleWatcher.entity" (event "selfVehicleWatcher.event"))
+		(var shipTTX:gfx = "_shipTTX			? _shipTTX :
+							selfVehicle			? selfVehicle.selfVehicle.shipTTX
+												: null")
+
+		(var rendererName:str = "_ttxDescriptor in AMMO_DESCRIPTOR_TO_RENDERER	?	AMMO_DESCRIPTOR_TO_RENDERER[_ttxDescriptor] + 'ForBattle'
+																				:	'DefaultParametersForTooltip'")
+	)
+	(style (width = 100%))
+	(controller $Instance
+		(bind enabled "shipTTX != null")
+		(bind renderer "rendererName")
+		(args "shipTTX" "_ownerId" "_isSecondaryActive")
+	)
+)
+
+
+(def layout AmmoParametersAdapter (_ttxDescriptor:str, _parentWidth:number = "340px", _isSecondaryActive:bool = false) dispatch_size_change=true
+	(scope
+		(var comparison:gfx = "$datahub.getSingleEntity(CC.comparison).comparison")
+		(var panelTTX:gfx = "comparison ? comparison.panelTTX : null" (event "comparison.evPanelTTXChanged"))
+		(var rendererName:str = "_ttxDescriptor in AMMO_DESCRIPTOR_TO_RENDERER	?	AMMO_DESCRIPTOR_TO_RENDERER[_ttxDescriptor] + 'ForDock'
+																				:	'DefaultParametersForTooltip'")
+	)
+	(bind visible "panelTTX != null")
+	(style (bind width "_parentWidth") (paddingLeft = "-M") (paddingRight = "M"))
+	(block
+		(class $TooltipModuleParamsContainer)
+		(controller $Instance
+			(bind enabled "panelTTX != null")
+			(bind renderer "rendererName")
+			(args "panelTTX" "_isSecondaryActive")
+		)
+	)
+)
+
+(def layout DefaultParametersForTooltip (_shipTTX:gfx) dispatch_size_change=true
+	(class $ParametersPanel)
+	(macro trace "_shipTTX")
+)

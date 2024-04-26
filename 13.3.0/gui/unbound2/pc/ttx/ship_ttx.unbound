@@ -1,0 +1,214 @@
+(def css $ParametersPanel ()
+	(width = 100%)
+)
+
+(def css $TTXSecondaryPanelBG ()
+	(backgroundColor = 0x33000000)
+)
+
+(def css $TTXSecondaryPanel ()
+	(extends $TTXSecondaryPanelBG)
+	(paddingLeft = 36px)
+	(paddingRight = 18px)
+)
+(def css $TTXTooltip ()
+	(width = 300)
+	(position = "absolute")
+)
+
+(def element CurrentShipTTX (_isExpanded:bool = true) layout=true dispatch_size_change=true
+	(scope
+		(var comparisonWatcher:gfx = "$datahub.getFirstWatcher(CC.comparison)")
+		(var comparisonEntity:gfx = "comparisonWatcher.entity" (event "comparisonWatcher.event"))
+		(var panelTTX:gfx = "comparisonEntity ? comparisonEntity.comparison.panelTTX : null" (event "comparisonEntity.comparison.evPanelTTXChanged"))
+	)
+	(style (width = "INTEGRAL_TTX_ROW_WIDTH"))
+	(controller $Instance renderer='ShipTTX'
+		(bind enabled "panelTTX != null")
+		(args _shipTTX="panelTTX" _isExpanded="_isExpanded")
+	)
+)
+
+(def element ShipTTX (_shipTTX:gfx, _isExpanded:bool=true) layout=true
+	(style
+		(width = 100%)
+	)
+
+
+	(macro TTXRowInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_DURABILITY'			_elementName='DurabilityTTX' _module="_shipTTX.durability" _isExpanded="_isExpanded")
+	(macro TTXRowInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_AVIATION'				_elementName='SquadronsTTX' _module="_shipTTX.squadrons" _isExpanded="_isExpanded")
+	(macro TTXRowInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_WEAPONRY'				_elementName='ArtilleryTTX' _module="_shipTTX.artillery" _isExpanded="_isExpanded")
+	(macro TTXRowInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_PINGER'				_elementName='PingerTTX' _module="_shipTTX.pinger" _isExpanded="_isExpanded")
+	(macro TTXRowInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_TORPEDY'				_elementName='TorpedoesTTX'_module= "_shipTTX.torpedoes" _isExpanded="_isExpanded")
+	(macro TTXRowInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_TORPEDY'				_elementName='TorpedoGroupsTTX'_module= "_shipTTX.torpedoGroups" _isExpanded="_isExpanded")
+	(macro TTXRowInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_AIRSUPPORT'			_elementName='AirSupportTTX' _module="_shipTTX.airSupport" _isExpanded="_isExpanded")
+	(macro TTXRowInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_DEPTH_CHARGE'			_elementName='DepthChargesTTX' _module="_shipTTX.depthCharges" _isExpanded="_isExpanded")
+	(macro TTXRowInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_AIR_DEFENSE'			_elementName='AirDefenseTTX' _module="_shipTTX.airDefense" _isExpanded="_isExpanded")
+	(macro TTXRowInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_BATTERY'				_elementName='BatteryTTX' _module="_shipTTX.battery" _isExpanded="_isExpanded")
+	(macro TTXRowInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_MOBILITY'				_elementName='MobilityTTX' _module="_shipTTX.mobility" _isExpanded="_isExpanded")
+	(macro TTXRowInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_UNDERWATER_MOBILITY'	_elementName='UnderwaterMobilityTTX' _module="_shipTTX.underwaterMobility" _isExpanded="_isExpanded")
+	(macro TTXRowInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_VISIBILITY'			_elementName='VisibilityTTX' _module="_shipTTX.visibility" _isExpanded="_isExpanded")
+)
+
+(def macro TTXRowInstance (_shipTTX:expression, _title:str, _elementName:str, _module:expression, _isExpanded:expression="false")
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='ShipTTXRow'
+			(bind enabled "_module != null")
+			(args _shipTTX="_shipTTX" _title="_title" _module="_module" _elementName="_elementName" _isExpanded="_isExpanded")
+		)
+	)
+)
+
+(def macro TTXRowSimpleInstance (_shipTTX:expression, _title:str, _module:expression, _showOnlyDiff:expression="false")
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='ShipTTXRowSimple'
+			(bind enabled "_module != null && (_showOnlyDiff ? _module.integralValue.delta != 0 : true)")
+			(args _shipTTX="_shipTTX" _title="_title" _module="_module")
+		)
+	)
+)
+
+(def macro TTXRowBasicInstance (_title:str, _module:expression)
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='ShipTTXRowBasic'
+			(bind enabled "_module != null && _module.integralValue != 0")
+			(args
+				_title = "_title"
+				_module = "_module"
+			)
+		)
+	)
+)
+
+(def element ShipTTXSimple (_shipTTX:gfx, _showOnlyDiff:bool=false) layout=true
+	(style
+		(width = 100%)
+	)
+
+	(macro TTXRowSimpleInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_DURABILITY'			_module="_shipTTX.durability"			_showOnlyDiff="_showOnlyDiff")
+	(macro TTXRowSimpleInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_AVIATION'			_module="_shipTTX.squadrons"			_showOnlyDiff="_showOnlyDiff")
+	(macro TTXRowSimpleInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_WEAPONRY'			_module="_shipTTX.artillery"			_showOnlyDiff="_showOnlyDiff")
+	(macro TTXRowSimpleInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_PINGER'				_module="_shipTTX.pinger"				_showOnlyDiff="_showOnlyDiff")
+	(macro TTXRowSimpleInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_TORPEDY'				_module="_shipTTX.torpedoes"			_showOnlyDiff="_showOnlyDiff")
+	(macro TTXRowSimpleInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_TORPEDY'				_module="_shipTTX.torpedoGroups"		_showOnlyDiff="_showOnlyDiff")
+	(macro TTXRowSimpleInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_AIRSUPPORT'			_module="_shipTTX.airSupport"			_showOnlyDiff="_showOnlyDiff")
+	(macro TTXRowSimpleInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_DEPTH_CHARGE'		_module="_shipTTX.depthCharges"			_showOnlyDiff="_showOnlyDiff")
+	(macro TTXRowSimpleInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_AIR_DEFENSE'			_module="_shipTTX.airDefense"			_showOnlyDiff="_showOnlyDiff")
+	(macro TTXRowSimpleInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_BATTERY'				_module="_shipTTX.battery"				_showOnlyDiff="_showOnlyDiff")
+	(macro TTXRowSimpleInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_MOBILITY'			_module="_shipTTX.mobility"				_showOnlyDiff="_showOnlyDiff")
+	(macro TTXRowSimpleInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_UNDERWATER_MOBILITY'	_module="_shipTTX.underwaterMobility"	_showOnlyDiff="_showOnlyDiff")
+	(macro TTXRowSimpleInstance _shipTTX="_shipTTX" _title='IDS_SHIP_PARAM_VISIBILITY'			_module="_shipTTX.visibility"			_showOnlyDiff="_showOnlyDiff")
+)
+
+(def element ShipTTXBasic (_shipTTX:gfx) layout=true
+	(style
+		(width = 100%)
+	)
+	(macro TTXRowBasicInstance _title='IDS_SHIP_PARAM_DURABILITY'			_module="_shipTTX.durability")
+	(macro TTXRowBasicInstance _title='IDS_SHIP_PARAM_AVIATION'				_module="_shipTTX.squadrons")
+	(macro TTXRowBasicInstance _title='IDS_SHIP_PARAM_WEAPONRY'				_module="_shipTTX.artillery")
+	(macro TTXRowBasicInstance _title='IDS_SHIP_PARAM_PINGER'				_module="_shipTTX.pinger")
+	(macro TTXRowBasicInstance _title='IDS_SHIP_PARAM_TORPEDY'				_module="_shipTTX.torpedoes")
+	(macro TTXRowBasicInstance _title='IDS_SHIP_PARAM_TORPEDY'				_module="_shipTTX.torpedoGroups")
+	(macro TTXRowBasicInstance _title='IDS_SHIP_PARAM_DEPTH_CHARGE'			_module="_shipTTX.depthCharges")
+	(macro TTXRowBasicInstance _title='IDS_SHIP_PARAM_AIRSUPPORT'			_module="_shipTTX.airSupport")
+	(macro TTXRowBasicInstance _title='IDS_SHIP_PARAM_AIR_DEFENSE'			_module="_shipTTX.airDefense")
+	(macro TTXRowBasicInstance _title='IDS_SHIP_PARAM_BATTERY'				_module="_shipTTX.battery")
+	(macro TTXRowBasicInstance _title='IDS_SHIP_PARAM_MOBILITY'				_module="_shipTTX.mobility")
+	(macro TTXRowBasicInstance _title='IDS_SHIP_PARAM_UNDERWATER_MOBILITY'	_module="_shipTTX.underwaterMobility")
+	(macro TTXRowBasicInstance _title='IDS_SHIP_PARAM_VISIBILITY'			_module="_shipTTX.visibility")
+)
+
+(def element ShipIntegralParams (_shipId:number = null, _parentWidth:number = 340px, _showOnlyDiff:bool = true) layout=true dispatch_size_change=true
+	(scope
+		(var comparison:gfx = "$datahub.getSingleComponent(CC.comparison)")
+		(var modalTTX:gfx = "comparison ? comparison.modalTTX : null" (event "comparison.evModalTTXChanged"))
+		(var hasModalDiff:gfx = "comparison ? comparison.hasModalIntegralDiff : null" (event "comparison.evModalTTXChanged"))
+
+		(var panelTTX:gfx = "comparison ? comparison.panelTTX : null" (event "comparison.evPanelTTXChanged"))
+
+		(var paramsToShow:gfx = "_showOnlyDiff ? modalTTX : panelTTX")
+		(var showParamsBlock:bool = "_showOnlyDiff ? hasModalDiff : true")
+	)
+	(style
+		(bind width "_parentWidth")
+	)
+	(controller $Instance layout=true
+		(bind enabled "showParamsBlock")
+		(exprs
+			(style (width = 100%))
+			(element StatusLine	_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+								_text = 'IDS_AFTER_MOUNT'
+								_width = 100%
+				(style
+					(marginBottom = "S")
+					(marginLeft = "M")
+				)
+			)
+			(element ShipTTXSimple _shipTTX="paramsToShow" _showOnlyDiff="_showOnlyDiff")
+			(element HorizontalDividerTwoPx
+				(style
+					(marginBottom = "M")
+				)
+			)
+		)
+	)
+)
+
+(def element TooltipSystemShipIntegralParams (_parentWidth:number = 340px, _showOnlyDiff:bool = true) layout=true dispatch_size_change=true
+	(scope
+		(var comparison:gfx = "$datahub.getSingleComponent(CC.comparison)")
+		(var modalTTX:gfx = "comparison ? comparison.modalTTX : null" (event "comparison.evModalTTXChanged"))
+		(var hasModalDiff:bool = "comparison ? comparison.hasModalIntegralDiff : false" (event "comparison.evModalTTXChanged"))
+
+		(var panelTTX:gfx = "comparison ? comparison.panelTTX : null" (event "comparison.evPanelTTXChanged"))
+
+		(var paramsToShow:gfx = "_showOnlyDiff ? modalTTX : panelTTX")
+		(var showParamsBlock:bool = "_showOnlyDiff ? hasModalDiff : true")
+	)
+	(style
+		(bind width "_parentWidth")
+	)
+	(controller $Instance layout=true
+		(bind enabled "showParamsBlock")
+		(exprs
+			(style (width = 100%) (paddingRight = "L"))
+			(element TooltipSystemStatusLine	_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+												_text = 'IDS_AFTER_MOUNT'
+				(style
+					(marginBottom = "SXS")
+				)
+			)
+			(element ShipTTXSimple _shipTTX="paramsToShow" _showOnlyDiff="_showOnlyDiff"
+				(style (paddingLeft = "-M") (paddingRight = "-M") (paddingBottom = "-SXS"))
+			)
+		)
+	)
+)
+
+(def element ShipParamsIntegralWithCompare (_isCompare:bool = true, _isReversedCompare:bool = false, _parentWidth:number = 340) layout=true dispatch_size_change=true
+	(scope
+		(var comparisonWatcher:gfx = "$datahub.getFirstWatcher(CC.comparison)")
+		(var comparisonEntity:gfx = "comparisonWatcher.entity" (event "comparisonWatcher.event"))
+		(var comparisonComponent:gfx = "comparisonEntity ? comparisonEntity.comparison : null")
+		(var tooltipTTX:gfx = "comparisonComponent	? comparisonComponent.tooltipTTX
+													: null"
+								(event "comparisonComponent.evTooltipTTXChanged")
+		)
+		(var compareTTX:gfx = "comparisonComponent	? _isReversedCompare	? comparisonComponent.compareReversedTTX
+																			: comparisonComponent.compareTTX
+													: null"
+								(event "comparisonComponent.evCompareTTXChanged")
+		)
+
+		(var displayTTX:gfx = "_isCompare ? compareTTX : tooltipTTX")
+	)
+	(style (bind width "_parentWidth") (paddingLeft = 1px) (paddingRight=1px))
+	(controller $Instance renderer='ShipTTXSimple'
+		(bind enabled "displayTTX != null")
+		(args _shipTTX="displayTTX")
+	)
+)

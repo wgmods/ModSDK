@@ -1,0 +1,531 @@
+(def constant EVENT_OWN_BAR_IMAGE_WIDTH "186")
+(def constant EVENT_OWN_BAR_IMAGE_HEIGHT "48")
+
+(def constant EVENT_ALLY_BAR_IMAGE_WIDTH "186")
+(def constant EVENT_ALLY_BAR_IMAGE_HEIGHT "24")
+
+(def constant EVENT_ICON_KEY_IMAGE_WIDTH "30")
+(def constant EVENT_ICON_KEY_IMAGE_HEIGHT "30")
+
+(def constant EVENT_SHIP_HEALTH_STYLES {
+	'ownShip' : {	barWidth: "EVENT_OWN_BAR_IMAGE_WIDTH",
+					barHeight: "EVENT_OWN_BAR_IMAGE_HEIGHT",
+					showRegenHealth: true,
+					shipNameTextClass: '$TextDefaultBold17NM',
+					playerNameTextClass: '$TextDefaultNM',
+					remainingHealthTextClass: '$TextDefaultBold17NM',
+					totalHealthTextClass: '$TextDefault17NM',
+					iconNamePrefix: 'event_own_ship',
+					keyMargin: -8,
+					marginBottom: -12
+
+				},
+	'allyShip' : {	barWidth: "EVENT_ALLY_BAR_IMAGE_WIDTH",
+					barHeight: "EVENT_ALLY_BAR_IMAGE_HEIGHT",
+					showRegenHealth: false,
+					shipNameTextClass: null,
+					playerNameTextClass: '$TextDefault13NM',
+					remainingHealthTextClass: null,
+					totalHealthTextClass: null,
+					iconNamePrefix: 'event_ally_ship',
+					keyMargin: 0,
+					marginBottom : -14
+				 }
+}
+)
+
+(def css $EventTextDefault ()
+	(fontFamily = '$WWSDefaultFont')
+	(extends $FontSizeDefault)
+	(extends $FontColorWhite)
+	(extends $BlockDropShadowFilter3)
+	(extends $FontEnableReadability)
+)
+
+
+(def css $EventTextAllyHealth ()
+	(fontFamily = '$WWSDefaultFont')
+	(extends $FontSizeDefault)
+	(extends $FontColorWhite)
+	(extends $BlockDropShadowFilter3)
+	(extends $FontEnableReadability)
+)
+
+(def css $EventTextAllyHealthBold ()
+	(fontFamily = '$WWSDefaultFontBold')
+	(extends $FontSizeDefault)
+	(extends $FontColorWhite)
+	(extends $BlockDropShadowFilter3)
+	(extends $FontEnableReadability)
+)
+
+(def css $EventShipParamsCommandTextStyle ()
+	(extends $TextDefaultBold13NM)
+	(wordWrap=true)
+	(autoSize=true)	
+)
+
+(def macro EVENT_HEALTH_PERCENT_AND_ALIVE(entity:expression)
+	(var healthComponent:gfx = "entity.health")
+	(var maxHealth:number = "healthComponent.max" (event "healthComponent.evMaxChanged"))
+	(var healthValue:number = "healthComponent.value" (event "healthComponent.evValueChanged"))
+	(var healthPercent:number = "healthValue / max(maxHealth, 1)")
+	(var isAlive:bool = "healthComponent.isAlive" (event "healthComponent.evIsAliveChanged"))
+)
+
+(def element EventShipHealth () layout=true
+	(scope	
+		(var collection:gfx = "$datahub.getCollection(CC.avatar)")
+		(var allyCollection:gfx = "collection ? collection.getChildByPath('team.ally.alive') : null" (event "collection.evChildAdded") (event "collection.evChildRemoved"))
+		(var allyItems:array = "allyCollection ? allyCollection.items : null" (event "allyCollection.evAdded") (event "allyCollection.evRemoved"))
+		(var itemsLength:number = "allyItems ? allyItems.length : 0")
+
+		(var totalCount:number = "$datahub.getSingleEntity(CC.battleInfo).battleInfo.maxDiplomacyTeamSize")
+	)
+	(style
+		(marginTop = "M")
+		(marginLeft = "MS")
+	)
+	
+	(tf
+		(bind visible "itemsLength > 1")
+		(class $TextDefaultBold17NM)
+		(bind text "tr('IDS_EVENT_PORTAL_TEAM') + ' ' + itemsLength + '/' + totalCount")
+	)
+
+	(controller $Repeat renderer='EventAllyShipHealthContainer'
+		(bind count "itemsLength")
+		(args __entities="allyItems")
+		(exprs
+			(scope
+				(bind entities "allyItems")
+			)
+		)
+	)
+)
+
+(def element EventAllyShipHealthContainer (__entities:array) layout=true
+	(scope
+		(var entities:array = "__entities")
+		(var entity:gfx = "entities[$index]")
+
+		(var entityId:number = "entity &&
+								entity.hasComponent(CC.health) &&
+								entity.hasComponent(CC.vehicleInfo) ? entity.id : 0"
+								(event "entity.evAdded"))
+
+		(var playerAvatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var playerAvatarId:number = "playerAvatarEntity.avatar.id")
+		(var observedAvatarName:str = "entity.avatar.name")
+	)
+
+	(controller $Instance renderer='EventShipHealthContainer'
+			(args __entityId="entityId" __isSelfObserved="false" __avatarName="observedAvatarName"
+				_styleName='allyShip')
+			(exprs
+				(scope
+					(bind entityId "entityId")
+					(bind avatarName "observedAvatarName")
+				)
+			)
+
+			(bind enabled "playerAvatarId != entity.avatar.id")
+	)
+)
+
+(def element EventShipHealthContainer (__entityId:number, __isSelfObserved:bool, __avatarName:str, _styleName:str='ownShip') layout=true
+	(scope
+		(var entityId:number = "__entityId")
+		(var isSelfObserved:bool = "__isSelfObserved")
+		(var avatarName:str = "__avatarName")
+		(var styleConfig:dict = "EVENT_SHIP_HEALTH_STYLES[_styleName]")
+		(var entity:gfx = "$datahub.getEntity(entityId)")
+		(var healthComponent:gfx = "entity.health")
+		(var isAlive:bool = "healthComponent != null ? healthComponent.isAlive : false" (event "healthComponent.evIsAliveChanged"))
+
+		(var ingameLevelEntity:gfx = "$datahub.getSingleEntity(CC.battleLeveling)")
+		(var ingameLevelComponent:gfx = "ingameLevelEntity.battleLeveling")
+		(var realLevel:number = "ingameLevelComponent.level" watch=false (event "ingameLevelComponent.evChanged"))
+		(var isSelfHealthBar:bool = "_styleName != 'allyShip' && isSelfObserved")
+	)
+
+	(block
+		(style
+			(bind marginBottom "styleConfig.marginBottom")
+		)
+		(hblock
+			(style
+				(marginLeft = "2px")
+			)
+			(block
+				(bind visible "realLevel && isSelfHealthBar")
+				(style
+					(height = "25px")
+					(width = "30px")
+					(marginTop = "14px")
+					(marginRight = "S")
+					(paddingTop = "7px")
+					(backgroundImage = "'url:../events/halloween20/icon_level_background.png'")
+					(align = "center")
+				)
+				
+				(tf
+					(style
+						(marginRight = "-7px")
+					)
+					(class $TextDefaultBold17NM)
+					(bind text "subst('%(level)r',[], {level : realLevel})")
+				)
+			)
+			(block
+				(element EventShipLabel _styleConfig="styleConfig" _entityId="entityId"
+					(scope 
+						(bind entityId "entityId")
+					)
+					(style
+						(minWidth = 135)
+					)
+				)
+				(element EventPlayerLabel _styleConfig="styleConfig" _playerName="avatarName"
+					(scope 
+						(bind playerName "avatarName")
+					)
+					(style
+						(minWidth = 135)
+					)
+				)
+			)
+		)
+		
+		(block
+			(style (marginTop = 4px))
+			(controller $Instance renderer='EventHealthBar'
+				(args _styleConfig="styleConfig" _entityId="entityId")
+				(bindcall recreate (bind trigger "entityId"))
+			)
+		)
+
+		
+
+	)
+)
+
+(def element EventKeyIcon (_entityId:number = 0, _showEmpty : bool = true) layout=true
+	(scope
+		(var entityId:number = "_entityId")
+		(var entity:gfx = "$datahub.getEntity(entityId)")
+		
+		(var resources:gfx = "$datahub.getCollection(CC.resource)")
+		(var keyCollectionPath:str = "entity ? 'byOwnerId.' + entityId + '.byType.'+  SC.Battle.RESOURCE_TYPES.KEYS : null")
+		(var keyCollection:gfx = "resources && keyCollectionPath ? resources.getChildByPath(keyCollectionPath) : null" (event "resources.evChildAdded") (event "resources.evChildRemoved"))
+		(var keyItem:gfx = "keyCollection && keyCollection.items.length > 0 ? keyCollection.items[0] : null" (event "keyCollection.evAdded") (event "keyCollection.evRemoved"))
+		(var keyItemProgress:gfx = "keyItem ? keyItem.progress : null")
+		(var hasKey:bool = "keyItemProgress ? keyItemProgress.value > 0 : false" (event "keyItemProgress.evChanged"))
+	)
+	(style
+		(width = "EVENT_ICON_KEY_IMAGE_WIDTH")
+		(height = "EVENT_ICON_KEY_IMAGE_HEIGHT")
+	)
+	
+	(block
+		(style
+			(width = "100%") (height = "100%") 
+			(backgroundSize = "crop")
+			(bind backgroundImage "'url:../events/halloween20/icon_key_' + (hasKey ? 'full' : 'empty') + '.png'")
+		)
+		(bind visible "_showEmpty || hasKey")
+	)
+	
+	(block
+		(bind visible "hasKey")
+		
+		(controller $Animation
+			(bindcall play  duration = "1"
+							action="killAll"
+							watch = false
+							easing="Easing.elastic_out"
+							from = "{ alpha: 0, scaleX: 0.9, scaleY: 0.9 }"
+							to = "{ alpha: 1, scaleX: 1, scaleY: 1 }"
+							(bind trigger "hasKey")
+			)
+		)
+
+		(style
+			(width = "100%") (height = "100%") (position = "absolute")
+			(backgroundSize = "crop")
+			(bind backgroundImage "'url:../events/halloween20/icon_key.png'")
+		)
+	)
+)
+
+
+(def element EventShipLabel(_styleConfig:dict, _entityId:number = 0) layout=true
+	(scope
+		(var entityId:number = "_entityId")
+		(var entity:gfx = "$datahub.getEntity(entityId)")
+		(var shipInfo:gfx = "$datahub.getEntity(entity.vehicleInfo.shipInfoEntityId)")
+		(var nameIDS:str = "shipInfo.ship.nameIDS")
+		
+	)
+	(name = 'ship_name')
+	(style
+		(flow = "horizontal")
+		(align = "middle")
+		(marginTop = 4px)
+		(marginBottom = 4px)
+		(marginLeft = 2px)
+	)
+
+	(tf
+		(bind class "_styleConfig.shipNameTextClass" (bind enabled "_styleConfig.shipNameTextClass"))
+		(class $FontEnableReadability)
+		(bind text "shipInfo != null ? toUpper(tr(nameIDS)) : 'IDS_SHIP_INFO_UNKNOWN'")
+		(bind visible "_styleConfig.shipNameTextClass")
+	)
+)
+
+
+(def element EventPlayerLabel(_styleConfig:dict, _playerName:str) layout=true
+	(scope
+		(var playerName:str = "_playerName")
+	)
+	(name = 'player_name')
+	(style
+		(flow = "horizontal")
+		(align = "middle")
+		(marginTop = 4px)
+		(marginBottom = 2px)
+		(marginLeft = 2px)
+	)
+
+	(tf
+		(bind class "_styleConfig.playerNameTextClass")
+		(class $FontEnableReadability)
+		(bind text "playerName")
+	)
+)
+
+(def element EventHealthBar (_styleConfig:dict, _entityId:number = 0) layout=true
+	(name = 'vehicle_hp_text')
+	(scope
+		(var entityId:number = "_entityId")
+		(var entity:gfx = "$datahub.getEntity(entityId)")
+
+		(var healthComponent:gfx = "entity.health")
+
+		(var isAlive:bool = "healthComponent != null ? healthComponent.isAlive : true" (event "healthComponent.evIsAliveChanged"))
+		
+		(var shipInfo:gfx = "$datahub.getEntity(entity.vehicleInfo.shipInfoEntityId)")
+		(var shortName:str = "shipInfo.ship.shortName")
+	)
+	(style
+		(height = "_styleConfig.barHeight")
+		(marginBottom = "6px")
+		(width = "_styleConfig.barWidth")
+	)
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundSize = "crop")
+			(bind backgroundImage "'url:../events/halloween20/' + _styleConfig.iconNamePrefix + (isAlive ? '_h_bg.png' : '_h_bgdead.png')")
+			(alpha = "0.3")
+		)
+	)
+
+	(block
+		(bind visible "isAlive")
+		(class $FullsizeAbsolute)
+		(element EventHealthBarRegenInstance _styleConfig="_styleConfig" _entityId="entityId" (scope (bind entityId "entityId")) (bind visible "_styleConfig.showRegenHealth"))
+		(element EventHealthBarFX _styleConfig="_styleConfig" _entityId="entityId" (scope (bind entityId "entityId")))
+	)
+
+	(element EventHealthBarValue _styleConfig="_styleConfig" _entityId="entityId" (scope (bind entityId "entityId")))
+	
+	(element EventHealthBarLabel _styleConfig="_styleConfig" _entityId="entityId"
+		(scope (bind entityId "entityId"))
+		(style
+			(position = "absolute")
+			(left = 8px)
+		)
+	)
+)
+
+(def element EventHealthBarLabel (_styleConfig:dict, _entityId:number=0) layout=true
+	(scope
+		(var entityId:number = "_entityId")
+		(var entity:gfx = "$datahub.getEntity(entityId)")
+
+		(macro EVENT_HEALTH_PERCENT_AND_ALIVE "entity")
+	)
+	(style
+		(marginTop = "8px")
+		(flow = "horizontal")
+	)
+	(hblock
+		(bind visible "healthComponent != null")
+		(tf
+			(bind class "_styleConfig.remainingHealthTextClass" (bind enabled "_styleConfig.remainingHealthTextClass"))
+			(class $FontColorWhite)
+			(bind text "formatSeparator(healthValue)")
+			(bind visible "_styleConfig.remainingHealthTextClass")
+		)
+
+		(tf
+			(style
+				(marginLeft = "XXS")
+			)
+			(bind class "_styleConfig.totalHealthTextClass" (bind enabled "_styleConfig.totalHealthTextClass"))
+			(bind text "'/'")
+			(bind visible "_styleConfig.remainingHealthTextClass")
+		)
+	
+		(tf
+			(style
+				(marginLeft = "XXS")
+			)
+			(bind class "_styleConfig.totalHealthTextClass" (bind enabled "_styleConfig.totalHealthTextClass"))
+			(bind text "formatSeparator(maxHealth)")
+			(bind visible "_styleConfig.remainingHealthTextClass")
+		)
+	)
+)
+
+(def element EventHealthBarRegenInstance (_styleConfig:dict, _entityId:number = 0) layout=true
+	(scope
+		(var entityId:number = "_entityId")
+		(var entity:gfx = "$datahub.getEntity(entityId)")
+	)
+	(style
+		(height = 100%)
+		(width = 100%)
+	)
+	
+	(controller $Instance renderer='EventHealthBarRegen'
+		(bind enabled "entity.hasComponent(CC.regeneration)")
+		(args _styleConfig="_styleConfig" _entityId="entityId")
+		(exprs
+			(scope
+				(bind entityId "entityId" )
+			)
+		)
+	)
+)
+
+(def element EventHealthBarRegen (_styleConfig:dict, _entityId:number = 0) layout=true
+	(scope
+		(var barImageWidth:number = "_styleConfig.barWidth")
+		(var entityId:number = "_entityId")
+		(var entity:gfx =  "$datahub.getEntity(entityId)")
+
+		(var healthComponent:gfx = "entity.health")
+		(var maxHealth:number = "healthComponent.max" (event "healthComponent.evMaxChanged"))
+
+		(var regenComponent:gfx = "entity.regeneration" (event "entity.evAdded"))
+		(var regenMaxValue:number = "regenComponent.maxValue" (event "regenComponent.evChanged"))
+		(var regenValue:number = "regenComponent.value" (event "regenComponent.evChanged"))
+		(var regenPercent:number = "regenMaxValue / max(maxHealth,1)" (event "regenComponent.evChanged"))
+
+		(var resultWidth:number = "ceil(barImageWidth * regenPercent)")
+		(var currentWidth:number = "resultWidth" watch=false)
+
+		(controller $Animation
+			(bindcall play  duration = "HEALTH_ANI_MIN"
+							action="killAll"
+							watch = false
+							easing="Easing.quad_in"
+							from = "{ currentWidth: currentWidth }"
+							to = "{ currentWidth: resultWidth }"
+							(event "regenComponent.evChanged")
+			)
+		)
+	)
+
+	(style
+		(bind width "currentWidth")
+		(height = "100%")
+		(position = "absolute")
+		(backgroundSize = "crop")
+		(bind backgroundImage "'url:../events/halloween20/' + _styleConfig.iconNamePrefix + '_h.png'")
+	)
+	
+	(bind colorTransform "regenValue > 0 ? SHIP_HP_TRANSFORM_COLORS.POSITIVE_REGEN : SHIP_HP_TRANSFORM_COLORS.MAX_REGEN")
+)
+
+(def element EventHealthBarFX(_styleConfig:dict, _entityId:number = 0) layout=true
+	(scope
+		(var barImageWidth:number = "_styleConfig.barWidth")
+		(var entityId:number = "_entityId")
+		(var entity:gfx =  "$datahub.getEntity(entityId)")
+
+		(macro EVENT_HEALTH_PERCENT_AND_ALIVE "entity")
+
+		(var resultWidth:number = "ceil(barImageWidth * healthPercent)")
+		(var healthDelta:number = "healthComponent.delta" (event "healthComponent.evDeltaChanged"))
+
+		(var currentWidth:number = "resultWidth" watch=false) 
+
+		(controller $Animation
+			(bindcall play  delay = "healthDelta >=0 ? 0 : HEALTH_ANI_DELAY"
+							duration = "healthDelta >=0 ? HEALTH_ANI_DELAY : min(HEALTH_ANI_MAX, max(HEALTH_ANI_MIN, abs(healthDelta/maxHealth)*10))"
+							action="killAll"
+							watch = false
+							easing="Easing.quad_in"
+							from = "{ currentWidth: currentWidth }"
+							to = "{ currentWidth: resultWidth }"
+							(event "healthComponent.evChanged") 
+							(event "healthComponent.evMaxChanged")
+			)
+		)
+	)
+
+	(style
+		(bind width "currentWidth")
+		(height = "100%")
+		(position = "absolute")
+		(backgroundSize = "crop")
+		(bind backgroundImage "'url:../events/halloween20/' + _styleConfig.iconNamePrefix + '_h.png'")
+	)
+	
+	(bind colorTransform "healthDelta >= 0 ? SHIP_HP_TRANSFORM_COLORS.POSITIVE_REGEN : SHIP_HP_TRANSFORM_COLORS.WHITE")
+)
+
+(def element EventHealthBarValue (_styleConfig:dict, _entityId:number = 0) layout=true
+	(scope
+		(var barImageWidth:number = "_styleConfig.barWidth")
+		(var entityId:number = "_entityId")
+		(var entity:gfx = "$datahub.getEntity(entityId)")
+
+		(macro EVENT_HEALTH_PERCENT_AND_ALIVE "entity")
+
+		(var resultWidth:number = "ceil(barImageWidth * healthPercent)")
+		(var healthDelta:number = "healthComponent.delta" (event "healthComponent.evDeltaChanged"))
+
+		(var currentWidth:number = "healthComponent != null ? resultWidth : barImageWidth" watch=false
+							(event "healthComponent.evMaxChanged"))
+
+		(controller $Animation
+			(bindcall play
+							delay= "healthDelta >=0 ? HEALTH_ANI_DELAY : 0"
+							duration = "healthDelta >=0 ? HEALTH_ANI_MAX : HEALTH_ANI_MIN"
+							action="killAll"
+							watch = false
+							easing="Easing.quad_in"
+							from = "{ currentWidth: currentWidth }"
+							to = "{ currentWidth: resultWidth }"
+							(event "healthComponent.evChanged")
+							(event "healthComponent.evMaxChanged")
+			)
+		)
+	)
+
+	(style
+		(bind width "currentWidth")
+		(height = "100%")
+		(backgroundSize = "crop")
+		(bind backgroundImage "'url:../events/halloween20/' + _styleConfig.iconNamePrefix + '_h.png'")
+		(alpha = 0.7)
+	)
+
+
+	(bind colorTransform "healthComponent == null ? SHIP_HP_TRANSFORM_COLORS.NEGATIVE_DPS : healthPercent > 0.8 ? SHIP_HP_TRANSFORM_COLORS.GREEN : healthPercent > 0.3 ? SHIP_HP_TRANSFORM_COLORS.YELLOW : SHIP_HP_TRANSFORM_COLORS.RED")
+)

@@ -1,0 +1,106 @@
+<BD069_Director_Mk37_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Dir_mk37	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Dir_mk37_wire	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_BM363_Preset_for_BD069_1	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	-0.0042 0.1478 -0.0677 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	MP_BM364_Preset_for_BD069_2_RF	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS200_YDCS_M_1	</identifier>
+				<transform>
+					<row0>	1.3188 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.3188 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.3188 0.0000	</row2>
+					<row3>	0.0000 0.0760 0.0236 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS206_YDSS_S_1	</identifier>
+				<transform>
+					<row0>	0.0000 0.0000 0.9539 0.0000	</row0>
+					<row1>	-0.9539 0.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 -0.9539 0.0000 0.0000	</row2>
+					<row3>	-0.0587 0.0981 -0.0226 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS206_YDSS_S_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.0000 0.0000 -0.9539 0.0000	</row0>
+					<row1>	0.9539 0.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 -0.9539 0.0000 0.0000	</row2>
+					<row3>	0.0587 0.0981 -0.0226 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Dir_mk37	</node>
+		<geometry>
+			<vertices>	Dir_mk37_lod2Shape.vertices	</vertices>
+			<primitive>	Dir_mk37_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/BSA210_Audacious/director/BD069_Director_Mk37.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Dir_mk37_wire	</node>
+		<geometry>
+			<vertices>	Dir_mk37_wire_lod2Shape.vertices	</vertices>
+			<primitive>	Dir_mk37_wire_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPWIRE_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/BSA210_Audacious/director/BD069_Director_Mk37_wire.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1172 0.0000 -0.1000	</min>
+		<max>	0.1172 0.2774 0.1283	</max>
+	</boundingBox>
+</BD069_Director_Mk37_lod2.visual>

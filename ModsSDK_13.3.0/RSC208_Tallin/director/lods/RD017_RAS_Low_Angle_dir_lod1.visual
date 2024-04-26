@@ -1,0 +1,47 @@
+<RD017_RAS_Low_Angle_dir_lod1.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	RD017_RAS_Low_Angle_dir	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS200_YDCS_M_1	</identifier>
+				<transform>
+					<row0>	0.5718 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.5718 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.5718 0.0000	</row2>
+					<row3>	0.0000 0.0684 -0.0309 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	RD017_RAS_Low_Angle_dir	</node>
+		<geometry>
+			<vertices>	RD017_RAS_Low_Angle_dir_lod1Shape.vertices	</vertices>
+			<primitive>	RD017_RAS_Low_Angle_dir_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/RSC208_Tallin/director/RD017_RAS_low_Angle_dir.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0227 -0.0014 -0.0327	</min>
+		<max>	0.0227 0.1082 0.0256	</max>
+	</boundingBox>
+</RD017_RAS_Low_Angle_dir_lod1.visual>

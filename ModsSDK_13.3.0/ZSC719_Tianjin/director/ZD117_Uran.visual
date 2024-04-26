@@ -1,0 +1,74 @@
+<ZD117_Uran.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	RD075_Uran	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS201_YDCS_M_2	</identifier>
+				<transform>
+					<row0>	0.6204 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.2109 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0868 0.0074 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS202_YDCS_M_3	</identifier>
+				<transform>
+					<row0>	0.0000 0.0000 -1.0000 0.0000	</row0>
+					<row1>	0.0000 0.9527 0.0000 0.0000	</row1>
+					<row2>	0.6244 0.0000 0.0000 0.0000	</row2>
+					<row3>	-0.0103 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS203_YDSS_M_1	</identifier>
+				<transform>
+					<row0>	0.0000 0.5087 0.0000 0.0000	</row0>
+					<row1>	-0.6417 0.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	-0.0105 0.0569 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS203_YDSS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.0000 -0.5087 0.0000 0.0000	</row0>
+					<row1>	0.6417 0.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0105 0.0569 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	RD075_Uran	</node>
+		<geometry>
+			<vertices>	RD075_UranShape.vertices	</vertices>
+			<primitive>	RD075_UranShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ZSC719_Tianjin/director/ZD117_Uran.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0533 -0.0635 -0.0714	</min>
+		<max>	0.0533 0.1676 0.0740	</max>
+	</boundingBox>
+</ZD117_Uran.visual>

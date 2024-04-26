@@ -1,0 +1,49 @@
+(def constant BUILDING_TYPE_SYMBOL_NAME "{
+	CoastalArtillery: 'ground_artillery_type_1',
+	AntiAircraft: 'ground_air_defence',
+	SensorTower: 'ground_radar',
+	Complex: 'ground_artillery_type_1',
+	Military: 'ground_supply',
+	RayTower: 'ground_tower',
+	AirBase: 'ground_airbase',
+	Generator: 'ground_supply',
+	SpaceStation: 'ground_station'
+}")
+
+(def element MapBuildingMarker (_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number) layout=true
+	(scope
+		(var markerScale:number = "_itemScale / _mapScale")
+
+		(var buildingComponent:gfx = "_markerEntity.building")
+		(var isSuppressed:bool = "buildingComponent.isSuppressed" (event "buildingComponent.evSuppressionChanged"))
+
+		(var healthComponent:gfx = "_markerEntity.health" (event "_markerEntity.evAdded"))
+		(var isAlive:bool = "healthComponent.isAlive" (event "healthComponent.evIsAliveChanged"))
+
+		(var mapVisible:bool = "_markerEntity.visibility.mapVisible" (event "_markerEntity.visibility.evChanged"))
+
+		(macro VAR_RELATION "_markerEntity")
+
+		(var symbolName:str = "BUILDING_TYPE_SYMBOL_NAME[buildingComponent.type]")
+		(var suppressedStr:str = "isSuppressed ? '_suppressed' : ''")
+		(var relationStr:str = "'_' + (relation == RELATION_NAMES.OWN ? RELATION_NAMES.NEUTRAL : relation)")
+		(var markerIcon:str =
+			"!(mapVisible) 
+				? 'symbol:minimap_' + symbolName + '_last_visible'
+				: isAlive
+					? 'symbol:minimap_' + symbolName + suppressedStr + relationStr
+					: 'symbol:minimap_' + symbolName + '_dead'")
+
+		
+		(macro SCOPE_HIGHLIGHT_MARKER_ON_MAP_MOUSE_OVER "_markerEntity")
+	)
+
+	(macro BIND_FAIR_SCALE "markerScale")
+	
+	(block
+		(macro EFFECT_HIGHLIGHT_MARKER_ON_MOUSE_OVER)
+		(style
+			(bind backgroundImage "markerIcon")
+		)
+	)
+)

@@ -1,0 +1,80 @@
+<resources.xml>
+	<!--
+		This file specifies where the resources
+		required by the BigWorld Client engine are located.
+
+		You can customise this file for your specific resource tree
+		by copying this file into the root of your tree, and making
+		the required changes there.
+
+		This file bigworld/res/resources.xml should not itself be changed.
+	-->
+	<system>
+		<engineConfigXML>	engine_config.xml	</engineConfigXML>
+		<!-- Global engine settings -->
+		<scriptsConfigXML>	scripts_config.xml	</scriptsConfigXML>
+		<!-- Config file to be passed to the scripts -->
+		<notFoundBmp>	system/maps/notfound.dds		</notFoundBmp>
+		<!-- Texture map to be used in place of missing textures -->
+		<blackBmp>	system/maps/col_black.dds		</blackBmp>
+		<!-- Black texture map -->
+		<defaultNorms>	system/maps/default_norms.dds		</defaultNorms>
+		<!-- Default flat normal map -->
+		<notFoundModel>	helpers/props/standin.model	</notFoundModel>
+		<!-- Model to be used in place of missing models -->	
+		<defaultShaderPath> shaders/std_effects/ </defaultShaderPath>
+		<!-- The default shader path for ModelEditor -->
+		<defaultMfmPath> materials/template_mfms </defaultMfmPath>
+		<!-- The default MFM path for ModelEditor -->		
+		<defaultLightsPath> helpers/lights </defaultLightsPath>
+		<!-- Old Terrain effect material -->
+		<terrain2> system/data/terrain2.xml </terrain2>
+		<!-- The settings for terrain2 -->
+		<textureDetailLevels> system/data/texture_detail_levels.xml </textureDetailLevels>
+		<!-- Texture detail level information file -->
+		<particles>
+			<particleAtlas> particles/textures/particles.atlas </particleAtlas>
+			<depthScale> 0.3 </depthScale>
+		</particles>
+		
+		<landscapeModelPrefix> content/location/nature/ </landscapeModelPrefix>
+		<!-- Landspace model prefix -->
+		
+		<graphicsSettingsXML> system/data/graphics_settings.xml </graphicsSettingsXML>
+		<graphicsSettingsPresets> system/data/graphics_settings_presets.xml </graphicsSettingsPresets>
+		<autoConfigSettings> system/data/auto_config_settings.xml </autoConfigSettings>
+
+		<puddlesMaskTexture> system/maps/weather/puddles_mask.dds </puddlesMaskTexture>
+		<ripplesPatternTexture> system/maps/weather/ripples_pattern.dds </ripplesPatternTexture>
+
+		<!-- The trusted certificate used to verify the certificate presented
+		by the server when using DTLS. -->
+		<rootCertificate> server-root.pem </rootCertificate>
+
+	</system>
+	<environment>
+		<defaultEditorSpace> spaces/default </defaultEditorSpace>
+		<chunkParticleStagger>	50			</chunkParticleStagger>
+		<!-- Number of frames to wait between auto-seeding ticks for chunk particle systems-->
+	</environment>
+	<dummy>
+		<!-- Resources used by BigBang -->
+		<cData>	blank.cdata	</cData>
+		<!-- Template cData file for new terrain, used to create new spaces -->
+	</dummy>
+	<exporter>
+		<defaultMaterial>	materials/template_mfms/lightonly.mfm	</defaultMaterial>
+	</exporter>
+	<editor>
+		<pointerModel>		resources/models/pointer.model		</pointerModel>
+		<positionGizmo>		helpers/models/position_gizmo.visual	</positionGizmo>
+		<positionGizmoObLock>	helpers/models/position_gizmo2.visual	</positionGizmoObLock>
+		<scaleGizmo>		helpers/models/scale_gizmo.visual	</scaleGizmo>
+		<scaleGizmoUV>      helpers/models/scale_gizmo_uv.visual </scaleGizmoUV>
+		<radiusGizmo>		helpers/models/radius_gizmo.visual	</radiusGizmo>
+		<radiusGizmoSmall>	helpers/models/radius_gizmo_small.visual</radiusGizmoSmall>
+		<rotationGizmo>		helpers/models/rotate_gizmo.visual	</rotationGizmo>
+		<graphLinkGizmo>	helpers/models/graph_link.visual	</graphLinkGizmo>
+		<graphAddGizmo>		helpers/models/graph_add.visual	</graphAddGizmo>
+	</editor>
+</resources.xml>

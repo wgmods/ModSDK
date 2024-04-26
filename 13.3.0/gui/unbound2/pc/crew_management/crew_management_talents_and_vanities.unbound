@@ -1,0 +1,11 @@
+(def element CrewTalentItemView (_talentId:str, _isForceWhite:bool = "false") layout=true
+	(class $Fullsize)
+	(style (backgroundSize = "fill") (bind backgroundImage "'url:../crew_commander/talents/' + _talentId + '.png'"))
+	(bind colorTransform "_isForceWhite	? {} : COLOR_TRANSFORM_WHITE_TO_YELLOW")
+)
+
+(def element CrewVanityItemView (_vanityName:str, _isActive:bool) layout=true
+	(class $Fullsize)
+	(style (backgroundSize = "fill") (bind backgroundImage "'url:../crew_commander/vanities/' + toLower(tr(_vanityName)) + '.png'"))
+	(bind colorTransform "_isActive ? COLOR_TRANSFORM_WHITE_TO_YELLOW : {}")
+)

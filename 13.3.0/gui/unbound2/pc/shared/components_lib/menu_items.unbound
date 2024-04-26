@@ -1,0 +1,117 @@
+(def element SmallMenuItemWithPrice (	_isAvailable:bool, _isSelected:bool, _disableReason:str,
+										_title:str, _priceInfo:gfx, _width:number, _height:number,
+										_showDiscountTag:bool=false, _newCounterValue:number=0,
+										_dispatchedEv:str='', _dispatchParams:gfx={}) layout=true
+
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+		(var isSelectedStateActive:bool = "_isAvailable && _isSelected")
+		(var isRollOverActive:bool = "_isAvailable && (_isSelected || rollOver)")
+	)
+
+	(controller $Tooltip
+		(renderer='SimpleStatusTooltip')
+		(args
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.NEGATIVE"
+			_text = "_disableReason"
+		)
+		(bind enabled "!_isAvailable && _disableReason")
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(style
+		(backgroundColor = "0x30000000")
+		(bind width "_width ? _width : 100%")
+		(bind height "_height ? _height : 74")
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style	(hitTest = false)
+				(bind alpha "isSelectedStateActive ? 1 : 0.4")
+		)
+
+		(controller $Animation
+			(bindcall play
+				from = "{alpha: 0.4}"
+				to = "{alpha: 1}"
+				duration = "0.1"
+				reverse = "!isSelectedStateActive"
+				(bind trigger "isSelectedStateActive")
+			)
+		)
+
+		(block
+			(class $Fullsize)
+			(style
+				(backgroundSize = "fill")
+				(backgroundImage = "'url:../service_kit/panel_backgrounds/menu_item_panel.png'")
+				(scale9grid=3)
+				(bind alpha "isRollOverActive ? 1 : 0")
+			)
+
+			(controller $Animation
+				(bindcall play
+					from = "{alpha: 0}"
+					to = "{alpha: 1}"
+					duration = "0.1"
+					reverse = "!isRollOverActive"
+					(bind trigger "isRollOverActive")
+				)
+			)
+		)
+	)
+
+	(hblock
+		(class $Fullsize)
+		(style (paddingLeft = "M") (paddingRight = "M") (align = "middle"))
+		(alpha = 	"_isSelected	? 1 :
+					_isAvailable	? 0.8
+									: 0.35")
+
+		(hblock
+			(style (width = 100%))
+
+			(tf
+				(style (alpha = "TA"))
+				(class $TextDefaultBold17NM)
+
+				(bind text "_title")
+			)
+
+			(block
+				(bind visible "_newCounterValue > 0")
+				(style (marginLeft = "XXS") (marginTop = "-S"))
+
+				(element MarkerNewCounter
+					_newContentCounter = "_newCounterValue"
+				)
+			)
+		)
+
+		
+		(element PriceTag
+			_priceInfo = "_priceInfo"
+			_size = "SIZE.SMALL"
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+
+		(macro MOUSE_HANDLER
+			_enabled = "_isAvailable"
+			_dispatchedEv = "_dispatchedEv"
+			_dispatchParams = "_dispatchParams"
+			_soundSet = "'button_default'"
+		)
+	)
+
+	(element HorizontalDividerTwoPx
+		(style
+			(position = "absolute")
+			(width = 100%)
+			(bottom = 0)
+		)
+	)
+)

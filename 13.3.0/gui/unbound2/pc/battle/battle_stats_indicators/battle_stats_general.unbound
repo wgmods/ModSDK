@@ -1,0 +1,617 @@
+(def element BattleStatsContainer () layout=true
+	(scope
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var gameModeId:number = "battleDataEntity.battleInfo.gameModeId")
+		(var isPinata:bool = "SC.Battle.GAME_MODE.PINATA_EVENT == gameModeId")
+
+		(var battleState:number = "battleDataEntity.battleState.battleState" (event "battleDataEntity.battleState.evBattleStateChanged"))
+		(var isNotBattleIdling:bool = "battleState != SC.Common.CLIENT_BATTLE_STATE.END_BATTLE_IDLING")
+		
+		
+		(var payloadCollection:gfx = "$datahub.getCollection(CC.payload)")
+		(var payloadCollectionItemsCount:number = "payloadCollection ? payloadCollection.items.length : 0" (event "payloadCollection.evAdded") (event "payloadCollection.evRemoved") (event "payloadCollection.evUpdated"))
+		(var isPayloadProgressContainerVisible:bool = "payloadCollection && payloadCollectionItemsCount > 0")
+
+		
+		(var capturePointsCollection:gfx = "$datahub.getCollection(CC.capturePoint)")
+		(var capturePointsCollectionSorted:gfx = "capturePointsCollection.getChildByPath('sorted')" (event "capturePointsCollection.evChildAdded"))
+		(var capturePointsCollectionItemsCount:number = "capturePointsCollection ? capturePointsCollection.items.length : 0" (event "capturePointsCollection.evAdded") (event "capturePointsCollection.evRemoved") (event "capturePointsCollection.evUpdated"))
+		(var isCapturingPointsIndicatorVisible:bool = "capturePointsCollection && capturePointsCollectionItemsCount > 0 && gameModeId != SC.Battle.GAME_MODE.PVE") 
+
+		
+		(var resourcesCollection:gfx = "$datahub.getCollection(CC.resource)")
+		(var resourcesCollectionItemsCount:number = "resourcesCollection ? resourcesCollection.items.length : 0" (event "resourcesCollection.evAdded") (event "resourcesCollection.evRemoved") (event "resourcesCollection.evUpdated"))
+		(var isBattleResourceIndicatorVisible:bool = "resourcesCollection && resourcesCollectionItemsCount > 0")
+
+		(var tasksCollection:gfx = "$datahub.getCollection(CC.task)")
+		(var taskWithTimer:gfx = "tasksCollection ? tasksCollection.getChildByPath('byShowOnHud.' + 1) : null" (event "tasksCollection.evChildAdded") (event "tasksCollection.evChildRemoved"))
+		(var timerInHudItem:gfx = "taskWithTimer ? taskWithTimer.items[0] : null" (event "taskWithTimer.evAdded") (event "taskWithTimer.evUpdated")) 
+		(var isTaskTimerBigVisible:bool = "timerInHudItem ? true : false")
+	)
+
+	(element HeaderShipList
+		(style (marginTop = 7))
+	)
+
+	(block $enabled = "isPinata"
+		(style (marginTop = "S"))
+		(controller $Instance renderer='PinataItem'
+			(bind enabled "gameModeId != SC.Battle.GAME_MODE.CONVOY_EVENT") 
+		)
+	)
+
+	(block
+		(style
+			(bind marginTop "isCapturingPointsIndicatorVisible ? XS : 0")
+		)
+		(controller $Instance renderer='CapturingPointsIndicator'
+			(bind enabled "isCapturingPointsIndicatorVisible")
+			(args
+				_gameModeId="gameModeId"
+				_capturePointsCollection = "capturePointsCollectionSorted"
+				_isPinata = "isPinata"
+			)
+		)
+	)
+
+	(block
+		(style
+			(bind marginTop "isBattleResourceIndicatorVisible ? XS : 0")
+		)
+		(controller $Instance renderer='BattleResourceIndicator'
+			(bind enabled "isBattleResourceIndicatorVisible")
+			(args
+				_resourcesCollection = "resourcesCollection"
+			)
+		)
+	)
+
+	(block $enabled = "gameModeId != SC.Battle.GAME_MODE.CONVOY_EVENT && !isPinata"
+		(style (marginTop = "S"))
+		(controller $Instance renderer='KeyObjectsContainer'
+			(bind enabled "gameModeId != SC.Battle.GAME_MODE.CONVOY_EVENT") 
+		)
+	)
+
+	(block $enabled = "gameModeId == SC.Battle.GAME_MODE.CONVOY_EVENT"
+		(style (marginTop = "M"))
+		(controller $Instance renderer='ConvoysListContainer'
+			(bind enabled "gameModeId == SC.Battle.GAME_MODE.CONVOY_EVENT") 
+		)
+	)
+
+	(block
+		(style
+			(width = "100%")
+			(align = "center")
+			(bind marginTop "isPayloadProgressContainerVisible ? MS : 0")
+		)
+		(controller $Instance renderer='PayloadProgressContainer'
+			(bind enabled "isPayloadProgressContainerVisible")
+		)
+	)
+
+	(block
+		(style
+			(bind marginTop "isTaskTimerBigVisible && isNotBattleIdling ? XS : 0")
+		)
+		(controller $Instance renderer='TaskTimerBig'
+			(bind enabled "isTaskTimerBigVisible && isNotBattleIdling")
+			(args
+				_timerInHudItem = "timerInHudItem"
+			)
+		)
+	)
+
+	
+	
+	
+
+	
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(def element CapturingPointsIndicator (_gameModeId:number, _capturePointsCollection:gfx, _isPinata:bool = false) layout=true  
+	(name = 'base_capture')
+	(scope
+		(event evShowEnemyPointsDifference)
+		(event evShowAllyPointsDifference)
+		(event evDelayedStartShowAllyPointsDifference)
+
+		(var selfPlayerEntity:gfx = "$datahub.getSingleEntity(CC.accountSelf)")
+		(var selfAvatar:gfx = "selfPlayerEntity.avatar")
+
+		(var selfTeamId:number = "selfAvatar.teamId")
+		(var enemyTeamId:number = "selfTeamId == 1 ? 0 : 1")
+
+		(var battleInfoEntity:gfx = "$datahub.getSingleEntity(CC.battleInfo)")
+		(var battleInfoComponent:gfx = "battleInfoEntity.battleInfo")
+		(var totalScore:number = "battleInfoComponent.teamWinScore")
+
+		(var teamScores:gfx = "$datahub.getCollection(CC.teamScore)")
+		(var allyTeamScore:gfx = "teamScores.items[selfTeamId].teamScore")
+		(var enemyTeamScore:gfx = "teamScores.items[enemyTeamId].teamScore")
+
+		(var allyScore:number = "allyTeamScore.score" (event "allyTeamScore.evScoreChanged"))
+		(var allyScorePrev:number = "allyTeamScore.score" (event "evShowAllyPointsDifference"))
+		(var allyScoreAnimated:number = "allyTeamScore.score" watch=false)
+
+		(var enemyScore:number = "enemyTeamScore.score" (event "enemyTeamScore.evScoreChanged"))
+		(var enemyScorePrev:number = "enemyTeamScore.score" (event "evShowEnemyPointsDifference"))
+		(var enemyScoreAnimated:number = "enemyTeamScore.score" watch=false)
+
+		(var allyTeamCD:gfx = "allyTeamScore ? teamScores.items[selfTeamId].countDown : null" (event "allyTeamScore.evGainLocked"))
+		(var enemyTeamCD:gfx = "enemyTeamScore ? teamScores.items[enemyTeamId].countDown : null" (event "enemyTeamScore.evGainLocked"))
+
+		(var isPinataCCActive:bool = "_isPinata ? _capturePointsCollection.items[0].capturePoint.active : true" (event "_capturePointsCollection.items[0].capturePoint.evActiveChanged"))
+
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.battleTimer)")
+		(var currentTime:number = "timerEntity.battleTimer.battleTime" (event "timerEntity.battleTimer.evBattleTimeChanged"))
+
+		(controller $Animation
+			(bindcall play to="{allyScoreAnimated: allyScore}" duration=0.55 delay=0.55 easing="Easing.line" (event "evShowAllyPointsDifference"))
+			(bindcall play to="{enemyScoreAnimated: enemyScore}" duration=0.55  delay=0.55 easing="Easing.line" (event "evShowEnemyPointsDifference"))
+		)
+	)
+	(style
+		(align = "center")
+	)
+
+	(dispatch evShowEnemyPointsDifference args="{value: enemyScore-enemyScorePrev}" (event "enemyTeamScore.evScoreChanged"))
+
+	(dispatch evShowAllyPointsDifference args="{value: allyScore-allyScorePrev}" (event "allyTeamScore.evScoreChanged"))
+
+	(hblock
+		(block $enabled = "_gameModeId == SC.Battle.GAME_MODE.ARMS_RACE"
+			(style
+				(position = "absolute")
+				(right = "100%")
+				(marginRight = "S")
+			)
+			(controller $Instance (renderer='CapturedDropsCount')
+				(bind enabled "_gameModeId == SC.Battle.GAME_MODE.ARMS_RACE")
+				(args
+					_isAlly = "true"
+				)
+			)
+		)
+
+		(hblock
+			(controller $Repeat count="_capturePointsCollection.items.length" layout=true
+				(bind enabled "isPinataCCActive")
+				(exprs
+					(element CapturePointIndicator _markerEntity="_capturePointsCollection.items[$index]" _isBattleStatsElement="true"
+						(style
+							(bind marginLeft "$index == 0 ? 0 : M")
+						)
+					)
+				)
+			)
+		)
+
+		(block $enabled = "_gameModeId == SC.Battle.GAME_MODE.ARMS_RACE"
+			(style
+				(position = "absolute")
+				(left = "100%")
+				(marginLeft = "S")
+			)
+			(controller $Instance (renderer='CapturedDropsCount')
+				(bind enabled "_gameModeId == SC.Battle.GAME_MODE.ARMS_RACE")
+				(args
+					_isAlly = "false"
+				)
+			)
+		)
+	)
+
+	(hblock
+		(style
+			(marginTop = "S")
+		)
+		(element BattleProgressBar _barWidth="95" _maxProgress = "totalScore" _valueProgress = "allyScore" _color = "C_ALLY"
+			(style
+				(marginRight = "S")
+			)
+			(controller $Instance renderer='TeamPointsLock'
+				(bind enabled "allyTeamCD")
+				(args
+					_countDownComponent = "allyTeamCD"
+				)
+			)
+		)
+
+		(element BattleProgressBar _barWidth="95" _maxProgress = "totalScore" _valueProgress = "enemyScore" _color = "C_ENEMY"
+			(controller $Instance renderer='TeamPointsLock'
+				(bind enabled "enemyTeamCD")
+				(args
+					_countDownComponent = "enemyTeamCD"
+				)
+			)
+		)
+	)
+
+	(hblock
+		(style
+			(marginTop = "S")
+		)
+		(hblock
+			(style
+				(position = "absolute")
+				(right = "100%")
+			)
+			(block
+				(style
+					(marginRight = "S")
+					(height = "100%")
+				)
+				
+				(controller $FxInstance renderer='CapturingPointsIndicatorRecievedValue' lifetime=2
+					(args _value="$event.value")
+					(bindcall create (event "evShowAllyPointsDifference"))
+				)
+			)
+			(tf
+				(style
+					(width = "46")
+					(textAlign = "right")
+				)
+				(class $TextDefaultBold21NM)
+				(bind text "floor(allyScoreAnimated)")
+			)
+		)
+		(tf
+			(class $TextDefaultBold21NM)
+			(text = ' : ')
+		)
+		(hblock
+			(style
+				(position = "absolute")
+				(left = "100%")
+			)
+			(tf	
+				(style
+					(width = "46")
+				)
+				(class $TextDefaultBold21NM)
+				(bind text "floor(enemyScoreAnimated)")
+			)
+			(block
+				(style
+					(marginLeft = "S")
+					(height = "100%")
+				)
+
+				(controller $FxInstance renderer='CapturingPointsIndicatorRecievedValue' lifetime=2
+					(args _value="$event.value")
+					(bindcall create (event "evShowEnemyPointsDifference"))
+				)
+			)
+		)
+	)
+)
+
+(def element TeamPointsLock (_countDownComponent:gfx) layout = true
+	(scope
+		(var duration:number = "_countDownComponent ? _countDownComponent.duration : 0")
+
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.battleTimer)")
+		(var currentTime:number = "timerEntity.battleTimer.battleTime" (event "timerEntity.battleTimer.evBattleTimeChanged"))
+		(var timeLeft:number = "_countDownComponent ? ceil(_countDownComponent.endTime - currentTime) : -1" (event "timerEntity.battleTimer.evBattleTimeChanged"))
+		(var progress:number = "timeLeft && duration ? timeLeft / duration : 1" (event "timerEntity.battleTimer.evBattleTimeChanged"))
+	)
+
+	(class $MiddleVHAbsolutely)
+
+	(style
+		(hitTest = "false")
+		(paddingLeft = "SXS")
+		(paddingRight = "SXS")
+	)
+
+	(bind visible "timeLeft > 0")
+
+	(block
+		(style
+			(pivotX = "50%") (pivotY = "50%")
+			(align = "center|middle")
+		)
+
+		(block
+			(style
+				(bind backgroundImage "'url:../battle_hud/markers/pinata/timer_bar/vpblocked_track.png'")
+				(backgroundSize = "autosize")
+				(align = "center|middle")
+			)
+
+			(block
+				(class $FullsizeAbsolute)
+				(style (align = "center|middle"))
+
+				(block
+					(controller $Sector
+						(bind arc "-360 * progress")
+						(offset = "-90")
+						(radius = "23")
+					)
+					(isMask = true)
+				)
+
+				(block
+					(class $FullsizeAbsolute)
+					(style (bind backgroundImage "'url:../battle_hud/markers/pinata/timer_bar/vpblocked_bar.png'"))
+				)
+			)
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style (align = "center|middle"))
+			(block
+				(style
+					(bind backgroundImage "'url:../battle_hud/markers/pinata/timer_bar/vpblocked_icon.png'")
+					(backgroundSize = "autosize")
+				)
+			)
+		)
+	)
+)
+
+(def element CapturingPointsIndicatorRecievedValue (_value:number) layout=true  
+	(scope
+		(event evAddedToStage)
+	)
+
+	(style
+		(height = "0")
+		(marginBottom = "15")
+	)
+
+	(dispatch evAddedToStage on='addedToStage')
+
+	(controller $Animation
+		(bindcall play 
+			keyframes =
+			"[
+				{
+					frame:0,
+					to:{marginTop: 15, alpha:0}
+				},
+				{
+					frame:15,
+					to:{marginTop: 2, alpha:1}
+				},
+				{
+					frame:45,
+					to:{marginTop: 2, alpha:1}
+				},
+				{
+					frame:60,
+					to:{marginTop: -15, alpha:0} 
+				}
+			]"
+			repeatCount=1
+			(event "evAddedToStage")
+		)
+	)
+
+	(tf
+		(class $TextDefaultBoldNM)
+		(bind text "_value < 0 ? _value : '+' + _value")
+	)
+
+)
+
+
+(def element BattleResourceIndicator (_resourcesCollection:gfx) layout=true  
+	(scope
+		(var barWidth:number = "180")
+
+		(var resourcesOnAllyVehiclesWatcher:gfx = "$datahub.getPrimWatcher(CC.resource, '2_entityClass_Vehicle_relation_1')")
+		(var resourcesOnAllyVehiclesEntity:gfx = "resourcesOnAllyVehiclesWatcher.entity" (event "resourcesOnAllyVehiclesWatcher.event"))
+		(var teamResourcesOnVehiclesCurrentValue:number = "resourcesOnAllyVehiclesEntity && resourcesOnAllyVehiclesEntity.progress ? resourcesOnAllyVehiclesEntity.progress.value : 0" (event "resourcesOnAllyVehiclesEntity.progress.evChanged"))
+		(var teamResourcesStartValue:number = "resourcesOnAllyVehiclesEntity &&  resourcesOnAllyVehiclesEntity.progress ? resourcesOnAllyVehiclesEntity.progress.max : 0" (event "resourcesOnAllyVehiclesEntity.progress.evChanged")) 
+
+		(var resourcesInZonesWatcher:gfx = "$datahub.getPrimWatcher(CC.resource, '2_entityClass_InteractiveZone_relation_1')")
+		(var resourcesInZonesEntity:gfx = "resourcesInZonesWatcher.entity" (event "resourcesInZonesWatcher.event"))
+		(var zoneResourcesCurrentValue:number = "resourcesInZonesEntity && resourcesInZonesEntity.progress ? resourcesInZonesEntity.progress.value : 0" (event "resourcesInZonesEntity.progress.evChanged"))
+		(var zoneResourcesStartValue:number = "resourcesInZonesEntity &&  resourcesInZonesEntity.progress ? resourcesInZonesEntity.progress.max : 0" (event "resourcesInZonesEntity.progress.evChanged"))  
+
+		(var teamResourcesSummValue:number = "teamResourcesOnVehiclesCurrentValue + zoneResourcesCurrentValue")
+
+		(var taskCollection:gfx = "$datahub.getCollection(CC.task)")
+		(var primaryTask:gfx = "taskCollection ? taskCollection.getChildByPath('category.primary') : null" (event "taskCollection.evChildAdded") (event "taskCollection.evChildRemoved") (event "taskCollection.evChildUpdated"))
+
+		(var primaryTaskEntity:gfx = "primaryTask ? primaryTask.items[0] : null" (event "primaryTask.evAdded") (event "primaryTask.evUpdated"))
+		(var primaryTaskMax:number = "primaryTaskEntity && primaryTaskEntity.progress ? primaryTaskEntity.progress.max : 0" (event "primaryTask.evAdded") (event "primaryTaskEntity.progress.evMaxChanged"))
+		(var primaryTaskMaxSeparated:str = "formatSeparator(primaryTaskMax)")
+
+		(var targetValueMargin:number = "teamResourcesStartValue > 0 ? (primaryTaskMax / teamResourcesStartValue) * barWidth : 0")
+		(var resourceCounterText:str = "resourcesInZonesEntity && zoneResourcesCurrentValue > 0 ? formatSeparator(zoneResourcesCurrentValue) + '/' + formatSeparator(teamResourcesSummValue)
+																								: formatSeparator(teamResourcesSummValue)")
+
+		(var whiteProgressBarValue:number = "resourcesOnAllyVehiclesEntity && (teamResourcesSummValue < teamResourcesStartValue) ? teamResourcesSummValue / teamResourcesStartValue : 1")
+		(var greenProgressBarWidth:number = "resourcesInZonesEntity ? (zoneResourcesCurrentValue / teamResourcesStartValue) * barWidth : 0")
+	)
+
+	(style
+		(align = "middle")
+		(flow = "horizontal")
+	)
+
+	(block
+		(style
+			(backgroundSize = "autosize")
+			(bind backgroundImage "'url:../battle_hud/markers/zone_markers/marines_unloading.png'")
+		)
+	)
+
+	(block
+		(style
+			(marginLeft = "S")
+		)
+
+		(controller $Instance renderer='BattleProgressBar'
+			(args
+				_barWidth = "barWidth"
+				_barHeight = 4
+				_maxProgress = 1
+				_valueProgress = "whiteProgressBarValue"
+				_color = "C_NEUTRAL"
+			)
+		)
+
+		(block
+			(style
+				(position = "absolute")
+				(bind width "greenProgressBarWidth")
+				(height = "2")
+				(marginTop = "1px")
+				(marginLeft = "1px")
+				(backgroundColor = "C_ALLY")
+			)
+		)
+
+		(tf
+			(class $MiddleAlignedAbsolutely)
+			(style
+				(position = "absolute")
+				(marginTop = "-16px")
+			)
+			(class $TextDefaultNM)
+			(bind text "resourceCounterText")
+		)
+
+		(block
+			(bind visible "primaryTaskMax > 0")
+			(style
+				(position = "absolute")
+				(marginTop = "8px")
+				(bind marginLeft "targetValueMargin")
+			)
+			(block
+				(style
+					(width = "1")
+					(height = "4")
+					(marginTop = "-8px")
+					(backgroundColor = "0xFF000000")
+				)
+			)
+			(tf
+				(class $MiddleAlignedAbsolutely)
+				(class $TextDefault13NM)
+				(bind text "primaryTaskMaxSeparated")
+			)
+		)
+	)
+)

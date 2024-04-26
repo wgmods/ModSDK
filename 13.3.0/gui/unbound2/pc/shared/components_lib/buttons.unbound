@@ -1,0 +1,299 @@
+(def element DefaultButton (_name:str='', _enabled:bool=true, _type:str="SC.Ui_styles.BUTTON_TYPE.DEFAULT", _isExternal:bool=false, _isTransactionBtn:bool=false,
+							_icon:str='', _size:number="SIZE.MEDIUM", _width:number=0, _label:str='',
+							_focusIndex:number=0, _clickInterval:number=0, _defaultFocused:bool=false,
+							_dispatchedEv:str='', _dispatchParams:gfx={}, _methods:array=[], _tooltipText:str='') layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(event evOperationsAccountLockedChanged)
+
+		(var accountResourceEntity:gfx = "$datahub.getSingleEntity(CC.accountResource)")
+		(var accountResource:gfx = "accountResourceEntity ? accountResourceEntity.accountResource : null")
+		(var operationsAccountLocked:bool = "accountResource ? accountResource.operationsLocked : null" (event "accountResource.evOperationsLockChanged"))
+		(var isOperationsLocked:bool = "_isTransactionBtn && operationsAccountLocked")
+		(var enabled:bool = "_enabled && !isOperationsLocked")
+
+		
+			
+			
+			
+		
+		(var isFocused:bool = false)
+
+		
+		(var showOperationsLock:bool = false)
+		(bind showOperationsLock "operationsAccountLocked" (event "evOperationsAccountLockedChanged"))
+					
+
+		(dispatch evOperationsAccountLockedChanged dir="EventDirection.NONE" (bind trigger "operationsAccountLocked"))
+		(var isDisabledVisual:bool = "!_enabled || (isOperationsLocked && showOperationsLock)")
+		
+
+		(var isDown:bool = "!isDisabledVisual && mouseDown")
+		(var isRollover:bool = "!isDisabledVisual && rollOver")
+
+		(var isIconBtn:bool = "_type == SC.Ui_styles.BUTTON_TYPE.ICON")
+		(var btnHeight:str = "	isIconBtn				? MS :
+								_size == SIZE.LARGE		? LM :
+								_size == SIZE.SMALL		? MS
+														: L")
+		(var btnWidth:str = "	isIconBtn				? MS :
+								_width					? _width
+														: 'auto'")
+		(var isAutoWidth:bool = "btnWidth == 'auto'")
+
+		(var isSecondaryBtn:bool = "_type ==  SC.Ui_styles.BUTTON_TYPE.SECONDARY")
+
+		
+		(var ctRollOver:dict = "isSecondaryBtn	?	{ redMultiplier: 1,	greenMultiplier: 1,	blueMultiplier: 1,	alphaMultiplier: 1,
+													  redOffset: 45,	greenOffset: 45,	blueOffset: 45,		alphaOffset: 0 }
+												:	{ redMultiplier: 1,	greenMultiplier: 1,	blueMultiplier: 1,	alphaMultiplier: 1,
+													  redOffset: 15,	greenOffset: 15,	blueOffset: 15,		alphaOffset: 0 }")
+		(var ctDown:dict = "	isSecondaryBtn	?	{ redMultiplier: 1,	greenMultiplier: 1,	blueMultiplier: 1,	alphaMultiplier: 1,
+													  redOffset: -45,	greenOffset: -45,	blueOffset: -45,	alphaOffset: 0 }
+												:	{ redMultiplier: 1,	greenMultiplier: 1,	blueMultiplier: 1,	alphaMultiplier: 1,
+													  redOffset: -15,	greenOffset: -15,	blueOffset: -15,	alphaOffset: 0 }")
+		
+
+		(var focusImage:str = "_type	? 'url:../service_kit/buttons/backgrounds/' + _type + '_focused.png'
+										: 'url:../service_kit/buttons/backgrounds/default_focused.png'")
+		(var backgroundImage:str = "isDisabledVisual && _type	? 'url:../service_kit/buttons/backgrounds/' + _type + '_disabled.png' :
+									_type						? 'url:../service_kit/buttons/backgrounds/' + _type + '.png' :
+									isDisabledVisual 			? 'url:../service_kit/buttons/backgrounds/default_disabled.png'
+																: 'url:../service_kit/buttons/backgrounds/default.png'")
+	)
+
+	(bind name "_name ? _name : null")
+
+	(style
+		(width = "btnWidth")
+		(height = "btnHeight")
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(hitTest = false)
+			(bind backgroundImage "backgroundImage")
+			(scale9grid = 10)
+		)
+	)
+
+	(block
+		(bind visible "isRollover || isDown")
+		(bind colorTransform "	isRollover && !isDown	? ctRollOver :
+								isDown					? ctDown
+														: CT_NONE")
+		(class $FullsizeAbsolute)
+		(style
+			(hitTest = false)
+			(bind backgroundImage "backgroundImage")
+			(scale9grid = 10)
+		)
+	)
+
+	(hblock
+		(style
+			(hitTest = false)
+			(align = "middle|center")
+			(height = 100%)
+			(bind width "isAutoWidth ? btnWidth : 100%")
+		)
+
+		(bind alpha "	isDown || isDisabledVisual					? TS :
+						isRollover									? 1.1 :
+						_type == SC.Ui_styles.BUTTON_TYPE.SECONDARY	? TC
+																	: TA")
+
+		(block
+			
+				
+			
+			(bind visible "isFocused && !isDisabledVisual")
+			(class $FullsizeAbsolute)
+			(style (backgroundImage = "focusImage") (scale9grid = 2))
+		)
+
+		(block
+			(bind visible "_label && !isIconBtn")
+
+			(style
+				(align = "center|middle")
+				(bind width "isAutoWidth ? btnWidth : 100%")
+				(bind minWidth "!isAutoWidth	? 0 :
+								_isExternal		? 78
+												: 110")
+				(bind paddingLeft "	_isExternal			? 28 :
+									_size == SIZE.SMALL	? S
+														: SXS")
+				(bind paddingRight "_isExternal			? 28 :
+									_size == SIZE.SMALL	? S
+														: SXS")
+				(bind marginTop "_size == SIZE.MEDIUM ? -1 : 0")
+			)
+
+			(tf
+				(style (elideMode = true) (textAlign = "center"))
+				(bind class "	_type == SC.Ui_styles.BUTTON_TYPE.ACCENT && _size == SIZE.LARGE	? '$TextDefaultBold25NM' :
+								_size == SIZE.LARGE												? '$TextDefaultBold17NM' :
+								_size == SIZE.SMALL												? '$TextDefaultBold12NM'
+																								: '$TextDefaultBoldNM'")
+
+				(bind text "toUpper(tr(_label))")
+			)
+		)
+
+		(block
+			(bind visible "isIconBtn")
+
+			(style
+				(position = "absolute")
+				(width = 24px)
+				(height = 24px)
+				(bind backgroundImage "'url:../service_kit/buttons/icons/' + _icon + '.png'" (bind enabled "isIconBtn"))
+			)
+		)
+
+		(block
+			(bind visible "_isExternal")
+			(name = 'externalArrow')
+
+			(class $MiddleVAligned)
+			(style
+				(position = "absolute")
+				(right = "S")
+				(width = 14px)
+				(height = 14px)
+				(backgroundImage = 'url:../service_kit/buttons/icons/out.png')
+			)
+		)
+	)
+
+	(macro INPUT "_name")
+
+	(macro MOUSE_HANDLER
+		_enabled = "enabled"
+		_dispatchedEv = "_dispatchedEv"
+		_dispatchParams = "_dispatchParams"
+		_methods = "_methods"
+		_soundSet = "_type	? 'button_' + _type
+							: 'button_default'"
+	)
+
+	(controller $Tooltip
+		(renderer='SimpleStatusTooltip')
+		(bind enabled "_tooltipText")
+		(args
+			_text = "_tooltipText"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(align = "right|innerTop")
+		(offset = { x: 6, y: -26 })
+	)
+)
+
+(def element ImageButton (	_name:str='', _enabled:bool=true, _width:number=0, _height:number=0, _backgroundImage:str='', _hitAreaMargin:array=[0], _soundSet:str='',
+							_dispatchedEv:str='', _dispatchParams:gfx={}, _methods:array=[], _tooltipText:str='') layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var btnWidth:number = "_width ? _width : 50")
+		(var btnHeight:number = "_height ? _height : 50")
+
+		
+		(var ctRollOver:dict = "{ redMultiplier: 1,	greenMultiplier: 1,	blueMultiplier: 1,	alphaMultiplier: 1,
+								  redOffset: 15,	greenOffset: 15,	blueOffset: 15,		alphaOffset: 0 }")
+		(var ctDown:dict = "	{ redMultiplier: 1,	greenMultiplier: 1,	blueMultiplier: 1,	alphaMultiplier: 1,
+								  redOffset: -15,	greenOffset: -15,	blueOffset: -15,	alphaOffset: 0 }")
+		
+
+		(var isDown:bool = "_enabled && mouseDown")
+		(var isRollover:bool = "_enabled && rollOver")
+	)
+
+	(bind name "_name")
+
+	(style
+		(bind width "btnWidth")
+		(bind height "btnHeight")
+		(bind backgroundImage "_backgroundImage")
+		(backgroundSize = "fill")
+	)
+
+	(bind colorTransform "	isRollover && !isDown	? ctRollOver :
+							isDown					? ctDown
+													: CT_NONE")
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (bind padding "_hitAreaMargin"))
+
+		(macro INPUT "_name")
+
+		(block
+			(class $FullsizeAbsolute)
+			(macro MOUSE_HANDLER
+				_enabled = "_enabled"
+				_dispatchedEv = "_dispatchedEv"
+				_dispatchParams = "_dispatchParams"
+				_methods = "_methods"
+				_soundSet = "_soundSet ? _soundSet : 'button_context'"
+			)
+		)
+
+		(controller $Tooltip
+			(renderer='SimpleStatusTooltip')
+			(bind enabled "_tooltipText")
+			(args
+				_text = "_tooltipText"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			(align = "right|innerTop")
+			(offset = { x: 6, y: -26 })
+		)
+	)
+)
+
+(def element DockButton (_label:str, _methods:array, _isTextBold:bool=false) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var backgroundPath:str = "	mouseDown	?	'url:../service_kit/buttons/button_dock/down.png' :
+									rollOver	?	'url:../service_kit/buttons/button_dock/over.png'
+												:	'url:../service_kit/buttons/button_dock/default.png'")
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (paddingBottom = "-S") (paddingLeft = "-M") (paddingRight = "-M") (paddingTop = "-S"))
+
+		(block
+			(class $FullsizeAbsolute)
+			(style (bind backgroundImage "backgroundPath") (backgroundSize = "fill") (scale9grid = 4))
+			
+			(controller $Animation
+				(bindcall play
+					from =	"{alpha: 0}"
+					to =	"{alpha: 1}"
+					reverse = "!rollOver"
+					duration="0.3"
+					(bind trigger "rollOver")
+				)
+			)
+		)
+	)
+
+	(block
+		(style (hitTest = "false"))
+		(tf
+			(style (alpha = "TA"))
+			(bind class "_isTextBold ? '$TextDefaultBoldNM': '$TextDefaultNM'")
+			(bind text "_label")
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_methods = "_methods"
+		_soundSet = "'button_secondary'"
+	)
+)

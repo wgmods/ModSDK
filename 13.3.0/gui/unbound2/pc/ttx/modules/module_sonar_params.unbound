@@ -1,0 +1,25 @@
+
+(def layout ModuleSonar_ParametersForDock (shipTTX:gfx, hasIntegralDiff:bool)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_SHOT_DELAY'
+											_value = "shipTTX.pinger.reloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_MAX_DIST'
+											_value = "shipTTX.pinger.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_SPEED'
+											_value = "shipTTX.pinger.speed"
+											_valueConfig = "VALUE_CONFIG.METER_SECOND"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_WIDTH'
+											_value = "shipTTX.pinger.width"
+											_valueConfig = "VALUE_CONFIG.METER"
+			)
+		)
+	)
+	(macro TTX_INSTANCE 'ModuleIntegralParams' "shipTTX" "hasIntegralDiff")
+)

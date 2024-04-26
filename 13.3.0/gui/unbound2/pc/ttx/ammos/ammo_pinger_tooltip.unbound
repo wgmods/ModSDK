@@ -1,0 +1,50 @@
+(def layout Pinger_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_SHOT_DELAY' 
+											_value = "_shipTTX.pinger.reloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_MAX_DIST' 
+											_value = "_shipTTX.pinger.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_DURATION_FIRST' 
+											_value = "_shipTTX.pinger.duration1"
+											_valueConfig = "VALUE_CONFIG.SECONDS"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_DURATION_SECOND' 
+											_value = "_shipTTX.pinger.duration2"
+											_valueConfig = "VALUE_CONFIG.SECONDS"
+			)
+		)
+	)
+)
+
+(def layout Pinger_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_SHOT_DELAY' 
+											_value = "_shipTTX.pinger.reloadTime"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.pingerReloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_MAX_DIST' 
+											_value = "_shipTTX.pinger.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_DURATION_FIRST' 
+											_value = "_shipTTX.pinger.duration1"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.pingerDurationFirst"
+											_valueConfig = "VALUE_CONFIG.SECONDS"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_WAVE_DURATION_SECOND' 
+											_value = "_shipTTX.pinger.duration2"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.pingerDurationSecond"
+											_valueConfig = "VALUE_CONFIG.SECONDS"
+			)
+		)
+	)
+)

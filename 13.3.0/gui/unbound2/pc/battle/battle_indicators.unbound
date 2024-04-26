@@ -1,0 +1,853 @@
+(def css $IndicatorText ()
+	(extends $TextDefaultBold13NM)
+	(filters
+		(dropShadow
+			(distance = 0)
+			(angle = 0)
+			(color = 0x000000)
+			(alpha = 0.7)
+			(blurX = 2.0)
+			(blurY = 2.0)
+			(strength = 1.0)
+			(quality = 1)
+		)
+	)
+)
+
+(def css $IndicatorTextWarning ()
+	(textColor = 0xFF9900)
+)
+
+(def css $IndicatorTextCritical ()
+	(textColor = 0xFF3300)
+)
+
+(def constant VISIBILITY_ICONS	{
+	'fighters_warning': 	'IconVisibilityFightersWarning',
+	'fighters_critical': 	'IconVisibilityFightersCritical',
+	'antiAir':				'IconVisibilityAntiAir',
+	'volley': 				'IconVisibilityVolley',
+	'ship': 				'IconVisibilityShip',
+	'plane': 				'IconVisibilityPlane',
+	'common_xray': 			'IconVisibilityCommonXray',
+	'attacked':				'IconVisibilityAircarrierAttacked',
+	'rls': 					'IconVisibilityRLS',
+	'sonar': 				'IconVisibilitySonar',
+	'hydrophone':			'IconVisibilityHydrophone',
+	'submarine_locator':	'IconVisibilitySubmarineLocator',
+	'none':					'IconVisibilityShip'
+})
+
+(def constant WARD_STATE_NORMAL 'normal')
+(def constant WARD_STATE_WARNING 'warning')
+(def constant WARD_STATE_CRITICAL 'critical')
+
+(def constant CYCLONE 'cyclone')
+(def constant CYCLONE_START 'cyclone_start')
+(def constant CYCLONE_END 'cyclone_end')
+(def constant CYCLONE_INV 'inv')
+
+(def element BattleIndicatorsContainer () layout=true
+	(scope
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var tacticalMap:bool = "cameraEntity.camera.isTactical" (event "cameraEntity.camera.evTacticalStateChanged"))
+
+		(macro IS_ON_PLANE)
+		(var hasPlanes:gfx = "ownCarrierEntity != null")
+
+		(var avatar:gfx =  "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var healthComponent:gfx = "avatar.health")
+		(var isAlive:bool = "healthComponent ? healthComponent.isAlive : false" (event "healthComponent.evIsAliveChanged"))
+	)
+
+	(class $FullsizeAbsolute)
+	(style
+		(align = "center|middle")
+		(hitTest = "false")
+	)
+
+	(bind visible "(isAlive || isOnPlane) && !tacticalMap")
+
+	(block
+		(style
+			(width = "0")
+			(height = "0")
+		)
+		(block
+			(style
+				(position = "absolute")
+				(left = "250")
+				(bottom = "217")
+			)
+			(controller $Instance renderer='DetectIndicator'
+				(args
+					_isOnPlane = "isOnPlane"
+				)
+			)
+		)
+		(block
+			(style
+				(position = "absolute")
+				(left = "340")
+				(bottom = "226")
+			)
+			(controller $Instance renderer='IntuitionIndicator'
+				(bind enabled "!isOnPlane")
+			)
+		)
+		(block
+			(style
+				(position = "absolute")
+				(left = "340")
+				(bottom = "226")
+			)
+			(controller $Instance renderer='RLSDetectIndicator'
+				(bind enabled "!isOnPlane")
+			)
+		)
+		(block
+			(style
+				(position = "absolute")
+				(left = "250")
+				(bottom = "156")
+			)
+			(controller $Instance renderer='SubmarineCollisionIndicator'
+				(bind enabled "!isOnPlane")
+			)
+		)
+		(block
+			(style
+				(position = "absolute")
+				(left = "-250")
+				(bottom = "156")
+			)
+
+			(bind visible "hasPlanes && isOnPlane")
+
+			(controller $Instance renderer='FightersWardIndicator'
+				(bind enabled "hasPlanes")
+			)
+
+		)
+		(block
+			(style
+				(position = "absolute")
+				(left = "-340")
+				(bottom = "226")
+			)
+
+			(controller $Instance renderer='CycloneIndicator')
+		)
+	)
+)
+
+
+(def element DetectIndicator (_isOnPlane:bool = null) layout=true
+	(scope
+		(event evStartAnimation)
+		(event evEndAnimation)
+
+		(event evShowFocusedEnemies)
+		(event evHideFocusedEnemies)
+
+		(var battleIndication:gfx = "$datahub.getSingleEntity(CC.battleIndication)")
+		(var selfAvatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+
+		(var shipSpotType:str = "battleIndication.alertIndication.spotType" (event "battleIndication.alertIndication.evSpottedChanged"))
+		(var shipSpotFlags:number = "selfAvatarEntity.hasComponent(CC.vehicle) ? selfAvatarEntity.vehicle.visibilityFlags : 0" (event "selfAvatarEntity.vehicle.evVisibilityFlagsChanged"))
+		(var shipFocusedEnemies:number = "battleIndication.alertIndication.focusedEnemies" (event "battleIndication.alertIndication.evFocusedEnemiesChanged"))
+		(var squadronSpotType:str = "battleIndication.alertIndication.squadronSpotType" (event "battleIndication.alertIndication.evSquadronSpottedChanged"))
+		(var squadronSpotFlags:number = "battleIndication.alertIndication.squadronSpotFlags" (event "battleIndication.alertIndication.evSquadronSpottedChanged"))
+		(var underFighterAttack:number = "battleIndication.alertIndication.underFighterAttackStatus" (event "battleIndication.alertIndication.evUnderFighterAttackStatusChanged"))
+		(var underAntiAirAttack:bool = "battleIndication.alertIndication.underAntiAirAttack" (event "battleIndication.alertIndication.evUnderAntiAirAttackChanged"))
+		(var antiAirThreatCount:number = "battleIndication.alertIndication.antiAirThreatCount" (event "battleIndication.alertIndication.evAntiAirThreatCountChanged"))
+		(var isUnderFighterAttack:bool = "_isOnPlane && underFighterAttack > 0")
+		(var isUnderAntiAirAttack:bool = "_isOnPlane && underAntiAirAttack")
+		(var spotType:str = "_isOnPlane ? squadronSpotType : shipSpotType")
+
+		(var focusedEnemies:number = "	!_isOnPlane			? shipFocusedEnemies :
+										underAntiAirAttack	? antiAirThreatCount
+															: 0")
+		(var isFocusedEnemiesEnable:bool = "focusedEnemies > 0")
+
+		(var isAlertVisible:bool = "_isOnPlane ? squadronSpotFlags > 0 : shipSpotFlags > 0")
+		(var isHydrophone:bool = "spotType == 'hydrophone'")
+		(var isSubmarineLocator:bool = "spotType == 'submarine_locator'")
+
+		(var isVolley:bool = "false")
+		(controller $Animation
+			(bindcall play  duration=1.0
+							from="{ isVolley: true }"
+							to="{ isVolley: false }"
+							(event "battleIndication.alertIndication.evArtilleryAlert")
+			)
+		)
+
+		(var iconName:str = "	isUnderFighterAttack && underFighterAttack == 1		? 'fighters_warning' :
+								isUnderFighterAttack && underFighterAttack != 1		? 'fighters_critical' :
+								isUnderAntiAirAttack								? 'antiAir' :
+								isVolley											? 'volley'
+																					: spotType")
+
+		(var iconLabel:str = "	isUnderFighterAttack	? 'IDS_UNDER_FIGHTERS_ATTACK'	:
+								isUnderAntiAirAttack	? 'IDS_UNDER_ANTI_AIR_ATTACK'	:
+								isVolley 				? 'IDS_VOLLEY'					:
+								isHydrophone			? 'IDS_HYDROPHONE'				:
+								isSubmarineLocator		? 'IDS_SUBMARINE_LOCATOR'
+														: 'IDS_DETECTED'")
+	)
+
+	(style
+		(alpha = "isAlertVisible ? 1 : 0")
+	)
+
+	(dispatch evStartAnimation (bind enabled "isAlertVisible") (bind trigger "isAlertVisible"))
+	(dispatch evEndAnimation (bind enabled "!isAlertVisible") (bind trigger "!isAlertVisible"))
+
+	(dispatch evShowFocusedEnemies (bind trigger "isFocusedEnemiesEnable") (bind enabled "isFocusedEnemiesEnable"))
+	(dispatch evHideFocusedEnemies (bind trigger "!isFocusedEnemiesEnable") (bind enabled "!isFocusedEnemiesEnable"))
+
+	(controller $Animation
+		(bindcall play  duration=0.3
+						easing="Easing.quad_in"
+						from="{ alpha: 0, scaleX: 2, scaleY: 2 }"
+						to="{ alpha: 1, scaleX: 1, scaleY: 1 }"
+						action="killAll"
+						(bind enabled "isAlertVisible")
+						(event "evStartAnimation")
+		)
+		(bindcall play  duration=0.3
+						easing="Easing.quad_out"
+						from="{ alpha: 1, scaleX: 1, scaleY: 1 }"
+						to="{ alpha: 0, scaleX: 2, scaleY: 2 }"
+						action="killAll"
+						(bind enabled "!isAlertVisible")
+						(event "evEndAnimation")
+		)
+	)
+
+	(block
+		(class $MiddleVHAbsolutely)
+		(block
+			(style
+				(align = "center")
+				(width = "64px")
+				(height = "64px")
+			)
+
+			(controller $Animation
+				(bindcall play  duration=0.2
+								easing="Easing.quad_in"
+								from="{ scaleX: 2, scaleY: 2, x: -32, y: -32 }"
+								to="{ scaleX: 1, scaleY: 1, x: 0, y: 0 }"
+								action="killAll"
+								(bind trigger "iconName")
+				)
+			)
+
+			(block
+				(style
+					(width = "32px")
+					(height = "32px")
+					(align = "center|bottom")
+				)
+				(controller $Instance
+					(bind renderer "VISIBILITY_ICONS[iconName]")
+				)
+			)
+			(tf
+				(class $IndicatorText)
+				(style
+					(width = "100px")
+					(marginTop = "5px")
+					(textAlign = "center")
+					(leading = "-3")
+				)
+				(bind class "isVolley || (underFighterAttack == 2 && _isOnPlane) ? '$IndicatorTextCritical' : '$IndicatorTextWarning'")
+				(bind text "iconLabel")
+			)
+		)
+	)
+
+	(block
+		(style
+			(alpha = 0)
+			(position = "absolute")
+			(top = "-27px")
+			(left = "17px")
+			(align = "center|middle")
+			(height = "0px")
+			(width = "0px")
+			(bind top "_isOnPlane ? -32 : -27")
+			(bind left "_isOnPlane ? 24 : 17")
+		)
+
+		(controller $Animation
+			(bindcall play  duration=0.15
+							from="{ alpha: 0, scaleX: 2, scaleY: 2 }"
+							to="{ alpha: 1, scaleX: 1, scaleY: 1 }"
+							action="killAll"
+							(bind enabled "isFocusedEnemiesEnable")
+							(event "evShowFocusedEnemies")
+			)
+			(bindcall play  duration=0.15
+							from="{ alpha: 1, scaleX: 1, scaleY: 1 }"
+							to="{ alpha: 0, scaleX: 2, scaleY: 2 }"
+							action="killAll"
+							(bind enabled "!isFocusedEnemiesEnable")
+							(event "evHideFocusedEnemies")
+			)
+		)
+
+		(block
+			(style
+				(position = "absolute")
+				(width = "32px")
+				(height = "32px")
+				(left = "50%")
+				(top = "50%")
+				(marginLeft = "-50%")
+				(marginTop = "-50%")
+				(backgroundImage = "'bitmap:icon_visibility_priority'")
+			)
+		)
+
+		(tf
+			(class $TextDefaultBold18NM)
+			(class $IndicatorTextWarning)
+			(style
+				(marginTop = "-1px")
+			)
+			(bind visible "focusedEnemies > 0")
+			(bind text "focusedEnemies")
+		)
+	)
+)
+
+(def element IconVisibilityFightersWarning () layout=true
+	(style
+		(width = "31px")
+		(height = "30px")
+		(backgroundImage = "'bitmap:icon_visibility_fighters_warning'")
+	)
+)
+
+(def element IconVisibilityFightersCritical () layout=true
+	(style
+		(width = "31px")
+		(height = "30px")
+		(backgroundImage = "'bitmap:icon_visibility_fighters_critical'")
+	)
+)
+
+(def element IconVisibilityAntiAir () layout=true
+	(style
+		(width = "32px")
+		(height = "32px")
+		(backgroundImage = "'bitmap:icon_visibility_antiair'")
+	)
+)
+
+(def element IconVisibilityVolley () layout=true
+	(style
+		(width = "6px")
+		(height = "24px")
+		(backgroundImage = "'bitmap:icon_visibility_volley'")
+	)
+)
+
+(def element IconVisibilityShip () layout=true
+	(style
+		(width = "6px")
+		(height = "24px")
+		(backgroundImage = "'bitmap:icon_visibility_ship'")
+	)
+)
+
+(def element IconVisibilityPlane () layout=true
+	(style
+		(width = "28px")
+		(height = "28px")
+		(backgroundImage = "'bitmap:icon_visibility_plane'")
+	)
+)
+
+(def element IconVisibilityAircarrierAttacked () layout=true
+	(style
+		(width = "30px")
+		(height = "30px")
+		(backgroundImage = "'bitmap:icon_aircarrier_attacked'")
+	)
+)
+
+(def element IconVisibilityRLS () layout=true
+	(style
+		(width = "33px")
+		(height = "32px")
+		(backgroundImage = "'bitmap:icon_visibility_rls'")
+	)
+)
+
+(def element IconVisibilitySonar () layout=true
+	(style
+		(width = "33px")
+		(height = "32px")
+		(backgroundImage = "'bitmap:icon_visibility_sonar'")
+	)
+)
+
+(def element IconVisibilityHydrophone () layout=true
+	(style
+		(width = "33px")
+		(height = "28px")
+		(backgroundImage = "'url:../battle_hud/battle_indicators/icon_visibility_hydrophone.png'")
+	)
+)
+
+(def element IconVisibilityCommonXray () layout=true
+	(style
+		(width = "34px")
+		(height = "29px")
+		(backgroundImage = "'bitmap:icon_visibility_xray'")
+	)
+)
+
+(def element IconVisibilitySubmarineLocator () layout=true
+	(style
+		(width = "33px")
+		(height = "28px")
+		(backgroundImage = "'url:../battle_hud/battle_indicators/icon_visibility_submarine_locator.png'")
+	)
+)
+
+
+
+(def element IntuitionIndicator () layout=true
+	(scope
+		(event evStartAnimation)
+		(event evEndAnimation)
+
+		(var battleIndication:gfx = "$datahub.getSingleEntity(CC.battleIndication)")
+		(var isIntuitionActive:bool = "battleIndication ? battleIndication.alertIndication.intuitionActive : false" (event "battleIndication.alertIndication.evIntuitionActiveChanged"))
+		(var isInRlsZone:bool = "battleIndication ? battleIndication.alertIndication.isInRlsZone : false" (event "battleIndication.alertIndication.evIsInRlsZoneChanged"))
+		(var isIndicatorVisible:bool = "isIntuitionActive && !isInRlsZone")
+		(var iconName:str = "'bitmap:icon_anti_intuition'")
+
+	)
+
+	(style
+		(alpha = "isIndicatorVisible ? 1 : 0")
+	)
+
+	(dispatch evStartAnimation (bind trigger "isIndicatorVisible") (bind enabled "isIndicatorVisible"))
+	(dispatch evEndAnimation (bind trigger "isIndicatorVisible") (bind enabled "!isIndicatorVisible"))
+
+	(controller $Animation
+		(bindcall play  duration=0.15
+						from="{ alpha: 0, scaleX: 2, scaleY: 2 }"
+						to="{ alpha: 1, scaleX: 1, scaleY: 1 }"
+						(bind enabled "isIndicatorVisible")
+						(event "evStartAnimation")
+		)
+		(bindcall play  duration=0.15
+						from="{ alpha: 1, scaleX: 1, scaleY: 1 }"
+						to="{ alpha: 0, scaleX: 2, scaleY: 2 }"
+						(bind enabled "!isIndicatorVisible")
+						(event "evEndAnimation")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(pivotX=50%)
+			(pivotY=50%)
+			(align = "center")
+		)
+		(block
+			(style
+				(width = "32px")
+				(height = "32px")
+				(align = "center|bottom")
+			)
+			(block
+				(style
+					(width = "25px")
+					(height = "25px")
+					(backgroundImage = "iconName")
+				)
+			)
+		)
+		(tf
+			(class $IndicatorText)
+			(style
+				(width = "100px")
+				(marginTop = "5px")
+				(textAlign = "center")
+			)
+			(text = 'IDS_DETECTED_BY_ENEMY_SHIP')
+		)
+	)
+)
+
+
+
+(def element RLSDetectIndicator () layout=true
+	(scope
+		(event evStartAnimation)
+		(event evEndAnimation)
+
+		(var battleIndication:gfx = "$datahub.getSingleEntity(CC.battleIndication)")
+		(var isInRlsZone:bool = "battleIndication ? battleIndication.alertIndication.isInRlsZone : false" (event "battleIndication.alertIndication.evIsInRlsZoneChanged"))
+	)
+
+	(style
+		(alpha = "isInRlsZone ? 1 : 0")
+	)
+
+	(dispatch evStartAnimation (bind trigger "isInRlsZone") (bind enabled "isInRlsZone"))
+	(dispatch evEndAnimation (bind trigger "!isInRlsZone") (bind enabled "!isInRlsZone"))
+
+	(controller $Animation
+		(bindcall play  duration=0.15
+						from="{ alpha: 0, scaleX: 2, scaleY: 2 }"
+						to="{ alpha: 1, scaleX: 1, scaleY: 1 }"
+						(bind enabled "isInRlsZone")
+						(event "evStartAnimation")
+		)
+		(bindcall play  duration=0.15
+						from="{ alpha: 1, scaleX: 1, scaleY: 1 }"
+						to="{ alpha: 0, scaleX: 2, scaleY: 2 }"
+						(bind enabled "!isInRlsZone")
+						(event "evEndAnimation")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(pivotX=50%)
+			(pivotY=50%)
+			(align = "center")
+		)
+		(block
+			(style
+				(width = "32px")
+				(height = "32px")
+				(align = "center|bottom")
+			)
+			(block
+				(style
+					(width = "28px")
+					(height = "28px")
+					(backgroundImage = "'url:../battle_hud/battle_indicators/icon_in_rls_zone.png'")
+				)
+			)
+		)
+		(tf
+			(class $IndicatorText)
+			(style
+				(width = "120px")
+				(textAlign = "center")
+				(marginTop = "5px")
+			)
+			(text = 'IDS_IN_RLS_ZONE')
+		)
+	)
+)
+
+
+
+(def element FightersWardIndicator () layout=true
+	(scope
+		(event evStartAnimation)
+		(event evEndAnimation)
+
+		(var battleIndication:gfx = "$datahub.getSingleEntity(CC.battleIndication)")
+		(var wardInsideLifeTime:number = "battleIndication.fightersWardIndication.wardInsideLifeTime" (event "battleIndication.fightersWardIndication.evWardTimerChanged"))
+		(var state:str = "	wardInsideLifeTime == 0		? WARD_STATE_NORMAL :
+							wardInsideLifeTime <= 5		? WARD_STATE_CRITICAL :
+							wardInsideLifeTime <= 20	? WARD_STATE_WARNING
+														: WARD_STATE_NORMAL")
+		(var isIndicatorVisible:bool = "wardInsideLifeTime > 0.2")
+		(var iconName:str = "'bitmap:icon_inside_fighters_ward_' + state")
+	)
+
+	(bind visible "wardInsideLifeTime > 0")
+
+	(dispatch evStartAnimation (bind trigger "isIndicatorVisible") (bind enabled "isIndicatorVisible"))
+	(dispatch evEndAnimation (bind trigger "isIndicatorVisible") (bind enabled "!isIndicatorVisible"))
+
+	(controller $Animation
+		(bindcall play  duration=0.15
+						from="{ alpha: 0, scaleX: 2, scaleY: 2 }"
+						to="{ alpha: 1, scaleX: 1, scaleY: 1 }"
+						(bind enabled "isIndicatorVisible")
+						(event "evStartAnimation")
+		)
+		(bindcall play  duration=0.15
+						from="{ alpha: 1, scaleX: 1, scaleY: 1 }"
+						to="{ alpha: 0, scaleX: 2, scaleY: 2 }"
+						(bind enabled "!isIndicatorVisible")
+						(event "evEndAnimation")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(pivotX=50%)
+			(pivotY=50%)
+			(align = "center")
+		)
+		(block
+			(style
+				(width = "32px")
+				(height = "32px")
+				(align = "center|bottom")
+			)
+			(block
+				(style
+					(width = "30px")
+					(height = "32px")
+					(align = "center|middle")
+					(bind backgroundImage "iconName")
+				)
+			)
+		)
+		(tf
+			(class $IndicatorText)
+			(style
+				(height = "20px")
+				(marginTop = "1px")
+				(bind alpha "wardInsideLifeTime != 0 ? 1 : 0")
+			)
+			(bind class "	state == WARD_STATE_CRITICAL	? '$IndicatorTextCritical' :
+							state == WARD_STATE_WARNING		? '$IndicatorTextWarning'
+															: '$None'")
+
+			(bind text "countdownFormat(wardInsideLifeTime,0,true)")
+		)
+	)
+)
+
+
+
+(def element CycloneIndicator () layout=true
+	(scope
+		(event evStartAnimation)
+		(event evEndAnimation)
+
+		(event evCycloneStart)
+		(event evCycloneEnd)
+
+		(event evCycloneProgressStart)
+		(event evCycloneProgressEnd)
+
+		(var battleIndication:gfx = "$datahub.getSingleEntity(CC.battleIndication)")
+		(var weatherTimeLeft:number = "battleIndication ? battleIndication.weatherIndication.weatherTimeLeft : 0" (event "battleIndication.weatherIndication.evWeatherTimeLeftChanged"))
+		(var weatherState:str = "battleIndication ? battleIndication.weatherIndication.weatherState : CYCLONE_INV" (event "battleIndication.weatherIndication.evWeatherStateChanged"))
+		(var weatherVisible:bool = "battleIndication.weatherIndication.weatherState ? weatherState != CYCLONE_INV : false")
+
+		(var ownCarrierEntity:gfx = "$datahub.getSingleEntity(CC.aircarrier)")
+		(var activeSquadronId:number = "ownCarrierEntity ? ownCarrierEntity.aircarrier.activeSquadron : -1" (event "ownCarrierEntity.aircarrier.evStateChanged"))
+		(var stateOwnerId:number = "activeSquadronId != -1 ? 0 : -1")
+
+		(var statesCollection:gfx = "$datahub.getCollection(CC.state)")
+		(var playerAvatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var cycloneEntityID:str = "'global_cyclone_' + playerAvatarEntity.id + '_' + stateOwnerId")
+		(var cycloneStateEntity:gfx = "$datahub.getPrimaryEntity(CC.state, cycloneEntityID)" (event "statesCollection.evAdded"))
+		(var visibilityRange:number = "cycloneStateEntity ? cycloneStateEntity.attributes.modifiers['maxShipVisionDistance'] : 0" (event "cycloneStateEntity.attributes.evChanged"))
+
+		(var isCycloneState:bool = "weatherState == CYCLONE")
+		(var isCycloneStartState:bool = "weatherState == CYCLONE_START")
+		(var isCycloneEndState:bool = "weatherState == CYCLONE_END")
+		(var isCycloneInProgress:bool = "isCycloneState || isCycloneEndState")
+		(var iconName:str = "isCycloneStartState ? 'bitmap:icon_cyclone_inactive' : 'bitmap:icon_cyclone_active'")
+	)
+
+	(style
+		(alpha = "weatherVisible ? 1 : 0")
+	)
+
+	(dispatch evStartAnimation (bind trigger "weatherVisible") (bind enabled "weatherVisible"))
+	(dispatch evEndAnimation (bind trigger "!weatherVisible") (bind enabled "!weatherVisible"))
+
+	(dispatch evCycloneStart (bind trigger "isCycloneStartState") (bind enabled "isCycloneStartState"))
+	(dispatch evCycloneEnd (bind trigger "!isCycloneEndState") (bind enabled "!isCycloneEndState"))
+
+	(dispatch evCycloneProgressStart (bind trigger "isCycloneInProgress") (bind enabled "isCycloneInProgress"))
+	(dispatch evCycloneProgressEnd (bind trigger "!isCycloneInProgress") (bind enabled "!isCycloneInProgress"))
+
+	(controller $Animation
+		(bindcall play  duration=0.15
+						from="{ alpha: 0, scaleX: 2, scaleY: 2 }"
+						to="{ alpha: 1, scaleX: 1, scaleY: 1 }"
+						(bind enabled "weatherVisible")
+						(event "evStartAnimation")
+		)
+		(bindcall play  duration=0.15
+						from="{ alpha: 1, scaleX: 1, scaleY: 1 }"
+						to="{ alpha: 0, scaleX: 2, scaleY: 2 }"
+						(bind enabled "!weatherVisible")
+						(event "evEndAnimation")
+		)
+	)
+
+
+	(block
+		(class $MiddleVHAbsolutely)
+		(style
+			(align = "center")
+			(bind alpha "isCycloneStartState ? 0.7 : 1")
+		)
+
+		(block
+			(style
+				(width = "32px")
+				(height = "32px")
+				(align = "center|bottom")
+			)
+			(block
+				(style
+					(width = "28px")
+					(height = "23px")
+					(bind backgroundImage "iconName")
+				)
+			)
+		)
+
+		(tf
+			(class $IndicatorText)
+			(style
+				(marginTop = "5px")
+				(width = "100px")
+				(textAlign = "center")
+			)
+			(controller $Animation
+				(bindcall play  duration=0.15
+								from="{alpha: 0, top: 10}"
+								to="{alpha: 1, top: 0}"
+								action="killAll"
+								(bind enabled "isCycloneStartState")
+								(event "evCycloneStart")
+				)
+				(bindcall play  duration=0.15
+								from="{alpha: 0, top: 10}"
+								to="{alpha: 1, top: 0}"
+								action="killAll"
+								(bind enabled "isCycloneEndState")
+								(event "evCycloneEnd")
+				)
+			)
+			(bind text "isCycloneState ? toUpper(tr('IDS_CYCLONE')) : countdownFormat(weatherTimeLeft,0,true)")
+		)
+
+		(block
+			(style
+				(position = "absolute")
+				(width = "100px")
+				(top = "-5px")
+			)
+
+			(bind visible "isCycloneInProgress")
+
+			(tf
+				(class $IndicatorText)
+				(style
+					(alpha = "isCycloneInProgress ? 1 : 0")
+					(width = "100%")
+					(textAlign = "center")
+				)
+
+				(controller $Animation
+					(bindcall play  duration=0.15
+									from="{alpha: 0, top: 10}"
+									to="{alpha: 1, top: 0}"
+									action="killAll"
+									(bind enabled "isCycloneInProgress")
+									(event "evCycloneProgressStart")
+					)
+					(bindcall play  duration=0.15
+									from="{alpha: 1, top: 0}"
+									to="{alpha: 0, top: 10}"
+									action="killAll"
+									(bind enabled "!isCycloneInProgress")
+									(event "evCycloneProgressEnd")
+					)
+				)
+
+				(bind text "formatFloatingPoint(visibilityRange, 1) + tr('IDS_KILOMETER_SPACE')")
+			)
+		)
+	)
+)
+
+
+
+
+(def element SubmarineCollisionIndicator () layout=true
+	(scope
+		(event evStartAnimation)
+		(event evEndAnimation)
+
+		(var battleIndication:gfx = "$datahub.getSingleEntity(CC.battleIndication)")
+		(var isSubmarineCollisionWarning:bool = "battleIndication.alertIndication.isSubmarineCollisionWarning" (event "battleIndication.alertIndication.evIsSubmarineCollisionWarningChanged"))
+	)
+
+	(style
+		(alpha = "isSubmarineCollisionWarning ? 1 : 0")
+	)
+
+	(dispatch evStartAnimation (bind trigger "isSubmarineCollisionWarning") (bind enabled "isSubmarineCollisionWarning"))
+	(dispatch evEndAnimation (bind trigger "!isSubmarineCollisionWarning") (bind enabled "!isSubmarineCollisionWarning"))
+
+	(controller $Animation
+		(bindcall play  duration=0.15
+						from="{ alpha: 0, scaleX: 2, scaleY: 2 }"
+						to="{ alpha: 1, scaleX: 1, scaleY: 1 }"
+						(bind enabled "isSubmarineCollisionWarning")
+						(event "evStartAnimation")
+		)
+		(bindcall play  duration=0.15
+						from="{ alpha: 1, scaleX: 1, scaleY: 1 }"
+						to="{ alpha: 0, scaleX: 2, scaleY: 2 }"
+						(bind enabled "!isSubmarineCollisionWarning")
+						(event "evEndAnimation")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(pivotX = 50%)
+			(pivotY = 50%)
+			(align = "center")
+		)
+		(block
+			(style
+				(width = 32px)
+				(height = 32px)
+				(align = "center|bottom")
+			)
+			(block
+				(style
+					(width = 32px)
+					(height = 32px)
+					(backgroundImage = "'url:../battle_hud/battle_indicators/icon_submarine_collision.png'")
+				)
+			)
+		)
+		(tf
+			(class $IndicatorText)
+			(class $IndicatorTextWarning)
+			(style
+				(width = 120px)
+				(textAlign = "center")
+				(marginTop = 5px)
+			)
+			(text = 'IDS_SUBMARINE_COLLISION')
+		)
+	)
+)
+

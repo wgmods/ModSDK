@@ -1,0 +1,92 @@
+(def element PinataShipMarker (_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number) layout=true
+	(scope
+		(var isAlive:bool = "_markerEntity.health ? _markerEntity.health.isAlive : false" (event "_markerEntity.health.evIsAliveChanged"))
+
+		(var target:gfx = "_markerEntity.target" (event "_markerEntity.evAdded") (event "_markerEntity.evRemoved"))
+		(var targetFlags:number = "target ? target.flags : 0" (event "target.evChanged"))
+		(var isTargetLocked:bool = "(targetFlags & LOCKABLE_WEAPONS) > 0")
+
+		(var mapVisible:bool = "_markerEntity.visibility ? _markerEntity.visibility.mapVisible : false" (event "_markerEntity.visibility.evChanged"))
+		(var worldVisible:bool = "_markerEntity.visibility ? _markerEntity.visibility.visible : false" (event "_markerEntity.visibility.evChanged"))
+
+		(var markerScale:number = "_itemScale / _mapScale")
+
+		(macro SCOPE_IS_BATTLE_IN_PROGRESS "'isBattleInProgress'")
+
+		(var minimapEntity:gfx = "$datahub.getSingleEntity(CC.minimap)")
+		(var minimapComponent:gfx = "minimapEntity.minimap")
+		(var angleToRotate:number = "minimapComponent ? minimapComponent.rotationAngleDeg : 0" (event "minimapComponent.evRotationAngleDegChanged"))
+
+		(var shipNamesDisplayEnabledComponent:gfx = "$datahub.getPrimaryEntity(CC.minimapOption, SC.Battle.MINIMAP_OPTION.shipNamesDisplayEnabled).minimapOption")
+		(var shipNamesDisplayEnabled:bool = "shipNamesDisplayEnabledComponent.value > 0" (event "shipNamesDisplayEnabledComponent.evValueChanged"))
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var altVision:bool = "cameraEntity.camera ? cameraEntity.camera.altVision : false" (event "cameraEntity.camera.evAltVisionChanged"))
+		(macro SCOPE_HIGHLIGHT_MARKER_ON_MAP_MOUSE_OVER "_markerEntity")
+	)
+
+	(bind visible "isAlive")
+
+	(block
+		(style
+			(position = "absolute")
+			(align = "center|middle")
+		)
+
+		(macro EFFECT_HIGHLIGHT_MARKER_ON_MOUSE_OVER)
+		(element PinataMarkerShipIcon
+			_markerEntity="_markerEntity"
+			(macro BIND_FAIR_SCALE "markerScale")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(pivotY = -8)
+			(bind rotation "-(angleToRotate)")
+		)
+		(block
+			(controller $Instance (renderer = 'PinataMarkerShipName')
+				(bind enabled "isAlive && (shipNamesDisplayEnabled || altVision)")
+				(args _markerEntity="_markerEntity")
+			)
+		)
+		(macro BIND_FAIR_SCALE "markerScale")
+	)
+)
+
+(def element PinataMarkerShipIcon (_markerEntity:gfx) layout=true
+	(scope
+		(macro SHIP_MARKER_ICON_DATA "_markerEntity.id")
+
+		(macro SCOPE_IS_BATTLE_IN_PROGRESS "'isBattleInProgress'")
+
+		(var visibilityPostfix:str = "mapVisible && !(worldVisible) && isBattleInProgress ? '_invisible' : ''")
+	)
+	(bind name "worldVisible ? 'map_marker_pinata_' + (_markerEntity.avatar ? _markerEntity.avatar.id : 0) : ''")
+	(class $MiddleVHAbsolutely)
+	(style
+		(width = 17)
+		(height = 17)
+		(bind backgroundImage "mapVisible ? 'url:../battle_hud/markers/pinata/icon_minimap_pinata_enemy.png' : 'url:../battle_hud/markers/pinata/icon_minimap_pinata_lastvisible.png'")
+	)
+)
+
+(def element PinataMarkerShipName (_markerEntity:gfx) layout=true
+	(scope
+		(macro SHIP_MARKER_ICON_DATA "_markerEntity.id")
+		(var shipName:str = "avatarComponent ? avatarComponent.ship.ref.ship.nameUpper : ''")
+
+		(var colorPresetName:str = "toLower(SC.Battle.PLAYER_RELATION.VALUE_TO_NAME[relationComponent.value])")
+	)
+
+	(style (width = 100%) (align = "center"))
+	(tf
+		(class $TextDefaultBold9NM)
+		(bind class "isMultyTeamEnabled && !isAlly	? MULTI_TEAMS_COLOR_CLASSES[teamId]
+													: TWO_TEAMS_FONT_COLOR_CLASSES[colorPresetName]")
+		(class $FontEnableReadability)
+		(bind text "shipName")
+	)
+)

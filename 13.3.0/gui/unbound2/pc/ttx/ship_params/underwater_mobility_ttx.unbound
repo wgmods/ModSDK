@@ -1,0 +1,23 @@
+(def element UnderwaterMobilityTTX (shipTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(class $TTXSecondaryPanel)
+
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAX_SPEED_UNDER_WATER'
+									_value = "shipTTX.underwaterMobility.speed"
+									_valueConfig = "VALUE_CONFIG.KNOT_FLOAT"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_MAX_SPEED_UNDER_WATER' 'IDS_TOOLTIP_MAX_SPEED_UNDER_WATER')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_BUOYANCY_RUDDER_TIME'
+									_value = "shipTTX.underwaterMobility.rudderTime"
+									_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_BUOYANCY_RUDDER_TIME' 'IDS_TOOLTIP_BUOYANCY_RUDDER_TIME')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAX_BUOYANCY_SPEED'
+									_value = "shipTTX.underwaterMobility.buoyancySpeed"
+									_valueConfig = "VALUE_CONFIG.METER_SECOND_FLOAT"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_MAX_BUOYANCY_SPEED' 'IDS_TOOLTIP_MAX_BUOYANCY_SPEED')
+	)
+)

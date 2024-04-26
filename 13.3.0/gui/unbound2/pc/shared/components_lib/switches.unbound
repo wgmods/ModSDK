@@ -1,0 +1,243 @@
+(def element SwitchWithRightLabel (_enabled:bool=true, _state:bool=false, _textClass:str='', _label:str='', _dispatchedEv:str='', _methods:array=[]) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var accountResourceEntity:gfx = "$datahub.getSingleEntity(CC.accountResource)")
+		(var operationsAccountLocked:bool = "accountResourceEntity.accountResource.operationsLocked" (event "accountResourceEntity.accountResource.evOperationsLockChanged"))
+
+		(var isDisabledVisual:bool = "!_enabled || operationsAccountLocked")
+
+		(var isDown:bool = "!isDisabledVisual && mouseDown")
+		(var isRollover:bool = "!isDisabledVisual && rollOver")
+
+		
+		(var ctRollOver:dict = "{ redMultiplier: 1,	greenMultiplier: 1,	blueMultiplier: 1,	alphaMultiplier: 1,
+								  redOffset: 15,	greenOffset: 15,	blueOffset: 15,		alphaOffset: 0 }")
+		(var ctDown:dict = "	{ redMultiplier: 1,	greenMultiplier: 1,	blueMultiplier: 1,	alphaMultiplier: 1,
+								  redOffset: -15,	greenOffset: -15,	blueOffset: -15,	alphaOffset: 0 }")
+		
+	)
+
+	(bind colorTransform "	isRollover && !isDown	? ctRollOver :
+							isRollover && isDown	? ctDown
+													: CT_NONE")
+
+	(hblock
+		(style
+			(bind alpha "_enabled ? 1: 0.7")
+		)
+
+		(block
+			(style
+				(marginBottom = -3px)
+				(marginTop = "-XS")
+				(marginRight = "S")
+			)
+
+			(controller $Instance renderer='SwitchView'
+				(args
+					_state = "_state"
+				)
+			)
+		)
+
+		(tf
+			(bind class "_textClass ? _textClass : '$TextDefaultNM'")
+			(style (alpha = "TC"))
+			(bind text "_label")
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(paddingTop = -6px)
+			(paddingBottom = "-XS")
+		)
+
+		(macro MOUSE_HANDLER
+			_enabled = "_enabled && !operationsAccountLocked"
+			_dispatchedEv = "_dispatchedEv"
+			_methods = "_methods"
+			_soundSet = "'switch_default'"
+		)
+	)
+)
+
+(def element SwitchWithLeftLabel (_enabled:bool=true, _state:bool=false, _textClass:str='', _label:str='', _dispatchedEv:str='', _methods:array=[]) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var accountResourceEntity:gfx = "$datahub.getSingleEntity(CC.accountResource)")
+		(var operationsAccountLocked:bool = "accountResourceEntity.accountResource.operationsLocked" (event "accountResourceEntity.accountResource.evOperationsLockChanged"))
+
+		(var isDisabledVisual:bool = "!_enabled || operationsAccountLocked")
+
+		(var isDown:bool = "!isDisabledVisual && mouseDown")
+		(var isRollover:bool = "!isDisabledVisual && rollOver")
+
+		
+		(var ctRollOver:dict = "{ redMultiplier: 1,	greenMultiplier: 1,	blueMultiplier: 1,	alphaMultiplier: 1,
+								  redOffset: 15,	greenOffset: 15,	blueOffset: 15,		alphaOffset: 0 }")
+		(var ctDown:dict = "	{ redMultiplier: 1,	greenMultiplier: 1,	blueMultiplier: 1,	alphaMultiplier: 1,
+								  redOffset: -15,	greenOffset: -15,	blueOffset: -15,	alphaOffset: 0 }")
+		
+	)
+
+	(bind colorTransform "	isRollover && !isDown	? ctRollOver :
+							isRollover && isDown	? ctDown
+													: CT_NONE")
+
+	(hblock
+		(style
+			(bind alpha "_enabled ? 1: 0.7")
+		)
+
+		(tf
+			(bind class "_textClass ? _textClass : '$TextDefaultNM'")
+			(style (alpha = "TC") (marginRight = "S"))
+			(bind text "_label")
+		)
+
+		(block
+			(style
+				(marginBottom = -3px)
+				(marginTop = "-XS")
+				(marginRight = "S")
+			)
+
+			(controller $Instance renderer='SwitchView'
+				(args
+					_state = "_state"
+				)
+			)
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(paddingTop = -6px)
+			(paddingBottom = "-XS")
+		)
+
+		(macro MOUSE_HANDLER
+			_enabled = "_enabled && !operationsAccountLocked"
+			_dispatchedEv = "_dispatchedEv"
+			_methods = "_methods"
+			_soundSet = "'switch_default'"
+		)
+	)
+)
+
+(def element SwitchWithoutLabel (_enabled:bool=true, _state:bool=false, _dispatchedEv:str='', _methods:array=[]) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var accountResourceEntity:gfx = "$datahub.getSingleEntity(CC.accountResource)")
+		(var operationsAccountLocked:bool = "accountResourceEntity.accountResource.operationsLocked" (event "accountResourceEntity.accountResource.evOperationsLockChanged"))
+
+		(var isDisabledVisual:bool = "!_enabled || operationsAccountLocked")
+
+		(var isDown:bool = "!isDisabledVisual && mouseDown")
+		(var isRollover:bool = "!isDisabledVisual && rollOver")
+
+		
+		(var ctRollOver:dict = "{ redMultiplier: 1,	greenMultiplier: 1,	blueMultiplier: 1,	alphaMultiplier: 1,
+								  redOffset: 15,	greenOffset: 15,	blueOffset: 15,		alphaOffset: 0 }")
+		(var ctDown:dict = "	{ redMultiplier: 1,	greenMultiplier: 1,	blueMultiplier: 1,	alphaMultiplier: 1,
+								  redOffset: -15,	greenOffset: -15,	blueOffset: -15,	alphaOffset: 0 }")
+		
+	)
+
+	(bind colorTransform "	isRollover && !isDown	? ctRollOver :
+							isRollover && isDown	? ctDown
+													: CT_NONE")
+
+	(hblock
+		(style
+			(bind alpha "_enabled ? 1: 0.7")
+		)
+
+		(block
+			(style
+				(marginBottom = -3px)
+				(marginTop = "-XS")
+			)
+
+			(controller $Instance renderer='SwitchView'
+				(args
+					_state = "_state"
+				)
+			)
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(paddingTop = -6px)
+			(paddingBottom = "-XS")
+		)
+
+		(macro MOUSE_HANDLER
+			_enabled = "_enabled && !operationsAccountLocked"
+			_dispatchedEv = "_dispatchedEv"
+			_methods = "_methods"
+			_soundSet = "'switch_default'"
+		)
+	)
+)
+
+(def element SwitchView (_state:bool=false) layout=true
+	(scope
+		(var initAlpha:number = "_state ? 1 : 0" watch=false)
+		(var initLeft:number = "_state ? 16 : 0" watch=false)
+	)
+
+	(style
+		(width = 36px)
+		(height = 20px)
+		(backgroundImage = 'url:../service_kit/switch/switch_bg.png')
+		(scale9grid = 7)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(bind alpha "initAlpha")
+			(width = 22px)
+			(height = 20px)
+			(backgroundImage = 'url:../service_kit/switch/switch_bg_on.png')
+			(scale9grid = 7)
+		)
+
+		(controller $Animation
+			(bindcall play
+				duration = 0.07
+				from	 = { alpha: 0 }
+				to		 = { alpha: 1 }
+				reverse	 = "!_state"
+				(bind trigger "_state")
+			)
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(bind left "initLeft")
+			(backgroundImage = 'url:../service_kit/switch/switch_btn.png')
+		)
+
+		(controller $Animation
+			(bindcall play
+				duration = 0.07
+				from	 = { left: 0 }
+				to		 = { left: 16 }
+				reverse	 = "!_state"
+				(bind trigger "_state")
+			)
+		)
+	)
+)

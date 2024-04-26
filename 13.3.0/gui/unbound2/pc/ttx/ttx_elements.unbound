@@ -1,0 +1,339 @@
+(def constant INTEGRAL_TTX_ROW_HEIGHT 27)
+
+(def constant INTEGRAL_TTX_ROW_WIDTH 320)
+
+(def element ShipTTXRow (_shipTTX:gfx, _title:str, _elementName:str, _module:gfx, _isExpanded:bool="true")
+	(scope
+		(event evAddedToStage)
+
+		(event btn_evMouseOver)
+		(event btn_evMouseOut)
+
+		(macro MOUSE_HANDLER_SCOPE "'btn_'")
+		
+		(var userPrefsComponent:gfx = "$datahub.getSingleComponent(CC.userPrefs)")
+		(var userPrefs:dict = "userPrefsComponent.userPrefs" (event "userPrefsComponent.evUserPrefsChanged"))
+		(var expandedLocal:bool = "userPrefs['isTTXSectionExpanded'][_elementName]" watch=false)
+
+		(bind expandedLocal "userPrefs['isTTXSectionExpanded'][_elementName]" init=false watch=false (event "userPrefsComponent.evUserPrefsChanged"))
+		(var expanded:bool = "_isExpanded && expandedLocal")
+
+		(var integralValueObject:gfx = "_module ? _module.integralValue : null")
+		(var integralValue:number = "integralValueObject ? integralValueObject.value : 0")
+		(var integralDelta:number = "integralValueObject ? integralValueObject.delta : 0")
+		(var isDelta:bool = "integralDelta != 0")
+		(var isDeltaNegative:bool = "integralDelta < 0")
+	)
+
+	(dispatch evAddedToStage args="{}" on='addedToStage')
+	(bindcall externalCall 'inputMapping.onAction' "['setUserPref', {name: 'isTTXSectionExpanded', subName: _elementName, value: !expandedLocal}]" init=false watch=false (event "btn_evClicked"))
+	
+	(style (width = 100%))
+	(controller $Animation
+		(bindcall play to="{ubScaleY:_isExpanded ? 1 : 0, alpha:_isExpanded ? 1 : 0, visible:_isExpanded}" duration=0.3 easing="Easing.quint_out" watch=false action="kill" (event "evAddedToStage") (bind trigger "_isExpanded"))
+	)
+
+	
+	(block
+		(macro MOUSE_HANDLER
+			_prefix = "'btn_'"
+			_soundSet = "'dropdown'"
+		)
+		(dispatch btn_evMouseOver on='mouseOver' args="{isOver: true}")
+		(dispatch btn_evMouseOut on='mouseOut' args="{isOver: false}")
+
+		(style
+			(width = 100%)
+			(height = "INTEGRAL_TTX_ROW_HEIGHT")
+			(flow = "horizontal")
+			(align = "middle")
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style (flow = "horizontal") (align = "bottom"))
+
+			(mc bar_color
+				(style
+					(hitTest = false)
+					(bind width "1% * (isDeltaNegative ? (integralValue) : (integralValue - integralDelta))")
+					(height = 15%)
+					(alpha = "0.66")
+				)
+
+				(controller $Animation
+					(bind enabled "!expanded")
+					(bindcall play to="{height:100%}" duration=0.3 easing="Easing.quint_out" action="kill" (event "btn_evMouseOver"))
+					(bindcall play to="{height:15%}" duration=0.3 easing="Easing.quint_out" action="kill" (event "btn_evMouseOut"))
+				)
+				(controller $Animation
+					(bind enabled "expanded")
+					(bindcall play to="{height:100%}" duration=0.3 easing="Easing.quint_out" action="kill" (bind enabled "expanded"))
+					(bindcall play to="{height:15%}" duration=0.3 easing="Easing.quint_out" action="kill" (bind enabled "!expanded"))
+				)
+				(bindcall gotoAndStop "_shipTTX && _shipTTX.hasDiff ? 'BarColorWhite' : 'BarColorGreen'" init=true)
+			)
+
+			(mc bar_color
+				(bind visible "isDelta")
+				(style
+					(hitTest = false)
+					(bind width "1% * abs(integralDelta)")
+					(height = 15%)
+				)
+
+				(controller $Animation
+					(bind enabled "!expanded")
+					(bindcall play to="{height:100%}" duration=0.3 easing="Easing.quint_out" action="kill" (event "btn_evMouseOver"))
+					(bindcall play to="{height:15%}" duration=0.3 easing="Easing.quint_out" action="kill" (event "btn_evMouseOut"))
+				)
+				(controller $Animation
+					(bind enabled "expanded")
+					(bindcall play to="{height:100%}" duration=0.3 easing="Easing.quint_out" action="kill" (bind enabled "expanded"))
+					(bindcall play to="{height:15%}" duration=0.3 easing="Easing.quint_out" action="kill" (bind enabled "!expanded"))
+				)
+				(bindcall gotoAndStop "isDeltaNegative ? 'BarColorRed' : 'BarColorGreen'" init=true)
+			)
+		)
+
+		(block
+			(style
+				(width = 24)
+				(height = 100%)
+				(hitTest = false)
+				(paddingLeft = "SXS")
+				(paddingRight = "SXS")
+				(align = "middle")
+			)
+
+			(element ButtonExpand
+				_isInOverState="btn_rollOver && !btn_mouseDown"
+				_isInDownState="btn_rollOver && btn_mouseDown"
+				_expanded="expandedLocal"
+			)
+		)
+
+		(block
+			(style
+				(width = 100%)
+				(hitTest = false)
+				(paddingLeft = "SXS")
+				(paddingRight = "16")
+			)
+
+			(element ShipParameter_Integral "_title" "integralValueObject")
+		)
+	)
+
+	(element HorizontalDividerTwoPx)
+
+	(block
+		(style
+			(width = "100%")
+			(alpha = "expanded ? 1 : 0")
+			(ubScaleY = "expanded ? 1 : 0")
+			
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(isMask = true)
+			(style
+				(backgroundColor = 0xFFFFFFFF)
+			)
+		)
+
+		(controller $Animation
+			(bindcall play to="{ubScaleY:0}" duration=0.5 easing="Easing.quint_out" action="kill" (bind enabled "!expanded"))
+			(bindcall play to="{ubScaleY:1}" duration=0.5 easing="Easing.quint_out" action="kill" (bind enabled "expanded"))
+		)
+		(controller $Animation
+			(bindcall play to="{alpha:0, visible:false}" delay=0.1 duration=0.3 easing="Easing.quint_out" action="kill" (bind enabled "!expanded"))
+			(bindcall play to="{alpha:1, visible:true}" duration=0.3 easing="Easing.quint_out" action="kill" (bind enabled "expanded"))
+		)
+		(controller $Instance
+			(renderer = "_elementName")
+			(bind enabled "_isExpanded")
+			(args shipTTX = "_shipTTX")
+		)
+	)
+)
+
+(def element ShipTTXRowSimple (_shipTTX:gfx, _title:str, _module:gfx)
+	(scope
+		(var integralValueObject:gfx = "_module ? _module.integralValue : null")
+		(var integralValue:number = "integralValueObject ? integralValueObject.value : 0")
+		(var integralDelta:number = "integralValueObject ? integralValueObject.delta : 0")
+		(var isDelta:bool = "integralDelta != 0")
+		(var isDeltaNegative:bool = "integralDelta < 0")
+	)
+	(style
+		(width = 100%)
+	)
+	(element HorizontalDividerTwoPx
+		(style
+			(marginBottom = -1)
+		)
+	)
+	(block
+		(style
+			(width = 100%)
+			(height = "INTEGRAL_TTX_ROW_HEIGHT")
+			(backgroundColor = 0x20000000)
+			(flow = "horizontal")
+		)
+		(mc bar_color
+			(style
+				(hitTest = false)
+				(bind width "1% * (isDeltaNegative ? (integralValue) : (integralValue - integralDelta))")
+				(height = 100%)
+				(alpha = "0.66")
+				(bottom = 0)
+			)
+			(bindcall gotoAndStop "_shipTTX.hasDiff ? 'BarColorWhite' : 'BarColorGreen'" init=true)
+		)
+		(mc bar_color
+			(bind visible "isDelta")
+			(style
+				(hitTest = false)
+				(bind width "1% * abs(integralDelta)")
+				(height = 100%)
+				(alpha = 1)
+				(bottom = 0)
+			)
+			(bindcall gotoAndStop "isDeltaNegative ? 'BarColorRed' : 'BarColorGreen'" init=true)
+		)
+	)
+	(block
+		(style
+			(width = 100%)
+			(height = 100%)
+			(hitTest = false)
+			(paddingLeft = "M")
+			(paddingRight = "M")
+			(position = "absolute")
+			(align = "middle")
+		)
+		(controller $Instance renderer='ShipParameter_Integral'
+			(bind enabled "integralValueObject != null")
+			(args "_title" "integralValueObject")
+		)
+	)
+)
+
+(def element ShipTTXRowBasic (_title:str, _module:gfx)
+	(scope
+		(var integralValue:number = "_module ? _module.integralValue.value : 0")
+	)
+	(style (width = 100%))
+
+	(element HorizontalDividerTwoPx
+		(style (marginBottom = -1))
+	)
+
+	(block
+		(style
+			(width = 100%)
+			(height = "INTEGRAL_TTX_ROW_HEIGHT")
+			(backgroundColor = 0x20000000)
+			(flow = "horizontal")
+		)
+		(mc bar_color
+			(style
+				(hitTest = false)
+				(bind width "1% * integralValue")
+				(height = 100%)
+				(alpha = "0.66")
+				(bottom = 0)
+			)
+			(bindcall gotoAndStop "'BarColorWhite'" init=true)
+		)
+	)
+	(block
+		(style
+			(width = 100%)
+			(height = 100%)
+			(hitTest = false)
+			(paddingLeft = "M")
+			(paddingRight = "M")
+			(position = "absolute")
+			(align = "middle")
+		)
+		(block
+			(class $TTXValueRowHorizontal)
+			(tf
+				(class $TextDefaultBoldNM)
+				(bind text "_title ? _title : ''")
+			)
+			(tf
+				(class $TTXValueContainer)
+				(class $TextTTXLineBold)
+				(alpha = "TA")
+				(style
+					(marginLeft = "XXS")
+					(marginRight = "XXS")
+				)
+				(bind text "integralValue")
+			)
+		)
+	)
+)
+
+
+(def element SimpleTTXTooltip (_headerText:str, _descriptionText:str) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW "_headerText" "_descriptionText")
+	)
+)
+
+(def macro SCOPE_GET_EXCURSION_ENABLED (_shipTTX:expression, _fieldName:str)
+	(var routeEntity:gfx = "$datahub.getPrimaryEntity(CC.route, SC.Ui_windows.ROUTE.PORT)")
+	(var isInPort:bool = "routeEntity.route.isActive" (event "routeEntity.route.evIsActiveChanged"))
+	(var currentPortSubroute:str = "routeEntity.route.activeChild" (event "routeEntity.route.evActiveChildChanged"))
+
+	(var previewRouteEntity:gfx = "$datahub.getPrimaryEntity(CC.route, SC.Ui_windows.ROUTE.SHIP_PREVIEW)")
+	(var isInPreview:bool = "previewRouteEntity.route.isActive" (event "previewRouteEntity.route.evIsActiveChanged"))
+
+	(var metashopRouteEntity:gfx = "$datahub.getPrimaryEntity(CC.route, SC.Ui_windows.ROUTE.PORTAL)")
+	(var isInMetashop:bool = "metashopRouteEntity.route.isActive" (event "metashopRouteEntity.route.evIsActiveChanged"))
+
+	(var windowManagerEntity:gfx = "$datahub.getSingleEntity(CC.windowManager)")
+	(var windowQueue:array = "windowManagerEntity.windowManager.windowQueue" (event "windowManagerEntity.windowManager.evChanged"))
+	(var isCrewModalWindow:bool = "isIn('ModalWindowCrewManagement', windowQueue)")
+	(var isEconomicsModalWindow:bool = "isIn('ModalWindowEconomicsManagement', windowQueue)")
+
+	(var dockDataEntity:gfx = "$datahub.getSingleEntity(CC.dockData)")
+	(var isArmorVisible:bool = "dockDataEntity.dockData.isArmorVisible" (event "dockDataEntity.dockData.evIsArmorVisibleChanged"))
+
+	(var excursionOffTag:bool = "(_shipTTX.tagsMask & (1 << SC.Ships.SHIP_TAG.EXCURSION_OFF)) != 0")
+	(var excursionOff:bool = " 
+								# (isOwned && isLocked) ||
+								excursionOffTag ||
+								isCrewModalWindow ||
+								isEconomicsModalWindow ||
+								isArmorVisible ||
+								((currentPortSubroute != SC.Ui_windows.ROUTE.MAIN) && !isInPreview && !isInMetashop)")
+
+	(var name="_fieldName" type=bool value="!excursionOff")
+)
+
+(def element TooltipSystemExcursionMouseInstruction (_shipTTX:gfx)
+	(scope
+		(macro SCOPE_GET_EXCURSION_ENABLED "_shipTTX" 'excursionEnabled')
+	)
+	(style
+		(width = 100%)
+	)
+	(controller $Instance layout = true
+		(bind enabled "excursionEnabled")
+		(exprs
+			(style (width = 100%))
+			(element TooltipSystemHorizontalDivider)
+			(element TooltipSystemStatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+				_text = 'IDS_INSTRUCTION_SHIP_COMPONENT_DEMO'
+			)
+		)
+	)
+)

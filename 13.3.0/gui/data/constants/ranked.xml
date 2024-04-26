@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<constants>
+
+    <enum name="DENY_REASONS_RANKED" type="BinaryShift">
+		<const name="SEASON_NOT_STARTED"						value="1"	/>
+		<const name="WRONG_SHIP_LEVEL"							value="2"	/>
+		<const name="WRONG_ACCOUNT_LEVEL"						value="3"	/>
+		<const name="DIVISION_NOT_ALLOWED"						value="4"	/>
+		<const name="FIRST_RANK"								value="5"	/>
+		<const name="FULL_STARS"								value="6"	/>
+		<const name="ONLY_PVP_PVE_SHIP"							value="7"	/>
+		<const name="NO_SHIP"									value="8"	/>
+		<const name="DIFFERENT_LEAGUES"							value="9"	/>
+		<const name="NO_CURRENT_PRIME_TIME"						value="10"	/>
+		<const name="NO_CURRENT_SPRINT"							value="11"	/>
+		<const name="FIRST_RANK_LAST_SPRINT"					value="12"	/>
+		<const name="FULL_STARS_LAST_SPRINT"					value="13"	/>
+		<const name="WRONG_SHIP_CLASS"							value="14"	/>
+
+		<range name="WRONG_LEVEL" values="WRONG_SHIP_LEVEL, WRONG_ACCOUNT_LEVEL"/>
+		<range name="WRONG_SHIP" values="WRONG_SHIP_LEVEL, ONLY_PVP_PVE_SHIP, WRONG_SHIP_CLASS"/>
+	</enum>
+
+	<enum name="RANK_CONSTANTS" type="Integer">
+		<const name="TOP_RANK"		value="1"	/>
+		<const name="TOP_LEAGUE"	value="1"	/>
+		<const name="NO_SPRINT"		value="-1"	/>
+	</enum>
+
+	<enum name="RANK_VICTORIES_REWARDS_PROGRESS" type="Integer"> <!-- константы для определения состояния прогресса по наградам за ранговые победы в постбоевой -->
+		<const name="NONE"					value="0"	/> <!-- награды за победы не отображаются -->
+		<const name="BEFORE_FIRST"			value="1"	/> <!-- не была получена ни одна награда, отображаются 1-ая и 2-ая награды за победы в лиге -->
+		<const name="AFTER_FIRST"			value="2"	/> <!-- была получена первая награда, отображаются последняя полученная и следующая награды -->
+		<const name="BEFORE_LAST"			value="3"	/> <!-- следующая награда является финальной, не отображается 3-ий прогрессбар -->
+		<const name="LAST"					value="4"	/> <!-- финальная награда -->
+	</enum>
+
+	<enum name="RANK_RESTRICTIONS_DEFAULT_SETTINGS" type="Integer">
+		<const name="MIN_SHIP_LEVEL"	value="1"	/>
+		<const name="MAX_SHIP_LEVEL"	value="10"	/>
+
+		<const name="MIN_PLAYERS"		value="5"	/>
+		<const name="MAX_PLAYERS"		value="12"	/>
+
+		<const name="MIN_CARRIERS"		value="0"	/>
+		<const name="MAX_CARRIERS"		value="1"	/>
+
+		<const name="MIN_BATTLESHIPS"	value="0"	/>
+		<const name="MAX_BATTLESHIPS"	value="1"	/>
+
+		<const name="MIN_CRUISERS"		value="0"	/>
+		<const name="MAX_CRUISERS"		value="1"	/>
+
+		<const name="MIN_DESTROYERS"	value="0"	/>
+		<const name="MAX_DESTROYERS"	value="1"	/>
+
+		<const name="MIN_SUBMARINES"	value="0"	/>
+		<const name="MAX_SUBMARINES"	value="1"	/>
+
+	</enum>
+
+</constants>

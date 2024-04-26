@@ -1,0 +1,111 @@
+(def element ParamsModifierItem(_shrinkHeight: bool, _category:number, __dataItem:dict) layout=true
+	(scope
+		(var _dataItem: dict = "__dataItem")
+	)
+
+	(style 
+		(width = "100%")
+		(flow = "horizontal")
+		(marginBottom = "M")
+		(bind marginTop "(_shrinkHeight == true) ? -S : 0")
+	)
+
+	
+	(tf
+		(class $TextDefaultNM)
+		(style
+			(leading = "-3")
+			(width = "100%")
+		)
+		(alpha = "0.8")
+		(bind text "_dataItem.attributeIDS")
+	)
+	
+	(tf
+		(style
+			(marginLeft = "SXS - 3") 
+		)
+		(class $TextDefaultNM)
+		(bind class "_category == AttributeModifiersCategory.POSITIVE ? '$FontColorComparePositive' :
+			_category == AttributeModifiersCategory.NEGATIVE ? '$FontColorCompareNegative' : '$FontColorDefault'")
+		(bind text "_dataItem.measuredValue")
+	)
+	
+	(tf
+		(style 
+			(marginLeft = "1")
+			(marginRight = "-9")
+		)
+		(bind alpha "_category == AttributeModifiersCategory.POSITIVE ? 0.65 : 0.8")
+		(class $TextDefaultNM)
+		(bind class "_category == AttributeModifiersCategory.POSITIVE ? '$FontColorComparePositive' :
+			_category == AttributeModifiersCategory.NEGATIVE ? '$FontColorCompareNegative' : '$FontColorDefault'")
+		(bind text "_dataItem.measure")
+	)
+)
+
+(def element ParamsModifierList(_shrinkHeight: bool) layout=true
+	(scope
+		(var _attributesPositive: array = [])
+		(var _attributesNegative: array = [])
+		(var _attributesNeutral: array = [])
+	)
+
+	(style 
+		(width = "100%")
+	)
+	(block 
+		(style 
+			(width = "100%")
+		)
+		(controller $Repeat renderer='ParamsModifierItem'
+			(bind count "_attributesPositive.length")
+			(args 
+				_shrinkHeight = "_shrinkHeight"
+				_category = "AttributeModifiersCategory.POSITIVE"
+				__dataItem = "_attributesPositive[$index]"
+			)
+			(exprs
+				(scope
+					(bind _dataItem "_attributesPositive[$index]")
+				)
+			)
+		)
+	)
+	(block 
+		(style 
+			(width = "100%")
+		)
+		(controller $Repeat renderer='ParamsModifierItem'
+			(bind count "_attributesNegative.length")
+			(args 
+				_shrinkHeight = "_shrinkHeight"
+				_category = "AttributeModifiersCategory.NEGATIVE"
+				__dataItem = "_attributesNegative[$index]"
+			)
+			(exprs
+				(scope
+					(bind _dataItem "_attributesNegative[$index]")
+				)
+			)
+		)
+	)
+	(block 
+		(style 
+			(width = "100%")
+		)
+		(controller $Repeat renderer='ParamsModifierItem'
+			(bind count "_attributesNeutral.length")
+			(args 
+				_shrinkHeight = "_shrinkHeight"
+				_category = "AttributeModifiersCategory.NEUTRAL"
+				__dataItem = "_attributesNeutral[$index]"
+			)
+			(exprs
+				(scope
+					(bind _dataItem "_attributesNeutral[$index]")
+				)
+			)
+		)
+	)
+)

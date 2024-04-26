@@ -1,0 +1,233 @@
+
+(def constant SLOT_SIZE 60)
+(def constant SLOT_FX_SIZE 68)
+
+(def layout SlotItem ()
+	(scope
+		(var _itemImageUrl:str = '')
+		(var _isSelectable:bool = true)
+		(var _isLocked:bool = false)
+
+		(var _width:number = "SLOT_SIZE")
+		(var _height:number = "SLOT_SIZE")
+
+		(var _selectedImageUrl:str = '')
+		(var _preSelectedImageUrl:str = '')
+		(var _enablePreselectAnimation:bool = true)
+
+		(var _isPreSelected:bool = false)
+		(var _isSelected:bool = false)
+		(var _selectedAnimation:bool = true)
+
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+
+	(style
+		(width = "_width")
+		(height = "_height")
+	)
+
+	(bind mouseEnabled "_isSelectable")
+	(bind mouseChildren "_isSelectable")
+
+	(element SlotImage
+		(scope
+			(bind _imageUrl "_itemImageUrl" init=false)
+		)
+		(style
+			(bind width  "_width")
+			(bind height "_height")
+		)
+	)
+	
+	(element SlotPreSelectedFrame
+		(bind visible "_isPreSelected")
+		(scope
+			(bind _imageUrl "_preSelectedImageUrl")
+			(bind _isPreSelected "_isPreSelected")
+			(bind _enablePreselectAnimation "_enablePreselectAnimation")
+		)
+	)
+
+	(element SlotSelectedFrame "_isSelected"
+		(bind visible "_isSelected")
+		(scope
+			(bind _imageUrl "_selectedImageUrl")
+			(bind _isSelected "_isSelected")
+			(bind _selectedAnimation "_selectedAnimation")
+		)
+	)
+
+	(element SlotMouseOverAnimationFrame
+		(bind visible "_isSelectable")
+		(scope
+			(bind isEnabled "rollOver")
+		)
+	)
+
+	
+	(element SlotLockedIndicator "_isLocked")
+
+	
+	(block
+		(style
+			(position = "absolute")
+			(backgroundColor = 0x01000000)
+			(width = "_width")
+			(height = "_height")
+		)
+
+		(macro MOUSE_EVENTS_DISPATCHER)
+	)
+)
+
+
+(def layout SlotMouseOverAnimationFrame (_width:number = "SLOT_FX_SIZE", _height:number = "SLOT_FX_SIZE", _slotWidth:number = "SLOT_SIZE", _slotHeight:number = "SLOT_SIZE")
+	(scope
+		(var isEnabled:bool = "false")
+	)
+
+	(alpha = 0)
+
+	(style
+		(position = "absolute")
+		(left = "-(_width - _slotWidth) / 2")
+		(top = "-(_height - _slotHeight) / 2")
+	)
+
+	(block
+		(style
+			(bind width "_width")
+			(bind height "_height")
+			(backgroundSize = "fill")
+			(scale9grid = 4)
+			(backgroundImage = "'url:../battle_hud/weapons_panel/slot/weapon_panel_slot_stroke_white.png'")
+		)
+	)
+
+	(controller $Animation
+		(bindcall play  duration="isEnabled ? 0.2 : 0.1" 
+						to= "isEnabled ? { alpha: 0.6 } : { alpha: 0 }" 
+						action="killAll"
+						(bind trigger "isEnabled")
+		)
+	)
+)
+
+(def layout SlotPreSelectedFrame ()
+	(scope
+		(var _isPreSelected:bool = "false")
+		(var _imageUrl:str = '')
+		(var _enablePreselectAnimation:bool = true)
+		(var _width:number = "SLOT_FX_SIZE")
+		(var _height:number = "SLOT_FX_SIZE")
+	)
+
+	(style
+		(position = "absolute")
+		(bind backgroundImage "_imageUrl == '' ? 'url:../battle_hud/weapons_panel/slot/weapon_panel_slot_stroke_white.png' : _imageUrl")
+		(left = "SLOT_SIZE / 2")
+		(top = "SLOT_SIZE / 2")
+		(pivotX = "_width / 2")
+		(pivotY = "_height / 2")
+	)
+	(controller $Animation
+		(bindcall play  duration=0.15
+						from={ scaleX: 1.2, scaleY: 1.2 }
+						to={ scaleX: 1, scaleY: 1 }
+						(bind enabled "_isPreSelected && _enablePreselectAnimation")
+		)
+	)
+)
+
+(def layout SlotSelectedFrame (isSelectedDefault:bool)
+	(scope
+		(var _isSelected:bool = "isSelectedDefault")
+		(var _selectedAnimation:bool = true)
+		(var _imageUrl:str = '')
+		(var _width:number = "SLOT_FX_SIZE")
+		(var _height:number = "SLOT_FX_SIZE")
+	)
+	(style
+		(position = "absolute")
+		(bind backgroundImage "_imageUrl == '' ? 'url:../battle_hud/weapons_panel/slot/weapon_panel_slot_stroke_green.png' : _imageUrl")
+		(left = "SLOT_SIZE / 2")
+		(top = "SLOT_SIZE / 2")
+		(pivotX = "_width / 2")
+		(pivotY = "_height / 2")
+	)
+
+	(controller $Animation
+		(bindcall play  duration=0.15
+						from={ scaleX: 1.2, scaleY: 1.2 }
+						to={ scaleX: 1, scaleY: 1 }
+						(bind enabled "_isSelected && _selectedAnimation")
+		)
+	)
+)
+
+(def element SlotLockedIndicator ( _isLocked:bool=false )
+	(visible = "_isLocked")
+	(alpha = "_isLocked ? 1 : 0")
+
+	(class $FullsizeAbsolute)
+	(style 
+		(backgroundColor = "0x80000000")
+		(pivotX = "SLOT_SIZE / 2")
+		(pivotY = "SLOT_SIZE / 2")
+		(left = "SLOT_SIZE /2")
+		(top = "SLOT_SIZE /2")
+	)
+
+	(controller $Animation layout=false
+		(bindcall play	duration=0.15
+						from="{ alpha:0, visible:false }"
+						to="{ alpha:1, visible:true }"
+						action="kill"
+						(bind enabled "_isLocked")
+		)
+		(bindcall play	delay=0.35
+						duration=0.15
+						from="{ alpha:1, visible:true }"
+						to="{ alpha:0, visible:false }"
+						(bind enabled "!(_isLocked)")
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundImage = "'url:../aircraft/icon_lock.png'")
+			(left = "SLOT_SIZE / 2")
+			(top = "SLOT_SIZE / 2")
+			(pivotX = "SLOT_SIZE / 2")
+			(pivotY = "SLOT_SIZE / 2")
+		)
+		(controller $Animation layout=false
+			(bindcall play	duration = 0.5
+							easing = "Easing.bounce_out"
+							from = "{alpha:0, scaleX: 2, scaleY: 2}"
+							to = "{alpha:1, scaleX: 1, scaleY: 1}"
+							action="kill"
+							(bind enabled "_isLocked")
+			)
+			(bindcall play	duration = 0.35
+							easing = "Easing.quart_out"
+							from = "{alpha:1, scaleX: 1, scaleY: 1}"
+							to = "{alpha:0, scaleX: 2, scaleY: 2}"
+							action="kill"
+							(bind enabled "!(_isLocked)")
+			)
+		)
+	)
+)
+
+(def layout SlotImage ()
+	(scope
+		(var _imageUrl:str = '')
+	)
+	(style
+		(bind backgroundImage "_imageUrl" init=false (bind enabled "_imageUrl != ''"))
+		(backgroundSize = "cover")
+	)
+)

@@ -1,0 +1,199 @@
+(def element UICompendiumPriceTagsInset (_showDiscountTag:bool, _isColumnAlign:bool) layout=true dispatch_size_change=true
+	(scope
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+		
+		(var currencies:array = "[	SC.Common.CURRENCIES.CREDITS,			SC.Common.CURRENCIES.GOLD,			SC.Common.CURRENCIES.XP,				SC.Common.CURRENCIES.FREE_XP,
+									SC.Common.CURRENCIES.ELITE_XP,			SC.Common.CURRENCIES.EVENTUM_1,		SC.Common.CURRENCIES.EVENTUM_2,			SC.Common.CURRENCIES.PARAGON_XP,
+									SC.Common.CURRENCIES.COAL,				SC.Common.CURRENCIES.STEEL,			SC.Common.CURRENCIES.BRASS,				SC.Common.CURRENCIES.MOLYBDENUM,
+									SC.Common.CURRENCIES.CLAN_RESOURCE,		'duplicate',						SC.Common.CURRENCIES.RECRUITMENT_POINTS,
+									SC.Common.CURRENCIES.EVENTUM_3,			SC.Common.CURRENCIES.EVENTUM_4,		SC.Common.CURRENCIES.EVENTUM_5,			SC.Common.CURRENCIES.EVENTUM_6,
+									SC.Common.CURRENCIES.EVENTUM_7,			SC.Common.CURRENCIES.EVENTUM_8,		SC.Common.CURRENCIES.EVENTUM_9,			SC.Common.CURRENCIES.EVENTUM_10,
+									SC.Common.CURRENCIES.EVENTUM_CN,		SC.Common.CURRENCIES.CLIENTUM_1,	SC.Common.CURRENCIES.CLIENTUM_2,		SC.Common.CURRENCIES.SANTIUM,
+									SC.Common.CURRENCIES.DOCKYARDUM_1,		SC.Common.CURRENCIES.DOCKYARDUM_2,
+									SC.Common.CURRENCIES.EVENTUM_11,		SC.Common.CURRENCIES.EVENTUM_12,	SC.Common.CURRENCIES.EVENTUM_13,		SC.Common.CURRENCIES.EVENTUM_14
+								]")
+
+		(var priceDeficitData:array = "[	{ size: SIZE.SMALL,		hideIcon: true	},
+											{ size: SIZE.SMALL,		hideIcon: false },
+											{ size: SIZE.MEDIUM,	hideIcon: true	},
+											{ size: SIZE.MEDIUM,	hideIcon: false	},
+											{ size: SIZE.LARGE,		hideIcon: true	},
+											{ size: SIZE.LARGE,		hideIcon: false	} ]")
+
+		(var priceTagWithLabelData:array = "[	{ label: 'IDS_RESEARCH_COST',		currency: SC.Common.CURRENCIES.XP,			size: SIZE.SMALL	},
+												{ label: 'IDS_RESEARCH_COST',		currency: SC.Common.CURRENCIES.XP,			size: SIZE.MEDIUM	},
+												{ label: 'IDS_RESEARCH_COST',		currency: SC.Common.CURRENCIES.XP,			size: SIZE.LARGE	},
+												{ label: 'IDS_PURCHASE_COST',		currency: SC.Common.CURRENCIES.GOLD,		size: SIZE.SMALL	},
+												{ label: 'IDS_PURCHASE_COST',		currency: SC.Common.CURRENCIES.GOLD,		size: SIZE.MEDIUM	},
+												{ label: 'IDS_PURCHASE_COST',		currency: SC.Common.CURRENCIES.GOLD,		size: SIZE.LARGE	},
+												{ label: 'IDS_EXPERIENCE_AMOUNT',	currency: SC.Common.CURRENCIES.ELITE_XP,	size: SIZE.SMALL	},
+												{ label: 'IDS_EXPERIENCE_AMOUNT',	currency: SC.Common.CURRENCIES.ELITE_XP,	size: SIZE.MEDIUM	},
+												{ label: 'IDS_EXPERIENCE_AMOUNT',	currency: SC.Common.CURRENCIES.ELITE_XP,	size: SIZE.LARGE	} ]")
+
+		(var priceTagWithQuestionData:array = "[	{ questionText: 'IDS_QUESTION_PURCHASE_AND_INSTALL_FOR',		currency: SC.Common.CURRENCIES.CREDITS,			finalPrice: 14232,
+																													currencyOptional: SC.Common.CURRENCIES.GOLD,	finalPriceOptional: 324	},
+													{ questionText: 'IDS_QUESTION_PURCHASE_AND_INSTALL_FOR',		currency: SC.Common.CURRENCIES.CREDITS,			finalPrice: 14232		},
+													{ questionText: 'IDS_PURCHASE_WOWS_ACCOUNT_FOR',				currency: SC.Common.CURRENCIES.GOLD,			finalPrice: 14232		},
+													{ questionText: 'IDS_QUESTION_RESEARCH_FOR',					currency: SC.Common.CURRENCIES.XP,				finalPrice: 14232		},
+													{ questionText: 'IDS_QUESTION_RESEARCH_FOR_FREE'	} ]")
+	)
+	(style (bind width "stageWidth"))
+	
+	(element CompendiumElementTitle "'PriceTag'")
+	(block
+		(style (width = "100%") (flow = "tile_horizontal"))
+		
+		(controller $Repeat renderer='UICompendiumPriceTagsRepeater' 
+			(bind count "currencies.length")
+			(args
+				_currency = "currencies[$index]"
+				_showDiscountTag = "_showDiscountTag"
+				_isColumnAlign= "_isColumnAlign"
+			)
+		)
+	)
+
+	(block
+		(style (width = "100%") (flow = "horizontal"))
+
+		(block
+			(element CompendiumElementTitle "'PriceDeficit'")
+			(style (marginRight = "LS"))
+
+			(controller $Repeat renderer='UICompendiumPriceDeficitRepeater'
+				(bind count "priceDeficitData.length")
+				(args
+					_priceInfo	= "{	currency: SC.Common.CURRENCIES.CREDITS,
+										basePrice: 123456,
+										finalPrice: 567890,
+										discountPercent: 10,
+										timeLeft: 123 }"
+					_deficit 	= "12310"
+					_hideIcon	= "priceDeficitData[$index].hideIcon"
+					_size		= "priceDeficitData[$index].size"
+				)
+			)
+		)
+
+		(block
+			(element CompendiumElementTitle "'PriceDeficit'")
+			(style (marginRight = "LS"))
+
+			(controller $Repeat renderer='UICompendiumPriceDeficitRepeater'
+				(bind count "priceDeficitData.length")
+				(args
+					_priceInfo	= "{	currency: SC.Common.CURRENCIES.FREE_XP,
+										basePrice: 123456,
+										finalPrice: 567890,
+										discountPercent: 10,
+										timeLeft: 123 }"
+					_deficit 	= "12310"
+					_hideIcon	= "priceDeficitData[$index].hideIcon"
+					_size		= "priceDeficitData[$index].size"
+				)
+			)
+		)
+		(block
+			(element CompendiumElementTitle "'PriceTagWithLabel'")
+			(style (marginRight = "LS"))
+
+			(controller $Repeat renderer='UICompendiumPriceTagWithLabelRepeater'
+				(bind count "priceTagWithLabelData.length")
+				(args
+					_priceInfo	= "{	currency: priceTagWithLabelData[$index].currency,
+										basePrice: 123456,
+										finalPrice: 567890,
+										discountPercent: 10,
+										timeLeft: 123 }"
+					_label		= "priceTagWithLabelData[$index].label"
+					_size		= "priceTagWithLabelData[$index].size"
+				)
+			)
+		)
+
+		(block
+			(element CompendiumElementTitle "'PriceTagWithQuestion'")
+			(style (marginRight = "LS"))
+
+			(controller $Repeat renderer='UICompendiumPriceTagWithQuestionRepeater'
+				(bind count "priceTagWithQuestionData.length")
+				(args
+					_questionText	= "priceTagWithQuestionData[$index].questionText"
+					_priceInfo		=	"'finalPrice' in priceTagWithQuestionData[$index] 	?	{	currency: priceTagWithQuestionData[$index].currency,
+																									finalPrice: priceTagWithQuestionData[$index].finalPrice }
+																							: null"
+
+					_optionalPriceInfo =	"'finalPriceOptional' in priceTagWithQuestionData[$index]	?	{	currency: priceTagWithQuestionData[$index].currencyOptional,
+																												finalPrice: priceTagWithQuestionData[$index].finalPriceOptional }
+																										: null"
+				)
+			)
+		)
+	)
+)
+
+(def element UICompendiumPriceTagsRepeater (_currency:str, _showDiscountTag:bool, _isColumnAlign:bool) layout=true
+	(scope
+		(var priceInfo:dict = "{	currency: _currency,
+									basePrice: 123456,
+									finalPrice: 567892,
+									discountPercent: 10,
+									timeLeft: 123 }")
+
+		(var priceTagParamsWithSize:array = "[	{priceInfo: priceInfo, showDiscountTag: _showDiscountTag, size: SIZE.LARGE, isColumnAlign: _isColumnAlign},
+												{priceInfo: priceInfo, showDiscountTag: _showDiscountTag, size: SIZE.MEDIUM, isColumnAlign: _isColumnAlign},
+												{priceInfo: priceInfo, showDiscountTag: _showDiscountTag, size: SIZE.SMALL, isColumnAlign: _isColumnAlign} ]")
+	)
+	(style (width = "256px") (marginBottom = "L") (bind align "_isColumnAlign ? right : left"))
+
+	(controller $Repeat renderer='UICompendiumPriceTagsSizeRepeater'
+		(bind count "priceTagParamsWithSize.length")
+		(args
+			priceTagParams = "priceTagParamsWithSize[$index]"
+		)
+	)
+)
+
+(def element UICompendiumPriceTagsSizeRepeater (priceTagParams:dict) layout=true
+	(element PriceTag
+		_priceInfo =		"'priceInfo'		in priceTagParams ? priceTagParams.priceInfo		: null"
+		_showDiscountTag =	"'showDiscountTag'	in priceTagParams ? priceTagParams.showDiscountTag	: null"
+		_size =				"'size'				in priceTagParams ? priceTagParams.size				: null"
+		_isColumnAlign =	"'size'				in priceTagParams ? priceTagParams.isColumnAlign	: null"
+		
+		(style (marginBottom = "16px"))
+	)
+)
+
+(def element UICompendiumPriceDeficitRepeater (_priceInfo:dict, _deficit:number, _hideIcon:bool, _size:number) layout=true
+	(element PriceDeficit
+		_priceInfo =	"_priceInfo"
+		_deficit =		"_deficit"
+		_hideIcon = 	"_hideIcon"
+		_size =			"_size"
+		
+		(style (marginBottom = "12px"))
+	)
+)
+
+(def element UICompendiumPriceTagWithLabelRepeater (_priceInfo:dict, _label:str, _size:number) layout=true
+	(element PriceTagWithLabel
+		_priceInfo =	"_priceInfo"
+		_size =			"_size"
+		_label =		"_label"
+		
+		(style (marginBottom = "12px"))
+	)
+)
+
+(def element UICompendiumPriceTagWithQuestionRepeater (_questionText:str, _priceInfo:dict = "null", _optionalPriceInfo:dict = "null") layout=true
+	(element PriceTagWithQuestion
+		_questionText =			"_questionText"
+		_priceInfo =			"_priceInfo"
+		_optionalPriceInfo =	"_optionalPriceInfo"
+		
+		(style (marginBottom = "12px"))
+	)
+)

@@ -1,0 +1,56 @@
+<AGS022_5in38_Mk24_dead_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	MP_XM255_YGRS_Postap_M_1	</identifier>
+				<transform>
+					<row0>	0.3980 0.0201 0.0343 0.0000	</row0>
+					<row1>	-0.0247 0.3953 0.0557 0.0000	</row1>
+					<row2>	-0.0311 -0.0575 0.3946 0.0000	</row2>
+					<row3>	-0.0277 0.0891 0.2982 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.3980 0.0201 0.0343 0.0000	</row0>
+					<row1>	-0.0247 0.3953 0.0557 0.0000	</row1>
+					<row2>	-0.0311 -0.0575 0.3946 0.0000	</row2>
+					<row3>	-0.0277 0.0891 0.2982 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_dead_lod2Shape.vertices	</vertices>
+			<primitive>	Turret_dead_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ASA538_Hornet/gun/AGS022_5in38_Mk24_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1283 -0.0025 -0.1452	</min>
+		<max>	0.0969 0.1868 0.2992	</max>
+	</boundingBox>
+</AGS022_5in38_Mk24_dead_lod2.visual>

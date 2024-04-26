@@ -1,0 +1,101 @@
+<WGM003_120mm_Bofors_wz34_36_twin_dead_lod1.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	SP_YMS100_YGBS_M_1_INDEX_2	</identifier>
+				<transform>
+					<row0>	0.4120 0.0020 0.0018 0.0000	</row0>
+					<row1>	-0.0018 0.4079 -0.0579 0.0000	</row1>
+					<row2>	-0.0020 0.0579 0.4079 0.0000	</row2>
+					<row3>	-0.0217 0.1208 0.0620 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS100_YGBS_M_1_INDEX_3	</identifier>
+				<transform>
+					<row0>	0.4120 0.0020 0.0018 0.0000	</row0>
+					<row1>	-0.0018 0.4079 -0.0579 0.0000	</row1>
+					<row2>	-0.0020 0.0579 0.4079 0.0000	</row2>
+					<row3>	0.0235 0.1146 0.0325 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS101_YGCS_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	1.1286 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.6279 -0.0298 0.0000	</row1>
+					<row2>	0.0000 0.0325 0.6852 0.0000	</row2>
+					<row3>	0.0000 0.0644 0.1449 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_2	</identifier>
+				<transform>
+					<row0>	0.3650 0.0018 0.0016 0.0000	</row0>
+					<row1>	-0.0016 0.3614 -0.0513 0.0000	</row1>
+					<row2>	-0.0018 0.0513 0.3614 0.0000	</row2>
+					<row3>	-0.0230 0.1562 0.3112 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS104_YGRS_M_1_INDEX_3	</identifier>
+				<transform>
+					<row0>	0.3650 0.0018 0.0016 0.0000	</row0>
+					<row1>	-0.0016 0.3614 -0.0513 0.0000	</row1>
+					<row2>	-0.0018 0.0513 0.3614 0.0000	</row2>
+					<row3>	0.0222 0.1505 0.2858 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS106_YGLL_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.7790 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.7790 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.7790 0.0000	</row2>
+					<row3>	-0.1042 0.0692 -0.0036 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	SP_YMS107_YGLR_M_1_INDEX_1	</identifier>
+				<transform>
+					<row0>	0.7790 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.7790 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 0.7790 0.0000	</row2>
+					<row3>	0.1042 0.0692 -0.0036 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_dead_lod1Shape.vertices	</vertices>
+			<primitive>	Turret_dead_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/WSD501_Blyskawica/gun/WGM003_120mm_Bofors_wz34_36_twin_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1042 -0.0042 -0.1730	</min>
+		<max>	0.1042 0.1648 0.3103	</max>
+	</boundingBox>
+</WGM003_120mm_Bofors_wz34_36_twin_dead_lod1.visual>
