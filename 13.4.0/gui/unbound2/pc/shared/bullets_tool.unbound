@@ -1,0 +1,35 @@
+(def element ListWithBulletsElement (_text:str, _bulletIndex:bool, _textAlpha:number="TC", _marginBottom:number="M", _bulletType:str='•', _textClass:str='$TextDefaultNM', _substitute:dict={}, _width:str='', _textColor:str="SC.Ui_styles.SERVICE_COLORS.WHITE", _leading:number=0, _isGlowDisabler:bool="false", _toUpper:bool=false)
+	(scope
+		(var textItem:str = "_bulletIndex ? _text + ($index + 1) : _text")
+	)
+	(style (width = "100%") (marginBottom = "_marginBottom"))
+
+	(hblock
+		(style (width = "100%"))
+
+		(tf
+			(bind visible "_bulletType")
+			(bind class "_isGlowDisabler ? '$GlowDisabler' : ''")
+			(class "_textClass")
+
+			(style
+				(marginRight = "10px") 
+				(bind textColor "_textColor")
+				(bind alpha "_textAlpha")
+			)
+			(bind text "_bulletType")
+		)
+
+		(tf
+			(class "_textClass")
+			(bind class "_isGlowDisabler ? '$GlowDisabler' : ''")
+			(style 
+				(width = "100%")
+				(bind leading "_leading")
+				(bind textColor "_textColor")
+				(bind alpha "_textAlpha")
+			)
+			(bind text "_toUpper ? toUpper(textItem) : textItem")
+		)
+	)
+)

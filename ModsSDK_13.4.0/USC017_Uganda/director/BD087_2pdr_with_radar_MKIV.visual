@@ -1,0 +1,61 @@
+<BD087_2pdr_with_radar_MKIV.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	BD011_2pdr_with_radar_type283_Director	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	BD087_2pdr_with_radar_MKIV	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	BD011_2pdr_with_radar_type283_Director	</node>
+		<geometry>
+			<vertices>	BD011_2pdr_with_radar_type283_DirectorShape.vertices	</vertices>
+			<primitive>	BD011_2pdr_with_radar_type283_DirectorShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/USC017_Uganda/director/BD003_2pdr_with_radar_type282.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	BD087_2pdr_with_radar_MKIV	</node>
+		<geometry>
+			<vertices>	BD087_2pdr_with_radar_MKIVShape.vertices	</vertices>
+			<primitive>	BD087_2pdr_with_radar_MKIVShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director1	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/USC017_Uganda/director/BD087_2pdr_with_radar_MKIV.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0533 0.0000 -0.0546	</min>
+		<max>	0.0594 0.1539 0.0507	</max>
+	</boundingBox>
+</BD087_2pdr_with_radar_MKIV.visual>

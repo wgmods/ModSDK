@@ -1,0 +1,276 @@
+(def element SlotRenderer (_id:str, _type:number, _count:number) layout=true
+	(scope
+		(event emptyEvent)
+
+		
+		(var selfVehicleWatcher:gfx = "$datahub.getFirstWatcher(CC.selfVehicle)")
+		(var entity:gfx = "selfVehicleWatcher.entity" (event "selfVehicleWatcher.event"))
+		(var controller:gfx = "entity ? entity.weaponController : null" (event "entity.evAdded") (event "entity.evRemoved"))		
+		(var shipInfo:gfx = "entity ? $datahub.getEntity(entity.vehicleInfo.shipInfoEntityId) : null")
+		(var slot:gfx = "$datahub.getPrimaryEntity(CC.weaponSlot, _id)")
+
+		(var slotOptions:gfx = "slot ? slot.slotOptions : null" (event "slot.evAdded") (event "slot.evRemoved"))
+		(var state:number = "slot ? slot.weaponSlot.state : 0" (event "slot.weaponSlot.evStateChanged"))
+
+		(var ammoEntity:gfx = "$datahub.getPrimaryEntity(CC.ammo, slot.weaponSlot.id)")
+		(var hasSecondaryAmmo:gfx = "ammoEntity ? ammoEntity.ammo.hasSecondaryAmmo : false")
+		(var isAutoUsage:bool = "ammoEntity ? ammoEntity.ammo.isAutoUsage : false")
+		(var squadId:number = "ammoEntity ? ammoEntity.ammo.squadId : -1")
+		(var ownerEntity:gfx = "_type == SC.Ships.SHIP_WEAPON_TYPES.AIRPLANES	? $datahub.getPrimaryEntity(CC.ownSquadron, squadId)
+																				: $datahub.getSingleEntity(CC.playerAvatar)")
+
+		(var uniqueFeatures:array = "ammoEntity.ammo ? ammoEntity.ammo.viewData.uniqueFeatures : []" (event "ammoEntity.ammo.evUpdated"))
+		(var hasUniqueFeatures:bool = "uniqueFeatures.length > 0")
+
+		(var altFireModeEntity:gfx = "$datahub.getSingleEntity(CC.altFireMode)")
+		(var altFireModeComponent:gfx = "altFireModeEntity.altFireMode")
+		(var isAltFireModeActive:bool = "altFireModeComponent.isActive"  (event "altFireModeComponent.evIsActiveChanged"))
+
+		(var isSecondaryActive:bool = "isAltFireModeActive && hasSecondaryAmmo")
+
+		(var fireModeEntity:gfx = "$datahub.getSingleEntity(CC.fireModeSlot)")
+		(var fireModeComponent:gfx = "fireModeEntity.fireModeSlot")
+		(var isBurstFire:bool = "fireModeComponent.isBurstFire")
+		(var isCanBurst:bool = "isBurstFire && _type == SC.Ships.SHIP_WEAPON_TYPES.ARTILLERY")
+		(var isActiveBurst:bool = "isCanBurst && isAltFireModeActive")
+
+		
+		(var status:str = "	slot.weaponSlot.state == SC.Weapons.GUN_STATE.DESTROYED ? '_inactive' :
+							isIn(slot.weaponSlot.state, [SC.Weapons.GUN_STATE.SWITCHING_CRITICAL, SC.Weapons.GUN_STATE.CRITICAL]) ? '_disabled'
+																					: ''" (event "slot.weaponSlot.evStateChanged"))
+
+		(var icon:str = "isSecondaryActive ? 'url:../ammo/' + _id + '_sec' + status + '.png' : 'url:../ammo/' + _id + status + '.png'")
+
+		
+		(var command:number = "slot.weaponSlot.command")
+
+		
+		(var animationProgress:number = "1")
+		(var isAnimated:bool = "animationProgress < 1")
+
+		
+		(var _width:number = "SLOT_SIZE")
+		(var _height:number = "SLOT_SIZE")
+		(var isWeaponActive:bool = "controller ? (controller.selectedWeapon == _type) : false" (event "controller.evSelectedWeaponChanged"))
+		(var isActive:bool = "slot.weaponSlot.active" (event "slot.weaponSlot.evActiveChanged"))
+		(var isSelected:bool = "slot.weaponSlot.selected" (event "slot.weaponSlot.evSelectedChanged"))
+		(var isAlive:bool = "state < SC.Weapons.GUN_STATE.CRITICAL")
+		(var isWorking:bool = "state == SC.Weapons.GUN_STATE.WORK")
+		(var isReloading:bool = "state == SC.Weapons.GUN_STATE.RELOAD")
+		(var isCharging:bool = "state == SC.Weapons.GUN_STATE.CHARGE")
+		(var isDisabled:bool = "state == SC.Weapons.GUN_STATE.DISABLED")
+
+		(var isAngleVisType:bool = "slotOptions && slotOptions.type == SC.Battle.SLOT_VISUALIZATION_TYPE.TORPEDO_ANGLE_SELECTION")
+		(var isSelectorType:bool = "slotOptions && isIn(slotOptions.type, SC.Battle.SLOT_VISUALIZATION_TYPE.SLOT_ADDITIONAL_VISUALS)")
+		(var isSelectorVisible:bool = "isSelectorType && slotOptions.showItemsSelector && slotOptions.items.length > 1")
+		(var isAirplanesVisType:bool = "slotOptions && slotOptions.type == SC.Battle.SLOT_VISUALIZATION_TYPE.AIRPLANES")
+		(var isSerialLoaderVisType:bool = "slotOptions && slotOptions.type == SC.Battle.SLOT_VISUALIZATION_TYPE.SERIAL_LOADER")
+
+		(var isPingerType:bool = "slotOptions && slotOptions.type == SC.Battle.SLOT_VISUALIZATION_TYPE.PINGER_ACTIVE_COUNT")
+		(var shipTTX:gfx = "entity ? entity.selfVehicle.shipTTX : null")
+		(var isPingerCountEnable:bool = "isPingerType && (shipTTX ? shipTTX.pinger.maxTargets.value > 0 : false)")
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(macro GET_PREF 'altVisionMode' "'battle.altVision.mode'")
+		(var isAltVision:bool = "cameraEntity.camera.altVision || altVisionMode >= AltVisionMode.ADAPTIVE" (event "cameraEntity.camera.evAltVisionChanged"))
+
+		(var optionsCommandId:number = "slotOptions ? slotOptions.commandId : Cmd.CMD_NONE")
+
+		
+		(var isHotKeyActive:bool = "isWeaponActive && (isSelected || isActive)")
+		(var isHotKeyEnabled:bool = "command && !isAutoUsage")
+		(var isHotKeyToggled:bool = "isActive && isWeaponActive")
+
+		
+		(var progress:number = "slot.progress.max != 0 ? 1 - slot.progress.value / slot.progress.max : 0" (event "slot.progress.evChanged"))
+		(var remain:number = "isWorking ? slot.progress.value : slot.progress.max - slot.progress.value" (event "slot.progress.evChanged"))
+
+		(var showProgressBar:bool = "(isActive || isAirplanesVisType) && progress > 0")
+
+		(controller $Animation
+			(bindcall play
+				duration="0.1" delay="0"
+				from="{progress: 0, animationProgress: 0}"
+				to="{progress: 1, animationProgress: 1}"
+				(event "slot.weaponSlot.evCharged")
+			)
+		)
+
+		(var slotAlpha:number = "isActive || (isWeaponActive && isSelected) || isAirplanesVisType ? 1 : 0.6")
+
+		(macro STAGE_SIZE)
+	)
+
+	(style
+		(flow = "horizontal")
+		(bind marginRight "slot.weaponSlot.tail	&& stageHeight >= 900	? PANEL_GROUP_MARGIN
+																		: PANEL_ITEM_MARGIN")
+	)
+
+	(bind name "'button_ammo_' + _id")
+	(controller $Instance
+		(renderer = "'AngleSwitcher'")
+		(bind enabled "isSelectorVisible")
+		(args	_command="slotOptions ? slotOptions.commandId : Cmd.CMD_NONE"
+				_height="_height")
+		(exprs
+			(scope
+				(bind weaponSelected "isWeaponActive")
+				(bind _selected "slotOptions && slotOptions.selected" (event "slotOptions.evSelectedChanged"))
+				(bind _options "slotOptions ? slotOptions.items : []")
+			)
+		)
+	)
+
+	(controller $Instance renderer='SerialLoaderInfo'
+		(bind enabled "isSerialLoaderVisType")
+		(args "_type")
+	)
+
+	(block
+		(bind visible "isActiveBurst")
+		(class $FullsizeAbsolute)
+		(style	(backgroundSize = "fill") (hitTest = false)
+				(backgroundImage = 'url:../consumables/altMode_burst_indicator.png')
+		)
+	)
+
+	
+	(block
+		
+		(bind name "isActive && isWeaponActive ? 'selected' : 'not_selected'")
+
+		(block
+			(controller $Instance renderer='AngleBackground'
+				(bind enabled "isAlive && isAngleVisType")
+				(args _width = "_width" _height = "_height")
+				(exprs
+					(scope
+						(bind _selected "slotOptions.selected" (event "slotOptions.evSelectedChanged"))
+						(bind _options "slotOptions.items")
+					)
+				)
+			)
+			(bind alpha "isActive || (isWeaponActive && isSelected) ? 1 : 0")
+		)
+
+		
+		(element SlotItem
+			(scope
+				(bind _itemImageUrl "icon")
+				(bind _isSelectable "!isAutoUsage")
+				(bind _width "_width")
+				(bind _height "_height")
+				(bind _isLocked "isDisabled")
+				(bind _selectedImageUrl "isCharging || isAnimated ? 'url:../battle_hud/weapons_panel/slot/weapon_panel_slot_stroke_blue.png' : ''")
+				(bind _isPreSelected "isWeaponActive && isSelected")
+				(bind _isSelected "isWeaponActive && isActive")
+			)
+			(bind alpha "slotAlpha")
+		)
+
+		(htile
+			(class $FullsizeAbsolute)
+			(style
+				(hitTest = false)
+				(width = 42px)
+			)
+			(controller $Repeat renderer='WeaponSlotUniqueFeatureItem'
+				(bind count "uniqueFeatures.length")
+				(args
+					_featureId = "uniqueFeatures[$index]"
+				)
+			)
+		)
+
+		(controller $Instance
+			(bind renderer "'PingerCountInfoRenderer'") 
+			(bind enabled "isPingerCountEnable")
+			(exprs
+				(style (position = "absolute"))
+				(bind visible "isAltVision")
+			)
+		)
+
+		
+		
+		(element SlotReloadBar
+			(bind visible "isPingerCountEnable ? (showProgressBar && !isAltVision) : showProgressBar")
+			(scope
+				(bind _atWork "isWorking")
+				(bind _atCharge "isCharging || isAnimated")
+				(bind _inverted "false")
+				(bind _showTime "!(isAnimated)")
+				(bind _percentPassed "progress")
+				(bind _remainTime "remain")
+			)
+
+			(class $FullsizeAbsolute)
+		)
+
+		
+		(controller $FxInstance lifetime=0.5
+			(bind renderer "'SlotWorkStartedFX'")
+			(args accented = "!(isWeaponActive)")
+			(bindcall create (event "slot.weaponSlot.evReloaded") (bind enabled "isActive && !(isAirplanesVisType)"))
+		)
+
+		
+		(controller $Instance (renderer = 'HotkeyIndicator')
+			(bind enabled "isHotKeyEnabled")
+			(args _commandId="command" _toggled="isHotKeyToggled")
+			(exprs
+				(scope
+					(bind isKeyActive "isHotKeyActive")
+				)
+				(style
+					(bottom = "-HOTKEY_SIZE[SIZE.MEDIUM]")
+					(hitTest = false)
+					(position = "absolute")
+					(hcenter = "0px")
+				)
+				(bind alpha "(isActive || isSelected) ? 1 : 0.8")
+			)
+		)
+
+		
+		(controller $Instance renderer='LabelAuto'
+			(bind enabled "isAutoUsage")
+		)
+
+		
+		(controller $Instance renderer='PlaneReloadProgressAndAttackersBarSlot'
+			(bind enabled "isAirplanesVisType")
+			(args "_id" "!(showProgressBar)")
+		)
+		
+		(element HIT_TEST_TOOLTIP_CONTAINER
+			(macro MOUSE_LMB_EXTERNAL_CALL 'direct.action' "['weaponSlot.pressed', [command]]" "isHotKeyEnabled")
+
+			(controller $Tooltip
+				(renderer='BattleWeaponTooltip')
+				(args
+					_ammoViewData = "ammoEntity.ammo.viewData"
+					_entityId = "ownerEntity.id"
+					_isSecondaryActive = "isSecondaryActive"
+					_isActiveBurst = "isActiveBurst"
+				)
+				(align="bottom|center")
+				(position="border")
+				(offset=[0, 20])
+				(screenBoundsOffset={left:10, top:30, right:10, bottom:100})
+				(macro SIMPLE_TOOLTIP_ANIMATION)
+			)
+		)
+	)
+)
+
+(def element WeaponSlotUniqueFeatureItem (_featureId:number)
+	(scope
+		(var featureName:str = "SC.Weapons.AMMO_UNIQUE_FEATURES.VALUE_TO_NAME[_featureId]")
+		(var iconPath:str = "'url:../ammo/unique_features/indicators/' + toLower(featureName) + '.png'")
+	)
+	(style (width = 60px) (height = 60px)
+		(bind backgroundImage "iconPath")
+	)
+)

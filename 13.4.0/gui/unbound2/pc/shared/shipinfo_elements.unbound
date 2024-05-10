@@ -1,0 +1,521 @@
+(def css $TextDefaultNMNoShadow ()
+	(extends $TextDefaultNM)
+	(extends $FontLightShadowFilter1)
+)
+(def css $FontLightShadowFilter1 ()
+	(filters
+		(dropShadow
+			(distance = 1)
+			(angle = 90)
+			(color = 0x08222A)
+			(alpha = 0.3)
+			(blurX = 2.0)
+			(blurY = 2.0)
+			(strength = 1.0)
+			(quality = 2)
+		)
+	)
+)
+(def css $TextShipLineNormal()
+	(extends $TextDefaultNMNoShadow)
+	(extends $FontEnableReadability)
+	)
+(def css $TextShipLinePremium()
+	(extends $TextShipLineNormal)
+	(extends $FontColorGolden)
+	)
+(def css $TextShipLineBlack()
+	(extends $TextShipLineNormal)
+	(extends $FontColorAlmostBlack)
+	)
+(def css $TextMetaHeader()
+	(extends $TextDefaultBold)
+	(extends $FontColorWhite)
+	)
+(def css $TextMetaInfo()
+	(extends $TextDefault)
+	(extends $FontColorDefault)
+	)
+(def css $ShipParamTitleWidth()
+	(width = "160px")
+	)
+(def css $ShipParamOnePieceTitleWidth()
+	(maxWidth = "160")
+	)
+(def css $TextShipLinePremiumAccentBold()
+	(extends $TextShipLineBoldAccent)
+	(extends $FontColorGolden)
+	)
+(def css $TextShipLineBoldAccent()
+	(fontFamily = '$WWSDefaultFontBold')
+	(extends $FontColorDefault)
+	(extends $FontSizeHeader3)
+	(extends $TextMouseDisable)
+	)
+(def css $TextShipLinePremiumBold()
+	(extends $TextShipLineBold)
+	(extends $FontColorGolden)
+	)
+(def css $TextShipLineBold()
+	(fontFamily = '$WWSDefaultFontBold')
+	(extends $FontColorDefault)
+	(extends $FontSizeDefault)
+	(extends $TextMouseDisable)
+	)
+(def css $TextShipLineBlackAccentBold()
+	(extends $TextShipLineBoldAccent)
+	(extends $FontColorAlmostBlack)
+	)
+(def css $TextShipLineBlackBold()
+	(extends $TextShipLineBold)
+	(extends $FontColorAlmostBlack)
+	)
+
+(def css $TextShipHeaderNameGolden21()
+	(fontFamily = '$WWSDefaultFontBold')
+	(extends $FontColorWhite)
+	(extends $FontSizeHeader5)
+	(extends $TextMouseDisable)
+	(extends $FontColorGolden)
+	)
+(def css $TextShipHeaderNameNormal21()
+	(fontFamily = '$WWSDefaultFontBold')
+	(extends $FontColorWhite)
+	(extends $FontSizeHeader5)
+	(extends $TextMouseDisable)
+	)
+(def css $TextShipHeaderNameBlack21()
+	(extends $TextShipHeaderNameNormal21)
+	(extends $FontColorAlmostBlack)
+	)
+
+(def layout ShipInfoTabHeader (_shipId:number = 0, _isNotMyShip:bool = false, _inSideCompare:bool = false, _fromCrew:bool = false)
+	(scope
+		(var shipEntity:gfx =	"$datahub.getPrimaryEntity(CC.ship, _shipId)")
+		(var shipInfo:gfx =		"shipEntity ? shipEntity.ship : null"	(event "shipEntity.ship.evUpdate") (event "shipEntity.ship.evCurrentSkinChanged"))
+		(var upgradableShipInfo:gfx = "shipEntity ? shipEntity.upgradableShipInfo : null"	(event "shipEntity.upgradableShipInfo.evUpdate"))
+
+		(var isOwned:bool = "shipEntity != null")
+		
+		(var shipSubType:str = "shipInfo ? shipInfo.subtype : ''" (event "shipInfo.evUpdate"))
+		(var isSpecial:bool = "shipInfo ? shipInfo.uiSpecial : false" (event "shipInfo.evUpdate"))
+		(var isFarming:bool = "shipInfo ? shipInfo.isFarming : false" (event "shipInfo.evUpdate"))
+		(var isElite:bool = "shipInfo ? upgradableShipInfo.isElite : false" (event "upgradableShipInfo.evUpdate"))
+
+		(var shipType:str = "   isSpecial	? '_special' :
+								isFarming	? '_premium' :
+								isElite		? '_elite'
+											 : ''")
+
+		(var iconColorTransform:dict = "_fromCrew && !isOwned	?	{ redOffset:-255,		greenOffset:-255,		blueOffset:-255 } :
+										isFarming || isSpecial	?	{ redMultiplier:1,		greenMultiplier:0.83,	blueMultiplier:0.4 }
+																:	{ redMultiplier:1,		greenMultiplier:1,		blueMultiplier:1   }")
+		
+		(var isSupership:bool = "shipInfo.level == SC.Ships.SHIP_LEVELS.SUPER_SHIP")
+		(var useLevelIcon:bool = "shipInfo.levelIcon.length > 0")
+		(var shipLevelText:str = "useLevelIcon ? '' : shipInfo.levelRome + ' '")
+
+		(var shipClass:str = "tr('IDS_' + toUpper(shipSubType) + (isSupership ? '_LEGENDARY' : ''))")
+
+		(var secondLineText:str = "isSupership	? shipClass	: subst('IDS_SHIP_LEVEL', [], {_shipClass: shipClass, _shipLevel: shipInfo.levelRome})")
+
+		(var shipIconPath:str = "'url:../service_kit/ship_classes/icon_default_' + toLower(shipSubType) + shipType + '.png'")
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(width = 100%)
+			(height = 184)
+			(align = "center")
+			
+		)
+
+		
+		(element NationFlagsBig
+			_width =		"300"
+			_height =		"184"
+			_shipCountry =	"shipInfo.flagName"
+			_alpha =		"0.5"
+		)
+	)
+
+	
+	(block
+		(style
+			
+			(marginTop = 3px) (marginBottom = 8px) (marginLeft = -8px)
+		)
+		(class $InfoBlockHorizontalIndent)
+
+		(hblock
+			(style (height = 25) (align = "middle"))
+
+			(block
+				(style
+					(width = 27)
+					(height = 27)
+					(marginTop = 2px)
+					(bind backgroundImage "shipIconPath")
+				)
+			)
+
+			(block
+				(style (align = "middle") (paddingTop = 2px))
+				(controller $Instance renderer='LevelIconNM'
+					(bind enabled "useLevelIcon")
+					(args
+						_colorTransform = "iconColorTransform"
+						_levelIcon = "shipInfo.levelIcon"
+					)
+				)
+			)
+
+			
+			(block
+				
+				
+				(style (paddingTop = 1px))
+				(element InvertableTextLine
+					(scope
+						(bind _text "shipInfo ? shipLevelText + toUpper(tr(shipInfo.nameIDS + '_FULL')) : ''")
+						(bind _invert "_fromCrew ? !isOwned : false")
+						(bind _normalClass "(isFarming || isSpecial) && !_isNotMyShip ? '$TextShipHeaderNameGolden21' : '$TextShipHeaderNameNormal21'")
+						(bind _invertedClass "'$TextShipHeaderNameBlack21'")
+					)
+				)
+			)
+		)
+
+		
+		(block
+			(style (marginLeft = 31px) (marginTop = 4px))
+			(alpha = 0.8)
+			(element InvertableTextLine
+				(scope
+					(bind _maxWidth "192px")
+					(bind _text "secondLineText")
+					(bind _invert "_fromCrew ? !isOwned : false")
+					(bind _normalClass "(isFarming || isSpecial) && !_isNotMyShip ? '$TextShipLinePremium' : '$TextShipLineNormal'")
+					(bind _invertedClass "'$TextShipLineBlack'")
+				)
+			)
+		)
+	)
+)
+
+(def layout ShipDescription(_shipNameIDS:str = '', _needShowProjectYear:bool = false, _isPaperShip:bool = false, _peculiarity:str = '')
+
+	(class $InfoBlockIndent)
+	(block
+		(bind visible "(_peculiarity == 'default' || _peculiarity == 'first_april_2023') && _needShowProjectYear")
+		(style
+			(width = "100%")
+			(marginTop = "-3px")
+		)
+		(hblock
+			(tf
+				(class $TextSecondary)
+				(bind text "(_isPaperShip ? tr('IDS_PROJECT_YEAR') : tr('IDS_RELEASE_YEAR')) + tr('IDS_COLON')")
+			)
+			(tf
+				(class $TextSecondaryBold)
+				(bind text "_shipNameIDS + '_YEAR'")
+			)
+		)
+		(hblock
+			(class $AlignRight)
+			(bind visible "_isPaperShip != true")
+			(tf
+				(class $TextSecondary)
+				(bind text "tr('IDS_SHIPS_IN_SERIES') + tr('IDS_COLON')")
+			)
+			(tf
+				(class $TextSecondaryBold)
+				(bind text "_shipNameIDS + '_NUMBER'")
+			)
+		)
+	)
+	(tf
+		
+		(class $TextSecondaryBold)
+		(style
+			(width = "100%")
+			(bind marginTop "(_peculiarity  ==  'default')  ?  3  :  -2")
+		)
+		(bind text "_shipNameIDS + '_DESCR'")
+	)
+)
+
+
+
+
+(def layout LabelComingSoon(_showTestSampleLabel:bool = false)
+	(style
+		(width = 100%)
+		(height = 80px)
+		
+		(align = "middle|center")
+	)
+
+	(block
+		(style
+			(width = 100%)
+			
+			(align = "center")
+			(rotation = -6)
+			(pivotX = "TOOLTIP_SHIP_MAX_WIDTH/2")
+			(pivotY = "80/2")
+		)
+		(block
+			(style
+				(backgroundImage = 'symbol:coming_soon_frame')
+				(backgroundSize = "fill")
+				(scale9grid = 6)
+				
+			)
+			(tf
+				(class $TextAccentBold)
+				(class $FontColorWhite)
+				(style
+					(marginTop = 2px)
+					(marginBottom = 2px)
+					(marginLeft = 10px)
+					(marginRight = 10)
+				)
+
+				(bind text "_showTestSampleLabel ? toUpper(tr('IDS_TEST_SAMPLE')) : toUpper(tr('IDS_UNAVAILABLE_TO_DISPLAY_SOON'))")
+			)
+		)
+	)
+)
+
+(def element ShipLevelNM (	_levelIcon:str="null", _alpha:number="1", _colorTransform:gfx="CT_NONE",
+							_levelRome:str="null", _fontClass:str="'$TextDefaultBoldNM'",
+							_textColor:str="SC.Ui_styles.SERVICE_COLORS.WHITE") layout=true
+	(scope
+		(var isShowLevelIcon:bool = "_levelIcon != null ? _levelIcon.length > 0 : false")
+		(var shipLevelText:str = "(isShowLevelIcon ? '' : _levelRome) + ' '")
+	)
+
+	(style (flow = "horizontal") (align = "middle"))
+	(bind alpha "_alpha ? _alpha : '1'")
+
+	
+	(block
+		(style (height = 100%) (align = "middle"))
+		(controller $Instance renderer='LevelIconNM'
+			(bind enabled "isShowLevelIcon")
+			(args
+				_levelIcon		= "_levelIcon"
+				_colorTransform	= "_colorTransform"
+			)
+		)
+	)
+	
+	(tf
+		(bind class "_fontClass")
+		(style (multiline = false) (bind textColor "_textColor ? _textColor : null"))
+		(bind text "shipLevelText")
+	)
+)
+
+(def element LevelIconNM (_colorTransform:gfx, _levelIcon:str='') layout=true
+	(style
+		(width = 19px)
+		(height = 19px)
+		(bind backgroundImage "'url:../service_kit/ship_classes/icon_tier_' + (_levelIcon ? _levelIcon : 'special') + '.png'")
+	)
+	
+	(bind colorTransform "_colorTransform")
+)
+
+(def element ShipIcon (_shipType:str, _alpha:number="1", _isSpecial:bool=false, _isFarming:bool=false, _isElite:bool=false, _isEnemy:bool=false, _isKilled:bool=false, _isWhite:bool=false, _isDivision:bool=false, _isTeamKiller:bool=false, _isAlly:bool=false) layout=true
+	(scope
+		(var upgradable:str = "	_isSpecial	? '_special' :
+								_isFarming	? '_premium' :
+								_isElite	? '_elite'
+											: ''")
+
+		(var state:str = "		_isEnemy	?	_isKilled		?	'enemy_sunk':
+												_isWhite		?	'enemy_white'
+																:	'enemy'
+
+											:	_isKilled		?	'sunk':
+												_isDivision		?	'division':
+												_isTeamKiller	?	'teamkiller':
+												_isAlly			?	'ally'
+																:	'default'")
+
+		(var iconPath:str = "_shipType ? 'url:../service_kit/ship_classes/icon_' + state + '_' + toLower(_shipType) + upgradable + '.png' : ''")
+	)
+
+	(style (width = 27px) (height = 27px))
+	(block
+		(style (marginTop = -1px) (bind backgroundImage "iconPath"))
+		(bind alpha "_alpha || 1")
+	)
+)
+
+(def element ShipLineItemNM (_shipId:number, _withFlag:bool="false", _fontClass:str="'$TextDefaultBoldNM'", _hideName:bool="false", _width:number="0", _height:number="0") layout=true
+	(scope
+		(var shipEntity:gfx =	"$datahub.getPrimaryEntity(CC.ship, _shipId)")
+		(var shipInfo:gfx =		"shipEntity ? shipEntity.ship : null"	(event "shipEntity.ship.evUpdate") (event "shipEntity.ship.evCurrentSkinChanged"))
+		(var upgradableShipInfo:gfx = "shipEntity ? shipEntity.upgradableShipInfo : null"	(event "shipEntity.upgradableShipInfo.evUpdate"))
+
+		(var textColor:str = "shipInfo && (shipInfo.isFarming || shipInfo.uiSpecial)	? SC.Ui_styles.SERVICE_COLORS.YELLOW
+																						: SC.Ui_styles.SERVICE_COLORS.WHITE")
+
+		(var textAlpha:number = "textColor == SC.Ui_styles.SERVICE_COLORS.YELLOW	? 1
+																					: TA")
+		(var showFlag:bool = "shipInfo && shipInfo.flagName != SC.Common.NATION.EVENTS && _withFlag")
+
+		(var iconColorTransform:dict = "textColor == SC.Ui_styles.SERVICE_COLORS.YELLOW	? COLOR_TRANSFORM_WHITE_TO_YELLOW
+																						: {}")
+		(var showName:bool = "!_hideName")
+		(var nameIDS:str = "shipInfo && showName ? toUpper(tr(shipInfo.nameIDS)) : ''")
+
+		(var shipType:str = "shipInfo ? shipInfo.subtype : ''" (event "shipInfo.evUpdate"))
+		(var isSpecial:bool = "shipInfo ? shipInfo.uiSpecial : false" (event "shipInfo.evUpdate"))
+		(var isFarming:bool = "shipInfo ? shipInfo.isFarming : false" (event "shipInfo.evUpdate"))
+		(var isElite:bool = "shipInfo ? upgradableShipInfo.isElite : false" (event "upgradableShipInfo.evUpdate"))
+	)
+	(style
+		(flow = "horizontal")
+		(align = "middle")
+		(bind width "_width ? _width : 'auto'")
+	)
+
+	(block
+		(bind visible "showFlag")
+		(style (marginRight = "S") (marginTop = -5px) (marginBottom = -6px))
+		(controller $Instance renderer='NationFlagsTiny'
+			(bind enabled "showFlag")
+			(args
+				_shipCountry =	"shipInfo.flagName"
+			)
+		)
+	)
+
+	(block
+		(bind visible "shipInfo")
+		(style (marginTop = -8px) (marginBottom = -10px) (marginLeft = -5px) (bind marginRight "showName ? XS : 3"))
+		(controller $Instance renderer='ShipIcon'
+			(bind enabled "shipInfo && upgradableShipInfo")
+			(args
+				_shipType = "shipType"
+				_isSpecial = "isSpecial"
+				_isFarming = "isFarming"
+				_isElite = "isElite"
+			)
+		)
+	)
+
+	(block
+		(bind visible "shipInfo")
+		(style
+			(bind marginLeft "shipInfo && shipInfo.levelIcon.length > 0 ? -4 : 0")
+			(bind marginRight "shipInfo && shipInfo.levelIcon.length > 0 ? -1 : 0")
+		)
+		(controller $Instance renderer='ShipLevelNM'
+			(bind enabled "shipInfo")
+			(args
+				_levelIcon =		"shipInfo.levelIcon"
+				_colorTransform =	"iconColorTransform"
+				_levelRome =		"shipInfo.levelRome"
+				_alpha =			"textAlpha"
+				_fontClass =		"_fontClass"
+				_textColor =		"textColor"
+			)
+		)
+	)
+
+	(tf
+		(bind visible "showName")
+		(bind class "_fontClass")
+		(style
+			(multiline = false)
+			(marginLeft = 2px)
+			(bind textColor "textColor")
+			(bind width "_width ? _width : 'auto'")
+		)
+		(bind alpha "textAlpha")
+		(bind text "nameIDS")
+	)
+)
+
+(def element ShipInlineStereotypeSimple (_shipId:number, _fontClass:str="'$TextDefaultBoldNM'", _width:number="0", _showFlag:bool="true") layout=true
+	(scope
+		(var shipEntity:gfx = "$datahub.getPrimaryEntity(CC.ship, _shipId)")
+		(var shipInfo:gfx = "shipEntity ? shipEntity.ship : null" (event "shipEntity.ship.evUpdate") (event "shipEntity.ship.evCurrentSkinChanged"))
+
+		(var showFlag:bool = "_showFlag ? shipInfo && shipInfo.flagName != SC.Common.NATION.EVENTS : false")
+
+		(var nameIDS:str = "shipInfo ? toUpper(tr(shipInfo.nameIDS)) : ''")
+
+		(var shipType:str = "shipInfo ? shipInfo.subtype : ''" (event "shipInfo.evUpdate"))
+	)
+	(style
+		(flow = "horizontal")
+		(align = "middle")
+		(bind width "_width ? _width : 'auto'")
+	)
+
+	(block
+		(bind visible "showFlag")
+		(style
+			(marginRight = "S")
+			(marginTop = -5px)
+			(marginBottom = -6px)
+		)
+		(controller $Instance renderer='NationFlagsTiny'
+			(bind enabled "showFlag")
+			(args
+				_shipCountry = "shipInfo.flagName"
+			)
+		)
+	)
+
+	(block
+		(bind visible "shipInfo")
+		(style
+			(marginTop = "-S")
+			(marginBottom = -10px)
+			(marginLeft = -5px)
+			(bind marginRight "XS")
+		)
+		(controller $Instance renderer='ShipIcon'
+			(bind enabled "shipInfo")
+			(args
+				_shipType = "shipType"
+			)
+		)
+	)
+
+	(block
+		(bind visible "shipInfo")
+		(style
+			(bind marginLeft "shipInfo && shipInfo.levelIcon.length > 0 ? -4 : 0")
+			(bind marginRight "shipInfo && shipInfo.levelIcon.length > 0 ? -1 : 0")
+		)
+		(controller $Instance renderer='ShipLevelNM'
+			(bind enabled "shipInfo")
+			(args
+				_levelIcon = "shipInfo.levelIcon"
+				_levelRome = "shipInfo.levelRome"
+				_alpha = "TA"
+				_fontClass = "_fontClass"
+			)
+		)
+	)
+
+	(tf
+		(bind class "_fontClass")
+		(style
+			(marginLeft = 2px)
+			(bind width "_width ? _width : 'auto'")
+		)
+		(bind alpha "TA")
+		(bind text "nameIDS")
+	)
+)

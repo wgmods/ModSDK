@@ -1,0 +1,38 @@
+<GGA050_20mm_Flak_38_dead.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_deadShape.vertices	</vertices>
+			<primitive>	Turret_deadShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/GSD727_z34_EventDday_Support/gun/GGA017_20mm_Flak_M43U_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0432 -0.0032 -0.0614	</min>
+		<max>	0.0456 0.1858 0.0436	</max>
+	</boundingBox>
+</GGA050_20mm_Flak_38_dead.visual>

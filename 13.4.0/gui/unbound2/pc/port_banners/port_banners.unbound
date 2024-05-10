@@ -1,0 +1,178 @@
+(def css $PortBannerMargins ()
+	(marginBottom = "XS")
+	(marginLeft = "S")
+)
+
+(def element EventHubBanner (_isEventHubBattleTypeAvailable:bool=false)
+	(scope
+		(event evAddedToStage)
+
+		(var dockDataWatcher:gfx = "$datahub.getFirstWatcher(CC.dockData)")
+		(var dockDataEntity:gfx = "dockDataWatcher.entity" (event "dockDataWatcher.event"))
+		(var dockDataComponent:gfx = "dockDataEntity ? dockDataEntity.dockData : null")
+		(var isDockInputLockedByEH:bool = "dockDataComponent ? dockDataComponent.isDockInputLockedByEH : false" (event "dockDataComponent.evIsDockInputLockedByEHChanged"))
+
+		(var selfPlayerWatcher:gfx = "$datahub.getFirstWatcher(CC.accountSelf)")
+		(var selfPlayerEntity:gfx = "selfPlayerWatcher.entity" (event "selfPlayerWatcher.event"))
+		(var preBattlePlayerComponent:gfx = "selfPlayerEntity ? selfPlayerEntity.preBattlePlayerSimple : null" (event "selfPlayerEntity.evAdded") (event "selfPlayerEntity.evRemoved"))
+		(var isSelfPlayerCommander:bool = "preBattlePlayerComponent	? preBattlePlayerComponent.isCommander : false" (event "preBattlePlayerComponent.evIsCommanderChanged"))
+		
+		(var divisionDataWatcher:gfx = "$datahub.getFirstWatcher(CC.division)")
+		(var divisionDataEntity:gfx = "divisionDataWatcher.entity" (event "divisionDataWatcher.event"))
+		(var isInDivision:bool = "!!divisionDataEntity")
+		
+		(var preBattleWatcher:gfx = "$datahub.getFirstWatcher(CC.preBattle)")
+		(var preBattleEntity:gfx = "preBattleWatcher.entity" (event "preBattleWatcher.event"))
+		(var preBattleComponent:gfx = "preBattleEntity ? preBattleEntity.preBattle : null" (event "preBattleEntity.evAdded") (event "preBattleEntity.evRemoved"))
+		(var isDivisionInBattle:bool = "preBattleComponent ? preBattleComponent.isInBattle : false" (event "preBattleComponent.evStatusChanged"))
+		
+		(var isBannerEnabled:bool = "((isSelfPlayerCommander && !isDivisionInBattle) || !isInDivision) && !isDockInputLockedByEH")
+
+		(var tooltipData:dict = "{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.WARNING,
+									text: 	isDockInputLockedByEH	? 'IDS_DOCK_BANNER_EVENT_HUB_UNAVAILABLE_LOADING' :
+											isSelfPlayerCommander	? 'IDS_DOCK_BANNER_EVENT_HUB_UNAVAILABLE_SQUAD_IN_BATTLE' 
+																	: 'IDS_DOCK_BANNER_EVENT_HUB_UNAVAILABLE_NOT_COMMANDER' }")
+
+		(var selectedBattleTypes:gfx =	"$datahub.getCollection(CC.battleType).getChildByPath('selected')")
+		(var selectedBattleTypesItems:array = "selectedBattleTypes ? selectedBattleTypes.items : []"	(event "selectedBattleTypes.evAdded")
+																										(event "selectedBattleTypes.evRemoved"))
+		(var selectedBattleStateName:str = "selectedBattleTypesItems.length > 0 && selectedBattleTypesItems[0].eventBattleState ? selectedBattleTypesItems[0].eventBattleState.name : ''")
+		(var isEventHubBattleTypeSelected:bool = "selectedBattleStateName in SC.Ui_common.EVENTS.EVENT_HUB_OPERATIONS")
+
+		(var eventHubPhaseCollection:gfx = "$datahub.getCollection(CC.eventHubPhase)")
+		(var currentPhaseEventID:number = "eventHubPhaseCollection.items.length > 0 ? eventHubPhaseCollection.items[0].eventHubPhase.battleTypeGameParamId 
+																					: 0"
+																					(event "eventHubPhaseCollection.evAdded") (event "eventHubPhaseCollection.evRemoved"))
+
+		(macro FEATURES "31")
+		(var isEventHubUnlocked:bool = "feature_31 != 'locked'")
+		(var isInEventMode:bool = "selectedBattleTypesItems.length > 0	? isEventHubBattleTypeSelected
+																		: false"
+																		(event "selectedBattleTypes.evAdded"))
+
+		(var isEventHubBattleTypeAvailable:bool = "_isEventHubBattleTypeAvailable")
+
+		(var staticsEvent:str = "isInEventMode	? SC.Common.EVENT_HUB_STATISTICS.EVENT_HUB_BANNER_LEAVE 
+												: SC.Common.EVENT_HUB_STATISTICS.EVENT_HUB_BANNER_ENTER")
+	)
+
+	(style
+		(align = "center") (width = "240px")
+		(bind height "isInEventMode ? 32 : 116")
+	)
+
+	(bindcall externalCall "isBannerEnabled ? 'inputMapping.onRequest' : ''" "['eventHubBannerClick', {}]" 
+																			init=false watch=false on='click')
+
+	(bindcall externalCall "isBannerEnabled ? 'direct.action' : ''" "[SC.Common.STATISTICS_EVENTS.LOG, [staticsEvent]]" init=false watch=false on='click')
+
+	(controller $Animation
+		(bindcall play  duration="0.15"
+						delay="0.15"
+						from = "{ alpha: 0, top: 5 }"
+						to = "{ alpha: 1, top: 0 }"
+						(event "evAddedToStage")
+		)
+	)
+
+	(block
+		(class $Fullsize)
+
+		(controller $Instance renderer='EventHubEventEnterBanner'
+			(bind enabled "isEventHubBattleTypeAvailable && !isInEventMode")
+			(args
+				_isBannerEnabled = "isBannerEnabled"
+			)
+		)
+
+		(controller $Instance renderer='EventHubEventExitBanner'
+			(bind enabled "isInEventMode")
+			(args
+				_isBannerEnabled = "isBannerEnabled"
+			)
+		)
+	)
+
+	(controller $Tooltip
+		(bind enabled "isBannerEnabled")
+		(bind renderer "isInEventMode ? 'EventHubExitTooltip' : 'EventHubEnterTooltip'")
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(controller $Tooltip
+		(bind enabled "!isBannerEnabled")
+		(renderer='SimpleStatusTooltip')
+		(args
+			_text = "tooltipData.text"
+			_unifiedStatus = "tooltipData.unifiedStatus"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element EventHubEventEnterBanner (_isBannerEnabled:bool)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+
+	(class $Fullsize)
+	(style (align = "bottom"))
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style (backgroundSize = "cover") (backgroundImage = 'url:../event_hub/banners/enter_banner_bg.png'))
+		(bind alpha "!_isBannerEnabled ? 0.4 : 1")
+		(macro DESATURATION_DEFAULT "_isBannerEnabled")
+
+		(macro MOUSE_HANDLER
+			_soundSet = "'button_banner'"
+		)
+	)
+
+	
+	(block
+		(class $PortBannerMargins)
+		(style (width = "100%") (hitTest = "false"))
+
+		(tf
+			(class $TextLargeHeaderBold)
+			(class $FontColorSpecialButton)
+
+			(text = 'IDS_DOCK_BANNER_ENTER_EVENT_HUB')
+		)
+	)
+)
+
+(def element EventHubEventExitBanner (_isBannerEnabled:bool)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+
+	(class $Fullsize)
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style (backgroundSize = "cover") (backgroundImage = 'url:../event_hub/banners/exit_banner_bg.png'))
+		(bind alpha "!_isBannerEnabled ? 0.4 : 1")
+		(macro DESATURATION_DEFAULT "_isBannerEnabled")
+
+		(macro MOUSE_HANDLER
+			_soundSet = "'button_banner'"
+		)
+	)
+
+	
+	(block
+		(class $PortBannerMargins)
+		(style (width = "100%") (hitTest = "false"))
+
+		(tf
+			(class $TextLargeHeaderBold)
+			(class $FontColorSpecialButton)
+
+			(text = 'IDS_DOCK_EXIT_EVENT_HUB')
+		)
+	)
+)

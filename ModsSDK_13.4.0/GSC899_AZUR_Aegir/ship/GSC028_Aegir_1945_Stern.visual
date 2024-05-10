@@ -1,0 +1,130 @@
+<GSC028_Aegir_1945_Stern.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Stern	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Stern_DeckHouse	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	Stern_crack_MidBack	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Stern_crack_MidBack_in	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+			<node>
+				<identifier>	Stern_wire	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Stern	</node>
+		<geometry>
+			<vertices>	SternShape.vertices	</vertices>
+			<primitive>	SternShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/GSC899_AZUR_Aegir/ship/GSC028_Aegir_1945.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Stern_DeckHouse	</node>
+		<geometry>
+			<vertices>	Stern_DeckHouseShape.vertices	</vertices>
+			<primitive>	Stern_DeckHouseShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_DeckHouse	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/GSC899_AZUR_Aegir/ship/GSC028_Aegir_1945_DeckHouse.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Stern_crack_MidBack	</node>
+		<geometry>
+			<vertices>	Stern_crack_MidBackShape.vertices	</vertices>
+			<primitive>	Stern_crack_MidBackShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/GSC899_AZUR_Aegir/ship/GSC028_Aegir_1945.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Stern_crack_MidBack_in	</node>
+		<geometry>
+			<vertices>	Stern_crack_MidBack_inShape.vertices	</vertices>
+			<primitive>	Stern_crack_MidBack_inShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_Crack	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/GSC899_AZUR_Aegir/ship/C002_Razlom.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Stern_wire	</node>
+		<geometry>
+			<vertices>	Stern_wireShape.vertices	</vertices>
+			<primitive>	Stern_wireShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPWIRE_PBS_DeckHouse	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/GSC899_AZUR_Aegir/ship/GSC028_Aegir_1945_DeckHouse_wire.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.8814 -0.5529 -8.6506	</min>
+		<max>	0.8814 0.9811 -5.6260	</max>
+	</boundingBox>
+</GSC028_Aegir_1945_Stern.visual>

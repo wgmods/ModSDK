@@ -1,0 +1,187 @@
+(def constant BC_MOCKUP "{
+	battleCard: {
+		currentLevel: 1,
+		name: 'PCK006_TestBattleCard',
+		isInstalled: false,
+		evChanged: null
+	}
+}")
+
+(def constant BC_MOCKUP_2 "{
+	battleCard: {
+		currentLevel: 1,
+		name: 'PCK002_TestBattleCard',
+		isInstalled: true,
+		evChanged: null
+	}
+}")
+
+
+(def constant BC_COUNTDOWN_MOCKUP "{
+	countDown: {
+		endTime: 42,
+		evEndTimeChanged: null
+	},
+	evAdded : null
+}")
+
+
+(def constant SELECTED_CARDS_MOCKUP "{ items: [
+	BC_MOCKUP_2,
+	BC_MOCKUP_2,
+	BC_MOCKUP_2
+]}")
+
+(def constant ACTIVE_CARDS_MOCKUP "{ items: [
+	BC_MOCKUP,
+	BC_MOCKUP_2,
+	BC_MOCKUP,
+	BC_MOCKUP_2,
+	BC_MOCKUP_2,
+	BC_MOCKUP
+]}")
+
+
+(def constant BATTLE_CARD_SELECTOR_WIDTH "720")
+
+(def constant BATTLE_CARD_SELECTED_CARD_DIMENSION "180")
+
+(def constant BATTLE_CARD_ACTIVE_CARD_DIMENSION "80")
+(def constant BATTLE_CARD_ACTIVE_CARD_SLOT_DIMENSION "112")
+
+(def element ModalWindowBattleCardsSelector () layout=true
+	(macro MODAL_WINDOW_INIT)
+	(scope
+		(var battleCardSelectorWatcher:gfx = "$datahub.getFirstWatcher(CC.battleCardSelector)")
+		(var battleCardSelectorEntity:gfx = "battleCardSelectorWatcher ? battleCardSelectorWatcher.entity : null" (event "battleCardSelectorWatcher.event"))
+	)
+	(class $FullsizeAbsolute)
+	(style (align = "center|middle"))
+	(macro MODAL_WINDOW_BACKGROUND_BATTLE)
+	(block
+		(class $EyeLevelVAligned)
+		(style (width = "BATTLE_CARD_SELECTOR_WIDTH") (vgap = "M") (marginBottom = "L"))
+		(block
+			(style (align = "center|middle") (width = 100%))
+			(element BattleCardsSelectorTimer
+				_selectorEntity="battleCardSelectorEntity"
+			)
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		)
+		(element BattleCardsSelectorSelectedCardsList
+			_selectorEntity="battleCardSelectorEntity"
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+			
+		)
+		(element BattleCardsSelectorActiveCardsList
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 3)
+		)
+	)
+	(element DefaultButton
+			_width = 256
+			_name = 'btn_confirm_selection'
+			_enabled = true
+			_isTransactionBtn = true
+			_label = 'IDS_CARD_SELECTOR_CONFIRM_SELECTION'
+			_focusIndex = 1
+			_defaultFocused = false
+			_methods = "[]"
+			_clickInterval = 2000
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 4)
+	)
+)
+
+(def element BattleCardsSelectorTimer (_selectorEntity:gfx)
+	(scope
+		
+		(var countDownComponent:gfx = "_selectorEntity.countDown" (event "_selectorEntity.evAdded") (event "_selectorEntity.evRemoved"))
+		(var endTime:number = "countDownComponent ? countDownComponent.endTime : 0" (event "countDownComponent.evEndTimeChanged"))
+
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+		(var currentTime:gfx = "timerEntity.timer.currentTime" (event "timerEntity.timer.evFrequent"))
+
+		(var remainTime:number = "countDownComponent ? endTime - currentTime : 0" )
+		(var countdownText:str = "countdownFormat(remainTime, 2, true)")
+	)
+
+	(style (align = "center|middle") (width = 100%) (vgap = "M") (alpha = "countDownComponent ? 1 : 0"))
+	
+	(controller $Animation
+		(bindcall play 	duration=0.2
+						from="{alpha: 0}" 
+						to="{alpha: 1}"
+						action="killAll"
+						reverse="countDownComponent == null"
+						(bind trigger "countDownComponent != null")
+		)
+	)
+
+	(tf
+		(class $TextDefaultBold50NM)
+		(style
+			(bind textColor "remainTime > 10 ? SC.Ui_styles.SERVICE_COLORS.WHITE : SC.Ui_styles.SERVICE_COLORS.ORANGE")
+		)
+		(bind text "countdownText")
+	)
+	(tf
+		(class $TextDefaultBold19NM)
+		(text = 'IDS_CARD_SELECTOR_LIMITED_TIME_IN_BATTLE')
+	)
+)
+
+(def element BattleCardsSelectorSelectedCardsList (_selectorEntity:gfx)
+	(scope
+		(var battleCardsCollection:gfx = "$datahub.getCollection(CC.battleCard)")
+		(var selectedCardsCollection:gfx = "battleCardsCollection.child('installed').child('sorted')")
+
+		(var selectedCardsCollectionLength:number = "selectedCardsCollection.items.length" (event "selectedCardsCollection.evAdded") (event "selectedCardsCollection.evRemoved"))
+
+		(var isAvailable:bool = "_selectorEntity.battleCardSelector.isAvailable" (event "_selectorEntity.battleCardSelector.evIsAvailableChanged"))
+		(var selectorMaxCount:number = "_selectorEntity.battleCardSelector.maxCards" (event "_selectorEntity.battleCardSelector.evMaxCardsChanged"))
+	)
+
+	(style (flow = "horizontal") (align = "center|middle") (width = 100%) (hgap="L") (marginBottom = "S"))
+	(controller $Repeat renderer='BattleCardItemSlotLarge'
+		(bind count "isAvailable ? selectorMaxCount : selectedCardsCollectionLength") 
+		(args _cardCollection="selectedCardsCollection" _isAvailable="isAvailable")
+	)
+)
+
+(def element BattleCardsSelectorActiveCardsList ()
+	(scope
+		
+		(var battleCardsCollection:gfx = "$datahub.getCollection(CC.battleCard)")
+		(var activeCardsCollection:gfx = "battleCardsCollection.getChildByPath('activeInEvent.available.sorted')")
+
+		(var activeCardsCollectionLength:number = "activeCardsCollection.items.length")
+	)
+
+	(style
+		(width = 100%)
+	)
+	(element HorizontalDividerTwoPx)
+
+	(block
+		(style
+			(width = 100%)
+			(backgroundImage = "'url:../service_kit/panel_backgrounds/inner_panel.png'")
+			(scale9grid = 3)
+			(paddingBottom = "MS")
+			(paddingTop = "MS")
+		)
+		(block
+			(style 
+				(flow = "tile_horizontal")
+				(align = "center|middle")
+				(width = "100%")
+				(vgap = "MS")
+				(hgap = "L")
+			)
+			(controller $Repeat renderer='BattleCardItem'
+				(bind count "activeCardsCollectionLength")
+				(args _battleCardItem="activeCardsCollection.items[$index]" _clickActionPrefix="BATTLE_CARD_CLICK_PREFIX_BATTLE")
+			)
+		)
+	)
+	(element HorizontalDividerTwoPx)
+)

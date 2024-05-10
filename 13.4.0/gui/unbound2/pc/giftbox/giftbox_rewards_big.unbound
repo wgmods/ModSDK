@@ -1,0 +1,445 @@
+(def constant REWARD_BIG_MARGINS "{720:8, 1080:16}")
+(def constant REWARD_BIG_MARGINS_IMAGE "{720:0, 1080:16}")
+
+(def constant RENDER_REWARD_ITEMS_BIG	{	'Crew':				'RewardItemBigCrew',
+											'Exterior':			'RewardItemBigExterior',
+											'Ship':				'RewardItemBigShip',
+											'Lootbox':			'RewardItemBigLootbox',
+											'Modernization':	'RewardItemBigCommon',
+											'Ability':			'RewardItemBigCommon',
+											'Resource':			'RewardItemBigCommon',
+											'ResourceCoeff':	'RewardItemBigCommon',
+											'Unit':				'RewardItemBigCommon',
+											'Reward':			'RewardItemBigCommon',
+											'Token':			'RewardItemBigCommon',
+											'Exchange':			'RewardItemBigCommon',
+											'Collection':		'RewardItemBigCommon',
+											'Unlock':			'RewardItemBigCommon',
+											'DogTag':			'RewardItemBigDogtag',
+											'SSETask':			'RewardItemBigCommon',
+											'PortalReward':		'RewardItemBigCommon',
+											'MysteryReward':	'RewardItemBigMystery',
+											'BattleCard':		'RewardItemBigCommon', })
+
+(def constant RENDER_REWARD_RESOURCE_ITEMS_BIG	{	'exp': 'RewardResourcesBig',
+													'gold': 'RewardResourcesBig',
+													'steel': 'RewardResourcesBig',
+													'coal': 'RewardResourcesBig',
+													'molybdenum': 'RewardResourcesBig',
+													'brass': 'RewardResourcesBig',
+													'saltpeter': 'RewardResourcesBig',
+													'eventum_1': 'RewardResourcesBig',
+													'eventum_2': 'RewardResourcesBig',
+													'eventum_3': 'RewardResourcesBig',
+													'eventum_4': 'RewardResourcesBig',
+													'eventum_5': 'RewardResourcesBig',
+													'eventum_6': 'RewardResourcesBig',
+													'eventum_7': 'RewardResourcesBig',
+													'eventum_8': 'RewardResourcesBig',
+													'eventum_9': 'RewardResourcesBig',
+													'eventum_10': 'RewardResourcesBig',
+													'eventum_11': 'RewardResourcesBig',
+													'eventum_12': 'RewardResourcesBig',
+													'eventum_13': 'RewardResourcesBig',
+													'eventum_14': 'RewardResourcesBig',
+													'eventum_cn': 'RewardResourcesBig',
+													'clientum_1': 'RewardResourcesBig',
+													'clientum_2': 'RewardResourcesBig',
+													'santium': 'RewardResourcesBig',
+													'dockyardum_1': 'RewardResourcesBig',
+													'dockyardum_2': 'RewardResourcesBig',
+													'freeXP': 'RewardResourcesBig',
+													'credits': 'RewardResourcesBig',
+													'eliteXP': 'RewardResourcesBig',
+													'accPoints': 'RewardResourcesBig',
+													'crewXP': 'RewardResourcesBig',
+													'clanResource': 'RewardResourcesBig',
+													'barCapacity': 'RewardResourceBarCapacityBig',
+													'premium': 'RewardResourcePremiumBig',
+													'wows_premium': 'RewardResourcePremiumBig',
+													'slots': 'RewardResourceSlotBig',
+													'paragonXP': 'RewardResourcesBig',
+													'recruitment_points': 'RewardResourcesBig',
+													'snowflake': 'RewardResourcesBig',
+													'bpPoints': 'RewardResourcesBig' })
+
+(def element RewardItemBig (_rewardEntityId:gfx, _isTitleVisible:bool = true) layout=true dispatch_size_change=true
+	(scope
+		(var rewardEntity:gfx = "$datahub.getEntity(_rewardEntityId)")
+		(var rewardComponent:gfx = "rewardEntity ? rewardEntity.rewardComponent : null")
+		(var rewardItem:dict = "rewardComponent	?	{	id:			rewardEntity ? rewardComponent.id : null,
+														amount:		rewardEntity ? rewardComponent.amount : null,
+														name:		rewardEntity ? rewardComponent.name : null,
+														type:		rewardEntity ? rewardComponent.type : null,
+														subtype:	rewardEntity ? rewardComponent.subtype : null,
+														params:		rewardEntity ? rewardComponent.params : null,
+														reasons:	rewardEntity ? rewardComponent.reasons : null,
+														isPRMP:		rewardEntity ? rewardComponent.isPRMP : null}
+												: null")
+		(var type:str = "rewardComponent ? rewardComponent.type : null")
+		(var selectedRenderRewardItem:str = "type ? RENDER_REWARD_ITEMS_BIG[rewardEntity.rewardComponent.type] : ''")
+		(var canRender:bool = "rewardItem && selectedRenderRewardItem")
+	)
+	(block
+		(style (width = 328px) (align = "center"))
+		(controller $Instance
+			(bind enabled "canRender")
+			(bind renderer "selectedRenderRewardItem")
+			(args _rewardItem = "rewardItem" _isTitleVisible = "_isTitleVisible")
+		)
+	)
+)
+
+(def element RewardItemBigCrew (_rewardItem:dict, _isTitleVisible:bool = true) layout=true
+	(scope
+		(var crewHistoryEntity:gfx = "$datahub.getPrimaryEntity(CC.crewHistoryInfo, _rewardItem.params.primaryKey)")
+		(var crewClassificationId:number = "crewHistoryEntity ? crewHistoryEntity.crewHistoryInfo.classificationId : 0")
+		(var isPersonCrew:bool = "crewClassificationId != SC.Common.COMMANDER_CLASSIFICATIONS.COMMON")
+
+		(var crewInfo:gfx = "crewHistoryEntity ? crewHistoryEntity.crewHistoryInfo : null")
+		(var crewName:str = "crewInfo ? crewInfo.fullName : tr('IDS_NO_CREW')")
+	)
+	(style (align = "center") (width = 100%))
+	(block
+		(style (width = 256px) (height = 256px) (backgroundImage = 'url:../reward_icons/big/Crew_bg.png'))
+	)
+	(block
+		(style (position = "absolute") (top = 60px) (left = 91px))
+		(element CrewStereotype _crewHistoryId = "_rewardItem.params.primaryKey" _size = "SIZE.MEDIUM")
+	)
+	(block
+		(class $FullsizeAbsolute)
+		(style (left = 36px) (hitTest = false) (backgroundImage = 'url:../reward_icons/big/Crew_overlay.png'))
+	)
+	(block
+		(bind visible "_isTitleVisible")
+		(style (align = "center") (marginTop = "REWARD_BIG_MARGINS_IMAGE"))
+		(tf
+			(class $TextDefault21NM)
+			(style (alpha = "TA"))
+			(bind text "'IDS_REWARD_' + toUpper(_rewardItem.subtype) + '_TITLE'")
+		)
+		(tf
+			(bind visible "isPersonCrew")
+			(class $TextDefault21NM)
+			(style (marginTop = "MS") (alpha = "TA") )
+			(bind text "crewName")
+		)
+	)
+)
+
+(def element RewardItemBigShip (_rewardItem:dict, _isTitleVisible:bool = true) layout=true
+	(scope
+		(var shipEntity:gfx = "$datahub.getPrimaryEntity(CC.ship, _rewardItem.id)")
+		(var shipInfo:gfx = "shipEntity ? shipEntity.ship : null"	(event "shipEntity.ship.evUpdate")
+																	(event "shipEntity.ship.evCurrentSkinChanged"))
+		(var shipId:number = "shipEntity ? shipInfo.id : 0")
+		(var isFarming:bool = "shipInfo ? shipInfo.isFarming : false")
+		(var uiSpecial:bool = "shipInfo ? shipInfo.uiSpecial : false")
+		(var shipProfitabilitySuffix:str = "uiSpecial	? SC.Common.SHIP_SPECIAL_FILTER_TYPE.SPECIAL :
+											isFarming	? SC.Common.SHIP_SPECIAL_FILTER_TYPE.PREMIUM
+														: SC.Common.SHIP_SPECIAL_FILTER_TYPE.ELITE")
+	)
+	(style (align = "center") (width = 100%))
+	(block
+		(style	(width = 256px) (height = 256px) (marginBottom = "REWARD_BIG_MARGINS_IMAGE")
+				(bind backgroundImage "'url:../reward_icons/big/ship_' + shipProfitabilitySuffix + '.png'"))
+	)
+	(block
+		(controller $Instance renderer='ShipLineItemNM'
+			(bind enabled "_isTitleVisible")
+			(args
+				_shipId = "shipId"
+				_withFlag = true
+				_fontClass = "'$TextDefaultBold21NM'"
+			)
+		)
+	)
+)
+
+(def element RewardItemBigExterior (_rewardItem:dict, _isTitleVisible:bool = true) layout=true
+	(scope
+		(var rewardSubType:str = "_rewardItem.subtype")
+
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+
+		(var exteriorEntity:gfx = "$datahub.getPrimaryEntity(CC.exteriorConfig, _rewardItem.id)")
+		(var exteriorConfig:gfx = "exteriorEntity ? exteriorEntity.exteriorConfig : null")
+		(var exteriorName:gfx = "exteriorConfig ? exteriorConfig.name : null")
+
+		(var isAvailableFakeColorSchemes:bool = "'colorsNum' in _rewardItem.params && _rewardItem.params.colorsNum")
+		(var fakeColorScheme:dict = "isAvailableFakeColorSchemes ? _rewardItem.params : null")
+
+		(var ecoBoostEntity:gfx = "$datahub.getPrimaryEntity(CC.ecoBoost, _rewardItem.id)")
+		(var isMultiBoost:bool = "rewardSubType == SC.Common.REWARD_SUBTYPE.MULTIBOOST")
+		(var shipLevel:str = "ecoBoostEntity && isMultiBoost ? ecoBoostEntity.filteringGroup.levelString : ''")
+		(var multiBoostName:str = "subst('IDS_MULTIBOOST_WITH_LEVEL_TITLE', [], { levelRange: shipLevel })")
+		(var ecoBoostName:str = "ecoBoostEntity ? ecoBoostEntity.ecoBoost.name : ''")
+
+		(var shipEntity:gfx = "$datahub.getPrimaryEntity(CC.ship, _rewardItem.params.shipId)")
+		(var shipInfo:gfx = "shipEntity ? shipEntity.ship : null")
+
+		(var itemName:str = "	exteriorEntity	? toUpper('IDS_' + exteriorName) :
+								ecoBoostEntity	? isMultiBoost	? multiBoostName
+																: 'IDS_' + toUpper(ecoBoostName)
+												: ''")
+
+		(var exteriorShipListRestrictions:gfx = "exteriorEntity ? exteriorEntity.filteringGroup : null")
+		(var ecoBoostShipListRestrictions:gfx = "ecoBoostEntity ? ecoBoostEntity.filteringGroup : null")
+
+		(var exteriorLevelFiltersRoman:str ="exteriorShipListRestrictions ? exteriorShipListRestrictions.levelString : ''" (event "exteriorShipListRestrictions.evUpdate"))
+		(var doesExteriorHaveLevelRestrictions:bool = "exteriorLevelFiltersRoman.length > 0")
+
+		(var ecoboostLevelFiltersRoman:str ="ecoBoostShipListRestrictions ? ecoBoostShipListRestrictions.levelString : ''" (event "ecoBoostShipListRestrictions.evUpdate"))
+		(var doesEcoBoostHaveLevelRestrictions:bool = "ecoboostLevelFiltersRoman.length > 0")
+
+		(var hasLevelRestrictions:bool = "doesExteriorHaveLevelRestrictions || doesEcoBoostHaveLevelRestrictions")
+
+		(var basicTitleWithShipName:str = "isMultiBoost ? 'IDS_MULTIBOOST_WITH_SHIP_TITLE' : 'IDS_EXTERIOR_NAME_WITH_SHIP'")
+		(var basicTitleWithShipLevel:str = "isMultiBoost ? 'IDS_MULTIBOOST_WITH_LEVEL_TITLE' : 'IDS_EXTERIOR_NAME_WITH_LEVEL'")
+
+		(var romanLevel:str = "doesExteriorHaveLevelRestrictions ? exteriorLevelFiltersRoman : ecoboostLevelFiltersRoman")
+
+		(var title:str = "	rewardSubType == SC.Ui_common.REWARD_EXTERIOR_TYPE.GLOBALBOOST	? 'IDS_GLOBALBOOST_TITLE' :
+							shipInfo														? subst(basicTitleWithShipName, [], {exteriorName: tr(itemName), shipName: toUpper(tr(shipInfo.nameIDS))}) :
+							hasLevelRestrictions											? subst(basicTitleWithShipLevel, [], {exteriorName: tr(itemName), levelRange: romanLevel})
+																							: tr(itemName)")
+
+		(var imagePath:str =	"ecoBoostEntity ? 'url:../reward_icons/big/' + ecoBoostName + '.png' : 
+								exteriorEntity	? 'url:../reward_icons/big/exteriors/' + exteriorName + '.png'
+												: ''")
+
+		(var isAmountVisible:bool = "_rewardItem.amount > 0")
+
+		(var validatedAmount:str = "exteriorEntity ? 'IDS_CAMOUFLAGE' : _rewardItem.amount")
+
+	)
+	(style (align = "center") (width = 100%))
+	(block
+		(style (width = 256px) (height = 256px) (marginBottom = "REWARD_BIG_MARGINS_IMAGE") (bind backgroundImage "imagePath"))
+
+		(controller $Tooltip
+			(bind enabled "exteriorEntity")
+			(renderer = 'CamouflageTooltip')
+			(args
+				_id = "_rewardItem.id"
+				_isReward = "true"
+				_amount = "_rewardItem.amount"
+				_fakeColorScheme = "fakeColorScheme"
+				_noMouseInstructions = "true"
+				_rewardShipId = "shipEntity ? _rewardItem.params.shipId : null"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			(cache = false)
+		)
+	)
+
+	
+	
+	
+	(block
+		(bind visible "_isTitleVisible")
+		(style (align = "center") (width = 100%))
+		(tf
+			(bind class "stageHeight > 850 ? '$TextDefault21NM' : '$TextDefault19NM'")
+			(alpha = "TA")
+			(style (width = 100%) (marginBottom = "REWARD_BIG_MARGINS") (textAlign = "center"))
+			(bind text "title")
+		)
+		(tf
+			(bind visible "isAmountVisible")
+			(bind class "stageHeight > 850 ? '$TextDefaultBold25NM' : '$TextDefaultBold21NM'")
+			(alpha = "TA")
+			(bind text "validatedAmount")
+		)
+	)
+)
+
+(def element RewardItemBigLootbox (_rewardItem:dict, _isTitleVisible:bool = true) layout=true
+	(style (align = "center") (width = 100%))
+
+	(block
+		(style	(width = 256px) (height = 256px) (marginBottom = "REWARD_BIG_MARGINS_IMAGE")
+				(bind backgroundImage "'url:../reward_icons/big/' + _rewardItem.subtype + '.png'"))
+	)
+	(block
+		(bind visible "_isTitleVisible")
+		(style (align = "center") (width = 100%))
+		(tf
+			(class $TextDefault21NM)
+			(style (width = 100%) (marginBottom = "REWARD_BIG_MARGINS") (textAlign = "center") (alpha = "TA"))
+			(bind text "'IDS_REWARD_LOOTBOX_' + toUpper(_rewardItem.subtype) + '_TITLE'")
+		)
+		(tf
+			(class $TextDefaultBold25NM)
+			(style (alpha = "TA"))
+			(bind text "subst('IDS_PL_LOOTBOX_COUNT', [], {_amount: toString(_rewardItem.amount)}, _rewardItem.amount)")
+		)
+	)
+)
+
+(def element RewardItemBigDogtag (_rewardItem:dict, _isTitleVisible:bool = true) layout=true
+	(scope
+		(var dogTagEntity:gfx = "$datahub.getPrimaryEntity(CC.dogTagItem, _rewardItem.id)")
+		(var gpName:str = "dogTagEntity ? dogTagEntity.dogTagItem.gpName : ''" (event "dogTagEntity.dogTagItem.evUpdate"))
+		(var isColorizable:bool = "dogTagEntity ? dogTagEntity.dogTagBackgroundShape.isColorizable : false" (event "dogTagEntity.dogTagBackgroundShape.evUpdate"))
+	)
+	(style (align = "center") (width = 100%))
+	(block
+		(style	(width = 256px) (height = 256px) (marginBottom = "REWARD_BIG_MARGINS_IMAGE") (backgroundSize = "fill")
+				(bind backgroundImage "'url:../dogTags/big/' + gpName + (isColorizable ? '/PCNT001' : '') + '.png'"))
+	)
+	(block
+		(bind visible "_isTitleVisible")
+		(style (width = 100%))
+		(tf
+			(class $TextDefault21NM)
+			(style (width = 100%) (textAlign = "center") (alpha = "TA"))
+			(bind text "'IDS_DOGTAG_' + toUpper(gpName) + '_NAME'")
+		)
+	)
+	(controller $Tooltip
+		(renderer='DogTagComponentTooltip')
+		(args
+			_elementEntityId = "dogTagEntity.id"
+			_isNotSelf = true
+			_isRewardTooltip = true
+			_isClickDisabled = true
+		)
+		(cache = false)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+	)
+)
+
+(def element RewardItemBigMystery (_rewardItem:dict, _isTitleVisible:bool = true) layout=true
+	(style (align = "center") (width = 100%))
+	(block
+		(style	(width = 256px) (height = 256px) (marginBottom = "REWARD_BIG_MARGINS_IMAGE")
+				(bind backgroundImage "'url:../reward_icons/big/' + _rewardItem.subtype + '.png'"))
+	)
+	(block
+		(bind visible "_isTitleVisible")
+		(style (align = "center") (width = 100%))
+		(tf
+			(class $TextDefault21NM)
+			(style (width = 100%) (textAlign = "center") (alpha = "TA"))
+			(bind text "'IDS_REWARD_' + toUpper(_rewardItem.subtype) + '_TITLE'")
+		)
+	)
+)
+
+(def element RewardItemBigCommon (_rewardItem:dict, _isTitleVisible:bool = true) layout=true
+	(scope
+		(var selectedRenderRewardResourceItemBig:str = "_rewardItem.subtype in RENDER_REWARD_RESOURCE_ITEMS_BIG ? RENDER_REWARD_RESOURCE_ITEMS_BIG[_rewardItem.subtype] : ''")
+	)
+	(style (width = 100%) (align = "center"))
+	(controller $Instance
+		(bind renderer "selectedRenderRewardResourceItemBig")
+		(bind enabled "selectedRenderRewardResourceItemBig")
+		(args
+			_rewardItem = "_rewardItem"
+			_isTitleVisible = "_isTitleVisible"
+		)
+	)
+)
+
+(def element RewardResourcesBig (_rewardItem:dict, _isTitleVisible:bool = true) layout=true
+	(scope
+		(var finalPrice:number = "_rewardItem && _rewardItem.amount ? _rewardItem.amount : 0")
+		(var currency:str = "	_rewardItem.subtype == SC.Common.REWARD_SUBTYPE.CLANRESOURCE	?	SC.Common.CURRENCIES.CLAN_RESOURCE
+																								:	_rewardItem.subtype")
+		(var priceInfo:dict = "{ finalPrice: finalPrice, currency: currency}")
+	)
+	(style (align = "center") (width = 100%))
+	(block
+		(style	(width = 256px) (height = 256px) (marginBottom = "REWARD_BIG_MARGINS_IMAGE")
+				(bind backgroundImage "'url:../reward_icons/big/' + _rewardItem.subtype + '.png'"))
+	)
+	(block
+		(bind visible "_isTitleVisible")
+		(style (align = "center") (width = 100%))
+		(tf
+			(class $TextDefault21NM)
+			(style (width = 100%) (marginBottom = "REWARD_BIG_MARGINS") (textAlign = "center") (alpha = "TA"))
+			(bind text "'IDS_REWARD_' + toUpper(_rewardItem.subtype) + '_TITLE'")
+		)
+		(element PriceTag
+			_priceInfo = "priceInfo"
+			_size = "SIZE.LARGE"
+		)
+	)
+)
+
+(def element RewardResourceBarCapacityBig (_rewardItem:dict, _isTitleVisible:bool = true) layout=true
+	(style (align = "center") (width = 100%))
+	(block
+		(style	(width = 256px) (height = 256px) (marginBottom = "REWARD_BIG_MARGINS_IMAGE")
+				(bind backgroundImage "'url:../reward_icons/big/' + _rewardItem.subtype + '.png'"))
+	)
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='RewardItemBigTitleTemplate'
+			(bind enabled "_isTitleVisible")
+			(args
+				_title = "'IDS_REWARD_' + toUpper(_rewardItem.subtype) + '_TITLE'"
+				_amount = "_rewardItem.amount"
+			)
+		)
+	)
+)
+
+(def element RewardResourceSlotBig (_rewardItem:dict, _isTitleVisible:bool = true) layout=true
+	(style (align = "center") (width = 100%))
+	(block
+		(style	(width = 256px) (height = 256px) (marginBottom = "REWARD_BIG_MARGINS_IMAGE")
+				(bind backgroundImage "'url:../reward_icons/big/' + _rewardItem.subtype + '.png'"))
+	)
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='RewardItemBigTitleTemplate'
+			(bind enabled "_isTitleVisible")
+			(args
+				_title = "'IDS_REWARD_' + toUpper(_rewardItem.subtype) + '_TITLE'"
+				_amount = "_rewardItem.amount"
+			)
+		)
+	)
+)
+
+(def element RewardResourcePremiumBig (_rewardItem:dict, _isTitleVisible:bool = true) layout=true
+	(style (align = "center") (width = 100%))
+	(block
+		(style	(width = 256px) (height = 256px) (marginBottom = "REWARD_BIG_MARGINS_IMAGE")
+				(bind backgroundImage "'url:../reward_icons/big/' + _rewardItem.subtype + '.png'"))
+	)
+	(block
+		(bind visible "_isTitleVisible")
+		(style (align = "center") (width = 100%))
+		(tf
+			(class $TextDefault21NM)
+			(style (width = 100%) (marginBottom = "REWARD_BIG_MARGINS") (textAlign = "center") (alpha = "TA"))
+			(bind text "'IDS_REWARD_' + toUpper(_rewardItem.subtype) + '_TITLE'")
+		)
+		(tf
+			(class $TextDefaultBold25NM)
+			(style (textColor = "SC.Ui_styles.SERVICE_COLORS.YELLOW") (alpha = "TA"))
+			(bind text "_rewardItem.params.text")
+		)
+	)
+)
+
+(def element RewardItemBigTitleTemplate (_title:str = '', _amount:number = 0)
+	(style (align = "center") (width = 100%))
+	(tf
+		(class $TextDefault21NM)
+		(style (width = 100%) (marginBottom = "REWARD_BIG_MARGINS") (textAlign = "center") (alpha = "TA"))
+		(bind text "_title")
+	)
+	(tf
+		(class $TextDefaultBold25NM)
+		(style (alpha = "TA"))
+		(bind text "_amount")
+	)
+)

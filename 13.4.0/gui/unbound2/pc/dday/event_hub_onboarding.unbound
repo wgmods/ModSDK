@@ -1,0 +1,90 @@
+(def element ModalWindowEventHubOnboarding ()
+	(scope
+		(event evAddedToStage)
+		(event evStartHide)
+
+		(var eventHubEntity:gfx = "$datahub.getSingleEntity(CC.eventHubSeason)")
+		(var isOnboardingNeeded:bool = "eventHubEntity ? eventHubEntity.eventHubSeason.isOnboardingNeeded : null" (event "eventHubEntity.eventHubSeason.evChanged"))
+	)
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(bindcall externalCall "isOnboardingNeeded ? 'inputMapping.onAction' : ''" "['setEventHubFlag', {flag: SC.Common.EVENT_HUB_FLAGS.ONBOARDING_SHOWN}]" on='addedToStage')
+
+	(style (align = "center|middle") (position = "absolute"))
+	(class $FullsizeAbsolute)
+	(controller $Animation
+		(bindcall play  duration=0.15
+						easing="Easing.quad_out"
+						delay="0.5*0.075"
+						from = "{ alpha: 0 }"
+						to = "{ alpha: 1 }"
+						(event "evAddedToStage")
+		)
+		(bindcall play  duration=0.15
+						easing="Easing.quad_in"
+						delay="0.5 * 0.055"
+						from = "{ alpha: 1 }"
+						to = "{ alpha: 0 }"
+						(event "evStartHide")
+		)
+	)
+
+	(hblock
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+			(style
+				(align = "center|middle")
+				(width = 478) (height = 615)
+				(backgroundImage = 'url:../event_hub/bg/welcome_screen.png')
+				(backgroundSize = "cover")
+				(bottom = 0)
+				(marginRight = "XL")
+			)
+		)
+
+		(block
+			(style (marginTop = "XLL"))
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 1.5)
+				(style (width = "600px"))
+				(tf
+					(class $TextDefaultBold40NM)
+					(style (width = "100%") (marginBottom = "L") (alpha = "TA"))
+					(text = 'IDS_EVENT_HUB_ONBOARDING_TITLE_UPPER')
+				)
+			)
+
+			(block
+				(style (width = "100%"))
+				(block
+					(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+					(style (width = "600px"))
+					(tf
+						(class $TextDefault19NM)
+						(style (width = "100%") (alpha = "TC") (marginBottom = "{720: LM, 1080: XL}"))
+						(text = 'IDS_EVENT_HUB_ONBOARDING_TEXT')
+					)
+				)
+			)
+
+			(block
+				(style (width = "100%") )
+				(block
+					(macro DEFAULT_MODAL_WINDOW_ANIMATION 2.5)
+					(element DefaultButton
+						_size = "SIZE.LARGE"
+						_width = "180"
+						_name = 'btn_cancel'
+						_enabled = true
+						_label = 'IDS_EVENT_HUB_ONBOARDING_BUTTON_START'
+						_methods = "[	{	type: 'direct.action',
+											name: SC.Common.STATISTICS_EVENTS.LOG,
+											args: ['ub2:event_hub_onboarding_closed_button']}
+									]"
+					)
+				)
+			)
+		)
+	)
+)

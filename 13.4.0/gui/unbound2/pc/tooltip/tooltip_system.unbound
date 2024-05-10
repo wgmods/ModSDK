@@ -1,0 +1,1588 @@
+(def css $DescriptionHtmlTextStyleSheet ()
+	(extends $FontDropShadowFilter)
+
+	(marginTextLeft = -3px)
+	(marginTextRight = -3px)
+	(marginTextTop = -6px)
+	(marginTextBottom = -6px) 
+	
+	(styleSheet ="'
+		body {
+			font-family: $WWSDefaultFont;
+			leading: -2;
+			font-size: 15;
+			color: #EEEEEE
+		}
+		.bold_default {
+			font-family: $WWSDefaultFontBold;
+			color: #EEEEEE
+		}
+		.bold_currentPlayerRelated {
+			font-family: $WWSDefaultFontBold;
+			color: #FFCC66
+		}
+		.bold_error {
+			font-family: $WWSDefaultFontBold;
+			color: #FF6600
+		}
+		.bold_warning {
+			font-family: $WWSDefaultFontBold;
+			color: #FF9900
+		}
+		.default {}
+		.currentPlayerRelated {
+			font-family: $WWSDefaultFont;
+			color: #FFCC66
+		}
+		.error {
+			font-family: $WWSDefaultFont;
+			color: #FF6600
+		}
+		.warning {
+			font-family: $WWSDefaultFont;
+			color: #FF9900
+		}
+	'")
+)
+
+(def constant TOOLTIP_PARAMETER_WITHOUT_VALUE "'none'")
+
+(def constant WEAPON_PARAM_TYPE_TO_RENDERER	"
+	{
+		'string' : 'StringParamRenderer',
+		'number' : 'NumberParamRenderer',
+		'array' : 'ArrayParamRenderer',
+		'none' : ''
+	}
+")
+
+(def macro SIMPLE_TOOLTIP_ANIMATION ()
+	(showAnimation={duration:0.15, delay:0.25, from:{alpha:0}, to:{alpha:1}})
+	(hideAnimation={duration:0.15, delay:0.0, from:{alpha:1}, to:{alpha:0}})
+	
+	
+	
+	(bindcall show on='mouseOver')
+	(bindcall hide on='mouseOut')
+)
+
+(def css $TooltipBackgroundContainer ()
+	(extends $FullsizeAbsolute)
+	(padding = -1)
+	(hitTest = false)
+)
+
+(def element HIT_TEST_TOOLTIP_CONTAINER () layout=true
+	(class $FullsizeAbsolute)
+	(style
+		(backgroundColor = 0x01000000)
+	)
+)
+
+(def element TooltipSystemSimpleTooltip (_tooltipText:str='') layout=true
+	(style (width = 100%))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemDescriptionText "_tooltipText")
+	)
+)
+
+
+(def macro INNER_PANEL_BACKGROUND ()
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundImage = "'url:../service_kit/panel_backgrounds/inner_panel.png'")
+			(scale9grid = 3)
+		)
+	)
+)
+
+(def macro TOOLTIP_SYSTEM_PARAMS_CONTAINER ()
+	(style
+		(width = 100%)
+		(paddingLeft = "-M")
+		(paddingRight = "-M")
+		(paddingTop = "-SXS")
+		(paddingBottom = "-SXS")
+	)
+
+	(macro INNER_PANEL_BACKGROUND)
+)
+
+(def element TOOLTIP_SYSTEM_PARAMS_WRAPPER ()
+	(macro TOOLTIP_SYSTEM_PARAMS_CONTAINER)
+)
+
+(def element TOOLTIP_SYSTEM_PARAMS_BLOCK ()
+	(style
+		(width = 100%)
+		(paddingLeft = "M")
+		(paddingRight = "M")
+		(paddingTop = "XS")
+		(paddingBottom = "XS")
+	)
+)
+
+(def macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE ()
+	(event evStartShow)
+	(event evShow)
+	(event evStartHide)
+	(event evHide)
+	
+	(macro GET_PREF 'isBlurOptionEnabled' "'graphics.GUI.blur'")
+	(macro GET_PREF 'isUIContrastOptionEnabled' "'graphics.GUI.contrast'")
+
+	(var windowManagerSingleComponent:gfx = "$datahub.getSingleComponent(CC.windowManager)")
+	(var windowQueue:array = "windowManagerSingleComponent.windowQueue" (event "windowManagerSingleComponent.evChanged"))
+	(var isInBattle:bool = "isIn('Battle', windowQueue)")
+
+	(var isHighContrast:bool="isInBattle || isUIContrastOptionEnabled || !isBlurOptionEnabled")
+)
+
+(def macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP (_isInfotip:expression="false")
+	(dispatch "'evBlurStartShow'" dir="EventDirection.DOWN" init=false (event "evStartShow"))
+	(dispatch "'evBlurStartHide'" dir="EventDirection.DOWN" init=false (event "evStartHide"))
+
+	(block
+		(class $TooltipBackgroundContainer)
+
+		(block
+			(class $FullsizeAbsolute)
+			(block
+				(class $FullsizeAbsolute)
+				(controller $Instance
+					(bind renderer "_isInfotip	? 'InfotipSystemBlur'
+												: 'TooltipSystemBlur'")
+					(bind enabled "!isHighContrast")
+				)
+			)
+			
+			(block
+				(bind visible "!isHighContrast")
+				(class $FullsizeAbsolute)
+				(style
+					(bind backgroundImage "_isInfotip	? 'url:../service_kit/panel_backgrounds/infotip_panel.png'
+														: 'url:../service_kit/panel_backgrounds/hint_panel.png'")
+					(scale9grid = 3)
+				)
+			)
+
+			(block
+				(bind visible "isHighContrast")
+				(class $FullsizeAbsolute)
+				(style
+					(backgroundImage = "'url:../service_kit/panel_backgrounds/hint_panel_high_contrast.png'")
+					(scale9grid = 3)
+				)
+			)
+		)
+	)
+)
+
+(def macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND (_isInfotip:expression="false")
+	(scope (macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP "_isInfotip")
+)
+
+(def element TOOLTIP_SYSTEM_DEFAULT_CONTAINER (_width:number="100%") layout=true
+	(style (bind width "_width" (bind enabled "_width")) (paddingRight = "M") (paddingLeft = "M") (paddingBottom = "SXS") (paddingTop = "SXS"))
+)
+
+(def element TooltipSystemHorizontalDivider () layout=true
+	(style
+		(width = 100%) (marginTop = "SXS") (marginBottom = "SXS")
+		(paddingLeft = "-M") (paddingRight = "-M")
+	)
+
+	(block
+		(style
+			(width = 100%) (height = 2) (backgroundSize = "fill")
+			(backgroundImage = 'url:../service_kit/dividers/divider_h.png')
+		)
+	)
+)
+
+(def element TooltipSystemVerticalDivider () layout=true
+	(style
+		(height = 100%) (marginLeft = "M") (marginRight = "M")
+		(paddingTop = "-SXS") (paddingBottom = "-SXS")
+	)
+
+	(block
+		(style
+			(height = 100%) (width = 3) (backgroundSize = "fill")
+			(backgroundImage = 'url:../service_kit/dividers/divider_v.png')
+		)
+	)
+)
+
+(def element TooltipSystemStatusLine (_text:str, _unifiedStatus:str="SC.Ui_styles.UNIFIED_STATUS.DEFAULT") layout=true
+	(style (width = 100%))
+
+	(element StatusLine
+		_unifiedStatus = "_unifiedStatus"
+		_text = "_text"
+		_width = "100%"
+	)
+)
+
+(def element TooltipSystemDescriptionTextSingleLine (_descriptionText:str) layout=true
+	(scope
+		(var descriptionText:str = "_descriptionText")
+	)
+
+	(style (width = 100%))
+
+	(tf
+		(class $TextDefaultNM)
+		(style
+			(width = 100%)
+			(leading = -2)
+			(elideMode = true)
+		)
+		(alpha = "TA")
+		
+		(bindcall substitute imageOffset=5 sourceText="tr(descriptionText)" postfix='' init=true)
+	)
+)
+
+(def element TooltipSystemDescriptionText (_descriptionText:str, _substitutionMap:dict={}) layout=true
+	(style (width = 100%))
+
+	(tf
+		(class $TextDefaultNM)
+		(style (width = 100%))
+		(alpha = "TA")
+
+		(bindcall substitute	imageOffset=5
+								substitutionMap="_substitutionMap"
+								sourceText="tr(_descriptionText)"
+								postfix=''
+								init=true)
+	)
+)
+
+(def element TooltipSystemHtmlDescriptionText (_descriptionText:str) layout=true
+	(scope
+		(var descriptionText:str = "_descriptionText")
+		(var substituteMap:dict = "{	'[commander]'		: 'icon_clan_role_commander',
+										'[exec_officer]'	: 'icon_clan_role_executive_officer',
+										'[private]'			: 'icon_clan_role_private',
+										'[recr_officer]'	: 'icon_clan_role_recruitment_officer',
+										'[comm_officer]'	: 'icon_clan_role_commissioned_officer',
+										'[officer]'			: 'icon_clan_role_officer'}")
+	)
+
+	(style (width = 100%))
+
+	(tf
+		(class $DescriptionHtmlTextStyleSheet)
+		(style (width = 100%))
+		(bindcall substitute imageOffset="5"  substitutionMap="substituteMap" 	sourceText="'<body>' + descriptionText + '</body>'"  postfix='' init=true)
+	)
+)
+
+(def element TooltipSystemDescriptionTextAutoStretch (_descriptionText:str, _maxWidth:number=250) layout=true
+	(scope
+		(var descriptionText:str = "_descriptionText")
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(style (maxWidth = "_maxWidth") (leading = -2))
+		(alpha = "TA")
+
+		(bindcall substitute imageOffset=5 sourceText="tr(descriptionText)" postfix='' init=true)
+	)
+)
+
+(def element TooltipSystemHeaderSubheaderText (_headerText:str, _unifiedStatus:str="SC.Ui_styles.UNIFIED_STATUS.DEFAULT", _subheaderText:str=null) layout=true
+	(style (width = 100%))
+
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "_unifiedStatus" "'textColor'" "'textAlpha'")
+
+	(tf
+		(name = "'tooltipSystemHeader'")
+		(style (width = "100%") (leading = "-4") (bind textColor "textColor"))
+		(class $TextDefaultBold19NM)
+
+		(bind alpha "textAlpha")
+		(bind text "_headerText")
+	)
+
+	(tf
+		(bind visible "_subheaderText != null")
+		(class $TextDefaultNM)
+		(style	(width = 100%)
+				(marginTop = "S")
+				(leading = "-2")
+				(bind alpha "textColor == SC.Ui_styles.SERVICE_COLORS.WHITE ? TC : 1")
+				(bind textColor "textColor"))
+		(bind text "_subheaderText")
+	)
+)
+
+(def element TooltipSystemSecondaryHeaderText (_headerText:str, _unifiedStatus:str="SC.Ui_styles.UNIFIED_STATUS.DEFAULT") layout=true
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "_unifiedStatus" "'textColor'" "'textAlpha'")
+	(style (width = "100%"))
+
+	(tf
+		(name = "'tooltipSystemSecondaryHeader'")
+		(style
+			(width = "100%")
+			(leading = "-4")
+			(bind textColor "textColor")
+			(bind alpha "textAlpha")
+		)
+		(class $TextDefaultBold17NM)
+		(bind text "_headerText")
+	)
+)
+
+(def element TooltipSystemInnerHeaderText (_headerText:str, _unifiedStatus:str) layout=true
+	(style (width = 100%))
+
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "_unifiedStatus" "'textColor'" "'textAlpha'")
+
+	(tf
+		(bind alpha "textAlpha")
+		(style
+			(width = 100%) (leading = -4)
+			(bind textColor "textColor")
+		)
+		(class $TextDefaultBoldNM)
+		(bind text "_headerText")
+	)
+)
+
+(def element TooltipSystemInnerHeaderSubheaderText (_headerText:str, _subheaderText:str, _unifiedStatus:str='') layout=true
+	(style (width = 100%))
+
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "_unifiedStatus" "'textColor'" "'textAlpha'")
+
+	(tf
+		(bind alpha "textAlpha")
+		(style
+			(width = 100%) (leading = -4)
+			(bind textColor "textColor")
+		)
+		(class $TextDefaultBoldNM)
+		(bind text "_headerText")
+	)
+
+	(tf
+		(bind visible "_subheaderText != null")
+
+		(class $TextDefaultNM)
+		(style
+			(width = 100%) (leading = -2)
+			(marginTop = "S")
+			(bind textColor "textColor")
+		)
+
+		(bind alpha "textAlpha")
+		(bind text "_subheaderText")
+	)
+)
+
+(def element TooltipSystemShipsRange (_startShipId:number, _endShipId:number) layout=true
+	(style (width = "100%") (flow = "horizontal"))
+
+	(block
+		(element ShipLineItemNM
+			_shipId = "_startShipId"
+			_fontClass = "'$TextDefaultBoldNM'"
+		)
+	)
+
+	(tf
+		(style (marginTop = "-1px") (marginLeft = "S") (marginRight = "S"))
+		(class $TextDefaultBoldNM)
+		(bind text "'—'")
+	)
+
+	(block
+		(element ShipLineItemNM
+			_shipId = "_endShipId"
+			_fontClass = "'$TextDefaultBoldNM'"
+		)
+	)
+)
+
+(def element ShipTitleWithIconAndLevelPBS (_shipID:number, _isSelf:bool = "false", _isEnemy:bool = "false", _fontSize:number = "null", _iconColorTransform:dict = "{}", _textColor:str="SC.Ui_styles.SERVICE_COLORS.WHITE") layout=true
+	(scope
+		(var shipEntity:gfx =	"$datahub.getPrimaryEntity(CC.ship, _shipID)")
+		(var shipInfo:gfx =		"shipEntity ? shipEntity.ship : null"	(event "shipEntity.ship.evUpdate")
+																		(event "shipEntity.ship.evCurrentSkinChanged"))
+
+		(var upgradableShipInfo:gfx = "shipEntity.upgradableShipInfo"	(event "shipEntity.upgradableShipInfo.evUpdate"))
+
+		(var fontClass:str = "	_fontSize == SIZE.SMALL		?	_isSelf	?	'$TextDefaultBold13NM'
+																		:	'$TextDefault13NM' :
+								_fontSize == SIZE.MEDIUM	?	_isSelf	?	'$TextDefaultBoldNM'
+																		:	'$TextDefaultNM' :
+								_fontSize == SIZE.LARGE		?	_isSelf	?	'$TextDefaultBold17NM'
+																		:	'$TextDefault17NM'
+															:	_isSelf	?	'$TextDefaultBold19NM'
+																		:	'$TextDefault19NM'")
+	)
+	(style (flow = "horizontal") (align = "left|middle"))
+
+	(element ShipIcon
+		_shipType =		"shipInfo.subtype"
+		_isEnemy =		"_isEnemy"
+
+		(style (marginTop = "2px") (marginLeft = "-4px") (marginRight = "1px"))
+	)
+
+	(element ShipLevelNM
+		_levelIcon =		"shipInfo.levelIcon"
+		_colorTransform =	"_iconColorTransform"
+		_levelRome =		"shipInfo.levelRome"
+		_fontClass =		"fontClass"
+		_textColor =		"_textColor"
+
+		(style (marginRight = "1px"))
+	)
+
+
+	(tf
+		(style (bind textColor "_textColor"))
+		(bind class "fontClass")
+		(bind text "toUpper(tr(shipInfo.nameIDS))")
+	)
+)
+
+(def element TooltipSystemHeaderIconCampaignView (_imageUrl:str, _imageWidth:number, _imageHeight:number, _iconAmount:str, _data:dict) layout=true
+	(scope
+		(var renderCampaignItems:dict = "	{	SC.Ui_common.CAMPAIGN_TYPE.TASK: 'TooltipSystemHeaderIconCampaignTask',
+												SC.Ui_common.CAMPAIGN_TYPE.MISSION: 'TooltipSystemHeaderIconCampaignMission',
+												SC.Ui_common.CAMPAIGN_TYPE.CAMPAIGN: 'TooltipSystemHeaderIconCampaign' }")
+	)
+	(controller $Instance
+		(bind renderer "renderCampaignItems[_data.iconType]")
+		(args
+			_entityId = "_data.entityId"
+			_imageWidth = "_imageWidth"
+			_imageHeight = "_imageHeight"
+		)
+	)
+)
+
+(def element TooltipSystemHeaderIconCampaignTask (_entityId:str, _imageWidth:number, _imageHeight:number) layout=true
+	(scope
+		(var campaignTaskEntity:gfx = "$datahub.getPrimaryEntity(CC.campaignTaskParams, _entityId)")
+		(var missionEntity:gfx = "$datahub.getPrimaryEntity(CC.campaignMissionParams, campaignTaskEntity.campaignTaskParams.missionID)")
+		(var campaignTaskParams:gfx = "campaignTaskEntity ? campaignTaskEntity.campaignTaskParams : null")
+		(macro PULL_CAMPAIGN_DATA_SCOPE "campaignTaskParams.campaignID")
+		(var campaignMissionParams:gfx = "missionEntity ? missionEntity.campaignMissionParams : null")
+		(var uiNumber:str = "campaignMissionParams.uiNumber")
+		(var imagePath:str = "'url:../campaigns/missions_pin/' + campaignName + '_pin.png'")
+	)
+	(style
+		(bind width "_imageWidth ? _imageWidth : 80")
+		(bind height "_imageHeight ? _imageHeight : 80")
+		(backgroundSize = "fill")
+		(bind backgroundImage "imagePath")
+		(align = "center|middle")
+	)
+
+	(tf
+		(style (alpha = "TA"))
+		(class $TextDefaultBold17NM)
+		(bind text "uiNumber")
+	)
+)
+
+(def element TooltipSystemHeaderIconCampaign (_entityId:str, _imageWidth:number, _imageHeight:number) layout=true
+	(scope
+		(var campaignEntity:gfx = "$datahub.getPrimaryEntity(CC.campaignParams, _entityId)")
+		(var campaignParams:gfx = "campaignEntity ? campaignEntity.campaignParams : null")
+		(var campaignName:str = "campaignParams.name")
+		(var imagePath:str = "'url:../campaigns/campaign_logo/' + campaignName + '_logo.png'")
+	)
+	(style
+		(bind width "_imageWidth ? _imageWidth : 80")
+		(bind height "_imageHeight ? _imageHeight : 80")
+		(backgroundSize = "fill")
+		(bind backgroundImage "imagePath")
+	)
+)
+
+(def element TooltipSystemHeaderIconCampaignMission (_entityId:str, _imageWidth:number, _imageHeight:number) layout=true
+	(scope
+		(var campaignMissionEntity:gfx = "$datahub.getPrimaryEntity(CC.campaignMissionParams, _entityId)")
+		(var campaignMissionParams:gfx = "campaignMissionEntity ? campaignMissionEntity.campaignMissionParams : null")
+		(macro PULL_CAMPAIGN_DATA_SCOPE "campaignMissionParams.campaignID")
+		(var uiNumber:str = "campaignMissionParams.uiNumber")
+		(var imagePath:str = "'url:../campaigns/campaign_logo/' + campaignName + '_logo.png'")
+	)
+	(style
+		(bind width "_imageWidth ? _imageWidth : 80")
+		(bind height "_imageHeight ? _imageHeight : 80")
+		(backgroundSize = "fill")
+		(bind backgroundImage "imagePath")
+	)
+)
+
+(def element TooltipSystemShipStereotype (_shipId:number, _isReady:bool) layout=true
+	(bind visible "_isReady")
+	(style (width = 100%))
+
+	(element ShipLineItemNM
+		_shipId = "_shipId"
+		_fontClass = "'$TextDefaultBold17NM'"
+	)
+)
+
+(def element TooltipSystemHeaderIconCrew (_imageUrl:str, _imageWidth:number, _imageHeight:number, _iconAmount:str, _data:dict) layout=true
+	(element CrewStereotype
+		_crewHistoryId =	"'crewHistoryId'	in _data ? _data.crewHistoryId		: null"
+		_crewId =			"'crewId'			in _data ? _data.crewId				: null"
+		_shipClass =		"'shipSubtype'		in _data ? _data.shipSubtype		: null"
+		_hideSkillPoints =	"'hideSkillPoints'	in _data ? _data.hideSkillPoints	: null"
+		_size =				"SIZE.SMALL"
+		_isAnimated = false
+	)
+)
+
+(def element TooltipSystemIconWithCounter (_imageUrl:str, _imageWidth:number, _imageHeight:number, _iconAmount:str, _data:dict="null") layout=true
+	(scope
+		(var imageUrl:str = "_imageUrl")
+	)
+
+	(style
+		(backgroundSize = "cover")
+		(bind width "_imageWidth")
+		(bind height "_imageHeight")
+		(bind backgroundImage "imageUrl")
+	)
+
+	(block
+		(style (position = "absolute") (right = 0) (bottom = 0))
+		(controller $Instance renderer='TooltipSystemHeaderIconCounter'
+			(bind enabled "_iconAmount")
+			(args
+				_iconAmount="_iconAmount"
+			)
+		)
+	)
+)
+
+(def element TooltipSystemHeaderIconCounter (_iconAmount:str) layout=true
+	(tf
+		(class $TextDefaultBold19NM)
+		(bind text "_iconAmount")
+	)
+	(tf
+		(style (position = "absolute"))
+		(class $TextDefaultBold19NM)
+		(bind text "_iconAmount")
+	)
+)
+
+(def element TooltipSystemSimpleIcon (_imageUrl:str, _imageWidth:number, _imageHeight:number, _iconAmount:str, _data:dict="null") layout=true
+	(style
+		(backgroundSize = "cover")
+		(bind width "_imageWidth ")
+		(bind height "_imageHeight")
+		(bind backgroundImage "_imageUrl")
+	)
+	(bind colorTransform "_data && 'colorTransform' in _data ? _data.colorTransform : {}")
+)
+
+(def element TooltipSystemHeaderIconCamoRepaint (_imageUrl:str, _imageWidth:number, _imageHeight:number, _iconAmount:str, _data:dict) layout=true
+	(controller $Instance renderer='CamouflageRepaintedIcon'
+		(args
+			_camouflageId = "_data.camouflageId"
+			_fakeColorScheme = "_data.fakeColorScheme"
+		)
+	)
+)
+
+(def element TooltipSystemHeaderIconRibbon (_imageUrl:str, _imageWidth:number, _imageHeight:number, _iconAmount:str, _data:dict="null") layout=true
+	(style
+		(backgroundSize = "cover")
+		(bind width "_imageWidth")
+		(bind height "_imageHeight")
+		(bind backgroundImage "_imageUrl")
+	)
+
+	(block
+		(style (position = "absolute") (right = 6) (bottom = 6))
+		(controller $Instance renderer='TooltipSystemHeaderIconCounter'
+			(bind enabled "_iconAmount")
+			(args
+				_iconAmount="_iconAmount"
+			)
+		)
+	)
+)
+
+(def element TooltipSystemHeaderIconEcoBoost (_imageUrl:str, _imageWidth:number, _imageHeight:number, _iconAmount:str, _data:dict) layout=true
+	(style
+		(width = "60px")
+		(height = "60px")
+		(bind backgroundImage "	_data.type == SC.Common.ECOBOOST_TYPES.COMMON	? 'url:../eco_boosts/common/' + _data.paramsId + '.png' :
+								_data.type == SC.Common.ECOBOOST_TYPES.LINKABLE	? 'url:../eco_boosts/multiboosts/linkable.png' :
+								_data.type == SC.Common.ECOBOOST_TYPES.GLOBAL	? 'url:../eco_boosts/multiboosts/globalboost.png'
+																				: 'url:../eco_boosts/multiboosts/clanboost.png'")
+	)
+)
+
+(def element TooltipSystemHeaderWithIconAndText (_imageUrl:str='', _imageWidth:number=0, _imageHeight:number=0, _headerText:str='',
+												_subheaderText:str='', _headerIconType:number=0, _iconAmount:str='', _unifiedStatus:str='', _data:dict="null") layout=true
+	(scope
+		(var headerIconType:number = "_headerIconType   ? _headerIconType
+														: SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.SIMPLE")
+
+		(var iconRendererItem:str = "	headerIconType == SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.SIMPLE			?	'TooltipSystemSimpleIcon'				:
+										headerIconType == SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.WITH_AMOUNT		?	'TooltipSystemIconWithCounter'			:
+										headerIconType == SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.CAMO_REPAINT		?	'TooltipSystemHeaderIconCamoRepaint'	:
+										headerIconType == SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.RIBBON			?	'TooltipSystemHeaderIconRibbon'			:
+										headerIconType == SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.CREW				?	'TooltipSystemHeaderIconCrew'			:
+										headerIconType == SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.ECO_BOOST		?	'TooltipSystemHeaderIconEcoBoost'		:
+										headerIconType == SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.CAMPAIGN			?	'TooltipSystemHeaderIconCampaignView'
+																														:	'TooltipSystemIconWithCounter'")
+	)
+
+	(style (width = "100%") (bind minHeight "_imageHeight") (flow = "horizontal") (align = "middle"))
+
+	(block
+		(style (height = "100%") (align = "top") (marginRight = "SXS"))
+		(controller $Instance
+			(bind renderer "iconRendererItem")
+			(args
+				_imageWidth =	"_imageWidth"
+				_imageHeight =	"_imageHeight"
+				_imageUrl =		"_imageUrl"
+				_iconAmount =	"_iconAmount"
+				_data =			"_data"
+			)
+		)
+	)
+
+	(element TooltipSystemHeaderSubheaderText
+		_headerText="_headerText"
+		_subheaderText="_subheaderText"
+		_unifiedStatus="_unifiedStatus"
+	)
+)
+
+(def element TooltipSystemParamsModifiersListTTX (_attributesNegative:array, _attributesPositive:array, _attributesNeutral:array, _ownerId:number=0) layout=true
+	(style
+		(width = 100%)
+	)
+
+	(block
+		(style (width = 100%))
+		(controller $Repeat renderer='ParamsModifierItemTooltipSystemTTX'
+			(bind count "_attributesPositive ? _attributesPositive.length : 0")
+			(args _attribute="_attributesPositive[$index]" _ownerId="_ownerId")
+		)
+	)
+
+	(block
+		(style (width = 100%))
+		(controller $Repeat renderer='ParamsModifierItemTooltipSystemTTX'
+			(bind count "_attributesNegative ? _attributesNegative.length : 0")
+			(args _attribute="_attributesNegative[$index]" _ownerId="_ownerId")
+		)
+	)
+
+	(block
+		(style (width = 100%))
+		(controller $Repeat renderer='ParamsModifierItemTooltipSystemTTX'
+			(bind count "_attributesNeutral ? _attributesNeutral.length : 0")
+			(args _attribute="_attributesNeutral[$index]" _ownerId="_ownerId")
+		)
+	)
+)
+
+(def element TooltipSystemParamsModifiersList (_attributesNegative:array=[], _attributesPositive:array=[], _attributesNeutral:array=[], _ownerId:number=0) layout=true
+	(macro TOOLTIP_SYSTEM_PARAMS_CONTAINER)
+
+	(block
+		(style (width = 100%) (padding = "M") (paddingTop = "SXS") (paddingBottom = 1))
+		(block
+			(style (width = 100%))
+			(controller $Repeat renderer='ParamsModifierItemTooltipSystem'
+				(bind count "_attributesPositive ? _attributesPositive.length : 0")
+				(args _attribute="_attributesPositive[$index]" _ownerId="_ownerId")
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Repeat renderer='ParamsModifierItemTooltipSystem'
+				(bind count "_attributesNegative ? _attributesNegative.length : 0")
+				(args _attribute="_attributesNegative[$index]" _ownerId="_ownerId")
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Repeat renderer='ParamsModifierItemTooltipSystem'
+				(bind count "_attributesNeutral ? _attributesNeutral.length : 0")
+				(args _attribute="_attributesNeutral[$index]" _ownerId="_ownerId")
+			)
+		)
+	)
+)
+
+(def element TooltipSystemPriceTagLine (_title:str, _priceInfo:dict) layout=true
+	(style (flow = "horizontal") (width = "100%"))
+
+	(tf
+		(style (alpha = "TA") (leading = "-2") (marginRight = "S") (width = "100%"))
+		(class $TextDefaultNM)
+		(bind text "_title")
+	)
+
+	(controller $Instance renderer='PriceTag'
+		(bind enabled "_priceInfo")
+		(args
+			_priceInfo			= "_priceInfo"
+			_showDiscountTag	= true
+		)
+	)
+)
+
+(def element TooltipSystemMultiplePriceTagLine (_priceIds:array) layout=true
+	(style (width = "100%"))
+
+	(hblock
+		(style (width = "100%"))
+
+		(controller $Repeat renderer='TooltipSystemMultiplePriceTagLineItem' 
+			(bind count "_priceIds.length")
+			(args _priceId="_priceIds[$index]")
+		)
+	)	
+)
+
+(def element TooltipSystemMultiplePriceTagLineItem (_priceId:str)
+	(scope
+		(var priceEntity:gfx = "$datahub.getEntity(_priceId)")
+		(var priceInfo:gfx = "priceEntity.itemPrice")
+	)
+
+	(style (flow = "horizontal") (align = "middle"))
+
+	(tf
+		(bind visible "$index != 0")
+
+		(class $TextDefaultNM)
+		(style (marginLeft = "S") (marginRight = "S") (alpha = "TC"))
+
+		(bind text "'IDS_OR'")
+	)
+
+	(controller $Instance renderer='PriceTag'
+		(bind enabled "priceInfo")
+		(args
+			_priceInfo			= "priceInfo"
+			_showDiscountTag	= true
+		)
+	)
+)
+
+(def element TooltipSystemCounterLine  (_title:str, _count:number, _measurement:str = '') layout=true
+	(style (flow = "horizontal") (width = "100%"))
+
+	(tf
+		(style (alpha = "TA") (leading = "-2") (marginRight = "S")) 
+		(class $TextDefaultNM)
+		(bind text "_title")
+	)
+
+	(tf
+		(style (alpha = "TA"))
+		(class $TextDefaultNM)
+		(bind text "formatSeparator(_count) + (_measurement ? ' ' + _measurement : '')")
+	)
+)
+
+(def element ParamsModifierItemTooltipSystemTTX (_attribute:dict, _ownerId:number=0) layout=true
+	(scope
+		(var parameterEntity:gfx = "$datahub.getPrimaryCompositeEntity(CC.parameter, _ownerId, _attribute.paramName)")
+		(var measuredValue:str = "parameterEntity && parameterEntity.parameterView	? parameterEntity.parameterView.currentValue
+																					: _attribute.measuredValue"
+									(event "parameterEntity.parameterView.evCurrentValueChanged"))
+
+		(var valueColor:number =  "	_attribute.category == 'positive' 	? SC.Ui_styles.SERVICE_COLORS.GREEN :
+									_attribute.category == 'negative' 	? SC.Ui_styles.SERVICE_COLORS.RED
+																		: SC.Ui_styles.SERVICE_COLORS.WHITE")
+		(var labelColor:number =  "measuredValue ? SC.Ui_styles.SERVICE_COLORS.WHITE : valueColor")
+	)
+	(class $TTXValueRowHorizontal)
+
+	(tf
+		(class $TextDefaultNM)
+		(style
+			(width = 100%)
+			(leading = -3) (marginRight = "6px")
+			(bind textColor "labelColor")
+		)
+
+		(bind alpha "(_attribute.category == 'negative' && !measuredValue) ? 1 : 0.8")
+
+		(bind text "_attribute.attributeIDS")
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(style (bind textColor "valueColor"))
+
+		(bindcall substitute imageOffset=5 substitutionMap="{	'[battleship]': 'battleship_small_own',
+																'[aircarrier]': 'carrier_small_own',
+																'[destroyer]': 'destroyer_small_own',
+																'[submarine]': 'submarine_small_own'
+															}"
+							sourceText="measuredValue" postfix="''" init=true)
+	)
+
+	(tf
+		(bind visible "_attribute.measure")
+
+		(class $TextDefaultNM)
+		(style
+			(bind textColor "valueColor")
+			(marginLeft = "XS")
+		)
+
+		(bind alpha "_attribute.category == 'positive' ? 0.65 : 0.8")
+		(bind text "_attribute.measure")
+	)
+)
+
+(def element ParamsModifierItemTooltipSystem (_attribute:dict, _ownerId:number=0) layout=true
+	(scope
+		(var parameterEntity:gfx = "'paramName' in _attribute && _ownerId ? $datahub.getPrimaryCompositeEntity(CC.parameter, _ownerId, _attribute.paramName) : null")
+		(var parameterView:gfx = "parameterEntity ? parameterEntity.parameterView : null")
+
+		(var currentValue:str = "parameterView ? parameterView.currentValue : ''" (event "parameterEntity.parameterView.evCurrentValueChanged"))
+		(var measuredValue:str = "parameterView ? currentValue : _attribute.measuredValue")
+
+		(var isPositiveAttributeCategory:bool = "_attribute && _attribute.category == 'positive'")
+		(var isNegativeAttributeCategory:bool = "_attribute && _attribute.category == 'negative'")
+		(var attributeMeasureText:str = "_attribute && 'measure' in _attribute ? _attribute.measure : ''")
+
+		(var valueColor:number =  "	isPositiveAttributeCategory 	? SC.Ui_styles.SERVICE_COLORS.GREEN :
+									isNegativeAttributeCategory 	? SC.Ui_styles.SERVICE_COLORS.RED
+																	: SC.Ui_styles.SERVICE_COLORS.WHITE")
+
+		(var labelColor:number =  "measuredValue ? SC.Ui_styles.SERVICE_COLORS.WHITE : valueColor")
+	)
+
+	(style
+		(flow = "horizontal")
+		(width = 100%)
+		(marginBottom = "SXS")
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(style
+			(width = 100%)
+			(leading = -3) (marginRight = "6px")
+			(bind textColor "labelColor")
+		)
+
+		(bind alpha "isNegativeAttributeCategory && !measuredValue ? 1 : 0.8")
+		(bind text "_attribute.attributeIDS")
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(style (bind textColor "valueColor"))
+
+		(bindcall substitute imageOffset=5 substitutionMap="{	'[battleship]': 'battleship_small_own',
+																'[aircarrier]': 'carrier_small_own',
+																'[destroyer]': 'destroyer_small_own',
+																'[submarine]': 'submarine_small_own'
+															}"
+							sourceText="measuredValue" postfix="''" init=true)
+	)
+
+	(tf
+		(bind visible "attributeMeasureText")
+
+		(class $TextDefaultNM)
+		(style
+			(bind textColor "valueColor")
+			(marginLeft = "XS")
+		)
+
+		(bind alpha "isPositiveAttributeCategory ? 0.65 : 0.8")
+		(bind text "attributeMeasureText")
+	)
+)
+
+(def element WeaponBattleTooltipParamsList (_params:dict, _paramSet:array, _entityId:number) layout=true
+	(macro TOOLTIP_SYSTEM_PARAMS_CONTAINER)
+
+	(block
+		(style (width = 100%) (padding = "M") (paddingTop = "SXS") (paddingBottom = "1"))
+		(controller $Repeat renderer='WeaponBattleTooltipParamsRow' 
+			(bind count "_paramSet.length")
+			(args _params="_params" _rowParams="_paramSet[$index]" _entityId="_entityId")
+		)
+	)
+)
+
+(def element WeaponBattleTooltipParamsRow (_params:dict, _rowParams:dict, _entityId:number) layout=true
+	(scope
+		(var alternateValueEntity:gfx = "$datahub.getPrimaryCompositeEntity(CC.parameter, _entityId, _rowParams.alternateValueEntity)")
+		(var alternateValueParameter:gfx = "alternateValueEntity.parameter")
+		(var alternateValue:number = "alternateValueParameter.currentValue" (event "alternateValueParameter.evChanged"))
+		
+		(var isHiddenWhenNullAlternateValue:bool = "'isNullAlternateValueHidden' in _rowParams && _rowParams.isNullAlternateValueHidden
+																									? alternateValue == null
+																									: false")
+	)
+
+	(style
+		(flow = "horizontal")
+		(width = 100%)
+		(marginBottom = "SXS")
+	)
+
+	(bind visible "_rowParams.paramName in _params && !isHiddenWhenNullAlternateValue")
+
+	(tf
+		(class $TextDefaultNM)
+		(style
+			(width = 100%)
+			(leading = -3)
+			(marginRight = "6px")
+		)
+		(alpha = "TA")
+		(bind text "_rowParams.title")
+	)
+
+	(block
+		(controller $Instance
+			(bind enabled "_rowParams.paramName in _params && _rowParams.type != TOOLTIP_PARAMETER_WITHOUT_VALUE")
+			(bind renderer "WEAPON_PARAM_TYPE_TO_RENDERER[_rowParams.type]")
+			(args
+				_entityId	= "_entityId"
+				_rowParams	= "_rowParams"
+				_params		= "_params"
+			)
+		)
+	)
+)
+
+(def element StringParamRenderer (_entityId:number, _rowParams:dict, _params:gfx) layout=true
+	(scope
+		(var alternateValueEntity:gfx = "$datahub.getPrimaryCompositeEntity(CC.parameter, _entityId, _rowParams.alternateValueEntity)")
+		(var alternateValueParameter:gfx = "alternateValueEntity.parameter")
+		(var alternateValue:str = "alternateValueParameter.currentValue" (event "alternateValueParameter.evChanged"))
+
+		(var paramValue:str = "_params ? _params[_rowParams.paramName] : ''")
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(bind text "_rowParams.alternateValueEntity ? alternateValue : paramValue")
+	)
+)
+
+(def element NumberParamRenderer (_entityId:number, _rowParams:dict, _params:gfx) layout=true
+	(scope
+		(var alternateValueEntity:gfx = "$datahub.getPrimaryCompositeEntity(CC.parameter, _entityId, _rowParams.alternateValueEntity)")
+		(var alternateValueParameter:gfx = "alternateValueEntity.parameter")
+		(var alternateValue:number = "alternateValueParameter.currentValue" (event "alternateValueParameter.evChanged"))
+			
+		(var paramValue:number = "_params ? _params[_rowParams.paramName] : 0")
+		(var roundNumber:number = "_rowParams ? _rowParams.roundNumber : 0")
+	)
+
+	(element NumberWithMeasureRenderer
+			_value = "_rowParams.alternateValueEntity ? alternateValue : paramValue"
+			_roundNumber = "roundNumber"
+			_measure = "_rowParams.measure"
+	)
+)
+
+(def element ArrayParamRenderer (_entityId:number, _rowParams:dict, _params:gfx) layout=true
+	(scope
+		(var alternateValueEntity:gfx = "$datahub.getPrimaryEntity(CC.parameter, toString(_entityId) + '_' + _rowParams.alternateValueEntity)")
+		(var alternateValueParameter:gfx = "alternateValueEntity.parameter")
+		(var alternateValue:number = "alternateValueParameter.currentValue" (event "alternateValueParameter.evChanged"))
+			
+		(var paramValues:array = "_params ? _params[_rowParams.paramName] : [0]")
+		(var roundNumber:number = "_rowParams ? _rowParams.roundNumber : 0")
+	)
+
+	(style (flow = "horizontal"))
+
+	(controller $Repeat renderer='NumberWithMeasureRenderer' count="paramValues.length"
+		(args
+			_value = "_rowParams.alternateValueEntity ? alternateValue : paramValues[$index]"
+			_roundNumber = "roundNumber"
+			_measure = "_rowParams.measure[$index]"
+			_drawDelimiter = "$index != paramValues.length - 1"
+		)
+	)
+)
+
+(def element NumberWithMeasureRenderer (_value:number, _roundNumber:number, _measure:str, _drawDelimiter:bool = false) layout=true
+	(scope
+		(var roundedValue:number =	"_roundNumber > 0 	? round(_value * pow(10, _roundNumber) ) / pow(10, _roundNumber)
+														: round(_value)")
+		(var measuredValue:str = 	"_roundNumber >= 0 	? formatFloatingPoint(roundedValue, _roundNumber)
+														: _value")
+	)
+
+	(style (flow = "horizontal"))
+
+	(tf
+		(class $TextDefaultNM)
+		(bindcall substitute imageOffset=5 substitutionMap="{	'[battleship]': 'battleship_small_own',
+																'[aircarrier]': 'carrier_small_own',
+																'[destroyer]': 'destroyer_small_own',
+																'[submarine]': 'submarine_small_own' 
+															}"
+							 sourceText="measuredValue" postfix="''" init=true)
+	)
+
+	(tf
+		(visible = "_measure")
+		(class $TextDefaultNM)
+		(alpha = "0.8")
+		(style
+			(bind marginLeft "_measure ? 6 : 0")
+		)
+		(bind text "_measure ? trPlural(_measure, roundedValue) : ''")
+	)
+
+	(tf
+		(visible = "_drawDelimiter")
+		(class $TextDefaultNM)
+		(alpha = 0.7)
+		(text = ' / ')
+	)
+)
+
+(def element TooltipSystemBattleParamsList (_paramSet:array, _paramOwner:gfx) layout=true
+	(macro TOOLTIP_SYSTEM_PARAMS_CONTAINER)
+	(block
+		(style (width = 100%) (paddingLeft = "M") (paddingRight = "M") (paddingTop = "SXS"))
+		(controller $Repeat renderer='ShipParamsListElement' 
+			(bind count "_paramSet.length")
+			(args _rowParams="_paramSet[$index]" _paramOwner="_paramOwner" _horizontalPaddings="0")
+		)
+	)
+)
+
+(def element TooltipSystemTaskRestrictions (_restrictionEntity:gfx="null", _battleTypes:array="null") layout=true
+	(scope
+		(var restrictionEntity:gfx = "_restrictionEntity")
+		(var battleTypes:array = "	_battleTypes					? _battleTypes :
+									restrictionEntity.sseConditions	? restrictionEntity.sseConditions.battleTypes
+																	: []")
+		(var shipListRestrictions:gfx = "restrictionEntity.filteringGroup" (event "restrictionEntity.evAdded") (event "restrictionEntity.evRemoved"))
+
+		(var shipRestrictions:array = "shipListRestrictions ? shipListRestrictions.selectedFilters : []" (event "restrictionEntity.evAdded") (event "restrictionEntity.evRemoved"))
+		(var isWithoutRestrictions:bool = "!battleTypes.length && shipRestrictions.isEmpty")
+	)
+	(style (width = "100%"))
+	(tf
+		(class $TextDefaultNM)
+		(style (alpha = "TA"))
+		(text = "'IDS_SSE_TASK_RESTRICTIONS'")
+	)
+
+	(hblock
+		(style  (width = "100%") (bind marginTop "isWithoutRestrictions ? 0 : SXS"))
+
+		(hblock
+			(bind visible "battleTypes.length > 0")
+			(style (marginLeft = "-2px") (marginTop = "-2px"))
+
+			(controller $Repeat renderer='TaskBattleTypeRestriction'
+				(bind count "battleTypes.length")
+				(args _battleType="battleTypes[$index]")
+			)
+		)
+		(block
+			(bind visible "!shipRestrictions.isEmpty && battleTypes.length > 0")
+			(style (height = 21px) (marginRight = "XS"))
+			(element VerticalDivider)
+		)
+		(block
+			(style (bind marginLeft "battleTypes.length ? S : 0"))
+
+			(controller $Instance renderer='ShipRestrictions'
+				(bind enabled "!shipRestrictions.isEmpty")
+				(args
+					_restrictionsEntityId = "restrictionEntity.id"
+					_withShipTypeCounters = "false"
+					_isFromTooltip = "true"
+				)
+			)
+		)
+	)
+	(block
+		(bind visible "isWithoutRestrictions")
+		(tf
+			(class $TextDefaultNM)
+			(style (marginTop = "SXS") (alpha = "TS"))
+			(text = "'IDS_SSE_TASK_RESTRICTIONS_ABSENT'")
+		)
+	)
+)
+
+(def element TooltipSystemShipLine (_shipId:number = "null") layout=true
+	(style (width = "100%"))
+
+	(controller $Instance renderer='ShipLineItemNM'
+		(bind enabled "_shipId != null")
+		(args
+			_shipId =	"_shipId"
+			_withFlag = "true"
+			_fontClass = "'$TextDefaultBoldNM'"
+		)
+	)
+)
+
+(def element TooltipSystemDueDateStatusLine (_dueDateTimeStamp:number, _substTextIDS:str = '') layout=true
+	(scope
+		(var serverTime:number = "currentServerSeconds()" (event "evInfrequent"))
+		(var timeLeft:number = "_dueDateTimeStamp - serverTime")
+		(var isTimeRunningOut:bool = "timeLeft < DAY_IN_SEC")
+
+		(var formattedDueDate:str = "formatTime(_dueDateTimeStamp, 'dd.MM.yy', '', true)")
+	)
+	(style (width = "100%"))
+	(element TooltipSystemStatusLine
+		_unifiedStatus =	"isTimeRunningOut	? SC.Ui_styles.UNIFIED_STATUS.DATE_ATTENTION
+												: SC.Ui_styles.UNIFIED_STATUS.DATE"
+		_text =				"_substTextIDS ? subst(_substTextIDS, [], { _date: formattedDueDate }) : toString(formattedDueDate)"
+	)
+)
+
+(def element TooltipSystemTimeLeftStatusLine (_daysLeft:number=null, _substTextIDS:str=null, _zeroTimeTextIDS:str=null, _timeLeftTimeStamp:number=null) layout=true
+	(scope
+		(var serverTime:number = "currentServerSeconds()" (event "evInfrequent"))
+		(var timeLeftTimeStamp:number = " _timeLeftTimeStamp	? _timeLeftTimeStamp
+																: (serverTime + (DAY_IN_SEC * _daysLeft))")
+		(var timeLeft:number = "timeLeftTimeStamp - serverTime")
+		(var formattedTimeLeft:str = "formatTime(timeLeft, 'HIGHEST,WITH_DAYS')")
+		(var isTimeRunningOut:bool = "timeLeft < DAY_IN_SEC")
+
+		(var tooltipSystemStatusLineContent:dict = "timeLeft <= 0 &&
+													_zeroTimeTextIDS	?	{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.DATE_ATTENTION,
+																				text: _zeroTimeTextIDS}
+																		:	{	unifiedStatus:	isTimeRunningOut	? SC.Ui_styles.UNIFIED_STATUS.DATE_ATTENTION
+																													: SC.Ui_styles.UNIFIED_STATUS.DATE,
+																				text: subst(_substTextIDS, [], { _timeLeft: formattedTimeLeft })
+																			}")
+	)
+	(style (width = "100%"))
+
+	(element TooltipSystemStatusLine
+		_unifiedStatus = "tooltipSystemStatusLineContent.unifiedStatus"
+		_text = "tooltipSystemStatusLineContent.text"
+	)
+)
+
+(def element TooltipSystemStaticTimeLeftStatusLine (_timeLeftTimeStamp:number, _substTextIDS:str = '') layout=true
+	(scope
+		(var formattedTimeLeft:str = "formatTime(_timeLeftTimeStamp, 'HIGHEST,WITH_DAYS')")
+		(var tooltipSystemStatusLineContent:dict = "{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.DATE,
+														text: _substTextIDS ? subst(_substTextIDS, [], { _timeLeft: formattedTimeLeft }) : formattedTimeLeft
+													}")
+	)
+	(style (width = "100%"))
+
+	(element TooltipSystemStatusLine
+		_unifiedStatus = "tooltipSystemStatusLineContent.unifiedStatus"
+		_text = "tooltipSystemStatusLineContent.text"
+	)
+)
+
+(def element TooltipSystemProgressBarBlock (_title:str, _currentValue:number, _maxValue:number, _barColor:str="null", _unifiedStatus:str = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT", _showPercent:bool="false") layout=true
+	(scope
+		(var progress:number = "_currentValue && _maxValue ? _currentValue / _maxValue : 0")
+		(var maxValue:str = "_showPercent ? 0 : _maxValue")
+
+		(var curValue:number = "_currentValue")
+		(var curValueStr:str = "toString(round(progress * 100)) + '%'")
+	)
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "_unifiedStatus" "'textColor'" "'textAlpha'")
+	(style (width = "100%"))
+
+	(tf
+		(style
+			(width = "100%") (alpha = "TA") (leading = "-2") (marginBottom = "S")
+			(bind alpha "textAlpha")
+			(bind textColor "textColor")
+		)
+		(class $TextDefaultNM)
+		(bind text "tr(_title)")
+	)
+
+	(element DefaultProgressBar
+		_progress = "progress"
+		_color = "_barColor"
+
+		(style (width = "100%") (marginRight = "-1px") (marginLeft = "-1px"))
+	)
+
+	(block
+		(element DefaultDividedCounter
+			_curValueTextClass = "'$TextDefaultNM'"
+			_doNotHideOnZeroMaxValue = "true"
+			_curValue = "!_showPercent ? curValue : null"
+			_curValueStr = "_showPercent ? curValueStr : null"
+			_maxValue = "maxValue"
+			_unifiedStatus = "_unifiedStatus"
+
+			(style (marginTop = "XS"))
+		)
+	)
+)
+
+(def element TooltipSystemDoubleProgressBarBlock (_title:str, _currentValue:number, _valueIncrement:number, _maxValue:number, _barColor:str="null", _unifiedStatus:str = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT", _showPercent:bool="false") layout=true
+	(scope
+		(var progress:number =			"_currentValue / _maxValue")
+		(var progressBefore:number =	"(_currentValue - _valueIncrement) / _maxValue")
+		(var progressIncrement:number =	"_currentValue == _maxValue	? 1 - progressBefore : _valueIncrement / _maxValue")
+
+		(var maxValue:str = "_showPercent ? 0 : _maxValue")
+
+		(var curValue:number = "_currentValue")
+		(var curValueStr:str = "toString(round(progress * 100)) + '%'")
+	)
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "_unifiedStatus" "'textColor'" "'textAlpha'")
+	(style (width = "100%"))
+
+	(tf
+		(style
+			(width = "100%") (alpha = "TA") (leading = "-2") (marginBottom = "S")
+			(bind alpha "textAlpha")
+			(bind textColor "textColor")
+		)
+		(class $TextDefaultNM)
+		(bind text "tr(_title)")
+	)
+	(element DoubleProgressBar
+		_progress1 =	"progressBefore"
+		_color1 =		"SC.Ui_styles.SERVICE_COLORS.ORANGE"
+		_progress2 =	"progressIncrement"
+		_color2 =		"SC.Ui_styles.SERVICE_COLORS.YELLOW"
+
+		(style (width = "100%") (marginRight = "-1px") (marginLeft = "-1px"))
+	)
+
+	(element DefaultDividedCounter
+		_curValueTextClass = "'$TextDefaultNM'"
+		_doNotHideOnZeroMaxValue = "true"
+		_curValue = "!_showPercent ? curValue : null"
+		_curValueStr = "_showPercent ? curValueStr : null"
+		_maxValue = "maxValue"
+		_unifiedStatus = "_unifiedStatus"
+
+		(style (marginTop = "XS"))
+	)
+)
+
+(def element TooltipSystemShipWithTitle (_shipId:number, _title:str, _unifiedStatus:str = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT", _withFlag:bool="false") layout=true
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "_unifiedStatus" "'textColor'" "'textAlpha'")
+	(style (width = "100%") (marginTop = "-SXS"))
+
+	(tf
+		(style (marginRight = "SXS") (marginTop = "SXS") (leading = "-2") (bind textColor "textColor"))
+		(class $TextDefaultNM)
+		(bind alpha "textAlpha")
+		(bind text "_title")
+	)
+
+	(element ShipLineItemNM
+		_shipId = "_shipId"
+		_withFlag = "_withFlag"
+
+		(style (marginTop = "SXS"))
+	)
+)
+
+(def element TooltipSystemHeaderShip (_shipId:number, _withFlag:bool="false", _fontClass:str="'$TextDefaultBoldNM'") layout=true
+	(style (width = "100%") (marginTop = "XS"))
+
+	(element ShipLineItemNM
+		_shipId = "_shipId"
+		_withFlag = "_withFlag"
+		_fontClass = "'$TextDefaultBold19NM'"
+	)
+)
+
+(def element TooltipSystemCrewSkills (_crewId:number, _shipSubtype:str) layout=true
+	(scope
+		(var subcollectionPath:str = "'byCrewAndShip.' + toString(_crewId) + '_' + _shipSubtype + '.sorted'")
+		(var crewSkillCollection:gfx = "$datahub.getCollection(CC.crewSkill)")
+		(var learnedSkillsCollection:gfx = "crewSkillCollection.getChildByPath(subcollectionPath)" (event "crewSkillCollection.evChildAdded"))
+		(var learnedSkills:array = "learnedSkillsCollection ? learnedSkillsCollection.items : []"	(event "learnedSkillsCollection.evAdded")
+																									(event "learnedSkillsCollection.evRemoved"))
+
+		(var title:str = "learnedSkills.length > 0	? tr(toUpper('IDS_CREW_TOOLTIP_TITLE_SKILLS_FOR_' + _shipSubtype))
+													: tr(toUpper('IDS_CREW_TOOLTIP_TITLE_NO_SKILLS_FOR_' + _shipSubtype))")
+	)
+	(style (width = "100%") (marginBottom = "-SXS"))
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style	(paddingLeft = "-M") (paddingRight = "-M") (paddingTop = "-SXS"))
+
+		(block
+			(class $Fullsize)
+			(style (backgroundImage = "'url:../service_kit/panel_backgrounds/inner_panel.png'") (scale9grid = 3))
+		)
+	)
+
+	(tf
+		(style (width = "100%") (marginBottom = "SXS") (alpha = "TA") (leading = "-2"))
+		(class $TextDefaultNM)
+		(bind text "title")
+	)
+
+	(block
+		(bind visible "learnedSkills.length > 0")
+		(style  (flow = "tile_horizontal") (width = "100%") (paddingTop = "-XS") (paddingLeft = "-XS") (paddingRight = "-XS") (marginBottom = "S"))
+
+		(controller $Repeat renderer = 'TooltipSystemCrewSkillItem'
+			(bind count "learnedSkills.length")
+			(args
+				_learnedSkillEntity = "learnedSkills[$index]"
+			)
+		)
+	)
+)
+
+(def element TooltipSystemCrewSkillItem (_learnedSkillEntity:gfx) layout=true
+	(scope
+		(var crewSkillEntity:gfx = "_learnedSkillEntity")
+		(var skillEntity:gfx = "$datahub.getEntity(crewSkillEntity.crewSkill.skillId)")
+
+		(var crewSkillName:str =	"skillEntity.skill.name")
+		(var isEpic:bool =			"skillEntity.skill.isEpic")
+		(var isUseless:bool =		"!(skillEntity.attributes.useful)" (event "skillEntity.attributes.evUsefulChanged"))
+	)
+	(style (margin = "XS") (width = "44px") (height = "44px"))
+
+	(element CrewSkillIconView
+		_name = "crewSkillName"
+		_isLearned = "false"
+
+		(class $Fullsize)
+		(bind alpha "isUseless ? 0.5 : 1")
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(controller $Instance renderer='CrewSkillEpicIcon' (bind enabled "isEpic"))
+	)
+
+	(block
+		(bind visible "isUseless")
+		(class $FullsizeAbsolute)
+		(style (backgroundSize = "fill") (backgroundImage = "'url:../service_kit/icons/icon_useless_big.png'"))
+	)
+)
+
+(def element TooltipSystemCrewVanityAndTalents (_crewId:number) layout=true
+	(scope
+		(var crewEntity:gfx = "$datahub.getPrimaryEntity(CC.crew, _crewId)")
+		(var crew:gfx = "crewEntity ? crewEntity.crew : null"	(event "crewEntity.crew.evChanged")
+																(event "crewEntity.crew.evLevelUp")
+																(event "crewEntity.crew.evExpChanged"))
+
+		(var crewVanitiesCollectionDH:gfx = "$datahub.getCollection(CC.crewVanity)")
+		(var activeVanitiesCollection:gfx =	"crewVanitiesCollectionDH ? crewVanitiesCollectionDH.getChildByPath('activeVanities.byCrewId.' + _crewId) : null"	(event "crewVanitiesCollectionDH.evAdded")
+																																								(event "crewVanitiesCollectionDH.evRemoved"))
+		
+		(var activeVanities:array =		"activeVanitiesCollection ? activeVanitiesCollection.items : []"	(event "activeVanitiesCollection.evAdded")
+																											(event "activeVanitiesCollection.evRemoved"))
+	)
+	(style (width = "100%") (marginBottom = "-SXS"))
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style	(paddingLeft = "-M") (paddingRight = "-M") (paddingTop = "-SXS"))
+
+		(block
+			(class $Fullsize)
+			(style (backgroundImage = "'url:../service_kit/panel_backgrounds/inner_panel.png'") (scale9grid = 3))
+		)
+	)
+
+	(tf
+		(style (width = "100%") (marginBottom = "SXS") (alpha = "TA") (leading = "-2"))
+		(class $TextDefaultNM)
+		(text = "'IDS_CREW_TALENTS_AND_VANITY_TOOLTIP_TITLE'")
+	)
+
+	(block
+		(style (width = "100%") (marginBottom = "SXS"))
+		(block
+			(style (flow = "tile_horizontal") (width = "100%") (margin = "-XS"))
+
+			(controller $Repeat renderer = 'TooltipSystemCrewTalentItem'
+				(bind count "crew.uniqueSkillSet.length")
+				(args
+					_value = "crew.uniqueSkillSet[$index]"
+				)
+			)
+			(controller $Repeat renderer = 'TooltipSystemCrewVanityItem'
+				(bind count "activeVanities.length")
+				(args
+					_entity = "activeVanities[$index]"
+				)
+			)
+		)
+	)
+)
+
+(def element TooltipSystemCrewTalentItem (_value:str) layout=true
+	(style (margin = "XS") (width = "44px") (height = "44px"))
+	(element CrewTalentItemView _talentId = "_value" _isForceWhite = "true")
+)
+
+(def element TooltipSystemCrewVanityItem (_entity:gfx) layout=true
+	(scope
+		(var vanityEntity:gfx = "_entity")
+		(var vanityName:gfx = "vanityEntity.crewVanity.vanityName")
+	)
+	(style (margin = "XS") (width = "44px") (height = "44px"))
+
+	(element CrewVanityItemView _vanityName = "vanityName" _isActive = "false")
+)
+
+(def element TOOLTIP_SYSTEM_ELEMENTS_GROUP (_isEnabled:bool=true) layout=true
+	(bind visible "_isEnabled")
+	(style (width = 100%) (marginBottom = "-SXS"))
+)
+
+(def element TOOLTIP_SYSTEM_GROUP_ELEMENT (_isEnabled:bool=true) layout=true
+	(bind visible "_isEnabled")
+	(style (width = 100%) (marginBottom = "SXS"))
+)
+
+(def element TooltipSystemAchievementsList (_achievementsIds:array) layout=true
+	(style (width = "100%"))
+	(macro TOOLTIP_SYSTEM_INNER_PANEL_BACKGROUND)
+	(block
+		(style (flow = "tile_horizontal") (width = "100%") (padding = "-S"))
+		(controller $Repeat renderer = 'TooltipSystemAchievementItem' 
+			(bind count "_achievementsIds.length")
+			(args
+				_achievementData = "_achievementsIds[$index]"
+			)
+		)
+	)
+)
+
+(def element TooltipSystemAchievementItem (_achievementData:array) layout=true
+	(scope
+		(var achievementEntity:gfx = "$datahub.getPrimaryEntity(CC.achievement, _achievementData[0])")
+	)
+	(style (margin = "S"))
+	(controller $Instance renderer='AchievementIcon'
+		(args
+			_id = "achievementEntity.id"
+			_amount = "_achievementData[1]"
+			_size = '44px'
+		)
+	)
+)
+
+(def element TooltipSystemSeasonShipsRestrictionBlock (_hasCounter:bool, _maxShipsInTooltip:number, _shipsArray:array, _headerText:str, _unifiedStatus:str="SC.Ui_styles.UNIFIED_STATUS.DEFAULT") layout=true
+	(style (width = 100%))
+	(macro TOOLTIP_SYSTEM_INNER_PANEL_BACKGROUND)
+
+	(element SeasonShipsRestrictionBlock
+		_hasCounter = "_hasCounter"
+		_maxShipsInTooltip = "_maxShipsInTooltip"
+		_shipsArray = "_shipsArray"
+		_headerText = "_headerText"
+		_unifiedStatus = "_unifiedStatus"
+	)
+)
+
+(def element TooltipSystemSubstituteDescriptionText (_descriptionText:str) layout=true
+	(style (width = 100%))
+
+	(tf
+		(style (width=  100%) (alpha = "TA") (leading = -2))
+		(class $TextDefaultNM)
+		(bindcall substitute imageOffset=5 sourceText="tr(_descriptionText)" postfix='' init=true)
+	)
+)
+
+(def element TooltipSystemAlterablePriceTagLine (_title:str, _priceInfo:dict)
+	(style (flow = "horizontal") (width = 100%))
+
+	(tf
+		(class $TextDefaultNM)
+		(style
+			(width = 100%)
+			(alpha = "TA")
+			(leading = -2)
+			(marginRight = "S")
+		)
+
+		(bind text "_title")
+	)
+
+	(element PriceTag
+		_priceInfo			= "_priceInfo"
+		_showDiscountTag	= true
+	)
+)
+
+(def element TooltipSystemHeaderSubheaderTextWithMarkerNew (_headerText:str, _subheaderText:str='', _isMarkerNew:bool=false, _unifiedStatus:str="SC.Ui_styles.UNIFIED_STATUS.DEFAULT") layout=true
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "_unifiedStatus" "'textColor'" "'textAlpha'")
+	(style (width = 100%))
+
+	(hblock
+		(style (width = 100%))
+		(tf
+			(name = "'tooltipSystemHeaderSubheaderTextWithMarkerNew'")
+			(style
+				(width = 100%)
+				(leading = -4)
+				(bind textColor "textColor")
+			)
+			(class $TextDefaultBold19NM)
+			(bind alpha "textAlpha")
+			(bind text "_headerText")
+		)
+
+		(block
+			(bind visible "_isMarkerNew")
+			(style (marginLeft = 3px) (marginTop = -9px))
+
+			(controller $Instance renderer='MarkerNew'
+				(bind enabled "_isMarkerNew")
+			)
+		)
+	)
+
+	(tf
+		(bind visible "_subheaderText")
+		(style
+			(width = 100%)
+			(marginTop = "S")
+			(leading = "-2")
+			(bind textColor "textColor")
+		)
+		(class $TextDefaultNM)
+		(bind alpha "textAlpha")
+		(bind text "_subheaderText")
+	)
+)

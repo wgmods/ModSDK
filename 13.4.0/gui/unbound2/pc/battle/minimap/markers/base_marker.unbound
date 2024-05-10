@@ -1,0 +1,481 @@
+(def css $TextMinimapRangeDropShadowFilter ()
+	(filters
+		(dropShadow
+			(distance = 0)
+			(angle = 70)
+			(color = 0x000000)
+			(alpha = 1.0)
+			(blurX = 2.0)
+			(blurY = 2.0)
+			(strength = 0.6)
+			(quality = 1)
+		)
+	)
+)
+
+(def macro SCOPE_HIGHLIGHT_MARKER_ON_WORLD_MOUSE_OVER ()
+	(macro GET_MARKER_ENTITY_COMPONENT 'selectedMouseHandler')
+	(var __mouse:gfx = "$datahub.getSingleComponent(CC.mouse)")
+	(var __isMouseActive:bool = "__mouse.active" (event "__mouse.evActiveChanged"))
+	(var __avatar:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+	(var __isAlive:bool = "__avatar.health.isAlive" (event "__avatar.health.evIsAliveChanged"))
+	(var __mouseCommandsComponent:gfx = "$datahub.getPrimaryEntity(CC.minimapOption, SC.Battle.MINIMAP_OPTION.mouseCommandsEnabled).minimapOption")
+	(var __mouseCommandsEnabled:bool = "__mouseCommandsComponent.value > 0" (event "__mouseCommandsComponent.evValueChanged"))
+	(var __mouseOverMarker:bool = "__isMouseActive && __isAlive && __mouseCommandsEnabled && selectedMouseHandlerComponent != null")
+)
+
+(def macro SCOPE_HIGHLIGHT_MARKER_ON_MAP_MOUSE_OVER (__entity:expression)
+	(var ___entity:gfx = "__entity")
+	(var __avatar:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+	(var __isAlive:bool = "__avatar.health.isAlive" (event "__avatar.health.evIsAliveChanged"))
+	(var _selectedMouseHandlerComponent:gfx = "___entity && ___entity.hasComponent(CC.selectedMouseHandler) ? ___entity.getComponent(CC.selectedMouseHandler) : null" (event "___entity.evAdded") (event "___entity.evRemoved"))
+	(var __mouseCommandsComponent:gfx = "$datahub.getPrimaryEntity(CC.minimapOption, SC.Battle.MINIMAP_OPTION.mouseCommandsEnabled).minimapOption")
+	(var __mouseCommandsEnabled:bool = "__mouseCommandsComponent.value > 0" (event "__mouseCommandsComponent.evValueChanged"))
+	(var __mouseOverMarker:bool = "__isAlive && __mouseCommandsEnabled && _selectedMouseHandlerComponent != null")
+)
+
+(def macro EFFECT_HIGHLIGHT_MARKER_ON_MOUSE_OVER ()
+	(bind colorTransform "__mouseOverMarker ? SHIP_HP_TRANSFORM_COLORS.WHITE : CT_NONE")
+)
+
+(def css $TextMinimapRange ()
+	(extends $FontFamilyDefault)
+	(extends $FontSizeSmall)
+	
+	(extends $TextMouseDisable)
+	(extends $FontEnableReadability)
+	(extends $TextMinimapRangeDropShadowFilter))
+
+(def css $TextMinimapRangeBold ()
+	(extends $TextMinimapRange)
+	(extends $FontFamilyDefaultBold)
+	(extends $FontSizeDefault))
+
+(def constant STUB_MINIMAP_MARKER_SETTINGS "{
+	markerRenderer: 'MapStubMarker',				disableUpdatePos: false, rotateBack: false,	hideOnDeath: false
+}")
+
+
+(def constant MINIMAP_MARKERS_SETTINGS [
+	{markerRenderer: 'MapShipMarker',				disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapBuildingMarker',			disableUpdatePos: false, rotateBack: true,	hideOnDeath: false},	
+	{markerRenderer: 'MapCapturePointMarker',		disableUpdatePos: false, rotateBack: true,	hideOnDeath: false},	
+	{markerRenderer: 'MapEpicenterMarker',			disableUpdatePos: false, rotateBack: true,	hideOnDeath: false},	
+	{markerRenderer: 'MapStubMarker',				disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapScenarioObjectMarker',		disableUpdatePos: false, rotateBack: true,	hideOnDeath: false},	
+	{markerRenderer: 'MapSquadronMarker',			disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapTorpedoMarker',			disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapCameraMarker',				disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapStubMarker',				disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapStubMarker',				disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapStubMarker',				disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapStubMarker',				disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapAimPositionMarker',		disableUpdatePos: true , rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapStubMarker',				disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapInteractiveZoneMarker',	disableUpdatePos: false, rotateBack: true,	hideOnDeath: false},	
+	{markerRenderer: 'MapWardFightersMarker',		disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapNavpointMarker',			disableUpdatePos: true , rotateBack: false,	hideOnDeath: false}, 	
+	{markerRenderer: 'MapPathMarker',				disableUpdatePos: true , rotateBack: false,	hideOnDeath: false}, 	
+	{markerRenderer: 'MapStubMarker',				disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapStubMarker',				disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapHydrophoneZoneMarker',		disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapStubMarker',				disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapStubMarker',				disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapStubMarker',				disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapAttentionMarker',			disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+	{markerRenderer: 'MapMinefieldMarker',			disableUpdatePos: false, rotateBack: false,	hideOnDeath: false},	
+])
+
+
+(def constant MASKED_MINIMAP_MARKERS_SETTINGS [
+	{markerRenderer: 'MapShipMarkerHolder',			rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapBuildingMarker', 			rotateBack: true,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapCapturePointMarker', 		rotateBack: true,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapEpicenterMarker', 			rotateBack: true,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapStubMarker', 				rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapStubMarker', 				rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapStubMarker', 				rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapScenarioObjectMarker',		rotateBack: true,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapSquadronMarker', 			rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapTorpedoMarker',			rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapCameraMarker',				rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapStubMarker', 				rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapStubMarker', 				rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapStubMarker', 				rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapStubMarker', 				rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapAimPositionMarker', 		rotateBack: false,	disableUpdatePos: true,		hideOnDeath: false},
+	{markerRenderer: 'MapStubMarker', 				rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapInteractiveZoneMarker', 	rotateBack: true,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapWardFightersMarker', 		rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapNavpointMarker',			rotateBack: false,	disableUpdatePos: true,		hideOnDeath: false}, 
+	{markerRenderer: 'MapPathMarker',				rotateBack: false,	disableUpdatePos: true,		hideOnDeath: false}, 
+	{markerRenderer: 'MapStubMarker', 				rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapStubMarker', 				rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapStubMarker', 				rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapStubMarker', 				rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapStubMarker', 				rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapStubMarker', 				rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapStubMarker',				rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+	{markerRenderer: 'MapMinefieldMarker',			rotateBack: false,	disableUpdatePos: false,	hideOnDeath: false},
+])
+
+(def constant QUICK_COMMAND_ANIM_LIFETIME 6)
+(def constant SUBMARINE_PING_ANIM_LIFETIME 3.15)
+(def constant MIN_TEXT_OFSSET_ANGLE 1.7707)
+(def constant ADDTIVE_TEXT_OFSSET_ANGLE 4.7123)
+(def constant RANGES_TEXT_ANGLE 3.14)
+(def constant MINIMAP_RANGES_SETTINGS "{
+	artilleryMaxDist:		{ color: 0xBBBBBB, boldText: true , dashLength: 0 , drawDotted: false, forceEnabled: false, lineThickness: 1  , spacing: 0 , optionName: 'shootMGRangeEnabled' },
+	torpedoMaxDist:			{ color: 0xBBBBBB, boldText: true , dashLength: 0 , drawDotted: false, forceEnabled: false, lineThickness: 1  , spacing: 0 , optionName: 'shootTARangeEnabled' },
+	pingerMaxDist:			{ color: 0xBBBBBB, boldText: true , dashLength: 0 , drawDotted: false, forceEnabled: false, lineThickness: 1  , spacing: 0 , optionName: 'shootPingerRangeEnabled' },
+	visibilityRange:		{ color: 0x6EE1F7, boldText: false, dashLength: 11, drawDotted: false, forceEnabled: false, lineThickness: 1  , spacing: 11 , optionName: 'visibilityRangeEnabled' },
+	visibilityRangeAlt:		{ color: 0x6EE1F7, boldText: false, dashLength: 11, drawDotted: false, forceEnabled: false, lineThickness: 1  , spacing: 11 , optionName: 'visibilityRangeEnabled' },
+	visibilityPlaneRange:	{ color: 0x6EE1D8, boldText: false, dashLength: 13, drawDotted: false, forceEnabled: false, lineThickness: 1  , spacing: 27 , optionName: 'visibilityPlaneRangeEnabled' },
+	visibilityPlaneRangeAlt:{ color: 0x6EE1D8, boldText: false, dashLength: 13, drawDotted: false, forceEnabled: false, lineThickness: 1  , spacing: 27 , optionName: 'visibilityPlaneRangeEnabled' },
+	aaRangeMax:				{ color: 0xF0A522, boldText: false, dashLength: 0 , drawDotted: false, forceEnabled: false, lineThickness: 1  , spacing: 0 , optionName: 'aaRangeMaxEnabled' },
+	atbaMaxDist:			{ color: 0xA9C272, boldText: false, dashLength: 0 , drawDotted: false, forceEnabled: false, lineThickness: 1  , spacing: 0 , optionName: 'atbaRangeEnabled' },
+	rlsShipRange:			{ color: 0x00CCFF, boldText: false, dashLength: 0 , drawDotted: true , forceEnabled: false, lineThickness: 1.5, spacing: 15.5 , optionName: 'rlsRangeEnabled' },
+	sonarShipRange:			{ color: 0x00CCFF, boldText: false, dashLength: 0 , drawDotted: true , forceEnabled: false, lineThickness: 2  , spacing: 21 , optionName: 'sonarRangeEnabled' },
+	hydrophoneRange:		{ color: 0x00CCFF, boldText: false, dashLength: 0 , drawDotted: true , forceEnabled: false, lineThickness: 2.5, spacing: 17.5 , optionName: 'hydrophoneRangeEnabled' },
+	submarineLocatorRange:	{ color: 0x00CCFF, boldText: false, dashLength: 0 , drawDotted: true , forceEnabled: false, lineThickness: 2.5, spacing: 17.5 , optionName: 'submarineLocatorRangeEnabled' },
+	visDistance:			{ color: 0x00CCFF, boldText: false, dashLength: 0 , drawDotted: false, forceEnabled: true , lineThickness: 1  , spacing: 0 , optionName: '' },
+	visibilityAfterPingByShipRange:	{ color: 0x00BBFF, boldText: false, dashLength: 16, drawDotted: false, forceEnabled: true , lineThickness: 1  , spacing: 40 , optionName: 'visibilityAfterPingByShipRangeEnabled' },
+	charge_laserMaxDist:	{ color: 0xBBBBBB, boldText: true , dashLength: 0 , drawDotted: false, forceEnabled: false, lineThickness: 1  , spacing: 0 , optionName: 'shootChargeLaserRangeEnabled' },
+	impulse_laserMaxDist:	{ color: 0xBBBBBB, boldText: true , dashLength: 0 , drawDotted: false, forceEnabled: false, lineThickness: 1  , spacing: 0 , optionName: 'shootImpulseLaserRangeEnabled' },
+	axis_laserMaxDist:		{ color: 0xBBBBBB, boldText: true , dashLength: 0 , drawDotted: false, forceEnabled: false, lineThickness: 1  , spacing: 0 , optionName: 'shootAxisLaserRangeEnabled' },
+	wavesMaxDist:			{ color: 0xBBBBBB, boldText: true , dashLength: 0 , drawDotted: false, forceEnabled: false, lineThickness: 1  , spacing: 0 , optionName: 'shootWaveGunRangeEnabled' },
+	air_supportMaxDist: 	{ color: 0xBBBBBB, boldText: true , dashLength: 0 , drawDotted: false, forceEnabled: false, lineThickness: 1  , spacing: 0 , optionName: 'shootAirSupportRangeEnabled' }
+}")
+
+(def macro BASE_MAP_MARKER_PARAMS ()
+	(var entity:gfx = "$datahub.getEntity(_entityId)")
+)
+
+(def element MapMarkerItem (_collection:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number, _markerSettingsMap:array = "MINIMAP_MARKERS_SETTINGS", _isLoading:bool = false) layout=true
+	(scope
+		(event evMarkerUpdate)
+
+		(var markerScale:number = "_itemScale / _mapScale")
+		(var markerSettingsMap:array = "_markerSettingsMap")
+
+		(var _markerEntity:gfx = "_collection.items[$index]" watch=false)
+		
+		(macro GET_MARKER_ENTITY_COMPONENT 'minimapMarker')
+		(macro GET_MARKER_ENTITY_COMPONENT 'mapPosition')
+
+		(var posX:number = "mapPositionComponent ? _scaleRatio * mapPositionComponent.position.x : 0" init=false watch=false (event "evMarkerUpdate"))
+		(var posY:number = "mapPositionComponent ? _scaleRatio * mapPositionComponent.position.y : 0" init=false watch=false (event "evMarkerUpdate"))
+
+		(var posZ:number = "minimapMarkerComponent ? minimapMarkerComponent.zindex : 0" (event "minimapMarkerComponent.evZindexChanged"))
+
+		(var type:number = "_markerEntity && _markerEntity.entityType ? _markerEntity.entityType.value : -1" (event "_markerEntity.evAdded") (event "_markerEntity.evRemoved"))
+		(var markerSettings:dict = "type != -1 ? markerSettingsMap[type] : STUB_MINIMAP_MARKER_SETTINGS")
+		(var markerUpdatePos:bool = "!(markerSettings.disableUpdatePos)")
+		(var rotateBack:bool = "markerSettings.rotateBack")
+
+		(var target:gfx = "_markerEntity.target" (event "_markerEntity.evAdded") (event "_markerEntity.evRemoved"))
+		(var targetFlags:number = "target ? target.flags : 0" (event "target.evChanged") (event "target.evFlagsChanged"))
+		(var isTargetLocked:bool = "(targetFlags & LOCKABLE_WEAPONS) > 0")
+
+		(var mapVisible:bool = "_markerEntity.visibility ? _markerEntity.visibility.mapVisible : false" (event "_markerEntity.visibility.evChanged"))
+
+		(var minimapComponent:gfx = "$datahub.getSingleComponent(CC.minimap)")
+		(var angleToRotate:number = "minimapComponent.rotationAngleDeg" (event "minimapComponent.evRotationAngleDegChanged"))
+
+		(var scenarioTag:gfx = "_markerEntity.scenarioTag" (event "_markerEntity.evAdded") (event "_markerEntity.evRemoved"))
+
+		(var avatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var isAlive:bool = "avatarEntity.health && avatarEntity.health.isAlive" (event "avatarEntity.health.evIsAliveChanged"))
+		(var hideOnDeath:bool = "markerSettings.hideOnDeath")
+	)
+
+	(dispatch evMarkerUpdate args={} (event "evEnterFrame") (bind enabled "markerUpdatePos"))
+
+	(style
+		(position = "absolute")
+		(bind left "posX")
+		(bind top "posY")
+		(bind zindex "posZ")
+		(bind rotation "-angleToRotate" (bind enabled "rotateBack"))
+	)
+
+	(macro BIND_FAIR_SCALE "markerUpdatePos ? _mapScale : 1")
+
+	
+	(block
+		(controller $Instance (renderer = 'MapMarkerScenarioTag')
+			(bind enabled "scenarioTag != null")
+			(args _markerEntity="_markerEntity")
+			(exprs
+				(macro BIND_FAIR_SCALE "markerScale")
+			)
+		)
+	)
+
+	
+	(block
+		(style (position = "absolute"))
+		(controller $FxInstance renderer='MapMarkerItemQCAnim' lifetime="QUICK_COMMAND_ANIM_LIFETIME"
+			(bindcall create (event "_markerEntity.quickCommand.evPlay"))
+			(args _type="$event[1]")
+		)
+	)
+	(bind visible "isAlive" (bind enabled "hideOnDeath"))
+
+	
+	(block
+		(controller $Instance (bind renderer "markerSettings.markerRenderer")
+			(args _markerEntity="_markerEntity" _mapScale="_mapScale" _itemScale="_itemScale" _scaleRatio="_scaleRatio")
+			(exprs
+				(scope
+					(bind _isLoading "_isLoading")
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(style (position = "absolute"))
+		(controller $Instance (renderer = 'MapMarkerItemAimTargetLock')
+			(bind enabled "isTargetLocked && mapVisible")
+			(exprs
+				(macro BIND_FAIR_SCALE "markerScale")
+			)
+		)
+	)
+)
+
+(def element MapMarkerItemQCAnim (_type:str) layout=true
+	(scope
+		(var lifetime:number = "_type == 'Submarine_Ping_CMD' ? SUBMARINE_PING_ANIM_LIFETIME : QUICK_COMMAND_ANIM_LIFETIME")
+	)
+	(style 
+		(position = "absolute")
+		(bind backgroundImage "isIn(_type, ['Target_CMD', 'Submarine_Ping_CMD']) ? 'symbol:TargetMinimap' : 'symbol:SenderMinimap'")
+	)
+
+	(controller $Animation
+		(play
+			duration=0.15
+			from={alpha: 0}
+			to={alpha: 1}
+			easing="Easing.quint_in"
+		)
+
+		(play
+			duration=0.15
+			delay="lifetime-0.15"
+			from={alpha: 1}
+			to={alpha: 0}
+			easing="Easing.quint_out"
+		)
+	)
+)
+
+(def element MapMarkerItemAimTargetLock () layout=true
+	(style (position = "absolute"))
+	(bind alpha 0.5)
+
+	(block
+		(style
+			(position = "absolute")
+			(bind backgroundImage "'symbol:minimap_target_lock'")
+		)
+				
+		(controller $Animation
+			(play 
+				duration=0.2
+				from={scaleX:2, scaleY:2, alpha:0}
+				to={scaleX: 1, scaleY: 1, alpha:1}
+			)
+		)
+	)
+)
+
+(def element MapMarkerRanges (entity:gfx, mapScale:number) layout=true
+	(scope
+		(var minimapRangesCollection:gfx = "$datahub.getCollection(CC.minimapRange)")
+		(var minimapRanges:gfx = "minimapRangesCollection.getChildByPath('byEntity.' + entity.id + '.active.sorted')")
+		(var itemCount:number = "minimapRanges ? minimapRanges.items.length : 0"  watch=false (event "minimapRanges.evAdded"))
+	)
+	(controller $Repeat renderer='MapMarkerItemRange'
+		(bind count "itemCount")
+		(bindcall removeChildAt "$event[1]" (event "minimapRanges.evRemoved"))
+		(args "entity" "mapScale" "minimapRanges")
+	)
+)
+
+(def macro RANGE_CIRCLE (_rangeSettings:expression, _rangeRadius:expression)
+	(block
+		(macro BIND_FAIR_SCALE "_rangeRadius")
+		(block
+			(controller $Sector
+				(bind arc "360")
+				(bind radius "MINIMAP_ASSETS_SIZE")
+				(bind innerRadius "MINIMAP_ASSETS_SIZE")
+				(bind lineThickness "_rangeSettings.lineThickness")
+				(bind lineAlpha "1")
+				(bind lineColor "_rangeSettings.color")
+				(bind dashLength "_rangeSettings.dashLength")
+				(bind spacing "_rangeSettings.spacing")
+				(bind drawDotted "_rangeSettings.drawDotted")
+			)
+		)
+	)
+)
+
+(def element MapMarkerItemRange (ownerEntity:gfx, _mapScale:number, _minimapRanges:gfx) layout = true
+	(scope
+		(var rangesTextScale:number = "_mapScale > 1 ? 1 / _mapScale : 1")
+
+		(var rangeEntity:gfx = "_minimapRanges.items[$index]" (event "_minimapRanges.evUpdated"))
+		(var parameterKey:str = "rangeEntity.minimapRange.parameterKey")
+		(var isConsumable:bool = "rangeEntity.minimapRange.isConsumable")
+		(var isActive:bool = "rangeEntity.minimapRange.isActive || isConsumable" (event "rangeEntity.minimapRange.evIsActiveChanged"))
+		(var rangeSettings:dict = "MINIMAP_RANGES_SETTINGS[parameterKey]")
+
+		(var minimapEntity:gfx = "$datahub.getSingleEntity(CC.minimap)")
+		(var angleToRotate:number = "minimapEntity.minimap.rotationAngleDeg" (event "minimapEntity.minimap.evRotationAngleDegChanged"))
+		
+		(var rangesAlphaComponent:gfx = "$datahub.getPrimaryEntity(CC.minimapOption, SC.Battle.MINIMAP_OPTION.rangesAlpha).minimapOption")
+		(var rangesAlpha:number = "rangesAlphaComponent.value * 0.01" (event "rangesAlphaComponent.evValueChanged"))
+
+		(var distanceDisplayEnabledComponent:gfx = "$datahub.getPrimaryEntity(CC.minimapOption, SC.Battle.MINIMAP_OPTION.distanceDisplayEnabled).minimapOption")
+		(var distanceDisplayEnabled:bool = "distanceDisplayEnabledComponent.value > 0" (event "distanceDisplayEnabledComponent.evValueChanged"))
+
+		(var rangeOptionsEnabledComponent:gfx = "rangeSettings.optionName	? $datahub.getPrimaryEntity(CC.minimapOption, rangeSettings.optionName).minimapOption
+																			: null")
+		(var rangeOptionsEnabled:bool = "rangeOptionsEnabledComponent ? rangeOptionsEnabledComponent.value > 0 : rangeSettings.forceEnabled" (event "rangeOptionsEnabledComponent.evValueChanged"))
+
+		(var rangeEnabled:bool = "rangeOptionsEnabled || rangeSettings.forceEnabled")
+
+		(var range:number = "rangeEntity.circle.radius" (event "rangeEntity.circle.evRadiusChanged"))
+		(var rangeRadius:number = "range" watch=false)
+		(controller $Animation
+			(bindcall play  duration=0.3
+							easing="Easing.line"
+							to="{ rangeRadius: range }"
+							watch=false
+							(bind trigger "range")
+							(bind enabled "rangeEnabled")
+			)
+		)
+
+		
+		(var rangeCurrentValue:number = "rangeEntity.parameter.currentValue" (event "rangeEntity.parameter.evChanged"))
+		(var rangeValue:str = "formatFloatingPoint(round(rangeCurrentValue * 10) / 10, 1)")
+		(var position:gfx = "ownerEntity.mapPosition.position")
+
+		(var timer:gfx = "$datahub.getSingleComponent(CC.timer)")
+		(var posX:number = "position.x" (event "timer.evInfrequent"))
+		(var posY:number = "position.y" (event "timer.evInfrequent"))
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var altVision:bool = "cameraEntity.camera.altVision" (event "cameraEntity.camera.evAltVisionChanged"))
+
+		(var offsetAngle:number = "RANGES_TEXT_ANGLE / _minimapRanges.items.length" watch=false)
+		(var rangeRotation:number = "(distanceDisplayEnabled || altVision) 	? (offsetAngle * (0 - _minimapRanges.items.length / 2 + $index)) + atan2(0.5 - posY, 0.5 - posX) 
+																			: 0")
+	)
+	(bind name "parameterKey")
+	(bind visible "rangeEnabled && rangeRadius > 0")
+
+	
+	(block
+		(style (bind alpha "rangesAlpha")) 
+		(block
+			(style (bind alpha "isActive ? 1 : 0.65")) 
+			(macro RANGE_CIRCLE "rangeSettings" "rangeRadius")
+
+			
+			(block
+				(style
+					(alpha = "0")
+					(filters
+						(dropShadow
+							(distance = 0)
+							(angle = 90)
+							(color = 0xFFFFFF)
+							(alpha = 1.0)
+							(blurX = 3.5)
+							(blurY = 3.5)
+							(strength = 1.2)
+							(quality = 2)
+						)
+					)
+				)
+				(macro RANGE_CIRCLE "rangeSettings" "rangeRadius")
+
+				(controller $Animation
+					(bindcall play 	duration=0.4
+									easing="Easing.line"
+									keyframes="[{
+										percent:50,
+										from:{ alpha: 0 },
+										to:{ alpha: 1 }
+									},{
+										percent:100,
+										to:{ alpha: 0 }
+									}]"
+									(bind enabled "isActive")
+									(event "rangeEntity.minimapRange.evIsActiveChanged")
+					)
+				)
+			)
+
+			(controller $Animation
+				(bindcall play 	duration=0.6
+								easing="Easing.line"
+								from="{ alpha: 0.65 }"
+								to="{ alpha: 1 }"
+								reverse="!(isActive)"
+								(event "rangeEntity.minimapRange.evIsActiveChanged")
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(style (bind rotation "radToGrad(rangeRotation)"))
+		(bind visible "distanceDisplayEnabled || altVision")
+		(block
+			(style
+				(position = "absolute")
+				(bind left "rangeRadius * MINIMAP_ASSETS_SIZE")
+			)
+			(block
+				(style (bind rotation "-radToGrad(rangeRotation) - angleToRotate"))
+				(macro BIND_FAIR_SCALE "rangesTextScale")
+				(tf
+					(style
+						(position = "absolute")
+						(width = "38px") (height = "20px")
+						(left = "-19px") (top = "-10px")
+						(textAlign = "center")
+						(textColor = "rangeSettings.color")
+					)
+					(bind class "rangeSettings.boldText ? '$TextMinimapRangeBold' : '$TextMinimapRange'")
+					(bind text "rangeValue")
+				)
+			)
+		)
+	)
+)
+
+
+(def element MapStubMarker (_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number) layout=true
+	
+	
+	
+
+	
+
+	
+
+
+
+
+
+)

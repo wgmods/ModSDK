@@ -1,0 +1,684 @@
+(def css $ContextMenuListItem ()
+	(width = 100%)
+	(height = 29px)
+	(align = "middle")
+)
+
+(def css $ContextMenuInfoItem ()
+	(width = 100%)
+	(marginTop = "XS")
+	(marginBottom = "SXS")
+)
+
+(def css $ContextMenuDimensions ()
+	(width = 210px)
+)
+
+(def css $ContextSubMenuDimensions ()
+	(width = 270px)
+)
+
+(def constant MAX_DYNAMIC_DIVISION_PARTICIPENTS_COUNT 3)
+(def constant MINIMUM_EVALUATION_COUNT 0)
+(def constant NONE_DIVISION_ID 0)
+
+(def element ContextMenuPlayer (_playerEntity:gfx, _selfPlayer:gfx)
+	(scope
+		(event evContextMenuShowed)
+		(event evContextMenuHidden)
+
+		
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var battleType:str =		"battleDataEntity.battleInfo.battleType")
+
+		
+		(var selfDivisionMember:gfx =		"_selfPlayer.divisionMember")
+		(var isSelfDivisionCommander:bool =	"selfDivisionMember.isDivisionCommander"	(event "selfDivisionMember.evIsDivisionCommanderUpdated"))
+		(var selfDivisionId:bool =			"selfDivisionMember.divisionId"				(event "selfDivisionMember.evDivisionChanged"))
+
+		(var isSelfAlive:bool =				"_selfPlayer.playerAvatar.isAlive" 			(event "_selfPlayer.playerAvatar.evIsAliveChanged"))
+
+		(var isBot:bool = 					"_playerEntity.avatar.isBot")
+		(var isPlayerMessagesMuted:bool =	"_playerEntity.avatar.mute" 				(event "_playerEntity.avatar.evMuteChanged"))
+		(var isPlayerAlive:bool =			"_playerEntity.health.isAlive"				(event "_playerEntity.health.evIsAliveChanged"))
+		(var isLeaver:bool =				"_playerEntity.avatar.isLeaver"				(event "_playerEntity.avatar.evIsLeaverChanged"))
+		(var isSuspended:bool =				"_playerEntity.accountSimple.suspended"		(event "_playerEntity.accountSimple.evSuspendedChanged"))
+		(var isIgnored:bool =				"_playerEntity.contact ? _playerEntity.contact.isIgnored : false" (event "_playerEntity.contact.evIsIgnoredChanged"))
+
+		
+		(var divisionMembers:gfx =			"selfDivisionId > NONE_DIVISION_ID	? $datahub.getCollectionByPath(CC.divisionMember, 'byDivisionId.' + selfDivisionId)
+																				: null")
+		(var divisionMembersCount:gfx =	"divisionMembers ? divisionMembers.items.length : 0" (event "divisionMembers.evAdded") (event "divisionMembers.evRemoved"))
+		
+		(var invitedPlayersMembers:gfx =		"$datahub.getCollection(CC.playerInvitedToPrebattleInfo)")
+		(var invitedPlayersMembersCount:gfx =	"invitedPlayersMembers.items.length" (event "invitedPlayersMembers.evAdded") (event "invitedPlayersMembers.evRemoved"))
+		(var isFreePlacesInDivision:bool =	"divisionMembers ? (divisionMembersCount + invitedPlayersMembersCount) < MAX_DYNAMIC_DIVISION_PARTICIPENTS_COUNT : true")
+
+		(var invitedPlayerEntity:gfx =		"$datahub.getPrimaryEntity(CC.preBattlePlayerSimple, _playerEntity.avatar.id)")
+		(var relationComponent:gfx =		"_playerEntity ? _playerEntity.relation : null")
+		(var isEnemy:bool =					"relationComponent && relationComponent.value == SC.Battle.PLAYER_RELATION.ENEMY" (event "relationComponent.evChanged"))
+
+		(var divisionMember:gfx =			"_playerEntity.divisionMember")
+		(var division:number =				"divisionMember.division"					(event "divisionMember.evDivisionChanged"))
+		(var isInSameDivision:bool =		"divisionMember.isInSameDivision"			(event "divisionMember.evDivisionChanged"))
+		(var isInSameDivisionOnStart:bool = "divisionMember.isInSameDivisionOnStart")
+
+		(var battleInvite:gfx =				"_playerEntity.battleInvite")
+		(var invitationsEnabled:bool =		"battleInvite.invitationsEnabled"			(event "battleInvite.evInvitationsEnabledChanged"))
+		(var inviteCooldown:number =		"battleInvite.inviteCooldown"				(event "battleInvite.evInviteCooldownChanged"))
+		(var inviteCooldownEnabled:bool =	"battleInvite.inviteCooldownEnabled"		(event "battleInvite.evInviteCooldownEnabledChanged"))
+
+		(var timer:gfx =					"$datahub.getSingleComponent(CC.timer)")
+		(var cooldownTime:number =			"inviteCooldown - timer.currentServerTime"	(event "timer.evFrequent"))
+		(var cooldownTimeText:str = 		"countdownFormat(inviteCooldownEnabled ? cooldownTime : 0, 2, true)")
+
+		(var invitationDisableReason:str =	"	isLeaver						? 'IDS_INVITATION_DISABLE_REASON_PLAYER_IS_OUT_OF_BATTLE':
+												division != NONE_DIVISION_ID	? 'IDS_INVITATION_DISABLE_REASON_ALREADY_IN_DIVISION' :
+												!isSelfAlive					? 'IDS_DIVISION_MANAGEMENT_LOCKED_FOR_DESTROYED' :
+												!isPlayerAlive					? 'IDS_INVITATION_DISABLE_REASON_DESTROYED' :
+												!isFreePlacesInDivision			? 'IDS_INVITATION_DISABLE_REASON_NO_FREE_PLACES' :
+												!invitationsEnabled				? 'IDS_INVITATION_DISABLE_REASON_INVITATIONS_DISABLED' :
+												inviteCooldownEnabled			? tr('IDS_WAIT_TIMEOUT_TO_INVITE_TO_DIVISION')+' '+cooldownTimeText
+																				: null")
+
+		(var isDynamicDivisionsEnabled:bool = "isIn(battleType, SC.Common.BATTLE_TYPES.DYNAMIC_DIVISION_AVAILABLE)")
+
+		(var isDivisionControlsEnable:bool = "isDynamicDivisionsEnabled &&
+												!(isEnemy) &&
+												!(isBot) &&
+												(isSelfDivisionCommander || selfDivisionId == NONE_DIVISION_ID) &&
+												!(isSuspended)")
+
+		
+		(var chatComponent:gfx =			"$datahub.getSingleComponent(CC.chat)")
+		(var isChatServerAvailable:bool =	"chatComponent ? chatComponent.isConnected : false" (event "chatComponent.evConnected") (event "chatComponent.evDisConnected"))
+		
+		(var contactsGroup:gfx =			"$datahub.getCollection(CC.contactsGroup)")
+		(var elementInGroups:gfx =			"_playerEntity.elementInGroups")
+		(var canAddGroupEntitiesId:array =	"elementInGroups	? elementInGroups.canAddGroupEntitiesId
+																: chatComponent.canAddGroupEntitiesId"
+												(event "chatComponent.evRosterChanged")
+												(event "elementInGroups.evCanAddGroupEntitiesChanged")
+		)
+
+		(var groupIdsOfAccount:array =		"elementInGroups ? elementInGroups.groupIds : null" (event "elementInGroups.evGroupsChanged"))
+
+		
+		(var playerVoiceState:gfx =	"$datahub.getPrimaryComponent(CC.playerVoiceState, _playerEntity.avatar.pureName)")
+		(var isMuted:bool =			"playerVoiceState ? playerVoiceState.isMuted : false" (event "playerVoiceState.evIsMutedChanged"))
+
+		(macro GET_PREF 'selfVoiceChatEnabled' "'sound.voice.chat.enabled'")
+
+		(var canBeInChat:bool = "		((battleType == SC.Common.BATTLE_TYPES.CLAN_BATTLE) && selfVoiceChatEnabled && !(isEnemy)) ||
+										((isInSameDivision && selfVoiceChatEnabled) && isIn(battleType, SC.Common.BATTLE_TYPES.CHAT_AVAILABLE))"
+		)
+
+		
+		(var evaluationLimitsInfo:gfx =			"$datahub.getSingleComponent(CC.evaluationLimitsInfo)")
+		(var evaluationLimitsComplain:number =	"evaluationLimitsInfo ? evaluationLimitsInfo.complain : MINIMUM_EVALUATION_COUNT" (event "evaluationLimitsInfo.evComplainChanged"))
+		(var evaluationLimitsPraise:number =	"evaluationLimitsInfo ? evaluationLimitsInfo.praise : MINIMUM_EVALUATION_COUNT" (event "evaluationLimitsInfo.evPraiseChanged"))
+		(var collectionRelationName:str = "isEnemy ? 'enemy' : 'ally'")
+		(var complainCollection:gfx =	"$datahub.getCollectionByPath(CC.playerEvaluationInfo, 'team.' + collectionRelationName + '.complaint.sorted')")
+		(var praiseCollection:gfx =		"$datahub.getCollectionByPath(CC.playerEvaluationInfo, 'team.' + collectionRelationName + '.praise.sorted')")
+
+		(var complainDisabledReason:str = "	battleType == SC.Common.BATTLE_TYPES.CLAN_BATTLE 		? 'IDS_COMPLAIN_DISABLED_FOR_CLAN_BATTLES' :
+											battleType == SC.Common.BATTLE_TYPES.TRAINING_BATTLE	? 'IDS_TRAININGBATTLE' :
+											evaluationLimitsComplain == MINIMUM_EVALUATION_COUNT	? 'IDS_DAY_LIMIT_IS_OFF' :
+											isInSameDivisionOnStart									? 'IDS_COMPLAIN_DISABLED_FOR_DIVISION_MEMBERS'
+																									: null")
+
+		(var praiseDisabledReason:str = "	battleType == SC.Common.BATTLE_TYPES.CLAN_BATTLE 		? 'IDS_PRAISE_DISABLED_FOR_CLAN_BATTLES' :
+											battleType == SC.Common.BATTLE_TYPES.TRAINING_BATTLE	? 'IDS_TRAININGBATTLE' :
+											evaluationLimitsPraise == MINIMUM_EVALUATION_COUNT		? 'IDS_DAY_LIMIT_IS_OFF' :
+											isInSameDivisionOnStart									? 'IDS_PRAISE_DISABLED_FOR_DIVISION_MEMBERS'
+																									: null")
+	)
+
+	(class $ContextMenuDimensions)
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(dispatch evContextMenuShowed dir="EventDirection.UP" args="{}" on='addedToStage')
+	(dispatch evContextMenuHidden dir="EventDirection.UP" args="{}" on='removedFromStage')
+
+	
+	(block
+		(style (width = 100%))
+		(bind visible "isDivisionControlsEnable")
+		(block
+			(bind visible "isSelfDivisionCommander && isInSameDivision")
+			(style (width = 100%) (backgroundColor = 0x01000000))
+			(element ContextMenuItem
+							_title="'IDS_APPOINT_PLAYER_TO_COMMANDER'"
+							_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+							_enabled="isSelfAlive"
+							_methods="[{
+											type:	'inputMapping.onAction',
+											name:	'changeCommander',
+											args:	{	playerId: _playerEntity.avatar.id,
+														teamId: _playerEntity.avatar.teamId
+													}
+										}]"
+			)
+			(element ContextMenuItem
+							_title="'IDS_EXCLUDE_PLAYER_OUT_OF_DIVISION'"
+							_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+							_enabled="isSelfAlive"
+							_methods="[{
+											type:	'inputMapping.onAction',
+											name:	'kickPlayerFromDivision',
+											args:	{ playerId: _playerEntity.avatar.id }
+									}]"
+			)
+			(controller $Tooltip (renderer = 'SimpleStatusTooltip')
+				(bind enabled "!isSelfAlive")
+				(args
+					_text="'IDS_DIVISION_MANAGEMENT_LOCKED_FOR_DESTROYED'"
+					_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+			)
+		)
+		(block
+			(bind visible "!isInSameDivision")
+			(style (width = 100%))
+			(block
+				(style (width = 100%) (backgroundColor = 0x01000000))
+				(controller $Instance renderer='ContextMenuItem'
+					(bind enabled "invitedPlayerEntity == null")
+					(args
+						_title='IDS_INVITE_IN_DIVISION'
+						_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+						_enabled="invitationDisableReason == null"
+						_methods="[{
+									type:	'inputMapping.onAction',
+									name:	'inviteToDivision',
+									args:	{	playerId: _playerEntity.avatar.id,
+												playerName: _playerEntity.avatar.name,
+												inviteType: SC.Pre_battle.PRE_BATTLE_INVITE_TYPE.COMMON
+											}
+								}]"
+					)
+				)
+				(controller $Tooltip (renderer = 'SimpleStatusTooltip')
+					(bind enabled "invitationDisableReason")
+					(args
+						_text="invitationDisableReason ? invitationDisableReason : ''"
+						_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+					)
+					(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+				)
+			)
+			
+			(block
+				(style (width = 100%))
+				(controller $Instance renderer='ContextMenuItem'
+					(bind enabled "invitedPlayerEntity != null")
+					(args
+						_title='IDS_RECALL_INVITATION'
+						_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+						_methods="[{
+										type:	'inputMapping.onAction',
+										name:	'revokeInvitationToDivision',
+										args:	{ id: _playerEntity.avatar.id }
+								}]"
+					)
+				)
+			)
+		)
+		(element HorizontalDividerTwoPx
+			(style (marginTop = "XS") (marginBottom = "XS"))
+		)
+	)
+
+	
+	(block
+		(style (width = 100%))
+		(bind visible "evaluationLimitsInfo != null && !isBot && !isSuspended")
+		(element EvaluationMenuItemExpandable
+						_playerEntity="_playerEntity"
+						_title="'IDS_COMPLAIN'"
+						_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+						_childrenCollection="complainCollection"
+						_disableReason="complainDisabledReason"
+						_remainCount="evaluationLimitsComplain"
+		)
+		(element EvaluationMenuItemExpandable
+						_playerEntity="_playerEntity"
+						_title="'IDS_PRAISE'"
+						_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+						_childrenCollection="praiseCollection"
+						_disableReason="praiseDisabledReason"
+						_remainCount="evaluationLimitsPraise"
+		)
+	)
+
+	
+	(block
+		(style (width = 100%))
+		(bind visible "!isIgnored && !isBot")
+		(element ContextMenuItem
+						_title="isPlayerMessagesMuted ? 'IDS_UNMUTE_PLAYER_CHAT' : 'IDS_MUTE_PLAYER_CHAT'"
+						_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+						_methods="[{
+									type:	'inputMapping.onAction',
+									name:	isPlayerMessagesMuted ? 'unmuteUser' : 'muteUser',
+									args:	{ id: _playerEntity.avatar.id }
+								}]"
+			(controller $Tooltip (renderer = 'SimpleStatusTooltip')
+				(args
+					_text="isPlayerMessagesMuted	? 'IDS_UNMUTE_PLAYER_CHAT_HINT'
+													: 'IDS_MUTE_PLAYER_CHAT_HINT'"
+					_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+			)
+		)
+		
+		
+		(element VoiceChatMenuItem
+						_playerVoiceState="playerVoiceState"
+						_actionType="'inputMapping.onAction'"
+						_action="'toggleVoice'"
+						_actionArgs="{	'playerName': _playerEntity.avatar.pureName, 
+										'nickName': _playerEntity.avatar.name}"
+			(bind visible "canBeInChat && !isBot && !isSuspended")
+		)
+	)
+	(block
+		(bind visible "!isSuspended && !isBot")
+		(style (width = 100%) (marginTop = "XS") (marginBottom = "XS"))
+		(controller $Instance renderer='HorizontalDividerTwoPx'
+			(bind enabled "!isSuspended && !isBot")
+		)
+	)
+	(block
+		(style (width = 100%))
+		
+		(block
+			(bind visible "!isBot && !isSuspended")
+			(style (backgroundColor = 0x01000000) (width = 100%))
+
+			(element ContextMenuItem
+							_title="groupIdsOfAccount == null ? 'IDS_ADD_TO_CONTACTS' : 'IDS_REMOVE_FROM_CONTACTS'"
+							_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+							_enabled="isChatServerAvailable"
+							_methods="[{
+										type:	'inputMapping.onAction',
+										name:	groupIdsOfAccount == null ? 'addContact' : 'removeContact',
+										args:	{ dbId: _playerEntity.accountSimple.dbId }
+									}]"
+				(bind visible "!isIgnored")
+			)
+			(element MoveToChatGroupMenuItemExpandable
+							_playerEntity="_playerEntity"
+							_title="'IDS_ADD_TO_GROUP'"
+							_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+							_children="canAddGroupEntitiesId"
+				(bind visible "!(isIgnored) && ((canAddGroupEntitiesId.length > 0) && (contactsGroup.items.length > 1))")
+			)
+			(element ContextMenuItem
+							_title="isIgnored ? 'IDS_NOT_IGNORE_PLAYER' : 'IDS_IGNORE_PLAYER'"
+							_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+							_enabled="isChatServerAvailable"
+							_methods="[{
+										type:	'inputMapping.onAction',
+										name:	'userIgnoreContact',
+										args:	{	dbId: _playerEntity.accountSimple.dbId,
+													ignore: !isIgnored
+												}
+									}]"
+				(controller $Tooltip (renderer = 'SimpleStatusTooltip')
+					(args
+						_text="isIgnored ? 'IDS_NOT_IGNORE_PLAYER_HINT' : 'IDS_IGNORE_PLAYER_HINT'"
+					)
+					(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+				)
+			)
+
+			(controller $Tooltip (renderer = 'SimpleStatusTooltip')
+				(bind enabled "!isChatServerAvailable")
+				(args
+					_text="'IDS_CONTACT_DISABLE_REASON_SERVER_CHAT_DISABLED'"
+					_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+			)
+			
+		)
+		(block
+			(style (width = 100%))
+
+			(controller $Instance renderer='InvitationToClanMenuItem'
+				(bind enabled "_selfPlayer.clanman && !isBot")
+				(args	_playerEntity="_playerEntity"
+						_selfClanman="_selfPlayer.clanman"
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='HorizontalDividerTwoPx'
+				(bind enabled "!isBot")
+			)
+		)
+
+		(block
+			(bind visible "isBot || isSuspended")
+			(class $ContextMenuInfoItem)
+			(style (paddingRight = "SXS") (paddingLeft = "SXS"))
+			(tf
+				(class $TextDefaultNM)
+				(style 
+					(width = 100%)
+					(hitTest = false)
+					(leading = -3)
+					(alpha = "TC")
+					(marginTop = "S")
+				)
+				(bind text  "isBot ? 'IDS_NO_AVAILABLE_ACTIONS_FOR_BOTS' : 'IDS_NO_AVAILABLE_ACTIONS'")
+				(name = 'noAvailableActionLabel')
+			)
+		)
+	)
+)
+
+
+(def element EvaluationMenuItemExpandable (	_playerEntity:gfx, _title:str, _unifiedStatus:str, _childrenCollection:gfx,
+											_disableReason:str=null, _remainCount:number="MINIMUM_EVALUATION_COUNT")
+	(scope
+		(event evMenuItemHover)
+		(event evInnerItemHover)
+
+		(var isOver:bool = "false" watch=false)
+		(bind isOver "$event.isOver" init=false watch=false (event "evMenuItemHover"))
+
+		(var isInnerOver:bool = "false" watch=false)
+		(bind isInnerOver "$event.isOver" init=false watch=false (event "evInnerItemHover"))
+
+		(var isCursorOverSelfOrChild:bool = "isOver || isInnerOver")
+	)
+
+	(class $ContextMenuListItem)
+
+	(element DockSubmenuItem _selected="false"
+		(class $FullsizeAbsolute)
+	)
+
+	(block
+		(class $MiddleVAligned)
+		(style
+			(hitTest = "false")
+			(backgroundSize = "autosize")
+			(backgroundImage = "'url:../service_kit/buttons/expand_up.png'")
+			(position = "absolute") (right = "6px")
+		)
+	)
+
+	(element TooltipSystemStatusLine "_title" "_unifiedStatus"
+		(style (hitTest = false) (marginLeft = "SXS"))
+	)
+
+	(controller $Tooltip (renderer = 'EvaluationMenuChildrenItems')
+		(args
+			_playerEntity="_playerEntity"
+			_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+			_childrenCollection="_childrenCollection"
+			_disableReason="_disableReason"
+			_remainCount="_remainCount"
+		)
+		(position="border")
+		(align="right|innerTop")
+		(bindcall show (bind enabled "isCursorOverSelfOrChild"))
+		(bindcall hide (bind enabled "!isCursorOverSelfOrChild"))
+		(offset=[-8, 0])
+		(screenBoundsOffset={left:10, top:10, right:10, bottom:10})
+		(showAnimation={duration:0.15, delay:0.25, from:{alpha:0}, to:{alpha:1}})
+		(hideAnimation={duration:0.15, delay:0.0, from:{alpha:1}, to:{alpha:0}})
+	)
+)
+
+(def layout EvaluationMenuChildrenItems (	_playerEntity:gfx, _unifiedStatus:str,
+											_childrenCollection:gfx, _disableReason:str, _remainCount:number="MINIMUM_EVALUATION_COUNT")
+	(scope
+		(event evInnerItemHover)
+		(macro MOUSE_HANDLER_SCOPE "'EvaluationMenuChildrenItems_'")
+	)
+
+	(class $ContextSubMenuDimensions)
+	(dispatch evInnerItemHover dir="EventDirection.UP"	args="{isOver:EvaluationMenuChildrenItems_rollOver}" (bind trigger "EvaluationMenuChildrenItems_rollOver"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(block
+		(style (width = 100%))
+		(controller $Repeat renderer='ContextMenuItem'
+			(bind count "_childrenCollection.items.length")
+			(args
+				_title="_childrenCollection.items[$index].playerEvaluationInfo.messageIDS"
+				_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				_enabled="_disableReason==null"
+				_methods="[{
+							type:	'inputMapping.onAction',
+							name:	'sendEvaluation',
+							args:	{	nickname:	_playerEntity.avatar.name,
+										type:		_childrenCollection.items[$index].playerEvaluationInfo.evaluationType,
+										topic:	_childrenCollection.items[$index].playerEvaluationInfo.evaluationTopic
+									}
+						}]"
+			)
+		)
+	)
+
+	(block
+		(bind class "_disableReason || _remainCount ? '$ContextMenuInfoItem' : '$None'")
+		(style (paddingLeft = "SXS"))
+		(controller $Instance renderer='TooltipSystemStatusLine'
+			(bind enabled "_disableReason")
+			(args
+				_text="tr(_disableReason)"
+				_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.NEGATIVE"
+			)
+		)
+		(controller $Instance renderer='TooltipSystemStatusLine'
+			(bind enabled "_remainCount && !_disableReason")
+			(args
+				_text="tr('IDS_DAY_LIMIT') + ' ' + _remainCount"
+				_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+			)
+		)
+	)
+
+	
+	(macro MOUSE_EVENTS_DISPATCHER
+		_prefix = "'EvaluationMenuChildrenItems_'"
+	)
+)
+
+(def element MoveToChatGroupMenuItemExpandable (_playerEntity:gfx, _title:str, _unifiedStatus:str, _children:array)
+	(scope
+		(event evMenuItemHover)
+
+		(var isOver:bool = "false" watch=false)
+		(bind isOver "$event.isOver" init=false watch=false (event "evMenuItemHover"))
+	)
+
+	(class $ContextMenuListItem)
+
+	(element DockSubmenuItem _selected="false"
+		(class $FullsizeAbsolute)
+	)
+
+	
+	(block
+		(class $MiddleVAligned)
+		(style
+			(hitTest = "false")
+			(backgroundSize = "autosize")
+			(backgroundImage = "'url:../service_kit/buttons/expand_up.png'")
+			(position = "absolute") (right = "6px")
+		)
+	)
+
+	(element TooltipSystemStatusLine "_title" "_unifiedStatus"
+		(style (hitTest = false) (marginLeft = "SXS"))
+	)
+
+	(controller $Tooltip (renderer = 'MoveToChatGroupMenuChildrenItems')
+		(args
+			_playerEntity="_playerEntity"
+			_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+			_children="_children"
+		)
+		(position="border")
+		(align="right|innerTop")
+		(bindcall show (bind enabled "isOver"))
+		(bindcall hide (bind enabled "!isOver"))
+		(offset=[-8, 0])
+		(screenBoundsOffset={left:10, top:10, right:10, bottom:10})
+		(showAnimation={duration:0.15, delay:0.25, from:{alpha:0}, to:{alpha:1}})
+		(hideAnimation={duration:0.15, delay:0.0, from:{alpha:1}, to:{alpha:0}})
+	)
+)
+
+(def element MoveToChatGroupMenuChildrenItems (_playerEntity:gfx, _unifiedStatus:str, _children:array) layout=true
+	(class $ContextSubMenuDimensions)
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(block
+		(style (width = 100%))
+		(controller $Repeat renderer='MoveToGroupMenuItem'
+			(bind count "_children.length")
+			(args
+				_playerEntity="_playerEntity"
+				_groupEntityId="_children[$index]"
+			)
+		)
+	)
+)
+
+(def element MoveToGroupMenuItem (_playerEntity:gfx, _groupEntityId:number)
+	(scope
+		(var groupEntity:gfx = "$datahub.getEntity(_groupEntityId)")
+		(var isToTranslate:bool =	"(groupEntity!=null && (groupEntity.groupOfElements.isLocal || 
+										groupEntity.groupOfElements.isIgnorList ||
+										groupEntity.groupOfElements.isReferralsList || 
+										groupEntity.groupOfElements.groupType=='channels'))")
+	)
+
+	(style (width = 100%))
+
+	(controller $Instance renderer='ContextMenuItem'
+		(bind enabled "groupEntity.groupOfElements.groupId != 1")
+		(args	_title="groupEntity.groupOfElements.name"
+				_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				_noTranslate="!isToTranslate"				
+				_methods="[{
+							type:	'inputMapping.onAction',
+							name:	'addContactToGroup',
+							args:	{	dbId:			_playerEntity.accountSimple.dbId,
+										toGroupId:		groupEntity.groupOfElements.groupId,
+										fromGroupId:	null # handler signature requires 'None' arg so provide it in this form
+									}
+						}]"
+		)
+	)
+)
+
+(def element VoiceChatMenuItem (_playerVoiceState:gfx, _actionType:str='direct.action', _action:str='', _actionArgs:gfx=[])
+	(scope
+		(event evMenuItemClicked)
+		(var isMuted:bool =	"_playerVoiceState ? _playerVoiceState.isMuted : false" (event "_playerVoiceState.evIsMutedChanged"))
+
+		(var isDisabled:bool = "_playerVoiceState == null")
+
+		(var voiceStateText:str = "		isDisabled	? 'IDS_PLAYER_IS_NOT_AVAILABLE_IN_VOICE_CHAT' :
+										isMuted		? 'IDS_UNMUTE_PLAYER_VOICE_CHAT'
+													: 'IDS_MUTE_PLAYER_VOICE_CHAT'")
+		(var voiceStateColor:number = "	isDisabled	? SC.Ui_styles.SERVICE_COLORS.ORANGE :
+										isMuted		? SC.Ui_styles.SERVICE_COLORS.ORANGE
+													: SC.Ui_styles.SERVICE_COLORS.WHITE")
+		(var voiceStateIconName:str = "	isDisabled	? 'disabled' :
+										isMuted		? 'muted'
+													: 'speak'")
+	)
+	(style
+		(width = 100%)
+		(minHeight = 29px)
+		(align = "middle")
+		(flow = "horizontal")
+	)
+	(element DockSubmenuItem _selected="false"
+		(class $FullsizeAbsolute)
+		(style (bind hitTest "!isDisabled"))
+	)
+	(bindcall externalCall "_actionType" "[_action, _actionArgs]" init=false watch=false (event "evMenuItemClicked"))
+	(mc icon_voice_chat_small
+		(style (position = "absolute") (right = "6px") (hitTest = false))
+		(class $MiddleVAligned)
+		(bindcall gotoAndStop "voiceStateIconName" init=true)
+	)
+	(tf
+		(class $TextDefaultNM)
+		(style
+			(leading = "-3")
+			(maxWidth = "90%")
+			(multiline = true)
+			(bind textColor "voiceStateColor")
+			(marginLeft = "SXS")
+			(marginTop = "S")
+			(marginBottom = "S")
+		)
+		(bind text "voiceStateText")
+	)
+)
+
+(def element InvitationToClanMenuItem (_selfClanman:gfx, _playerEntity:gfx) layout=true
+	(scope
+		(var clanId:number =	"_selfClanman.clanId"		(event "_selfClanman.evClanIdChanged"))
+		(var role:str =			"_selfClanman.role"			(event "_selfClanman.evRoleChanged"))
+		
+		(var clanEntity:gfx =	"$datahub.getPrimaryEntity(CC.clan, clanId)")
+		(var clanTag:str =		"clanEntity.clan.tag"				(event "clanEntity.clan.evTagChanged"))
+		(var clanName:str =		"clanEntity.clanExtended.name"		(event "clanEntity.clanExtended.evNameChanged"))
+		(var isFull:bool =		"clanEntity.clanExtended.isFull"	(event "clanEntity.clanExtended.evIsFullChanged"))
+
+		(var haveOwnClan:bool =				"clanEntity != null")
+		(var canInvite:bool =				"isIn(role, SC.Clan.CLAN_ROLE.CAN_INVITE)")
+		(var alreadyInYourClan:bool =		"_playerEntity.clanman != null && _playerEntity.clanman.clanId == _selfClanman.clanId")
+		(var alreadyInAnotherClan:bool =	"_playerEntity.clanman != null && _playerEntity.clanman.clanId != _selfClanman.clanId")
+		(var noFreePlacesInClan:bool =		"isFull")
+
+		(var isClanInviteAvailable:bool = "haveOwnClan && canInvite && !alreadyInYourClan")
+		(var isClanInviteDisabled:bool = "alreadyInAnotherClan || noFreePlacesInClan")
+	)
+
+	(style (width = 100%) (backgroundColor = 0x01000000))
+
+	(controller $Instance renderer='ContextMenuItem'
+		(bind enabled "isClanInviteAvailable")
+		(args	_title="'IDS_INVITATION_TO_CLAN'"
+				_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				_enabled="!isClanInviteDisabled"
+				_methods="[{
+								type:	'inputMapping.onAction',
+								name:	'ClanProxy.sendInvite',
+								args:	{ playerDBID: _playerEntity.accountSimple.dbId }
+							}]"
+			)
+	)
+
+	(controller $Tooltip (renderer = 'SimpleStatusTooltip')
+		(bind enabled "isClanInviteDisabled")
+		(args
+			_text="	noFreePlacesInClan		? 'IDS_CLAN_INVITATION_DENY_REASON_CLAN_IS_FULL' :
+					alreadyInAnotherClan	? 'IDS_CLAN_INVITATION_DENY_REASON_PLAYER_ALREADY_IN_CLAN'
+											: ''"
+			_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+	)
+)
+
+

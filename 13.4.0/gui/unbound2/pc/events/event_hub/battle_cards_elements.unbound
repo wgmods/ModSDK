@@ -1,0 +1,370 @@
+(def element BattleCardPreview (_battleCardItem:gfx)
+	(scope
+		(var name:str = "_battleCardItem.battleCard.name")
+		(var currentLevel:number = "_battleCardItem.battleCard.currentLevel")
+	)
+
+	(block
+		(style (width="360px") (height="805px") (marginLeft="LS") (backgroundColor = 0x60000000))
+
+		(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+			(class $Fullsize)
+			(hblock
+				(style (width="100%"))
+				(block
+					(style
+						(backgroundSize = "fill") (marginTop = "10") (width = "80") (height = "80")
+						(bind backgroundImage "'url:../battle_cards/preview/' + name + '_' + currentLevel + '.png'")
+					)
+				)
+
+				(block
+					(class $Fullsize)
+					(style (align = "middle") (marginLeft = "SXS"))
+					(tf
+						(class $TextDefaultBold17NM)
+						(bind text "'IDS_' + toUpper(name) + '_' + currentLevel + '_HEADER'")
+
+					)
+
+					(tf
+						(class $TextDefault13NM)
+						(style (marginTop = "S"))
+						(text = "'IDS_BATTLE_CARDS_INTELLIGENCE_DATA_HEADER'")
+					)
+				)
+			)
+
+			(element TooltipSystemHorizontalDivider)
+
+			(block
+				(tf
+					(class $TextDefaultBold17NM)
+					(class $FontColorGolden)
+					(bind text "'IDS_BATTLE_CARD_' + currentLevel + '_CURRENT_LEVEL'")
+				)
+			)
+
+			(element TooltipSystemHorizontalDivider)
+
+			(block
+				(style (width="360px") (height = "96px") (marginLeft = "-M") (marginRight = "-M")(backgroundColor = 0x60000000))
+			)
+
+			(element TooltipSystemHorizontalDivider)
+
+			(block
+				(class $Fullsize)
+				(tf
+					(style (marginTop = "S"))
+					(class $Fullsize)
+					(class $TextDefault17NM)
+					(bind text "'IDS_BATTLE_CARD_' + toUpper(name) + '_' + currentLevel + '_DESCRIPTION'")
+				)
+			)
+		)
+	)
+
+	(block
+		(style (width="360px") (height="805px") (marginLeft="LS") (backgroundColor = 0x60000000) (align = "center|middle"))
+		(class $Fullsize)
+		(block
+			(style
+				(align = "center|middle")
+				(marginTop = -50%)
+				(backgroundSize = "fill") (width = "131") (height = "131")
+				(bind backgroundImage "'url:../battle_cards/preview/' + name + '_' + currentLevel + '.png'")
+			)
+		)
+
+		(block
+			(style (align = "center|middle"))
+			(tf
+				(style (marginTop = "MS") (width = "360px") (textAlign = "center"))
+				(class "'$TextDefault17NM'")
+				(bind text "'IDS_BATTLE_CARD_' + toUpper(name) + '_' + currentLevel + '_HEADER'")
+			)
+			(tf
+				(style (marginTop = "MS") (width = "360px") (textAlign = "center"))
+				(class $TextDefault17NM)
+				(bind text "'IDS_BATTLE_CARD_' + toUpper(name) + '_' + currentLevel + '_DESCRIPTION'")
+			)
+		)
+	)
+)
+
+(def element BattleCardComponentTooltip (_battleCardItem:gfx, _isShowUB2Tooltip:bool=false,
+											_isRewardTooltip:bool=false, _rewardLevel:number=0,
+											_isInStatus:bool=false, _isChangeAvailable:bool=false
+										)
+	(scope
+		(var currentLevel:number = " _isRewardTooltip	? _rewardLevel 
+														: _battleCardItem	? _battleCardItem.battleCard.currentLevel
+																			: 0" (event "_battleCardItem.battleCard.evChanged"))
+		(var isInstalled:bool = "	_isRewardTooltip	? false :
+									_isInStatus			? false :
+									_battleCardItem		? _battleCardItem.battleCard.isInstalled
+														: false" (event "_battleCardItem.battleCard.evChanged"))
+		(var name:str = "_battleCardItem ? _battleCardItem.battleCard.name : false" (event "_battleCardItem.battleCard.evChanged"))
+		(var cardType:str = "_battleCardItem ? _battleCardItem.battleCard.cardType : false" (event "_battleCardItem.battleCard.evChanged"))
+		(var isActiveInEvent:bool = "_battleCardItem ? _battleCardItem.battleCard.isActiveInEvent : false" (event "_battleCardItem.battleCard.evChanged"))
+
+		(var isCardAvailable:bool = "currentLevel > 0")
+		(var battleCardBonusCurrentLevel:number = "currentLevel-1" (event "_battleCardItem.battleCard.evChanged"))
+
+		(var commonCardBonusEntityID:number = "_battleCardItem ? _battleCardItem.battleCard.activeCommonCardBonusEntityID : null")
+		(var commonBattleCardBonusEntity:gfx = "$datahub.getEntity(commonCardBonusEntityID)")
+		(var commonAttributesNegative:array = "commonBattleCardBonusEntity && isCardAvailable ? commonBattleCardBonusEntity.battleCardBonus.bonusesByLevel[battleCardBonusCurrentLevel].negative : []")
+		(var commonAttributesNeutral:array = "commonBattleCardBonusEntity && isCardAvailable ? commonBattleCardBonusEntity.battleCardBonus.bonusesByLevel[battleCardBonusCurrentLevel].neutral : []")
+		(var commonAttributesPositive:array = "commonBattleCardBonusEntity && isCardAvailable ? commonBattleCardBonusEntity.battleCardBonus.bonusesByLevel[battleCardBonusCurrentLevel].positive : []")
+
+		(var personalCardBonusEntityID:number = "_battleCardItem ? _battleCardItem.battleCard.activePersonalCardBonusEntityID : null")
+		(var personalBattleCardBonusEntity:gfx = "$datahub.getEntity(personalCardBonusEntityID)")
+		(var personalAttributesNegative:array = "personalBattleCardBonusEntity && isCardAvailable ? personalBattleCardBonusEntity.battleCardBonus.bonusesByLevel[battleCardBonusCurrentLevel].negative : []")
+		(var personalAttributesNeutral:array = "personalBattleCardBonusEntity && isCardAvailable ? personalBattleCardBonusEntity.battleCardBonus.bonusesByLevel[battleCardBonusCurrentLevel].neutral : []")
+		(var personalAttributesPositive:array = "personalBattleCardBonusEntity && isCardAvailable ? personalBattleCardBonusEntity.battleCardBonus.bonusesByLevel[battleCardBonusCurrentLevel].positive : []")
+
+		(var targetEntities:array = "_battleCardItem ? _battleCardItem.battleCard.targetEntities : []" (event "_battleCardItem.battleCard.evChanged"))
+		(var hasTargetEntites:bool = "targetEntities.length > 0")
+
+		(var ownerEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+
+		(var installedBattleCardCollection:gfx = "$datahub.getCollection(CC.battleCard).getChildByPath('installed')")
+		(var installedBattleCardCount:number = "installedBattleCardCollection ? installedBattleCardCollection.items.length : 0"  (event "installedBattleCardCollection.evUpdated"))
+
+		(var maxBattleCardsInstalled:bool = "installedBattleCardCount == BATTLE_CARD_MAX_SELECTED_COUNT")
+
+		(macro PULL_CURRENT_SHIP_ID)
+		(macro PULL_OWN_SHIP
+			_shipId			= "shipId"
+			_entityField	= "'shipEntity'"
+			_scopeFieldShip	= "'shipInfo'"
+		)
+		(var ownShipComponent:gfx = "shipEntity ? shipEntity.ownShip : null")
+
+		(var isExcluded:bool =	"ownShipComponent ? !shipEntity.carouselFilter.isFiltered : false"	(event "shipEntity.carouselFilter.evUpdate"))
+		(var isInFormation:bool =	"ownShipComponent ? ownShipComponent.isInFormation : false"	(event "ownShipComponent.evUpdateLock"))
+		(var isNeedRepair:bool =	"ownShipComponent ? ownShipComponent.isNeedRepair : false"	(event "ownShipComponent.evUpdateDockState"))
+		(var isNeedShell:bool =		"ownShipComponent ? ownShipComponent.isNeedShell : false"	(event "ownShipComponent.evUpdateDockState"))
+
+		(var mouseInstructionText:str = " isInstalled	? 'IDS_MOUSE_INSTRUCTION_TAKE_AWAY_BATTLE_CARD'
+														: 'IDS_MOUSE_INSTRUCTION_INSTALL_BATTLE_CARD'")
+
+		(var mouseInstruction:dict =	"_isRewardTooltip						?	null : # empty mouse instruction
+										_isInStatus								?	_isChangeAvailable	?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																												_text: 'IDS_MOUSE_INSTRUCTION_CHANGE_BATTLE_CARD' }
+																										:	null : # empty mouse instruction
+										currentLevel == 0						?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.LOCK,
+																						_text: 'IDS_UNREVEALED_BATTLE_CARD' } :
+										!isActiveInEvent						?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.NEGATIVE,
+																						_text: 'IDS_BATTLE_CARDS_ARE_INEFFECTIVE_FOR_CURRENT_OPERATION' } :
+										maxBattleCardsInstalled && !isInstalled	?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																						_text: 'IDS_MAXIMUM_AMOUNT_OF_BATTLE_CARDS_IS_INSTALLED' } :
+										isExcluded								?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																						_text: 'IDS_BATTLE_CARDS_ARE_UNAVAILABLE_FOR_CURRENT_SHIP' } :
+										isInFormation							?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																						_text: 'IDS_SET_UNREADY_DIVISION_FIRST_TO_OPERATE_BATTLE_CARDS' } :
+										isNeedRepair || isNeedShell				?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																						_text: 'IDS_SERVICE_SHIP_TO_OPERATE_BATTLE_CARDS' }
+																				:	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																						_text: mouseInstructionText }")
+
+	)
+
+	(bind visible "name")
+	(style (width = 320px) (hitTest = false))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element BattleCardComponentTooltipHeader
+			_name = "name"
+			_level = "currentLevel"
+			_type = "cardType"
+			_isInstalled = "isInstalled"
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider'
+				(bind enabled "isInstalled")
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isInstalled && !_isRewardTooltip")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+					_text = 'IDS_BATTLE_CARD_STATE_INSTALLED'
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider'
+				(bind enabled "isCardAvailable")
+			)
+		)
+
+		(block
+			(bind visible "isCardAvailable")
+
+			(style (width = 100%))
+
+			(tf
+				(class $TextDefaultNM)
+				(style (alpha = "TC") (width = 100%))
+
+				(bind text "tr('IDS_' + toUpper(name) + '_TARGET_DESCRIPTION')")
+			)
+
+			(block
+				(bind visible "hasTargetEntites")
+				(style (width = 100%) (marginTop = "M"))
+
+				(controller $Repeat renderer='BattleCardShipInlineStereotypeContainer'
+					(bind count "targetEntities.length")
+					(args
+						_targetEntityId = "targetEntities[$index]"
+						_isLast = "$index == targetEntities.length - 1"
+					)
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider'
+				(bind enabled "isCardAvailable && (personalBattleCardBonusEntity || commonBattleCardBonusEntity)")
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='BattleCardTooltipTTX'
+				(bind enabled "isCardAvailable && personalBattleCardBonusEntity")
+				(args
+					_attributesNegative = "personalAttributesNegative"
+					_attributesPositive = "personalAttributesPositive"
+					_attributesNeutral = "personalAttributesNeutral"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='BattleCardTooltipTTX'
+				(bind enabled "isCardAvailable && commonBattleCardBonusEntity")
+				(args
+					_attributesNegative = "commonAttributesNegative"
+					_attributesPositive = "commonAttributesPositive"
+					_attributesNeutral = "commonAttributesNeutral"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider'
+				(bind enabled "mouseInstruction")
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "mouseInstruction")
+				(args
+					_unifiedStatus = "mouseInstruction._unifiedStatus"
+					_text = "mouseInstruction._text"
+				)
+			)
+		)
+	)
+)
+
+(def element BattleCardTooltipTTX (_attributesNegative:array, _attributesPositive:array, _attributesNeutral:array)
+	(scope
+		(var ownerEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+	)
+
+	(style (width = 100%))
+	(controller $Instance layout=true
+		(exprs
+			(class $ParametersPanel)
+			(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+				(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+					(element TooltipSystemParamsModifiersListTTX
+						_attributesNegative="_attributesNegative"
+						_attributesPositive="_attributesPositive"
+						_attributesNeutral="_attributesNeutral"
+						_ownerId="ownerEntity.id"
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element BattleCardComponentTooltipHeader (_name:str, _level:number, _type:str, _isInstalled:bool="false")
+	(scope
+		(var unifiedStatus:str = "_isInstalled ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+
+		(var baseHeader:str = "tr('IDS_' + toUpper(_name))")
+		(var levelHeader:str = "tr('IDS_BATTLE_CARD_SECRET_LEVEL_' + _level)")
+		(var headerWithLevel:str = "subst('IDS_SUBST_BATTLE_CARD_HEADER', [], {_baseHeader: baseHeader, _levelHeader: levelHeader})")
+		(var headerText:str = "_level > 0	? headerWithLevel
+											: baseHeader")
+		(var levelForIconPath:number = "_level > 0 ? _level : 1")
+	)
+
+	(style (width = 100%))
+
+	(hblock
+		(style (width = 100%) (align = "middle"))
+
+		(block
+			(style
+				(marginRight ="M") (width = 80px) (height = 80px)
+				
+			)
+
+			(element TooltipSystemSimpleIcon
+				_imageUrl = "'url:../battle_cards/cards/small/' + _name + '_' + levelForIconPath + '.png'"
+				_imageWidth = "80px"
+				_imageHeight = "80px"
+			)
+		)
+
+		(block
+			(style (width = 100%))
+
+			(block
+				(style (width = 100%)) 
+				(element TooltipSystemHeaderSubheaderText 
+					_headerText = "headerText"
+					_subheaderText = "'IDS_BATTLE_CARD_' + toUpper(_type)"
+					_unifiedStatus = "unifiedStatus"
+				)
+			)
+		)
+	)
+)
+
+(def element BattleCardShipInlineStereotypeContainer (_targetEntityId:number, _isLast:bool)
+	(scope
+		(var shipEntity:gfx = "_targetEntityId ? $datahub.getEntity(_targetEntityId) : null")
+	)
+
+	(style (width = 100%)
+		(bind marginBottom "_isLast ? 0 : M")
+	)
+
+	(element ShipInlineStereotypeSimple
+		_shipId = "shipEntity.ship.id"
+		_width = 100%
+		_showFlag = false
+	)
+)

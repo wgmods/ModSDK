@@ -1,0 +1,22 @@
+(def element EventHubInfoButton ()
+	(hblock
+		(bindcall externalCall "'inputMapping.onRequest'" "['showRules', { _rulesType: 'event_hub' }]" init=false watch=false on='click')
+		(tf
+			(class $TextDefaultNM)
+			(style (marginTop = "XS"))
+
+			(text = 'IDS_BATTLEPASS_RULES_BUTTON')
+			(style (hitTest = "true"))
+
+		)
+		(block
+			(style (marginLeft = "S") (width = 22) (height = 22) (hitTest = "true"))
+			(element ImageButton
+				_width = 22
+				_height = 22
+				_enabled = "true"
+				_backgroundImage = 'url:../service_kit/buttons/info_tab_new.png'
+			)
+		)
+	)
+)

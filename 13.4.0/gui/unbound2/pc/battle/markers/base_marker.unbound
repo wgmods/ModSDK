@@ -1,0 +1,128 @@
+(def constant STUB_MARKER_SETTINGS "{
+	markerRenderer: 'WorldStubMarker',
+	hitTest: false
+}")
+
+
+(def constant WORLD_MARKERS_SETTINGS "[
+	{markerRenderer: 'WorldShipMarker', hitTest: false},				# CC.avatar
+	{markerRenderer: 'WorldBuildingMarker', hitTest: false},			# CC.building
+	{markerRenderer: 'WorldCapturePointMarker', hitTest: false},		# CC.capturePoint
+	{markerRenderer: 'WorldEpicenterMarker', hitTest: false},			# CC.epicenter
+	{markerRenderer: 'WorldNavpointMarker', hitTest: true},				# CC.navpoint
+	{markerRenderer: 'WorldScenarioObjectMarker', hitTest: false},		# CC.scenarioObject
+	{markerRenderer: 'WorldPlaneMarkerContainer', hitTest: false},		# CC.squadron
+	{markerRenderer: 'WorldTorpedoMarker', hitTest: false},				# CC.torpedo
+	STUB_MARKER_SETTINGS,												# CC.camera
+	STUB_MARKER_SETTINGS,												# CC.popupDamageGroup
+	STUB_MARKER_SETTINGS,												# CC.payload
+	STUB_MARKER_SETTINGS,												# CC.resource
+	STUB_MARKER_SETTINGS,												# CC.keyObject
+	{markerRenderer: 'WorldAimPositionMarker', hitTest: false},			# CC.aimPosition
+	STUB_MARKER_SETTINGS,												# CC.scenarioTag
+	{markerRenderer: 'WorldInteractiveZoneMarker', hitTest: false},		# CC.interactiveZone
+	{markerRenderer: 'WorldWardMarker', hitTest: false},				# CC.ward
+	STUB_MARKER_SETTINGS,												# CC.minimapPath
+	STUB_MARKER_SETTINGS,												# CC.minimapBezierPath
+	{markerRenderer: 'WorldMineMarker', hitTest: false},				# CC.mine
+	STUB_MARKER_SETTINGS,												# CC.submarineSearchPoint
+	{markerRenderer: 'WorldHydrophoneZoneMarker', hitTest: false},		# CC.submarineHydrophoneZone
+	{markerRenderer: 'WorldWaveHitMarker', hitTest: false},				# CC.waveHit
+	{markerRenderer: 'WorldDepthChargeMarker', hitTest: false},			# CC.depthCharge
+	{markerRenderer: 'WorldAirSupportChargeMarker', hitTest: false},	# CC.airSupportCharge
+	{markerRenderer: 'WorldAttentionMarker', hitTest: false},			# CC.minimapAttentionPoint
+	{markerRenderer: 'WorldMinefieldMarker', hitTest: false}			# CC.minefield
+]")
+
+(def macro MOUSE_HANDLER_HIT_AREA_DEBUG_DRAW ()
+	(scope
+		(var tacticalSize:number = "mouseHandlerComponent ? mouseHandlerComponent.tacticalSize : 0")
+		(var markerSize:number = "mouseHandlerComponent ? mouseHandlerComponent.markerSize : 0")
+		(var isCentered:bool = "mouseHandlerComponent && mouseHandlerComponent.isCentered")
+		
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var isTactical:bool = "cameraEntity.camera.isTactical" (event "cameraEntity.camera.evTacticalStateChanged"))
+
+		(var size:number = "(isTactical ? tacticalSize : markerSize)")
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(bind top "(isCentered || isTactical) ? 0 : -size")
+		)
+		(alpha = 0.5)
+		(controller $Sector
+			(bind arc "360")
+			(bind radius "size")
+			(bind color "0xFFFFFFFF")
+		)
+	)
+)
+
+
+(def element WorldMarkerItem (_collection:gfx) layout=true
+	(scope
+		(event evMarkerShow)
+		(event evMarkerHide)
+		(event evMarkerUpdate)
+
+		(var _markerEntity:gfx = "_collection.items[$index]" watch=false)
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'worldMarker')
+
+		(var screenPosition:gfx = "_markerEntity ? _markerEntity.screenPosition : null" (event "_markerEntity.evAdded") (event "_markerEntity.evRemoved"))
+		(var posX:number = "screenPosition ? screenPosition.position.x : 0" (event "evMarkerUpdate"))
+		(var posY:number = "screenPosition ? screenPosition.position.y : 0" (event "evMarkerUpdate"))
+
+		(var posZ:number = "worldMarkerComponent ? worldMarkerComponent.zindex : 0" (event "worldMarkerComponent.evZindexChanged"))
+
+		(var type:number = "_markerEntity && _markerEntity.entityType ? _markerEntity.entityType.value : -1" (event "_markerEntity.evAdded") (event "_markerEntity.evRemoved"))
+		(var markerSettings:dict = "type != -1 ? WORLD_MARKERS_SETTINGS[type] : STUB_MARKER_SETTINGS")
+
+		(var updateEnabled:bool = "screenPosition && !(screenPosition.behindCamera)" (event "evEnterFrame"))
+
+		(var showMarker:bool = "screenPosition != null")
+		(var hideMarker:bool = "!(showMarker)")
+	)
+
+	(dispatch evMarkerShow args="{}" dir="EventDirection.DOWN" (bind enabled "showMarker") (bind trigger "showMarker"))
+	(dispatch evMarkerHide args="{}" dir="EventDirection.DOWN" (bind enabled "hideMarker") (bind trigger "hideMarker"))
+	(dispatch evMarkerUpdate args={} (event "evEnterFrame") (bind enabled "updateEnabled"))
+
+	(bind visible "updateEnabled")
+
+	(style
+		(bind left "posX")
+		(bind top "posY")
+		(bind zindex "posZ")
+		(position = "absolute")
+		(align = "center|bottom")
+		(bind hitTest "markerSettings.hitTest")
+	)
+
+	
+	
+
+	
+
+	(controller $Instance
+		(bind renderer "markerSettings.markerRenderer")
+		(args _markerEntity="_markerEntity")
+		(bind enabled "_markerEntity != null")
+	)
+)
+
+(def element WorldStubMarker (_markerEntity:gfx) layout=true
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+)

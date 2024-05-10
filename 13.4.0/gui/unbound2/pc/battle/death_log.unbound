@@ -1,0 +1,197 @@
+(def constant DEATH_LOG_BUILDING_ICONS	{	'AntiAircraft': 'icon_ground_air_defence',
+											'CoastalArtillery': 'icon_ground_artillery_type_1',
+											'SensorTower': 'icon_ground_radar',
+											'Complex': 'icon_ground_artillery_type_1',
+											'AirBase': 'icon_ground_airbase'
+										})
+
+(def constant DEATH_LOG_BUILDING_ICONS_W	{	'AntiAircraft': 13px,
+												'CoastalArtillery': 11px,
+												'SensorTower': 13px,
+												'Complex': 13px,
+												'AirBase': 17px
+											})
+
+(def constant DEATH_LOG_BUILDING_ICONS_H	{	'AntiAircraft': 17px,
+												'CoastalArtillery': 15px,
+												'SensorTower': 15px,
+												'Complex': 15px,
+												'AirBase': 17px
+											})
+
+(def constant DEATH_LOG_MESSAGE_ALPHA_DURATION 0.3)
+(def constant DEATH_LOG_MESSAGE_HIDE_DELAY 30)
+(def constant DEATH_LOG_MESSAGE_LIFETIME "DEATH_LOG_MESSAGE_HIDE_DELAY + DEATH_LOG_MESSAGE_ALPHA_DURATION*2")
+
+
+(def element ShipBlock (_entity:gfx, _textColor:str, _colorTransformation:dict, _textClass:str='$TextDefaultBoldNM') layout=true
+	(scope
+		(var isBuilding:bool = "_entity.hasComponent(CC.building)")
+		(var isAirfieldEntity:bool = "_entity.hasComponent(CC.airfield)")
+		(var isDiplomacyEnemy:bool = "_entity.hasComponent(CC.diplomacyRelation) && _entity.diplomacyRelation.value == SC.Battle.DIPLOMACY_RELATIONS.ENEMY")
+		(var avatarName:str = "_entity && _entity.avatar ? _entity.avatar.name : ''")
+		(var airfieldName:str = "_entity && _entity.airfield ? _entity.airfield.name : ''")
+		(var buildingTypeIDS:str = "_entity && _entity.building ? _entity.building.typeIDS : ''")
+		(var isBot:bool = "_entity && _entity.avatar ? _entity.avatar.isBot : false")
+		(var playerDisplayName:str = "isBuilding || isAirfieldEntity || isDiplomacyEnemy ? '' : avatarName")
+		(var isEntityBot:bool = "isBuilding ? true : isBot")
+
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var gameModeId:number = "battleDataEntity.battleInfo.gameModeId")
+
+		(var shipLevelIcon:str = "_entity.avatar ? _entity.avatar.ship.ref.ship.levelIcon : ''")
+		(var shipLevelRome:str = "_entity.avatar ? _entity.avatar.ship.ref.ship.levelRome : ''")
+		(var showLevelIcon:bool = "shipLevelIcon != ''")
+		(var shipLevelText:str = "showLevelIcon ? '' : shipLevelRome + ' '")
+
+		(var entityDisplayName:str = "toUpper(	isBuilding 			? buildingTypeIDS :
+												isAirfieldEntity	? airfieldName :
+												isDiplomacyEnemy	? tr(_entity.avatar.ship.ref.ship.nameIDS)
+																	: shipLevelText + tr(_entity.avatar.ship.ref.ship.nameIDS))")
+		(var entityType:str = "isBuilding ? _entity.building.type : _entity.avatar.ship.ref.ship.subtype")
+		(var isAlly:bool = "_entity.relation.value == SC.Battle.PLAYER_RELATION.ALLY")
+		(var isSelf:bool = "_entity.relation.value == SC.Battle.PLAYER_RELATION.SELF")
+		(var iconName:str = "isBuilding ? DEATH_LOG_BUILDING_ICONS[entityType] + '_neutral' : ('icon_' + toLower(entityType))")
+	)
+	(hblock
+		(style
+			(align = "middle")
+		)
+		(tf
+			(bind class "_textClass")
+			(style (bind noTranslate "!isEntityBot") (bind textColor "_textColor"))
+			(text = "playerDisplayName")
+		)
+		(block
+			(bind visible "!isDiplomacyEnemy")
+			(bind colorTransform "_colorTransformation")
+			(style
+				(width = "isBuilding ? DEATH_LOG_BUILDING_ICONS_W[entityType] : SHIP_ICON_SIZE.WIDTH")
+				(height = "isBuilding ? DEATH_LOG_BUILDING_ICONS_H[entityType] : SHIP_ICON_SIZE.HEIGHT")
+				(bind rotation "isBuilding || isAlly || isSelf ? 0 : 180")
+				(pivotX = "SHIP_ICON_SIZE.WIDTH/2")
+				(pivotY = "SHIP_ICON_SIZE.HEIGHT/2")
+				(marginRight = 2px)
+				(marginLeft = 2px)
+				(bind backgroundImage "	isBuilding ? 'bitmap:' + iconName : 'url:../battle_hud/markers/ship/' + iconName + '.png'")
+			)
+		)
+		(block
+			(style
+				(align = "middle")
+				(marginLeft = "-XXS")
+				(marginRight = "XXS")
+			)
+			(controller $Instance renderer='LevelIconNM'
+				(bind enabled "showLevelIcon")
+				(args
+					_colorTransform = "_colorTransformation"
+					_levelIcon = "shipLevelIcon"
+				)
+			)
+		)
+		(tf
+			(bind class "_textClass")
+			(style (bind textColor "_textColor"))
+			(text = "entityDisplayName")
+		)
+	)
+)
+
+(def element DeathLogContainer() layout=true dispatch_size_change=true
+	(scope
+		(var feedbackCollection:gfx = "$datahub.getCollection(CC.feedbackComponent)")
+		(var feedbackEntity:gfx = "feedbackCollection.items[0]")
+	)
+
+	(name = 'DeathLogContainer')
+
+	(style
+		(align = "right|bottom")
+		(height = "22*3")
+		(width = "400")
+	)
+
+	(block
+		(style
+			(align = "right")
+		)
+		(controller $FxInstance renderer='DeathLogMessage' lifetime="DEATH_LOG_MESSAGE_LIFETIME"
+			(args _eventData = "$event[1]")
+			(bindcall create (event "feedbackEntity.feedbackComponent.evDeathLog"))
+		)
+	)
+)
+
+
+(def element DeathLogMessage (_eventData:dict) layout=true
+	(scope
+		(var customElementsVisibilityComponent:gfx = "$datahub.getSingleEntity(CC.customElementsVisibility)")
+		(var enabledElements:number = "customElementsVisibilityComponent ? customElementsVisibilityComponent.customElementsVisibility.enabledElements : null" (event "customElementsVisibilityComponent.customElementsVisibility.evChanged"))
+		(var isMultyTeamEnabled:bool = "(enabledElements & SC.Battle.CUSTOM_BATTLE_ELEMENTS.MULTYTEAMS) > 0")
+
+		(var hasKiller:bool = "_eventData.info.killer != null")
+		(var killerEntity:gfx = "hasKiller ? $datahub.getEntity(_eventData.info.killer) : null")
+		(var killerRelation:number = "hasKiller ? killerEntity.relation.value : 0")
+		(var killerTeamId:number = "hasKiller && killerEntity.avatar ? killerEntity.avatar.teamId : 0")
+		(var isKillerAlly:bool = "killerRelation == SC.Battle.PLAYER_RELATION.ALLY")
+		(var isSelfKiller:bool = "killerRelation == SC.Battle.PLAYER_RELATION.SELF")
+
+		(var isInSameDivisionKiller:bool = "hasKiller && killerEntity.divisionMember ? killerEntity.divisionMember.isInSameDivision : false")
+
+		(var killerColorPresetName:str = "isInSameDivisionKiller ? 'division' : toLower(SC.Battle.PLAYER_RELATION.VALUE_TO_NAME[killerRelation])")
+
+		(var hasVictim:bool = "_eventData.info.victim != null")
+		(var victimEntity:gfx = "hasVictim ? $datahub.getEntity(_eventData.info.victim) : null")
+		(var victimRelation:number = "hasVictim ? victimEntity.relation.value : 0")
+		(var victimTeamId:number = "hasVictim ? victimEntity.avatar.teamId : 0")
+		(var isVictimAlly:bool = "victimRelation == SC.Battle.PLAYER_RELATION.ALLY")
+		(var isSelfVictim:bool = "victimRelation == SC.Battle.PLAYER_RELATION.SELF")
+		(var isInSameDivisionVictim:bool = "hasVictim && victimEntity.divisionMember ? victimEntity.divisionMember.isInSameDivision : false")
+
+		(var victimColorPresetName:str = "isInSameDivisionVictim ? 'division' : toLower(SC.Battle.PLAYER_RELATION.VALUE_TO_NAME[victimRelation])")
+
+		(var weaponIconPath:str = "'url:../battle_hud/icon_frag/' + _eventData.info.weaponIcon + '.png'")
+
+		(var killerColor:str = "!isMultyTeamEnabled || (isKillerAlly || isSelfKiller || isInSameDivisionKiller) ? TWO_TEAMS_FONT_COLOR[killerColorPresetName] : MULTI_TEAMS_FONT_COLOR[killerTeamId]")
+		(var victimColor:str = "!isMultyTeamEnabled || (isVictimAlly || isSelfVictim || isInSameDivisionVictim) ? TWO_TEAMS_FONT_COLOR[victimColorPresetName] : MULTI_TEAMS_FONT_COLOR[victimTeamId]")
+
+		(var killerColorTransform:dict = "!isMultyTeamEnabled || (isKillerAlly || isSelfKiller) ? TWO_TEAMS_COLOR_TRANSFORMS[killerColorPresetName] : MULTI_TEAMS_COLOR_TRANSFORMS[killerTeamId]")
+		(var victimColorTransform:dict = "!isMultyTeamEnabled || (isVictimAlly || isSelfVictim) ? TWO_TEAMS_COLOR_TRANSFORMS[victimColorPresetName] : MULTI_TEAMS_COLOR_TRANSFORMS[victimTeamId]")
+	)
+
+	(hblock
+		(controller $Animation
+			(play
+				duration="DEATH_LOG_MESSAGE_ALPHA_DURATION"
+				from={alpha: 0.0, height: 0 }
+				to={alpha: 1, height: 21 }
+			)
+			
+			(play
+				duration="DEATH_LOG_MESSAGE_ALPHA_DURATION"
+				delay="DEATH_LOG_MESSAGE_HIDE_DELAY"
+				from={alpha: 1}
+				to={alpha: 0.0 }
+			)
+		)
+		(style
+			(align = "middle|center")
+		)
+		
+		(element ShipBlock "killerEntity" "killerColor" "killerColorTransform" $enabled="hasKiller")
+
+		(block
+			(style 
+				(width = 21px)
+				(height = 21px)
+				(marginLeft = "XS")
+				(marginRight = "XS")
+				(marginTop = "2")
+				(backgroundImage = "weaponIconPath")
+			)
+		)
+
+		(element ShipBlock "victimEntity" "victimColor" "victimColorTransform" $enabled="hasVictim")
+	)
+)

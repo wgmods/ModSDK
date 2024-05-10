@@ -1,0 +1,374 @@
+(def constant CONTENT_WIDTH "600")
+
+(def element ModalWindowEventHubPostBattleProgress () layout=true
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(scope
+		(event evStartFirstAnimation)
+		(event evStartRewardsAnimation)
+		(event evShowRandomCardsAnimation)
+		(event evShowCommonRewardAnimation)
+		(event evShowRestOfContent)
+
+		(var battleResultsDH:gfx = "$datahub.getSingleEntity(CC.battleResultsStructured)")
+		(var private:gfx = "battleResultsDH ? battleResultsDH.dataComponent.data.personal : null")
+		(var gameData:gfx = "battleResultsDH ? battleResultsDH.dataComponent.data.game_data: null")
+
+		(var tasks:array = "gameData ? gameData.battle_logic_info.tasks : []")
+
+		(var eventHubPostBattle:gfx = "battleResultsDH ? battleResultsDH.eventHubPostBattle : null")
+		(var nextRewardsStackEntityID:number = "eventHubPostBattle.nextRewardsStackEntityID")
+		(var pointsForNextLevel:number = "eventHubPostBattle.pointsForNextLevel")
+		(var cardsRewardsStackEntityID:number = "eventHubPostBattle.cardsRewardsStackEntityID")
+		(var otherRewardsStackEntityID:number = "eventHubPostBattle.otherRewardsStackEntityID")
+
+		(var cardsRewardStackEntity:gfx = "$datahub.getEntity(cardsRewardsStackEntityID)")
+		(var cardsRewards:array = "cardsRewardStackEntity ? cardsRewardStackEntity.rewardsStack.rewards : []"	(event "battleResultsDH.evAdded"))
+
+		(var otherRewardsStackEntity:gfx = "$datahub.getEntity(otherRewardsStackEntityID)")
+		(var otherRewards:array = "otherRewardsStackEntity ? otherRewardsStackEntity.rewardsStack.rewards : []"	(event "battleResultsDH.evAdded"))
+
+		(var nextRewardsStackEntity:gfx = "$datahub.getEntity(nextRewardsStackEntityID)")
+		(var nextRewards:array = "nextRewardsStackEntity ? nextRewardsStackEntity.rewardsStack.rewards : []"	(event "battleResultsDH.evAdded"))
+
+		(var cardRewardsAvailable:bool = "cardsRewards.length > 0")
+		(var otherRewardsAvailable:bool = "otherRewards.length > 0")
+		(var anyRewardsAvailable:bool = "cardRewardsAvailable || otherRewardsAvailable")
+	)
+
+	(dispatch "cardRewardsAvailable ? 'evStartFirstAnimation' : 'evShowRestOfContent'" dir="EventDirection.DOWN" on='addedToStage')
+	(dispatch evShowRandomCardsAnimation (event "evStartRewardsAnimation"))
+	(dispatch evShowCommonRewardAnimation (event "evStartRewardsAnimation"))
+
+	(style
+		(align = "center|middle")
+	)
+
+	
+	(block
+		(style
+			(width = "CONTENT_WIDTH") (align = "center")
+		)
+
+		
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+			(style (marginTop = "{720: L, 1080: LS}") (width = 100%) (align = "center"))
+
+			(tf
+				(class $TextDefaultBold36NM)
+				(style (alpha = "TA") (textColor = "SC.Ui_styles.SERVICE_COLORS.YELLOW"))
+
+				(text = "'IDS_EVENT_HUB_RESULT_SCREEN_MISSION_COMPLETE'")
+			)
+		)
+
+		
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 1.5)
+			(style (width = 570px) (marginTop = "{720: L, 1080: LS}"))
+
+			(controller $Repeat renderer='EventHubTaskResultElement'
+				(bind count "tasks.length")
+				(args
+					_task = "tasks[$index]"
+				)
+			)
+		)
+
+		
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+			(bind visible "anyRewardsAvailable")
+
+			(style (width = 100%) (marginTop = "{720: L, 1080: XL}"))
+
+			(tf
+				(class $TextDefaultBold21NM)
+				(style
+					(width = 100%) (alpha = "TA")
+					(textAlign = "center")
+				)
+
+				(text = "'IDS_EVENT_HUB_RESULT_SCREEN_RECEIVED_REWARDS_UPPER_CASE'")
+			)
+
+			(block
+				(style (width = 100%) (marginTop = "{720: SXS, 1080: M}"))
+
+				(element HorizontalDividerTwoPx)
+			)
+
+			(hblock
+				(style
+					(width = 100%) (align = "center")
+					(marginTop = "{720: M, 1080: MS}")
+				)
+
+				
+				(hblock
+					(style
+						(alpha = 0) (align = "center|middle")
+						(visualOffsetX = 50) (pivotX = "50%") (pivotY = "50%")
+						(marginRight = "SXS")
+					)
+
+					(controller $Repeat renderer='EventHubResultScreenRewardItem'
+						(bind count "cardsRewards.length")
+						(args
+							_entityId = "cardsRewards[$index]"
+						)
+					)
+
+					(controller $Animation
+						(bindcall play  duration=0.15
+										easing="Easing.quad_in"
+										from="{ alpha: 0}"
+										to="{ alpha: 1, visualOffsetX: 0}"
+										(event "evShowRandomCardsAnimation")
+						)
+					)
+				)
+
+				(hblock
+					(style
+						(align = "center|middle")
+						(pivotX = "50%") (pivotY = "50%")
+						(bind alpha "cardRewardsAvailable ? 0 : 1") 
+						(bind visualOffsetX "cardRewardsAvailable ? 50 : 0")
+						(bind scaleX "cardRewardsAvailable ? 0 : 1")
+					)
+
+					(controller $Repeat renderer='EventHubResultScreenRewardItem'
+						(bind count "otherRewards.length")
+						(args
+							_entityId = "otherRewards[$index]"
+						)
+					)
+
+					(controller $Animation
+						(bindcall play
+							keyframes="[
+								{	
+									time:0,
+									to:{scaleX: 0}
+								},
+								{	
+									time:0.15,
+									to:{alpha: 0, scaleX: 1}
+								},
+								{
+									time:0.30,
+									to:{alpha: 1, visualOffsetX: 0}
+								}
+							]"
+							delay=0.7
+							(event "evShowCommonRewardAnimation")
+						)
+						(dispatch evShowRestOfContent dir="EventDirection.UP" on=evAnimEnded)
+					)
+				)
+
+				(controller $Instance renderer='RandomCardAnimationContainer'
+					(bind enabled "cardRewardsAvailable")
+				)
+			)
+		)
+
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 3)
+			(style (width = 100%) (marginTop = "{720: M, 1080: MS}"))
+
+			(element HorizontalDividerTwoPx)
+		)
+
+		
+		(block
+			(macro DEFAULT_APPEAR_ANIMATION_BY_EVENT 5 "evShowRestOfContent")
+			(style (width = 100%))
+
+			(tf
+				(class $TextDefaultNM)
+				(style
+					(alpha = "TC") (width = 100%) (textAlign = "center")
+					(marginTop = "{720: MS, 1080: L}")
+				)
+
+				(text = "'IDS_EVENT_HUB_RESULT_SCREEN_TO_NEXT_REWARD'")
+			)
+
+			(hblock
+				(style
+					(width = 100%) (align = "center|middle")
+					(marginTop = "{720: S, 1080: SXS}")
+				)
+
+				(tf
+					(class $TextDefaultBold30NM)
+					(style (alpha = "TA"))
+
+					(bind text "pointsForNextLevel")
+				)
+
+				(block
+					(style	
+						(width = 24px) (height = 24px) (marginLeft = "XXS")
+						(backgroundImage = 'url:../service_kit/icons/star_24.png')
+					)
+				)
+			)
+
+			(hblock
+				(style
+					(width = 100%) (marginTop = "{720: SXS, 1080: M}")
+					(align = "center")
+				)
+
+				(controller $Repeat renderer='EventHubResultScreenRewardItem'
+					(bind count "nextRewards.length")
+					(args
+						_entityId = "nextRewards[$index]"
+					)
+				)
+			)
+		)
+
+		(block
+			(macro DEFAULT_APPEAR_ANIMATION_BY_EVENT 10 "evShowRestOfContent")
+			(style (width = 100%) (align = "center") (marginTop = "{720: LM, 1080: XLL}"))
+
+			(element DefaultButton
+				_width = 136
+				_height = 32
+				_name = 'btn_cancel'
+				_enabled = true
+				_label = 'IDS_CLOSE_BTN'
+			)
+		)
+	)
+)
+
+(def element EventHubTaskResultElement (_task:gfx)
+	(scope
+		(var status:number = "_task ? _task.status : null")
+		(var text:str = "_task ? _task.text : null")
+		(var isCompleted:bool = "status == SC.Battle.TASK_STATUS.SUCCESS")
+	)
+
+	(style
+		(width = 100%) (align = "middle") (flow = "horizontal") (marginBottom = "M")
+	)
+
+	(block
+		(style
+			(width = 24px) (height = 24px) (marginRight = 12px) (marginTop = -5px)
+			(backgroundSize = "align")
+			(bind backgroundImage "isCompleted	? 'url:../service_kit/icons/star_24.png'
+												: 'url:../service_kit/icons/star_24_non.png'")
+		)
+	)
+
+	(tf
+		(class $TextDefault17NM)
+		(style
+			(bind alpha "isCompleted ? 0.7 : 0.4")
+		)
+		
+		(text = "text")
+	)
+)
+
+(def element EventHubResultScreenRewardItem (_entityId:number)
+	(style
+		(width = 80px) (height = 80px)
+		(align = "center|middle")
+		(bind marginLeft "$index != 0 ? SXS : 0")
+	)
+
+	(block
+		(controller $Instance renderer='RewardItemAdapter'
+			(args
+				_entityId = "_entityId"
+				_isClickDisabled = "true"
+			)
+		)
+	)
+)
+
+(def element RandomCardAnimationContainer() layout=true
+	(scope
+		(event evStartFirstAnimation)
+		(event evStartSecondAnimation)
+		(event evStartThirdAnimation)
+	)
+
+	(class $FullsizeAbsolute)
+	(style (zindex = 1) (hitTest = "false") (marginTop = "{720: LS, 1080: LS}"))
+
+	(bindcall externalCall 'sound.playSetSoundDirect' "['pve_reward', 'receive']" init=false watch=false on='addedToStage')
+
+	(block
+		(class $MiddleAlignedAbsolutely)
+
+		
+		(block
+			(style
+				(position = "absolute") (alpha = 0) (width = 80px) (height = 80px)
+				(pivotX = "50%") (pivotY = "50%")
+				(backgroundImage = "'url:../reward_icons/random_battle_card.png'")
+			)
+
+			(controller $Animation
+				(bindcall play
+					keyframes="[
+						{	
+							time:0,
+							to:{alpha: 0, scaleX: 0.4, scaleY: 0.4}
+						},
+						{	
+							time:0.15,
+							to:{alpha: 1, scaleX: 2, scaleY: 2}
+						},
+						{
+							time:0.45,
+							to:{scaleX: 1, scaleY: 1},
+							easing:Easing.bounce_out
+						}
+					]"
+					delay=2
+					(event "evStartFirstAnimation")
+				)
+				(dispatch evStartSecondAnimation on=evAnimEnded)
+			)
+
+			(controller $Animation
+				(bindcall play
+					keyframes="[
+						{	
+							time:0,
+							to:{scaleX: 1, scaleY: 1, rotation: 0}
+						},
+						{
+							time:0.15,
+							to:{scaleX: 1.5, scaleY: 1.5, rotation: -20}
+						}
+					]"
+					delay=0.5
+					(event "evStartSecondAnimation")
+				)
+				(dispatch evStartThirdAnimation on=evAnimEnded)
+			)
+
+			(controller $Animation
+				(bindcall play
+					to={alpha: 0, scaleX: 2, scaleY: 2}
+					duration=0.35
+					delay=0.5
+					(event "evStartThirdAnimation")
+				)
+				(dispatch evStartRewardsAnimation dir="EventDirection.UP" on=evAnimEnded)
+			)
+		)
+	)
+)

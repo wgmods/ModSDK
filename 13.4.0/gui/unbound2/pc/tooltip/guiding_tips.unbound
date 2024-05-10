@@ -1,0 +1,613 @@
+(def constant TIP_POSITION_TOP			'top')
+(def constant TIP_POSITION_BOTTOM		'bottom')
+(def constant TIP_POSITION_LEFT			'left')
+(def constant TIP_POSITION_RIGHT		'right')
+
+(def constant POINTER_DIRECTION_UP		'up')
+(def constant POINTER_DIRECTION_DOWN	'down')
+(def constant POINTER_DIRECTION_LEFT	'left')
+(def constant POINTER_DIRECTION_RIGHT	'right')
+
+(def constant GUIDING_TIP_PIN_ELEMENT "{	'up': 		'ContextGuidingTipPointerPanel_up',
+											'down': 	'ContextGuidingTipPointerPanel_down',
+											'left': 	'ContextGuidingTipPointerPanel_left',
+											'right': 	'ContextGuidingTipPointerPanel_right'}"
+)
+
+(def css $ContextGuidingTipTextPaddings ()
+	(width = 100%)
+	(paddingRight = "M")
+	(paddingLeft = "M")
+	(paddingTop = "M")
+	(paddingBottom = "SXS")
+)
+
+(def element GuidingTipPinAnimation ()
+	(style
+		(marginLeft = -29px)
+		(marginTop = -29px)
+		(width = 58px)
+		(height = 58px)
+		(backgroundImage = 'url:../animations/spine/guiding_tip_pin/guiding_tip_pin.skel')
+		(alpha = 0.8)
+		(hitTest = false)
+	)
+)
+
+(def element ContextGuidingTipPointerPanel_up (_pointerOffset:number, _oppositePointerOffset:number, _firstPinOffset:number, _secondPinOffset:number, _noArrow:bool=false, _noPointer:bool=false)
+	(scope
+		(macro GET_PREF 'isBlurOptionEnabled' "'graphics.GUI.blur'")
+		(macro GET_PREF 'isUIContrastOptionEnabled' "'graphics.GUI.contrast'")
+	)
+	(class $FullsizeAbsolute)
+
+	(hblock
+		(class $FullsizeAbsolute)
+		(style (paddingLeft = 2px) (paddingRight = 2px))
+
+		(block
+			(style
+				(height = 2px)
+				(bind width "_noArrow ? '50%' : _firstPinOffset")
+				(backgroundSize = "fill")
+				(backgroundImage = 'url:../service_kit/guiding_tip/port_tip_line/up.png')
+			)
+		)
+
+
+		(block
+			(block
+				(bind visible "!_noPointer")
+				(style
+					(position = "absolute")
+					(marginTop = -19px)
+					(marginLeft = 11px)
+					(bind top "_pointerOffset")
+					(bind left "_oppositePointerOffset")
+				)
+				(element GuidingTipPinAnimation)
+			)
+			
+			(block
+				(bind visible "!_noArrow")
+				(style
+					(marginTop = -10px)
+					(width = 22px)
+					(height = 12px)
+					(backgroundImage = 'url:../service_kit/guiding_tip/port_tip_arrow/up.png')
+				)
+			)
+		)
+
+		(block
+			(style
+				(height = 2px)
+				(bind width "_noArrow ? '50%' : _secondPinOffset")
+				(backgroundSize = "fill")
+				(backgroundImage = 'url:../service_kit/guiding_tip/port_tip_line/up.png')
+			)
+		)
+	)
+
+	(block
+		(class $Fullsize)
+		(style
+			(backgroundSize = "fill")
+			(backgroundImage = 'url:../service_kit/guiding_tip/port_tip_box/up.png')
+			(scale9grid=4)
+			(bind alpha "!isBlurOptionEnabled || isUIContrastOptionEnabled ? 1.3 : 1")
+		)
+	)
+)
+
+(def element ContextGuidingTipPointerPanel_down (_pointerOffset:number, _oppositePointerOffset:number, _firstPinOffset:number, _secondPinOffset:number, _noArrow:bool=false, _noPointer:bool=false)
+	(scope
+		(macro GET_PREF 'isBlurOptionEnabled' "'graphics.GUI.blur'")
+		(macro GET_PREF 'isUIContrastOptionEnabled' "'graphics.GUI.contrast'")
+	)
+	(class $FullsizeAbsolute)
+
+	(block
+		(class $Fullsize)
+		(style
+			(backgroundSize = "fill")
+			(backgroundImage = 'url:../service_kit/guiding_tip/port_tip_box/down.png')
+			(scale9grid=4)
+			(bind alpha "!isBlurOptionEnabled || isUIContrastOptionEnabled ? 1.3 : 1")
+		)
+	)
+
+	(hblock
+		(class $Fullsize)
+		(style (marginTop = -2px) (paddingLeft = 2px) (paddingRight = 2px))
+
+		(block
+			(style
+				(height = 2px)
+				(bind width "_noArrow ? '50%' : _firstPinOffset")
+				(backgroundSize = "fill")
+				(backgroundImage = 'url:../service_kit/guiding_tip/port_tip_line/down.png')
+			)
+		)
+
+
+		(block
+			(block
+				(bind visible "!_noPointer")
+				(style
+					(position = "absolute")
+					(marginTop = 22px)
+					(marginLeft = 11px)
+					(bind top "_pointerOffset")
+					(bind left "_oppositePointerOffset")
+				)
+				(element GuidingTipPinAnimation)
+			)
+			
+			(block
+				(bind visible "!_noArrow")
+				(style
+					(marginBottom = -10px)
+					(width = 22px)
+					(height = 12px)
+					(backgroundImage = 'url:../service_kit/guiding_tip/port_tip_arrow/down.png')
+				)
+			)
+		)
+
+		(block
+			(style
+				(height = 2px)
+				(bind width "_noArrow ? '50%' : _secondPinOffset")
+				(backgroundSize = "fill")
+				(backgroundImage = 'url:../service_kit/guiding_tip/port_tip_line/down.png')
+			)
+		)
+	)
+)
+
+(def element ContextGuidingTipPointerPanel_right (_pointerOffset:number, _oppositePointerOffset:number, _firstPinOffset:number, _secondPinOffset:number, _noArrow:bool=false, _noPointer:bool=false)
+	(scope
+		(macro GET_PREF 'isBlurOptionEnabled' "'graphics.GUI.blur'")
+		(macro GET_PREF 'isUIContrastOptionEnabled' "'graphics.GUI.contrast'")
+	)
+	(class $FullsizeAbsolute)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (paddingTop = 2px) (paddingBottom = 2px) (align = "right"))
+
+		(block
+			(style
+				(width = 2px)
+				(bind height "_noArrow ? '50%' : _firstPinOffset")
+				(backgroundSize = "fill")
+				(backgroundImage = 'url:../service_kit/guiding_tip/port_tip_line/right.png')
+			)
+		)
+
+		(block
+			(block
+				(bind visible "!_noPointer")
+				(style
+					(position = "absolute")
+					(marginTop = 10px)
+					(marginLeft = 22px)
+					(bind left "_pointerOffset")
+					(bind top "_oppositePointerOffset")
+				)
+				(element GuidingTipPinAnimation)
+			)
+
+			(block
+				(bind visible "!_noArrow")
+				(style
+					(marginRight = -10px)
+					(width = 12px)
+					(height = 22px)
+					(backgroundImage = 'url:../service_kit/guiding_tip/port_tip_arrow/right.png')
+				)
+			)
+		)
+
+		(block
+			(style
+				(marginBottom = 1px)
+				(width = 2px)
+				(bind height "_noArrow ? '50%' : _secondPinOffset")
+				(backgroundSize = "fill")
+				(backgroundImage = 'url:../service_kit/guiding_tip/port_tip_line/right.png')
+			)
+		)
+	)
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundSize = "fill")
+			(backgroundImage = 'url:../service_kit/guiding_tip/port_tip_box/right.png')
+			(scale9grid=4)
+			(bind alpha "!isBlurOptionEnabled || isUIContrastOptionEnabled ? 1.3 : 1")
+		)
+	)
+)
+
+(def element ContextGuidingTipPointerPanel_left (_pointerOffset:number, _oppositePointerOffset:number, _firstPinOffset:number, _secondPinOffset:number, _noArrow:bool=false, _noPointer:bool=false)
+	(scope
+		(macro GET_PREF 'isBlurOptionEnabled' "'graphics.GUI.blur'")
+		(macro GET_PREF 'isUIContrastOptionEnabled' "'graphics.GUI.contrast'")
+	)
+	(class $FullsizeAbsolute)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (paddingTop = 2px) (paddingBottom = 2px))
+
+		(block
+			(style
+				(width = 2px)
+				(bind height "_noArrow ? '50%' : _firstPinOffset")
+				(backgroundSize = "fill")
+				(backgroundImage = 'url:../service_kit/guiding_tip/port_tip_line/left.png')
+			)
+		)
+
+		(block
+			(block
+				(bind visible "!_noPointer")
+				(style
+					(position = "absolute")
+					(marginTop = 10px)
+					(marginLeft = -21px)
+					(bind left "_pointerOffset")
+					(bind top "_oppositePointerOffset")
+				)
+				(element GuidingTipPinAnimation)
+			)
+
+			(block
+				(bind visible "!_noArrow")
+				(style
+					(marginLeft = -10px)
+					(width = 12px)
+					(height = 22px)
+					(backgroundImage = 'url:../service_kit/guiding_tip/port_tip_arrow/left.png')
+				)
+			)
+		)
+
+		(block
+			(style
+				(marginBottom = 1px)
+				(width = 2px)
+				(bind height "_noArrow ? '50%' : _secondPinOffset")
+				(backgroundSize = "fill")
+				(backgroundImage = 'url:../service_kit/guiding_tip/port_tip_line/left.png')
+			)
+		)
+	)
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundSize = "fill")
+			(backgroundImage = 'url:../service_kit/guiding_tip/port_tip_box/left.png')
+			(scale9grid=4)
+			(bind alpha "!isBlurOptionEnabled || isUIContrastOptionEnabled ? 1.3 : 1")
+		)
+	)
+)
+
+(def element ContextGuidingTip (_tipId:number, _pinOffset:number, _direction:str, _pointerOffset:number, _oppositePointerOffset:number, 
+								_noPointer:bool, _noArrow:bool, _tipDescription:str, _tipHeader:str, _hasNextButton:bool, 
+								_hasFinishButton:bool, _tipShownEvent:str='', _buttonLogEvent:str='')
+	(scope
+		(event evContextGuidingTipHide)
+		(event evContextGuidingTipUnHide)
+
+		(event evRemovedFromStage)
+
+		(var isVisible:bool = true)
+		(bind isVisible "false" init=false watch=false (event "evContextGuidingTipHide"))
+		(bind isVisible "true" init=false watch=false (event "evContextGuidingTipUnHide"))
+
+		(macro GET_PREF 'isBlurOptionEnabled' "'graphics.GUI.blur'")
+
+		(var pinOffset:number = "_pinOffset ? _pinOffset : 50")
+		(var pointerOffset:number = "_pointerOffset ? _pointerOffset + 'px' : '0px'")
+		(var oppositePointerOffset:number = "_oppositePointerOffset ? _oppositePointerOffset + 'px' : '0px'")
+
+		(var renderElement:str = "_direction in GUIDING_TIP_PIN_ELEMENT ? GUIDING_TIP_PIN_ELEMENT[_direction] : null")
+		(var isAvaliableForRender:bool = "renderElement != null")
+	)
+	(macro HIDE_UI_ON_SHIPOVERVIEW "true")
+	(dispatch evRemovedFromStage args="{}" on='removedFromStage')
+	(bindcall externalCall "_hasFinishButton ? 'inputMapping.onAction' : ''" "['deactivateCurrentTipChain', { tip_id: _tipId }]" init=false watch=false (event "evRemovedFromStage"))
+	(bindcall externalCall "_tipShownEvent ? 'direct.action' : ''" "[SC.Common.STATISTICS_EVENTS.LOG, [_tipShownEvent]]" init=false watch=false on='addedToStage')
+	(bind visible "isVisible")
+	(style (width = 340px))
+	
+	(element DeclareBlurLayer)
+
+	(block
+		(class $FullsizeAbsolute)
+		(bind visible "isBlurOptionEnabled")
+
+		(mc mc_blurmap5
+			(class $Fullsize)
+			(rendererString = blurMeBaby)
+		)
+	)
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(controller $Instance
+			(bind renderer "renderElement")
+			(bind enabled "isAvaliableForRender")
+			(args
+				_noPointer =				"_noPointer"
+				_noArrow =					"_noArrow"
+				_firstPinOffset =			"toString(pinOffset) + '%'"
+				_secondPinOffset =			"toString(100 - pinOffset) + '%'"
+				_pointerOffset =			"pointerOffset"
+				_oppositePointerOffset = 	"oppositePointerOffset"
+			)
+			
+		)
+	)
+
+	
+	(block
+		(style (width = 100%))
+	
+		(block
+			(style (width = 100%))
+			(bind visible "_tipDescription && _tipHeader")
+			(name = 'contextGuidingTip')
+
+			(block 
+				(class $ContextGuidingTipTextPaddings)
+				(name = 'contextGuidingTipHeader')
+				(tf 
+					(class $TextDefaultBold19NM)
+					(class $FontColorGolden)
+					(style (width = 100%) (marginRight = "M"))
+					(bind text "_tipHeader")
+				)
+			)
+
+			(block
+				(style (width = 100%) (paddingLeft = 2px) (paddingRight = 2px))
+				(element HorizontalDividerTwoPx)
+			)
+		)
+
+		(block 
+			(style (width = 100%))
+			(block
+				(class $FullsizeAbsolute)
+				(style (paddingLeft = 2px) (paddingRight = 2px) (paddingBottom = 2px))
+				(macro INNER_PANEL_BACKGROUND)
+			)
+
+			(block
+				(class $ContextGuidingTipTextPaddings)
+				(name = 'contextGuidingTipDescription')
+				(tf
+					(class $TextDefault17NM)
+					(style (alpha = "TC") (width = 100%) (marginBottom = "S"))
+					(bind text "_tipDescription")
+				)
+			)
+
+			(block
+				(style (width = 100%) (paddingLeft = 2px) (paddingRight = 2px))
+				(element HorizontalDividerTwoPx)
+			)
+		)
+
+		(block
+			(bind name "'btnCloseTip'")
+			(style (top = "M") (right = "M") (marginTop = 2px) (marginRight = -1px) (position = "absolute"))
+			
+			(element CloseButton
+				_methods = "[
+								{	type: 'inputMapping.onAction',
+									name: 'deactivateCurrentTipChain',
+									args: { tip_id: _tipId }
+								},
+								{	type: _tipShownEvent ? 'direct.action' : '',
+									name: SC.Common.STATISTICS_EVENTS.LOG,
+									args: [SC.Common.UB2_TIPS_STATISTICS.TIP_CLOSED_CROSS]
+								}
+							]"
+			) 
+		)
+
+		(block
+			(bind visible "_hasNextButton")
+			(style (align = "center|middle") (width = 100%) (padding = "M"))
+			
+			(element DefaultButton
+				_width = 120
+				_size = "SIZE.SMALL"
+				_label = 'IDS_NEWBIE_QUESTS_TOOLTIP_BUTTON_NEXT'
+				_methods = "[
+								{	type: 'inputMapping.onAction',
+									name: 'nextTipButton',
+									args: {}
+								},
+								{	type: _buttonLogEvent ? 'direct.action' : '',
+									name: SC.Common.STATISTICS_EVENTS.LOG,
+									args: [_buttonLogEvent]
+								}
+							]"
+			)
+		)
+
+		(block
+			(bind visible "_hasFinishButton")
+			(style (align = "center|middle") (width = 100%) (padding = "M"))
+
+			(element DefaultButton
+				_width = 120
+				_size = "SIZE.SMALL"
+				_label = 'IDS_NEWBIE_QUESTS_TOOLTIP_BUTTON_FINISH'
+				_methods = "[
+								{	type: 'inputMapping.onAction',
+									name: 'deactivateCurrentTipChain',
+									args: { tip_id: _tipId }
+								},
+								{	type: _buttonLogEvent ? 'direct.action' : '',
+									name: SC.Common.STATISTICS_EVENTS.LOG,
+									args: [_buttonLogEvent]
+								}
+							]"
+			)
+		)
+	)
+)
+
+(def element GuidingTipHub (_tipId:number,
+							_tipType:str='',
+							_modalWindowName:str='',
+							_pinOffset:number=0,
+							_pointerOffset:number=0,
+							_offset:number=0,
+							_tipPositioning:str='no_item',
+							_oppositePointerOffset:number=null,
+							_tipChainId:number=null,
+							_hasNextButton:bool=false,
+							_hasFinishButton:bool=false,
+							_noPointer:bool=false,
+							_onShowDelay:number=0,
+							_noArrow:bool=false,
+							_keepOnNotFit:bool=false,
+							_screenOffsetLeft:number=0,
+							_screenOffsetTop:number=0,
+							_screenOffsetRight:number=0,
+							_screenOffsetBottom:number=0,
+							_oppositeDirectionOffset:number=0,
+							_tipShownEvent:str='',
+							_buttonLogEvent:str='')
+	(scope
+		(event evAddedToStage)
+		(event evRemovedFromStage)
+
+		(var reasonOnStage:bool = false)
+		(bind reasonOnStage "true" init=false watch=false	(event "evAddedToStage"))
+		(bind reasonOnStage "false" init=false watch=false	(event "evRemovedFromStage"))
+
+		(macro PULL_WINDOWS_QUEUE_SCOPE)
+		
+
+		(event evGuidingTipOpen)
+		(event evGuidingTipClose)
+		
+		(var collection:gfx = "$datahub.getCollection(CC.newGuidingTip)")
+		(var tipEntity:gfx = "$datahub.getPrimaryEntity(CC.newGuidingTip, _tipId)" (event "collection.evAdded") (event "collection.evRemoved"))
+		(var tipComponent:gfx = "tipEntity ? tipEntity.newGuidingTip : null")
+
+		(var header:str =		"tipComponent ? tipComponent.header		: ''"		(event "tipComponent.evChanged"))
+		(var desc:str =			"tipComponent ? tipComponent.desc		: ''"		(event "tipComponent.evChanged"))
+		(var isActive:bool =	"tipComponent ? tipComponent.isActive	: false"	(event "tipComponent.evChanged"))
+		
+		(var isTipVisible:str = "tipComponent != null && isActive && reasonOnStage")
+
+		(var direction:str = "	_tipPositioning == TIP_POSITION_TOP		?	POINTER_DIRECTION_DOWN	:
+								_tipPositioning == TIP_POSITION_BOTTOM	?	POINTER_DIRECTION_UP	:
+								_tipPositioning == TIP_POSITION_LEFT	?	POINTER_DIRECTION_RIGHT	:
+								_tipPositioning == TIP_POSITION_RIGHT	?	POINTER_DIRECTION_LEFT
+																		:	'no_item'")
+	
+		(var oppositeOffsetY:number = "(_tipPositioning == TIP_POSITION_RIGHT 	|| _tipPositioning == TIP_POSITION_LEFT)	&& _oppositeDirectionOffset ? _oppositeDirectionOffset : 0")
+		(var oppositeOffsetX:number = "(_tipPositioning == TIP_POSITION_TOP 	|| _tipPositioning == TIP_POSITION_BOTTOM)	&& _oppositeDirectionOffset ? _oppositeDirectionOffset : 0")
+
+		(var directionOffsetY:number = "(_tipPositioning == TIP_POSITION_TOP 	|| _tipPositioning == TIP_POSITION_BOTTOM)	&& _offset ? _offset : 0")
+		(var directionOffsetX:number = "(_tipPositioning == TIP_POSITION_RIGHT 	|| _tipPositioning == TIP_POSITION_LEFT)	&& _offset ? _offset : 0")
+
+		(var offsetX:number = "oppositeOffsetX + directionOffsetX")
+		(var offsetY:number = "oppositeOffsetY + directionOffsetY")
+	)
+	(bind name "'NewGuidingTip_' + _tipId")
+
+	(dispatch evAddedToStage 		on='addedToStage')
+	(dispatch evRemovedFromStage	on='removedFromStage')
+
+	(dispatch evGuidingTipOpen	init=false watch=false (bind enabled "isTipVisible") (bind trigger "isTipVisible"))
+	(dispatch evGuidingTipClose	init=false watch=false (bind enabled "!isTipVisible") (bind trigger "isTipVisible"))
+
+	(class $FullsizeAbsolute)
+	(block
+		(bind visible "_tipType == 'panel'")
+		(class $Fullsize)
+		(style (hitTest = false) (padding = "-XS"))
+		(block
+			(class $Fullsize)
+			(style
+				(backgroundImage = 'url:../service_kit/panel_backgrounds/new_tip_sector.png')
+				(scale9grid = 6)
+			)
+		)
+	)
+	
+	(controller $Tooltip
+		(renderer = 'ContextGuidingTip')
+		(args
+			_tipId =				"_tipId"
+			_tipHeader =			"tr(header)"
+			_tipDescription =		"tr(desc)"
+			_direction =			"direction"
+			_pinOffset = 			"_pinOffset"
+			_pointerOffset = 		"_pointerOffset"
+			_oppositePointerOffset ="_oppositePointerOffset"
+			_tipChainId =			"_tipChainId"
+			_hasNextButton =		"_hasNextButton"
+			_hasFinishButton =		"_hasFinishButton"
+			_noPointer =			"_noPointer"
+			_noArrow =				"_noArrow"
+			_tipShownEvent =		"_tipShownEvent" 
+			_buttonLogEvent =		"_buttonLogEvent"
+		)
+
+		(macro GUIDING_TIP_BEHAVIOUR)
+	)
+)
+
+(def macro GUIDING_TIP_BEHAVIOUR ()
+	(bindcall show
+			animation =	{
+				duration:	0.3,
+				delay:		"_onShowDelay ? _onShowDelay : 0.5",
+				easing:		"Easing.cubic_out",
+				from:		{ alpha: 0, top: 10 },
+				to:			{ alpha: 1, top: 0 }
+			}
+			(event "evGuidingTipOpen")
+	)
+
+	(bindcall hide
+			animation = {
+				duration:	0.01,
+				delay:		0,
+				easing:		"Easing.cubic_out",
+				from:		{ alpha: 1, top: 0 },
+				to:			{ alpha: 0, top: -5 }
+			}
+			(event "evGuidingTipClose")
+			(event "evRemovedFromStage")
+	)
+
+	(bind offset "{	x:	offsetX,
+					y:	offsetY}")
+
+	(bind screenBoundsOffset "{		left:	_screenOffsetLeft,
+									top:	_screenOffsetTop,
+									right:	_screenOffsetRight,
+									bottom:	_screenOffsetBottom }")
+
+	(bind align "	_tipPositioning == TIP_POSITION_TOP		?	top|center :
+					_tipPositioning == TIP_POSITION_BOTTOM	?	bottom|center :
+					_tipPositioning == TIP_POSITION_RIGHT	?	right|middle
+															:	left|middle")
+	(position="border")
+)

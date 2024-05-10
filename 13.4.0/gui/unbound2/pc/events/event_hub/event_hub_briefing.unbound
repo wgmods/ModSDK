@@ -1,0 +1,154 @@
+(def constant TOTAL_NUMBER_OF_PHASES "3")
+
+(def css $EventHubEndDate ()
+	(extends $TextDefaultNM)
+	(extends $GlowDisabler)
+)
+
+(def macro EVENT_HUB_ACTIVE_PHASE_SCOPE ()
+	(var eventHubPhasesCollection:gfx = "$datahub.getCollection(CC.eventHubPhase)")
+	(var eventHubPhases:array = "eventHubPhasesCollection ? eventHubPhasesCollection.items : []"	(event "eventHubPhasesCollection.evAdded")
+																									(event "eventHubPhasesCollection.evRemoved"))
+	(var activePhase:number = "(TOTAL_NUMBER_OF_PHASES - eventHubPhases.length) + 1") 
+)
+
+(def element EventHubBriefingMainInset () layout=true dispatch_size_change=true
+	(scope
+		(macro STAGE_SIZE)
+
+		(var eventHubSeasonsCollection:gfx = "$datahub.getCollection(CC.eventHubSeason)")
+		(var eventHubSeasonEntity:gfx = "eventHubSeasonsCollection ? eventHubSeasonsCollection.items[0] : null"	(event "eventHubSeasonsCollection.evAdded")
+																												(event "eventHubSeasonsCollection.evRemoved"))
+		(var eventHubSeason:gfx = "eventHubSeasonEntity ? eventHubSeasonEntity.eventHubSeason : null")
+
+		(macro EVENT_HUB_ACTIVE_PHASE_SCOPE)
+		(var nextPhaseFinishTime:number = "eventHubPhases.length > 1 ? eventHubPhases[1].eventHubPhase.startTime : null")
+		(var eventHubFinishTime:number = "eventHubSeason ? eventHubSeason.finishTime : null")
+		(var eventFinishTime:number = "nextPhaseFinishTime ? nextPhaseFinishTime : eventHubFinishTime")
+
+		(var newContentEntity:gfx = "$datahub.getPrimaryEntity(CC.newContent, SC.Common.CONTENT_CATEGORY.EVENT_HUB_BRIEFING)")
+		(var newContentCounter:gfx = "newContentEntity ? newContentEntity.newContent.count : 0" (event "newContentEntity.newContent.evCountChanged"))
+		(var isNew:bool = "newContentCounter > 0")
+
+		(macro SERVER_TIME_SCOPE)
+		(macro COUNTDOWN_SCOPE "'eventHubTimeLeft'" "eventFinishTime" "'HIGHEST,WITH_DAYS'")
+	)
+
+	(bindcall externalCall 'sound.playSetSoundDirect' "['dock_inset', 'eventhub_briefing']" init=false watch=false on='addedToStage')
+	(bindcall externalCall "isNew ? 'inputMapping.onAction' : ''" "['setEventHubFlag', {flag: SC.Common.EVENT_HUB_FLAGS.BRIEFING_TAB_SEEN}]" init=false watch=false on='addedToStage')
+
+	(style
+		(bind width "stageWidth") (bind height "stageHeight")
+		(align = "center") (backgroundSize = "cover")
+		(backgroundImage = "'url:../event_hub/bg/main.jpg'")
+	)
+
+	(bind name "'EventHubBriefingMainInset'")
+
+	
+	(block
+		(style (width = 1200px) (height = 700px) (marginTop = "{720: 0px, 1080: XLL}"))
+
+		(block
+			(style
+				(width = 951px) (height = 700px) (position = "absolute")
+				(left = 0) (backgroundSize = "cover")
+				(bind backgroundImage "'url:../event_hub/bg/briefing_map_' + activePhase + '.png'")
+			)
+		)
+
+		(block
+			(style
+				(width = 460px) (height = 650px) (position = "absolute")
+				(top = "LS") (right = 0) (backgroundSize = "cover")
+				(align = "center")
+				(bind backgroundImage "'url:../event_hub/bg/briefing_description_' + activePhase + '.png'")
+			)
+
+			(block
+				(style (width = 360px) (marginTop = "100px"))
+
+				(tf
+					(class $TextDefaultBold21NM)
+					(class $GlowDisabler)
+					(style
+						(width = 100%) (alpha = "TC") (textAlign = "center")
+						(textColor = "0xFF212222")
+					)
+
+					(bind text "'IDS_EVENT_HUB_BRIEFING_' + activePhase + '_TITLE_UPPER_CASE'")
+				)
+
+				(block
+					(style (width = 100%) (marginTop = "MS"))
+
+					(element HorizontalDividerTwoPx)
+				)
+
+				(block
+					(style
+						(alpha = "TC") (width = 100%) (align = "center")
+						(marginTop = "S")
+					)
+
+					(element StatusLine
+						_text = "subst('IDS_SUBST_EVENT_HUB_STATUS_TIME', [], {_timeLeft: eventHubTimeLeft})"
+						_textClass = '$EventHubEndDate'
+						_textColor = "0xFF212222"
+						_width = 'auto'
+					)
+				)
+
+				(block
+					(style (width = 100%) (marginTop = "S"))
+
+					(element HorizontalDividerTwoPx)
+				)
+
+				(tf
+					(class $TextDefaultBold19NM)
+					(class $GlowDisabler)
+					(style
+						(width = 100%) (alpha = "TC") (marginTop = "MS")
+						(textColor = "0xFF212222")
+					)
+
+					(text = "'IDS_EVENT_HUB_BRIEFING_PARAGRAPH_1_TITLE'")
+				)
+
+				(tf
+					(class $TextDefaultNM)
+					(class $GlowDisabler)
+					(style
+						(width = 100%) (alpha = "TC") (marginTop = "SXS")
+						(textColor = "0xFF212222")
+					)
+
+					(bind text "'IDS_EVENT_HUB_BRIEFING_' + activePhase + '_PARAGRAPH_1_DESCRIPTION'")
+				)
+
+				(tf
+					(class $TextDefaultBold19NM)
+					(class $GlowDisabler)
+					(style
+						(width = 100%) (alpha = "TC") (marginTop = "MS")
+						(textColor = "0xFF212222")
+					)
+
+					(text = "'IDS_EVENT_HUB_BRIEFING_PARAGRAPH_2_TITLE'")
+				)
+
+				(tf
+					(class $TextDefaultNM)
+					(class $GlowDisabler)
+					(style
+						(width = 100%) (alpha = "TC") (marginTop = "SXS")
+						(textColor = "0xFF212222")
+					)
+
+					(bind text "'IDS_EVENT_HUB_BRIEFING_' + activePhase + '_PARAGRAPH_2_DESCRIPTION'")
+				)
+			)
+		)
+	)
+)

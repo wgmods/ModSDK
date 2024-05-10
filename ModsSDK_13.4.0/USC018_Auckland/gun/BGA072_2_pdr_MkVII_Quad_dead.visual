@@ -1,0 +1,61 @@
+<BGA072_2_pdr_MkVII_Quad_dead.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	shield_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret_dead	</node>
+		<geometry>
+			<vertices>	Turret_deadShape.vertices	</vertices>
+			<primitive>	Turret_deadShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/USC018_Auckland/gun/BGA008_2_pdr_MkVIII_8barrel_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	shield_dead	</node>
+		<geometry>
+			<vertices>	shield_deadShape.vertices	</vertices>
+			<primitive>	shield_deadShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Gun1Dead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/USC018_Auckland/gun/BGA072_2_pdr_MkVII_Quad_Shield_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0991 0.0000 -0.1226	</min>
+		<max>	0.1041 0.1558 0.1127	</max>
+	</boundingBox>
+</BGA072_2_pdr_MkVII_Quad_dead.visual>

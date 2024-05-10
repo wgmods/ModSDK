@@ -1,0 +1,17 @@
+<weathers.xml>
+	<!-- Погода по-дефолту -->
+	<scheme>
+		<step>
+			<startWeight> 100 </startWeight>
+			<param>PCOW011_Night</param>
+			<duration> 30 </duration>
+			<transition> 5 </transition>
+		</step>
+		<step>
+			<startWeight> 00 </startWeight>
+			<param>PCOW008_Morning</param>
+			<duration> 9999 </duration>
+			<transition> 5 </transition>
+		</step>
+	</scheme>
+</weathers.xml>
