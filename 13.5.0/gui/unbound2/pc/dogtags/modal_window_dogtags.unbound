@@ -1,0 +1,932 @@
+(def constant DOGTAG_ELEMENT_TO_INSET {
+	0:	'DogtagSubgroupInset',
+	1:	'DogtagSubgroupInset',
+	2:	'DogtagGroupInset',
+	3:	'DogtagSubgroupInset',
+	4:	'DogtagSubgroupInset',
+	5:	'DogtagSubgroupInset',
+	6:	'DogtagSubgroupInset',
+})
+
+(def constant DOGTAG_CATEGORY_TO_INSET {
+	0:	'DogtagConstructorInset',
+	1:	'DogtagSubgroupInset',
+	2:	'DogtagGroupInset',
+})
+
+(def constant CONSTRUCTOR_COLORIZATION_CATEGORIES "[SC.Common.DOGTAG_ELEMENTS.BG_COLOR,
+													SC.Common.DOGTAG_ELEMENTS.BG_BORDER_COLOR,
+													SC.Common.DOGTAG_ELEMENTS.BG_MATERIAL]")
+
+(def constant DOGTAG_ICON_BASE_COLOR 0xbcbcbc)
+
+(def macro COLOR_DIFF_TO_COLOR_TRANSFORM(_colorTransformField:expression, _baseColor:expression, _desiredColor:expression)
+	(var name="_colorTransformField" type=dict value="{	redOffset: ((_desiredColor & 0xFF0000) >> 16) - ((_baseColor & 0xFF0000) >> 16),
+														greenOffset: ((_desiredColor & 0x00FF00) >> 8) - ((_baseColor & 0x00FF00) >> 8),
+														blueOffset: (_desiredColor & 0x0000FF) - (_baseColor & 0x0000FF) }")
+)
+
+(def element ModalWindowDogTag () dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(scope
+		(var selfAvatarEntity:gfx = "$datahub.getSingleEntity(CC.accountSelf)")
+
+		(var selfComponentClanman:gfx = "selfAvatarEntity ? selfAvatarEntity.clanman : null")
+		(var clanId:number = "selfComponentClanman ? selfComponentClanman.clanId : null" (event "selfComponentClanman.evClanIdChanged"))
+
+		(var clanEntity:gfx	= "$datahub.getPrimaryEntity(CC.clan, clanId)")
+		(var clanComponent:gfx = "clanEntity ? clanEntity.clan : null")
+		(var clanTag:str = "clanComponent ? clanComponent.tag : null" (event "clanComponent.evTagChanged"))
+
+		(var dogTagPatchCollection:gfx = "$datahub.getCollection(CC.dogTagItem).getChildByPath(SC.Common.DOGTAG_ELEMENTS.PATCH)")
+		(var hasPatches:bool = "dogTagPatchCollection ? dogTagPatchCollection.items.length > 0 : false" (event "dogTagPatchCollection.evUpdated"))
+
+		(var dogTagSavedCollection:gfx = "$datahub.getCollection(CC.dogTagComponentSaved)")
+		(var dogTagSortedSavedCollection:gfx = "dogTagSavedCollection.getChildByPath('sorted')" (event "dogTagSavedCollection.evAdded")
+																								(event "dogTagSavedCollection.evRemoved"))
+		(var dogTagSavedArray:array = "dogTagSortedSavedCollection ? dogTagSortedSavedCollection.items : []" (event "dogTagSortedSavedCollection.evAdded")
+																											(event "dogTagSortedSavedCollection.evRemoved"))
+
+		(var dogTagPreviewComponent:gfx =	"$datahub.getSingleComponent(CC.dogTagComponentPreview)")
+		(var previewSymbolId:number =		"dogTagPreviewComponent ? dogTagPreviewComponent.symbol				: 0" (event "dogTagPreviewComponent.evUpdate"))
+		(var previewBgShapeId:number =		"dogTagPreviewComponent ? dogTagPreviewComponent.bgShape			: 0" (event "dogTagPreviewComponent.evUpdate"))
+		(var previewBgColorId:number =		"dogTagPreviewComponent ? dogTagPreviewComponent.bgColor			: 0" (event "dogTagPreviewComponent.evUpdate"))
+		(var previewBgBorderId:number =		"dogTagPreviewComponent ? dogTagPreviewComponent.bgBorderColor		: 0" (event "dogTagPreviewComponent.evUpdate"))
+		(var previewBgMaterialId:number =	"dogTagPreviewComponent ? dogTagPreviewComponent.bgMaterial			: 0" (event "dogTagPreviewComponent.evUpdate"))
+
+		(var selectedSymbolEntity:gfx =			"$datahub.getPrimaryEntity(CC.dogTagItem, previewSymbolId)" 			(event "dogTagPreviewComponent.evUpdate"))
+		(var selectedBgShapeEntity:gfx =		"$datahub.getPrimaryEntity(CC.dogTagItem, previewBgShapeId)" 			(event "dogTagPreviewComponent.evUpdate"))
+		(var selectedBgColorEntity:gfx =		"$datahub.getPrimaryEntity(CC.dogTagItem, previewBgColorId)"			(event "dogTagPreviewComponent.evUpdate"))
+		(var selectedBgBorderColorEntity:gfx =	"$datahub.getPrimaryEntity(CC.dogTagItem, previewBgBorderId)"			(event "dogTagPreviewComponent.evUpdate"))
+		(var selectedBgMaterialEntity:gfx =		"$datahub.getPrimaryEntity(CC.dogTagItem, previewBgMaterialId)" 		(event "dogTagPreviewComponent.evUpdate"))
+		(var isSelectedUnique:bool =			"dogTagPreviewComponent ? dogTagPreviewComponent.isUnique : false"		(event "dogTagPreviewComponent.evUpdate"))
+		(var isSaveVisible:bool =				"dogTagPreviewComponent ? dogTagPreviewComponent.isSaveVisible : false"	(event "dogTagPreviewComponent.evUpdate"))
+		(var isSaveEnabled:bool =				"dogTagPreviewComponent ? dogTagPreviewComponent.isSaveEnabled : false"	(event "dogTagPreviewComponent.evUpdate"))
+
+		(var dogTagSymbolEntity:gfx =			"selectedSymbolEntity			? selectedSymbolEntity : dogTagSavedArray[0]")
+		(var dogTagBgShapeEntity:gfx =			"selectedBgShapeEntity			? selectedBgShapeEntity :
+												dogTagSavedArray.length > 1		? dogTagSavedArray[1]
+																				: null")
+		(var dogTagBgColorEntity:gfx =			"selectedBgColorEntity			? selectedBgColorEntity :
+												dogTagSavedArray.length > 2		? dogTagSavedArray[2]
+																				: null")
+		(var dogTagBorderColorEntity:gfx =		"selectedBgBorderColorEntity	? selectedBgBorderColorEntity :
+												dogTagSavedArray.length > 2		? dogTagSavedArray[3]
+																				: null")
+		(var dogTagBgMaterialEntity:gfx =		"selectedBgMaterialEntity		? selectedBgMaterialEntity :
+												dogTagSavedArray.length > 2		? dogTagSavedArray[4]
+																				: null")
+
+		(var dogTagSymbolComponent:gfx =		"dogTagSymbolEntity			? dogTagSymbolEntity.dogTagItem : null")
+		(var dogTagBgShapeComponent:gfx =		"dogTagBgShapeEntity		? dogTagBgShapeEntity.dogTagBackgroundShape : null")
+		(var dogTagBgColorComponent:gfx =		"dogTagBgColorEntity		? dogTagBgColorEntity.dollBackgroundColor : null")
+		(var dogTagBorderColorComponent:gfx =	"dogTagBorderColorEntity	? dogTagBorderColorEntity.dollBorderColor : null")
+		(var dogTagBgMaterialComponent:gfx =	"dogTagBgMaterialEntity		? dogTagBgMaterialEntity.dollTexture : null")
+
+		(var dogTagSymbolName:str = "dogTagSymbolComponent ? dogTagSymbolEntity.dogTagItem.gpName : null"				(event "dogTagSymbolComponent.evUpdate"))
+		(var dogTagSymbolHasDescr:bool = "dogTagSymbolComponent ? dogTagSymbolEntity.dogTagItem.description : false"	(event "dogTagSymbolComponent.evUpdate"))
+		(var dogTagSymbolCategoryId:number = "dogTagSymbolComponent ? dogTagSymbolEntity.dogTagItem.categoryId : 0"		(event "dogTagSymbolComponent.evUpdate"))
+
+		(var dogTagBackgroundName:str = "dogTagBgShapeComponent ? dogTagBgShapeEntity.dogTagItem.gpName : null"							(event "dogTagBgShapeComponent.evUpdate"))
+		(var isColorizableShape:bool = "dogTagBgShapeComponent ? dogTagBgShapeEntity.dogTagBackgroundShape.isColorizable : false"		(event "dogTagBgShapeComponent.evUpdate"))
+		(var symbolOffsetY:number = "dogTagBgShapeComponent && !isSelectedUnique ? 512 / 100 * dogTagBgShapeEntity.dogTagBackgroundShape.symbolOffsetY : 0"
+																																		(event "dogTagBgShapeComponent.evUpdate"))
+
+		(var dogTagBgMaterialName:str = "dogTagBgMaterialComponent ? dogTagBgMaterialEntity.dogTagItem.gpName : null"					(event "dogTagBgMaterialComponent.evUpdate"))
+
+
+		(var dogTagPreviewDir:str = 'url:../dogTags/big/')
+		(var dogTagBgMaterialDir:str = "dogTagBgMaterialComponent && isColorizableShape ? '/' + dogTagBgMaterialName : ''")
+
+		(var dogtagBgColor:number = "dogTagBgColorComponent ? dogTagBgColorEntity.dollBackgroundColor.colorHEX : DOGTAG_ICON_BASE_COLOR")
+		(var dogtagBorderColor:number = "dogTagBorderColorComponent ? dogTagBorderColorEntity.dollBorderColor.colorHEX : DOGTAG_ICON_BASE_COLOR")
+		(var dogtagBaseColor:number = "dogTagBgMaterialComponent ? dogTagBgMaterialEntity.dollTexture.baseColorHEX : DOGTAG_ICON_BASE_COLOR")
+
+		(macro COLOR_DIFF_TO_COLOR_TRANSFORM "'bgTransform'" "dogtagBaseColor" "dogtagBgColor")
+		(macro COLOR_DIFF_TO_COLOR_TRANSFORM "'borderTransform'" "dogtagBaseColor" "dogtagBorderColor")
+
+		(var clanTagComponent:gfx = "dogTagBgShapeComponent && !isSelectedUnique	?	dogTagBgShapeComponent :
+																dogTagSymbolEntity	?	dogTagSymbolEntity.dogTagEmblem	?	dogTagSymbolEntity.dogTagEmblem :
+																						dogTagSymbolEntity.dogTagSymbol	?	dogTagSymbolEntity.dogTagSymbol
+																														:	null
+																					:	null	"(event "dogTagBgShapeComponent.evUpdate"))
+
+		(var clanTagVisible:bool = "clanTagComponent ? clanTagComponent.clanTagVisible	: false")
+
+		(var clanTagOffsetX:number = "clanTagComponent ? 512 / 100 * clanTagComponent.clanTagOffsetX : 0"	(event "clanTagComponent.evUpdate"))
+		(var clanTagOffsetY:number = "clanTagComponent ? 512 / 100 * clanTagComponent.clanTagOffsetY : 0"	(event "clanTagComponent.evUpdate"))
+		(var clanTagFontColor:number = "clanTagComponent && clanTagComponent.clanTagFontColor	? clanTagComponent.clanTagFontColor
+																								: dogtagBorderColor" (event "clanTagComponent.evUpdate"))
+
+		(macro COLOR_DIFF_TO_COLOR_TRANSFORM "'clanTagTransform'" "dogtagBaseColor" "clanTagFontColor")
+
+		(var clanTagStr:str = "clanTag ? '[' + clanTag + ']' : '^'")
+		(var clanTagUrl:str = "'img://embedded:DogTag?text=' + clanTagStr + '&font=big/WarHeliosCond_Textile'")
+
+		(macro PULL_NEW_CONTENT "'newSymbolEntity'"			"'newSymbolComponent'"			"'newSymbolCounter'"		"SC.Common.CONTENT_CATEGORY.SYMBOL")
+		(macro PULL_NEW_CONTENT "'newBgShapeEntity'"		"'newBgShapeComponent'"			"'newBgShapeCounter'"		"SC.Common.CONTENT_CATEGORY.BG_SHAPE")
+		(macro PULL_NEW_CONTENT "'newBgColorEntity'"		"'newBgColorComponent'"			"'newBgColorCounter'"		"SC.Common.CONTENT_CATEGORY.BG_COLOR")
+		(macro PULL_NEW_CONTENT "'newBgBorderColorEntity'"	"'newBgBorderColorComponent'"	"'newBgBorderColorCounter'"	"SC.Common.CONTENT_CATEGORY.BG_BORDER_COLOR")
+		(macro PULL_NEW_CONTENT "'newBgMaterialEntity'"		"'newBgMaterialComponent'"		"'newBgMaterialCounter'"	"SC.Common.CONTENT_CATEGORY.BG_MATERIAL")
+		(macro PULL_NEW_CONTENT "'newPatchEntity'"			"'newPatchComponent'"			"'newPatchCounter'"			"SC.Common.CONTENT_CATEGORY.PATCH")
+		(macro PULL_NEW_CONTENT "'newEmblemEntity'"			"'newEmblemComponent'"			"'newEmblemCounter'"		"SC.Common.CONTENT_CATEGORY.EMBLEM")
+
+		(var newCounterInfo:array = "[	(newSymbolCounter + newBgShapeCounter + newBgColorCounter + newBgBorderColorCounter + newBgMaterialCounter),
+										newPatchCounter,
+										newEmblemCounter ]")
+		(macro PULL_ACTIVE_CHILD_ROUTE
+			_nodeId = "SC.Ui_windows.MODAL.DOGTAGS"
+			_fieldActiveChild = "'currentRoute'"
+		)
+
+		(var isConstructorTabSelected:bool = "currentRoute == SC.Ui_windows.ROUTE.CONSTRUCTOR")
+	)
+
+	(bind name "'dogTagModal'")
+
+	(bindcall externalCall "!hasPatches ? 'inputMapping.onAction' : ''" "['navigateTo', {route: SC.Ui_windows.ROUTE.CONSTRUCTOR}]" init=false watch=false (event "dogTagPatchCollection.evUpdated"))
+	(bindcall externalCall "'inputMapping.onAction'" "['flushDogtagPreview', {}]" delay=0.075 init=false watch=false (event "startHide"))
+
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(style (width = 100%))
+
+		(element ModalWindowHeaderFullSize
+			_windowName = 'IDS_MODAL_WINDOW_DOG_TAG_HEADER'
+			_paddingRight = "M"
+			_paddingLeft = "M"
+			_hideBackButton = true
+		)
+	)
+
+	
+	(block
+		(class $Fullsize)
+
+		
+		(block
+			(style	(width = 100%) (align = "center") (marginTop = "{720: SXS, 1080: MS}"))
+
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 1.5)
+
+				(element MAIN_TAB_BUTTONS_BLOCK
+					(block
+						(element MainTabButton
+							_label = "'IDS_DOGTAGS_TAB_CONSTRUCTOR'"
+							_width = "MAIN_TAB_BUTTON_WIDTH.MEDIUM"
+							_isSelected = "isConstructorTabSelected"
+							_newContentCounter = "!isConstructorTabSelected &&	newCounterInfo[SC.Common.DOGTAG_CATEGORIES.CONSTRUCTOR] > 0 ?
+																				newCounterInfo[SC.Common.DOGTAG_CATEGORIES.CONSTRUCTOR] : 0"
+							_name = "'DogTagTab_Constructor'"
+							_methods = "[	{	type: 'inputMapping.onAction',
+												name: 'navigateTo',
+												args: { route: SC.Ui_windows.ROUTE.CONSTRUCTOR }
+											}]"
+						)
+					)
+
+					(block
+						(controller $Instance renderer='MainTabButton'
+							(bind enabled "hasPatches")
+							(args
+								_label = "'IDS_DOGTAGS_TAB_PATCH'"
+								_width = "MAIN_TAB_BUTTON_WIDTH.MEDIUM"
+								_isSelected = "currentRoute == SC.Ui_windows.ROUTE.PATCH"
+								_newContentCounter = "newCounterInfo[SC.Common.DOGTAG_CATEGORIES.PATCH] > 0 ? newCounterInfo[SC.Common.DOGTAG_CATEGORIES.PATCH] : 0"
+								_name = "'DogTagTab_Patch'"
+								_methods = "[	{	type: 'inputMapping.onAction',
+													name: 'navigateTo',
+													args: { route: SC.Ui_windows.ROUTE.PATCH }
+												}]"
+							)
+						)
+					)
+
+					(block
+						(element MainTabButton
+							_label = "'IDS_DOGTAGS_TAB_EMBLEM'"
+							_width = "MAIN_TAB_BUTTON_WIDTH.MEDIUM"
+							_isSelected = "currentRoute == SC.Ui_windows.ROUTE.EMBLEM"
+							_newContentCounter = "newCounterInfo[SC.Common.DOGTAG_CATEGORIES.EMBLEM] > 0 ? newCounterInfo[SC.Common.DOGTAG_CATEGORIES.EMBLEM] : 0"
+							_name = "'DogTagTab_Emblem'"
+							_isLast = true
+							_methods = "[	{	type: 'inputMapping.onAction',
+												name: 'navigateTo',
+												args: { route: SC.Ui_windows.ROUTE.EMBLEM }
+											}]"
+						)
+					)
+				)
+			)
+		)
+
+		(hblock
+			(style 
+				(width=100%)
+				(height=100%)
+				(marginTop = "{720: S, 1080: L}")
+				(align = "center")
+			)
+
+			
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 1.5)
+				(style (width=512px) (marginRight="XL") (marginBottom = "{720: S, 1080: M}"))
+
+				
+				(block
+					(style (width=100%) (height=512px) (hitTest = false))
+
+					(block
+						(bind visible "dogTagBgShapeComponent && !isSelectedUnique")
+						(class $FullsizeAbsolute)
+						(style
+							(backgroundSize = "cover")
+							(bind backgroundImage "dogTagPreviewDir + dogTagBackgroundName + dogTagBgMaterialDir + '.png'")
+						)
+						(bind colorTransform "dogTagBgColorComponent && isColorizableShape ? bgTransform : {}")
+					)
+
+					(block
+						(bind visible "dogTagBorderColorComponent && !isSelectedUnique")
+						(class $FullsizeAbsolute)
+						(style
+							(backgroundSize = "cover")
+							(bind backgroundImage "dogTagPreviewDir + dogTagBackgroundName + '/border.png'")
+						)
+						(bind colorTransform "dogTagBorderColorComponent && isColorizableShape ? borderTransform : {}")
+					)
+					
+					(block
+						(bind visible "dogTagSymbolComponent")
+						(class $FullsizeAbsolute)
+						(style
+							(backgroundSize = "cover")
+							(bind backgroundImage "dogTagPreviewDir + dogTagSymbolName + '.png'")
+							(bind top "symbolOffsetY")
+						)
+					)
+					
+					(block
+						(bind visible "clanTagVisible")
+						(class $FullsizeAbsolute)
+						(style
+							(position = "absolute")
+							(bind left "clanTagVisible ? clanTagOffsetX : 0")
+							(bind top "clanTagVisible ? clanTagOffsetY : 0")
+						)
+						(block
+							(style
+								(position = "absolute")
+								(bind marginLeft "-50%")
+								(bind marginTop "-50%")
+								(bind backgroundImage "clanTagUrl")
+								(backgroundSize = "autosize")
+							)
+							(bind colorTransform "clanTagTransform")
+						)
+					)
+				)
+
+				
+				(block
+					(style (position = "absolute") (alpha = "isConstructorTabSelected ? 1 : 0") (top = -6px))
+
+					(controller $Animation
+						(bindcall play
+							duration = 0.15
+							to		= "{ alpha: isConstructorTabSelected ? 1 : 0 }"
+							easing	= "Easing.quad_in"
+							(bind trigger "isConstructorTabSelected")
+						)
+					)
+
+					(element ImageButton
+						_enabled = "isConstructorTabSelected"
+						_width = 48
+						_height = 48
+						_backgroundImage = 'url:../service_kit/icons/random.png'
+						_methods = "[	{	type: 'inputMapping.onAction',
+											name: 'previewRandomDogtag',
+											args: {}
+										}]"
+						_name = "'DogTagRandomizer'"
+					)
+				)
+
+				
+				(block
+					(style (width=100%) (align = "center"))
+
+					(scrollArea
+						(style
+							(width=410)
+							(height="{720: 60, 1080: 300}")
+							(backgroundColor=0x01000000)
+							(align="top")
+						)
+
+						(verticalSlider='AchievementsScrollBarV')
+
+						(topShadow='ScrollAreaShadowTop')
+						(bottomShadow='ScrollAreaShadowBottom')
+
+						(hscrollPolicy='off')
+						(vscrollPolicy='auto')
+
+						(content
+							(style
+								(width=410)
+								(height=100%)
+							)
+
+							(tf
+								(class $TextDefaultBold30NM)
+								(style
+										(marginTop = "S") (marginBottom = "{720:S, 1080:M}")
+										(width = 100%) (backgroundColor=0xaaff0000)
+								)
+								(alpha = "TA") 
+								(bind text "tr(toUpper('IDS_DOGTAG_' + dogTagSymbolName +'_NAME'))")
+							)
+
+							(tf
+								(bind visible "dogTagSymbolHasDescr")
+								(class $TextDefault17NM)
+								(alpha = "TA") 
+								(style (width = 100%) (backgroundColor=0xaa00ff00) (marginBottom="XS"))
+								(bind text "tr(toUpper('IDS_DOGTAG_' + dogTagSymbolName +'_DESCRIPTION'))")
+							)
+						)
+					)
+				)
+			)
+
+			
+			(block
+				(style (width=590px))
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 1.5)
+				(controller $Repeat count="SC.Common.DOGTAG_CATEGORIES.ALL.length" renderer=DogtagInsetWrapper layout=true
+					(args
+						_insetIndex = "$index"
+						_isColorizableShape = "isColorizableShape"
+						_isTopLevel = "true"
+					)
+					(exprs
+						(scope
+							(bind _isSelected "$index == SC.Common.DOGTAG_CATEGORIES[SC.Ui_windows.ROUTE.VALUE_TO_NAME[currentRoute]]")
+						)
+					)
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(style
+			(width=100%)
+			(position = "absolute")
+			(bottom = "{720: S, 1080:LM}")
+			(align = "center")
+		)
+		(hblock
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+			(block
+				(style (marginRight="M") (bind ubScaleX "isSaveVisible ? 1 : 0"))
+				(alpha = "isSaveVisible ? 1 : 0")
+				(controller $Animation
+					(bindcall play
+						from =	"{alpha: 0, ubScaleX: 0}"
+						to =	"{alpha: 1, ubScaleX: 1}"
+						reverse = "!isSaveVisible"
+						duration="0.15"
+						(bind trigger "isSaveVisible")
+					)
+				)
+
+				(element DefaultButton
+					_enabled = "isSaveEnabled"
+					_focusIndex = 1
+					_defaultFocused = false
+					_label = 'IDS_SAVE_DOGTAG'
+					_methods = "[	{	type: 'inputMapping.onAction',
+										name: 'saveDogTag',
+										args: {}
+									}]"
+					_name = "'saveDogTag'"
+				)
+			)
+
+			(element DefaultButton
+				_name = "'btn_cancel'"
+				_label = 'IDS_CLOSE_BTN'
+			)
+		)
+	)
+)
+
+(def element DogtagInsetWrapper (_insetIndex:number, _isTopLevel:bool=false, _isColorizableShape:bool=true) layout=true dispatch_size_change=true
+	(scope
+		(var _isSelected:bool = false)
+	)
+	(style (width=100%))
+
+	(alpha = "_isSelected ? 1 : 0")
+	(visible = "_isSelected")
+
+	(controller $Animation
+		(bindcall play
+			duration = 0.15
+			to		= "{ alpha: _isSelected ? 1 : 0, visible: _isSelected }"
+			easing	= "Easing.quad_in"
+			(bind trigger "_isSelected")
+		)
+	)
+
+	(controller $Instance
+		(bind enabled "_isSelected")
+		(bind renderer "_isTopLevel ? DOGTAG_CATEGORY_TO_INSET[_insetIndex] : DOGTAG_ELEMENT_TO_INSET[_insetIndex]")
+		(args
+			_insetIndex = "_insetIndex"
+			_isColorizableShape = "_isColorizableShape"
+		)
+	)
+)
+
+
+(def element DogtagEmptyInset (_insetIndex:number) layout=true dispatch_size_change=true
+	(bind name "'dogTagInset_' + SC.Common.DOGTAG_CATEGORIES.NAMES[SC.Common.DOGTAG_CATEGORIES.VALUE_TO_NAME[_insetIndex]]")
+
+	(tf
+		(alpha = "TA")
+		(class = $TextDefaultBold17NM)
+		(bind text "'EMPTY'")
+		(style (marginTop = "LS") (alpha = "TA"))
+	)
+)
+
+(def element DogtagConstructorInset (_insetIndex:number, _isColorizableShape:bool=true) layout=true dispatch_size_change=true
+	(scope
+		(var dogTagPreviewComponent:gfx = "$datahub.getSingleComponent(CC.dogTagComponentPreview)")
+
+		(macro PULL_NEW_CONTENT "'newSymbolEntity'"			"'newSymbolComponent'"			"'newSymbolCounter'"		"SC.Common.CONTENT_CATEGORY.SYMBOL")
+		(macro PULL_NEW_CONTENT "'newBgShapeEntity'"		"'newBgShapeComponent'"			"'newBgShapeCounter'"		"SC.Common.CONTENT_CATEGORY.BG_SHAPE")
+		(macro PULL_NEW_CONTENT "'newBgColorEntity'"		"'newBgColorComponent'"			"'newBgColorCounter'"		"SC.Common.CONTENT_CATEGORY.BG_COLOR")
+		(macro PULL_NEW_CONTENT "'newBgBorderColorEntity'"	"'newBgBorderColorComponent'"	"'newBgBorderColorCounter'"	"SC.Common.CONTENT_CATEGORY.BG_BORDER_COLOR")
+		(macro PULL_NEW_CONTENT "'newBgMaterialEntity'"		"'newBgMaterialComponent'"		"'newBgMaterialCounter'"	"SC.Common.CONTENT_CATEGORY.BG_MATERIAL")
+
+		(var newCounterInfo:array = "[ newSymbolCounter, newBgShapeCounter, newBgColorCounter, newBgBorderColorCounter, newBgMaterialCounter ]")
+
+		(macro PULL_ACTIVE_CHILD_ROUTE
+			_nodeId = "SC.Ui_windows.ROUTE.CONSTRUCTOR"
+			_fieldActiveChild = "'currentRoute'"
+		)
+	)
+
+	(style (width=100%))
+
+	(bind name "'dogTagInset_' + SC.Common.DOGTAG_CATEGORIES.NAMES[SC.Common.DOGTAG_CATEGORIES.VALUE_TO_NAME[_insetIndex]]")
+
+	(hblock
+		(style (width = 100%))
+
+		(controller $Repeat renderer='TabButton'
+			count="SC.Common.DOGTAG_ELEMENTS.ORDER.length"
+			(args
+				_label = "'IDS_DOGTAGS_CONSTRUCTOR_TAB_' + SC.Common.DOGTAG_ELEMENTS.VALUE_TO_NAME[SC.Common.DOGTAG_ELEMENTS.ORDER[$index]]"
+				_isSelected = "currentRoute == SC.Ui_windows.ROUTE[SC.Common.DOGTAG_ELEMENTS.VALUE_TO_NAME[SC.Common.DOGTAG_ELEMENTS.ORDER[$index]]]"
+				_width = "toString(100/SC.Common.DOGTAG_ELEMENTS.ORDER.length) + '%'"
+				_name = "'DogTagSubtypeTabButton_' + SC.Common.DOGTAG_ELEMENTS.NAMES[SC.Common.DOGTAG_ELEMENTS.VALUE_TO_NAME[SC.Common.DOGTAG_ELEMENTS.ORDER[$index]]]"
+				_newContentCounter = "newCounterInfo[$index] > 0 ? newCounterInfo[$index] : 0"
+				_isDisabled = "!_isColorizableShape && isIn(SC.Common.DOGTAG_ELEMENTS.ORDER[$index], CONSTRUCTOR_COLORIZATION_CATEGORIES)"
+				_tooltipData = "{	unifiedStatus : 'SC.Ui_styles.UNIFIED_STATUS.DEFAULT',
+									text : !_isColorizableShape && isIn(SC.Common.DOGTAG_ELEMENTS.ORDER[$index], CONSTRUCTOR_COLORIZATION_CATEGORIES) ? 'IDS_DOGTAGS_CONSTRUCTOR_TAB_DISABLED_TOOLTIP' : ''
+								}"
+				_methods = "[	{	type: 'inputMapping.onAction',
+									name: 'navigateTo',
+									args: { route: SC.Ui_windows.ROUTE[SC.Common.DOGTAG_ELEMENTS.VALUE_TO_NAME[SC.Common.DOGTAG_ELEMENTS.ORDER[$index]]] }
+								}]"
+			)
+		)
+
+		(element HorizontalDividerTwoPx
+			(style
+				(position = "absolute")
+				(width = 100%)
+				(bottom = 0)
+			)
+		)
+	)
+
+	
+	(block
+		(style (width=100%) (height=660px))
+
+		(controller $Repeat count="SC.Common.DOGTAG_ELEMENTS.ORDER.length" renderer=DogtagInsetWrapper layout=true
+			(args
+				_insetIndex = "SC.Common.DOGTAG_ELEMENTS.ORDER[$index]"
+			)
+			(exprs
+				(scope
+					(bind _isSelected "SC.Common.DOGTAG_ELEMENTS.NAMES[SC.Common.DOGTAG_ELEMENTS.VALUE_TO_NAME[SC.Common.DOGTAG_ELEMENTS.ORDER[$index]]] == currentRoute")
+				)
+			)
+		)
+	)
+
+	(bindcall externalCall "!_isColorizableShape && isIn(SC.Common.DOGTAG_ELEMENTS[SC.Ui_windows.ROUTE.VALUE_TO_NAME[currentRoute]], CONSTRUCTOR_COLORIZATION_CATEGORIES) ?
+							'inputMapping.onAction' : ''" "['navigateTo', {route: SC.Ui_windows.ROUTE.BG_SHAPE}]" init=false watch=false  (event "dogTagPreviewComponent.evUpdate"))
+)
+
+
+(def element DogtagGroupInset (_insetIndex:number) layout=true dispatch_size_change=true
+	(scope
+		(var insetGroups:array = "SC.Dogtags_classifications[SC.Common.DOGTAG_CATEGORIES.VALUE_TO_NAME[_insetIndex] + '_GROUPS'].SORT_ORDER")
+		(var insetGroupsLength:number = "insetGroups.length")
+	)
+	(bind name "'dogTagInset_' + SC.Common.DOGTAG_CATEGORIES.NAMES[SC.Common.DOGTAG_CATEGORIES.VALUE_TO_NAME[_insetIndex]]")
+
+	(scrollArea
+		(style
+			(width=590px)
+			(height= "{720: 573, 1080: 794}")
+			(backgroundColor=0x01000000)
+			(align="top")
+			(margin=3)
+		)
+
+		(verticalSlider='AchievementsScrollBarV')
+
+		(topShadow='ScrollAreaShadowTop')
+		(bottomShadow='ScrollAreaShadowBottom')
+
+		(hscrollPolicy='off')
+		(vscrollPolicy='auto')
+
+		(repeatController='dtGroup')
+
+		(content
+			(style
+				(width=590px)
+				(marginTop="MS")
+				(height= "{720: 573, 1080: 794}")
+			)
+
+			(block
+				(style (width = "100%") (marginBottom="XXS"))
+				(controller $Repeat renderer = 'DogtagElementGroup' name='dtGroup'
+					(bind count "insetGroupsLength")
+					(args
+						_elementType = "_insetIndex"
+						_groupName = "insetGroups[$index]"
+					)
+				)
+			)
+		)
+	)
+)
+
+
+(def element DogtagSubgroupInset (_insetIndex:number) layout=true dispatch_size_change=true
+	(scope
+		(var insetGroups:array = "SC.Dogtags_classifications[SC.Common.DOGTAG_ELEMENTS.VALUE_TO_NAME[_insetIndex] + '_GROUPS'].SORT_ORDER")
+		(var insetGroupsLength:number = "insetGroups.length")
+
+		(var isCumulativeDelayCheck:bool = "isIn(_insetIndex, [SC.Common.DOGTAG_ELEMENTS.SYMBOL, SC.Common.DOGTAG_ELEMENTS.PATCH])")
+		(var activeGroupsComponent:gfx	= "isCumulativeDelayCheck	? $datahub.getPrimaryEntity(CC.dogTagActiveGroups, _insetIndex).dogTagActiveGroups : null")
+		(var activeGroupsArray:array	= "isCumulativeDelayCheck	? activeGroupsComponent.activeGroups : []" (event "activeGroupsComponent.evUpdate"))
+
+		(var isPatch:bool = "_insetIndex == SC.Common.DOGTAG_ELEMENTS.PATCH")
+		(var minDynamicHeight:number = "isPatch ? 573 : 536")
+		(var maxDynamicHeight:number = "isPatch ? 794 : 757")
+	)
+	(bind name "'dogTagInset_' + SC.Common.DOGTAG_CATEGORIES.NAMES[SC.Common.DOGTAG_CATEGORIES.VALUE_TO_NAME[_insetIndex]]")
+
+	(scrollArea
+		(style
+			(width=590px)
+			(height= "{720: minDynamicHeight, 1080: maxDynamicHeight}")
+			(backgroundColor=0x01000000)
+			(align="top")
+			(margin=3)
+		)
+
+		(verticalSlider='AchievementsScrollBarV')
+
+		(topShadow='ScrollAreaShadowTop')
+		(bottomShadow='ScrollAreaShadowBottom')
+
+		(hscrollPolicy='off')
+		(vscrollPolicy='auto')
+
+		(repeatController='dtSubGroup')
+
+		(content
+			(style
+				(width=590px)
+				(height= "{720: minDynamicHeight, 1080: maxDynamicHeight}")
+			)
+
+			(block
+				(style (width = "100%") (marginTop = "MS"))
+				(controller $Repeat renderer = 'DogtagElementSubgroupPerfWrapper' name='dtSubGroup'
+					(bind count "isCumulativeDelayCheck ? activeGroupsArray.length : insetGroupsLength")
+					(args
+						_elementType = "_insetIndex"
+						_groupName = "isCumulativeDelayCheck ? activeGroupsArray[$index] : insetGroups[$index]"
+						_subgroupName = -1
+						isDeepSorting = false
+					)
+				)
+			)
+		)
+	)
+)
+
+
+(def element DogtagElementGroup (_elementType:number, _groupName:number) layout=true
+	(scope
+		(var subcollectionPath:str = "'' + _elementType + '.byGroup.' + _groupName")
+
+		(var dogtagElementsCollection:gfx =	"$datahub.getCollection(CC.dogTagItem).getChildByPath(subcollectionPath)")
+		(var dogtagElements:array =	"dogtagElementsCollection ? dogtagElementsCollection.items : []"	(event "dogtagElementsCollection.evUpdate")
+																										(event "dogtagElementsCollection.evAdded")
+																										(event "dogtagElementsCollection.evRemoved"))
+		
+		(var categoryName:str = "SC.Common.DOGTAG_CATEGORIES.VALUE_TO_NAME[_elementType]")
+		(var categoryGroupName:str = "SC.Dogtags_classifications[categoryName + '_GROUPS'].VALUE_TO_NAME[_groupName]")
+
+		(var subgroupSharedName:str = "categoryGroupName + '_' + categoryName")
+		(var subgroupSharedArray:array = "SC.Dogtags_classifications[subgroupSharedName].SORT_ORDER")
+		(var subgroupSharedArrayLength:number = "subgroupSharedArray.length")
+
+		(var cumulativeDelay:number = "$index * 0.5")
+	)
+	(bind visible "dogtagElements.length > 0")
+	(style (width = "100%"))
+
+	(tf
+		(bind visible "_elementType == SC.Common.DOGTAG_ELEMENTS.EMBLEM")
+		(class = $TextDefaultBold17NM)
+		(bind text "tr('IDS_DOGTAGS_' + categoryName + '_GROUP_' + categoryGroupName)")
+		(style (marginBottom = "MS") (alpha = "TA") (alpha = 0))
+
+		(controller $Animation
+			(play
+				delay = "cumulativeDelay"
+				duration = "0.3"
+				to = "{ alpha: 1 }"
+			)
+		)
+	)
+
+	(controller $Repeat renderer = 'DogtagElementSubgroupPerfWrapper' count="subgroupSharedArrayLength"
+		(args
+			_elementType = "_elementType"
+			_groupName = "_groupName"
+			_subgroupName = "subgroupSharedArray[$index]"
+			_cumulativeDelay = "cumulativeDelay"
+		)
+	)
+)
+
+(def element DogtagElementSubgroupPerfWrapper (_elementType:number, _groupName:number, _subgroupName:number, isDeepSorting:bool=true, _cumulativeDelay:number=0)
+	(scope
+		(var isSubgroupEnabled:bool = false)
+
+		(controller $Animation		
+			(bindcall play
+				delay = "isDeepSorting ? $index * 0.09 + _cumulativeDelay : $index * 0.2"
+				duration = "0.001"
+				from	 = "{ isSubgroupEnabled: false }"
+				to		 = "{ isSubgroupEnabled: true }"
+				init	 = true
+			)
+		)
+	)
+	(style
+		(width = 100%)
+		(bind alpha "0")
+	)
+
+	(controller $Instance renderer='DogtagElementSubgroup'
+		(bind enabled "isSubgroupEnabled")
+		(args
+			_elementType = "_elementType"
+			_groupName = "_groupName"
+			_subgroupName = "_subgroupName"
+			isDeepSorting = "isDeepSorting"
+		)
+	)
+
+	(controller $Animation
+		(bindcall play
+			duration = "0.2"
+			from = "{ alpha: 0 }"
+			to = "{ alpha: 1 }"
+			(bind trigger "isSubgroupEnabled")
+			(bind enabled "!isSubgroupEnabled")
+		)
+	)
+)
+
+(def element DogtagElementSubgroup (_elementType:number, _groupName:number, _subgroupName:number, isDeepSorting:bool=true) layout=true
+	(scope
+		(var subcollectionPath:str = "'' + _elementType + '.byGroup.' + _groupName + (isDeepSorting ? '.bySubgroup.' + _subgroupName : '')")
+		(var categoryName:str = "SC.Common.DOGTAG_CATEGORIES.VALUE_TO_NAME[_elementType]")
+		(var categoryGroupName:str = "isDeepSorting ? SC.Dogtags_classifications[categoryName + '_GROUPS'].VALUE_TO_NAME[_groupName] : ''")
+		(var elementName:str = "SC.Common.DOGTAG_ELEMENTS.VALUE_TO_NAME[_elementType]")
+		(var subgroupTitle:str = "isDeepSorting ? 'IDS_DOGTAGS_' + categoryName + '_' + categoryGroupName + '_SUBGROUP_' + SC.Dogtags_classifications[categoryGroupName + '_' + categoryName].VALUE_TO_NAME[_subgroupName]
+												: 'IDS_DOGTAGS_' + elementName + '_GROUP_' + SC.Dogtags_classifications[elementName + '_GROUPS'].VALUE_TO_NAME[_groupName]")
+
+		(var dogtagElementsCollection:gfx =	"$datahub.getCollection(CC.dogTagItem).getChildByPath(subcollectionPath)")
+		(var dogtagElements:array =	"dogtagElementsCollection ? dogtagElementsCollection.items : []"	(event "dogtagElementsCollection.evUpdate")
+																										(event "dogtagElementsCollection.evAdded")
+																										(event "dogtagElementsCollection.evRemoved"))
+	)
+	(bind visible "dogtagElements.length > 0")
+	(style (width = "100%") (marginBottom = "S"))
+	(tf
+		(bind class "isDeepSorting && _elementType == SC.Common.DOGTAG_ELEMENTS.EMBLEM ? '$TextDefaultNM' : '$TextDefaultBold17NM'")
+		(style 
+			(marginBottom = "M") 
+			(bind alpha "isDeepSorting && _elementType == SC.Common.DOGTAG_ELEMENTS.EMBLEM ? TC : TA")
+		)
+		(bind text "tr(toUpper(subgroupTitle))")
+	)
+	(block
+		(style (flow = "tile_horizontal") (width = "100%"))
+
+		(controller $Repeat renderer = 'DogtagElement' 
+			(bind count "dogtagElements.length")
+			(args
+				_dogtagElementEntity = "dogtagElements[$index]"
+				_elementType = "_elementType"
+			)
+		)
+	)
+)
+
+(def element DogtagElement (_dogtagElementEntity:gfx, _elementType:number) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+		(var dogtagElementEntity:gfx = "_dogtagElementEntity")
+
+		(var isNew:bool = "dogtagElementEntity.hasComponent(CC.newItem)" (event "dogtagElementEntity.evAdded") (event "dogtagElementEntity.evRemoved"))
+		(var isSaved:bool = "dogtagElementEntity.hasComponent(CC.dogTagComponentSaved)" (event "dogtagElementEntity.evAdded") (event "dogtagElementEntity.evRemoved"))
+
+		(var dogTagIconPrefix:str = "dogtagElementEntity.dollBackgroundColor	? SC.Common.DOGTAG_ELEMENTS.NAMES.BG_COLOR :
+									dogtagElementEntity.dollBorderColor			? SC.Common.DOGTAG_ELEMENTS.NAMES.BG_BORDER_COLOR
+																				: ''")
+		(var isColorizableShape:bool = "dogtagElementEntity.dogTagBackgroundShape ? dogtagElementEntity.dogTagBackgroundShape.isColorizable : false")
+
+		(var dogTagPreviewComponent:gfx = "$datahub.getSingleComponent(CC.dogTagComponentPreview)")
+
+		(var isUnique:bool = "isIn(_elementType, [SC.Common.DOGTAG_ELEMENTS.PATCH, SC.Common.DOGTAG_ELEMENTS.EMBLEM])")
+
+		(var isSelected:bool = "	dogTagPreviewComponent[SC.Common.DOGTAG_ELEMENTS.NAMES[SC.Common.DOGTAG_ELEMENTS.VALUE_TO_NAME[_elementType]]] == dogtagElementEntity.dogTagItem.id ||
+									isUnique && dogTagPreviewComponent[SC.Common.DOGTAG_ELEMENTS.NAMES.SYMBOL] == dogtagElementEntity.dogTagItem.id ||
+									dogTagPreviewComponent[SC.Common.DOGTAG_ELEMENTS.NAMES[SC.Common.DOGTAG_ELEMENTS.VALUE_TO_NAME[_elementType]]] == 0 &&
+									dogtagElementEntity.hasComponent(CC.dogTagComponentSaved) &&
+									!dogTagPreviewComponent.isUnique" (event "dogTagPreviewComponent.evUpdate"))
+		(var isFrameVisible:bool = "isSelected || isSaved")
+		(var gpname:str =			"dogtagElementEntity.dogTagItem.gpName"		(event "dogtagElementEntity.dogTagItem.evUpdate"))
+		(var isEnabled:bool =		"dogtagElementEntity.dogTagItem.enabled"	(event "dogtagElementEntity.dogTagItem.evUpdate"))
+		(var iconPath:str = "'url:../dogTags/' + (dogTagIconPrefix ? 'preview/' + dogTagIconPrefix : 'small/' + gpname) + (isColorizableShape ? '/PCNT001' : '') + '.png'")
+
+		(var iconColor:number = "dogTagIconPrefix	?	dogtagElementEntity.dollBackgroundColor	? dogtagElementEntity.dollBackgroundColor.colorHEX:
+														dogtagElementEntity.dollBorderColor		? dogtagElementEntity.dollBorderColor.colorHEX
+																								: DOGTAG_ICON_BASE_COLOR
+													:	DOGTAG_ICON_BASE_COLOR")
+
+		(macro COLOR_DIFF_TO_COLOR_TRANSFORM "'iconTransform'" "DOGTAG_ICON_BASE_COLOR" "iconColor")
+		(var progress:array =		"dogtagElementEntity.dogTagEmblem ? dogtagElementEntity.dogTagEmblem.progress : []" (event "dogtagElementEntity.dogTagEmblem.evUpdate"))
+		(var progressIndex:number =	"progress.length > 0 ? progress.length - 1 : 0" (event "dogtagElementEntity.dogTagEmblem.evUpdate"))
+		(var progressNumber:number = "progress[progressIndex][2] && progress[progressIndex][1] ? progress[progressIndex][2] / progress[progressIndex][1] : 0")
+
+		(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM_SCOPE)
+
+		(var initialMarkerNewAlpha:number = 0)
+		(bind initialMarkerNewAlpha "isNew ? 1 : 0" watch=false)
+	)
+	(bind name "'DogTagComponentItemRenderer_' + gpname")
+
+	(style
+		(width=80px) (height=80px)
+		(marginRight = "M") (marginBottom = "M")
+	)
+
+	(bindcall externalCall "isNew ? 'inputMapping.onAction' : ''" "['makeSeen', {entityId: dogtagElementEntity.id}]" init=false watch=false (event "evClicked"))
+	(bindcall externalCall "isUnique ? 'inputMapping.onAction' : ''" "['previewDogTagUnique', {elementID: dogtagElementEntity.dogTagItem.id}]" init=false watch=false (event "evClicked"))
+	(bindcall externalCall "!isUnique ? 'inputMapping.onAction' : ''" "['previewDogTagConstructor', {elementID: dogtagElementEntity.dogTagItem.id, elementType: _elementType}]" init=false watch=false (event "evClicked"))
+
+	(dispatch evClicked on=click)
+
+	(controller $Tooltip
+		(renderer = 'DogTagComponentTooltip')
+		(args
+			_elementEntityId = "dogtagElementEntity.id"
+			_canInstall = true
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(block
+		(bind name "isSaved ? 'checked' : 'not_checked'")
+		(bind name "isSelected ? 'selected' : 'not_selected'")
+		(class=$Fullsize)
+		(alpha = "isFrameVisible ? 1 : 0")
+		(controller $Animation
+			(bindcall play
+				duration = 0.15
+				from	 = { alpha: 0, top: 5 }
+				to		 = { alpha: 1, top: -5 }
+				easing = "Easing.quad_in"
+				(bind enabled "isFrameVisible")
+			)
+			(bindcall play
+				duration = 0.15
+				from	 = { alpha: 1, top: -5 }
+				to		 = { alpha: 0, top: -15 }
+				easing = "Easing.quad_in"
+				(bind enabled "!isFrameVisible")
+			)
+		)
+		(block
+			(class = $Fullsize)
+			(style
+				(backgroundSize = "fill")
+				(backgroundImage="'url:../service_kit/frames/one_pixel_frame.png'")
+				(scale9grid=2)
+				(bind alpha "isSaved || !isEnabled ? 1 : 0.7")
+			)
+			(bind colorTransform "isSaved ? COLOR_TRANSFORM_WHITE_TO_YELLOW : !isEnabled ? COLOR_TRANSFORM_WHITE_TO_ORANGE : {}")
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(backgroundSize = "cover")
+				(bind backgroundImage "iconPath")
+				(macro DESATURATION_DEFAULT "isEnabled")
+			)
+			(bind colorTransform "dogTagIconPrefix ? iconTransform : {}")
+		)
+		(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM "isEnabled")
+		(macro MOUSE_HANDLER
+			_soundSet = "'button_dogtag'"
+		)
+	)
+	(block
+		(bind visible "!isEnabled && progress && progressNumber > 0")
+		(style
+			(width = "100%")
+			(position = "absolute")
+			(bottom = "-S")
+			(align = "center")
+		)
+
+		(element DefaultProgressBar
+			_progress = "progressNumber"
+			
+			(style (width = "50%") (marginRight = "-1px") (marginLeft = "-1px"))
+		)
+	)
+	
+	(block
+		(style
+			(position = "absolute")
+			(right= -7px)
+			(top = -5px)
+			(bind alpha "initialMarkerNewAlpha")
+		)
+		(element MarkerNew)
+
+		(controller $Animation
+			(bindcall play
+				duration = 0.15
+				from	 = { alpha: 0, top: 5 }
+				to		 = { alpha: 1, top: -5 }
+				easing = "Easing.quad_in"
+				(bind enabled "isNew")
+			)
+			(bindcall play
+				duration = 0.15
+				from	 = { alpha: 1, top: -5 }
+				to		 = { alpha: 0, top: -15 }
+				easing = "Easing.quad_in"
+				(bind enabled "!isNew")
+			)
+		)
+	)
+	
+)
+

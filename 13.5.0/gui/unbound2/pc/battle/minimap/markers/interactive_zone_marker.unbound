@@ -1,0 +1,288 @@
+(def constant MAP_DROP_ZONE_ICON_SIZE 30)
+
+(def constant INTERACTIVE_ZONE_TYPES
+	{
+		NO_TYPE: 0,
+		RESOURCE_ZONE: 1,
+		CONVOY_ZONE: 2,
+		REPAIR_ZONE: 3,
+		FEL_ZONE: 4,
+		WEATHER_ZONE: 5,
+		DROP_ZONE: 6,
+		CONSUMABLE_ZONE: 7,
+		COLORED_BY_RELATION: 8,
+		CONTROL_POINT: 9,
+		RESCUE_ZONE: 10,
+	}
+)
+
+(def constant INTERACTIVE_ZONES_SETTINGS "[
+		{color: 0xFFFFFF, alpha: 0},
+		{color: 0xFFFFFF, alpha: 0},
+		{color: 0xFFFFFF, alpha: 0},
+		{color: 0xFFFFFF, alpha: 0},
+		{color: 0xFF0000, alpha: 0.2},
+		{color: 0xFFFFFF, alpha: 0.2},
+		{color: 0xFFFFFF, alpha: 0.2},
+		{color: 0xFFFFFF, alpha: 0.2},
+		{color: 0xFF0000, alpha: 0.2}
+]")
+
+(def constant COLORED_BY_RELATION_INTERACTIVE_ZONES_SETTINGS "[
+		{color: 0x4CAA3C, alpha: 0.2},
+		{color: 0x4CAA3C, alpha: 0.2},
+		{color: 0xFF3300, alpha: 0.2}
+]")
+
+(def element MapInteractiveZoneMarker (_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number) layout=true
+	(scope
+		(var markerScale:number = "_itemScale / _mapScale")
+
+		(var type:number = "_markerEntity.interactiveZone.type")
+		(var visualType:number = "_markerEntity.interactiveZone.visualType")
+		(var isInversed:bool = "visualType == SC.Battle.INTERACTIVE_ZONE_VISUAL_TYPE.INVERSED")
+		(var relation:number = "_markerEntity.relation.value" (event "_markerEntity.relation.evChanged"))
+		(var circleSettings:dict = "type == INTERACTIVE_ZONE_TYPES.COLORED_BY_RELATION ? COLORED_BY_RELATION_INTERACTIVE_ZONES_SETTINGS[relation] : INTERACTIVE_ZONES_SETTINGS[type]")
+		(var circleRadius:number = "_markerEntity.circle.radius" (event "_markerEntity.circle.evRadiusChanged"))
+
+		(event evShow)
+		(event evHide)
+	)
+
+	(dispatch evShow on=addedToStage)
+	(dispatch evHide (event "_markerEntity.interactiveZone.evHide"))
+
+	
+	
+	(block
+		(macro BIND_FAIR_SCALE "circleRadius")
+		(bind alpha "circleSettings.alpha")
+		(style (position = "absolute"))
+
+		(block
+			(controller $Sector
+				(bind arc "360")
+				(bind color "isInversed ? C_ENEMY : circleSettings.color")
+				(bind radius "MINIMAP_ASSETS_SIZE")
+				(bind innerRadius "isInversed ? 3000 : 0")
+			)
+
+			(controller $Animation
+				(bindcall  play
+					duration=0.3
+					from={alpha: 0}
+					to={alpha: 1}
+					easing="Easing.quint_in"
+					(event "evShow")
+				)
+				(bindcall  play
+					duration=0.3
+					to={alpha: 0}
+					easing="Easing.quint_in"
+					(event "evHide")
+				)
+			)
+		)
+	) 
+	
+
+	
+	
+	(block
+		(style (position = "absolute"))
+
+		(controller $Instance (renderer = 'MapInteractiveZoneIndicator') 
+			(bind enabled "type == INTERACTIVE_ZONE_TYPES.RESOURCE_ZONE")
+			(args entity="_markerEntity")
+			(exprs
+				(macro BIND_FAIR_SCALE "markerScale")
+			)
+		)
+
+		(controller $Instance (renderer = 'MapDropZoneIndicator') 
+			(bind enabled "type == INTERACTIVE_ZONE_TYPES.DROP_ZONE")
+			(args entity="_markerEntity")
+			(exprs
+				(macro BIND_FAIR_SCALE "markerScale")
+			)
+		)
+
+		(controller $Instance (renderer = 'MapRescueZoneIndicator') 
+			(bind enabled "type == INTERACTIVE_ZONE_TYPES.RESCUE_ZONE")
+			(args entity="_markerEntity")
+			(exprs
+				(macro BIND_FAIR_SCALE "markerScale")
+			)
+		)
+
+		(controller $Animation
+			(bindcall  play
+				duration=0.3
+				from={alpha: 0, scaleX: 0, scaleY: 0}
+				to={alpha: 1, scaleX: 1, scaleY: 1}
+				easing="Easing.quint_in"
+				(event "evShow")
+			)
+			(bindcall  play
+				duration=0.3
+				from={alpha: 1, scaleX: 1, scaleY: 1}
+				to={alpha: 0, scaleX: 0, scaleY: 0}
+				easing="Easing.quint_in"
+				(event "evHide")
+			)
+		)
+	)
+	
+)
+
+(def element MapInteractiveZoneIndicator (entity:gfx) layout=true
+	(scope
+		(var resourceHolder:gfx = "entity.resourceHolder" (event "entity.evAdded"))
+		(var resourceType:number = "resourceHolder.resourceType")
+		(var loading:bool = "resourceHolder.loading")
+		(var resourceName:str = "resourceHolder ? toLower(resourceHolder.resourceName) + (loading ? '_gathering' : '_unloading') : null")
+
+		(var enabled:bool = "!isIn(resourceType, SC.Battle.RESOURCE_TYPES.HIDDEN_RESOURCE_ZONES)")
+	)
+
+	(style
+		(width = "26px") (height = "26px")
+	)
+
+	(bind visible "enabled")
+
+	(block
+		(style
+			(position = "absolute") (top = "-13px") (left = "-13px")
+			(bind backgroundImage "'url:../battle_hud/markers/zone_markers/map/' + resourceName + '.png'" (bind enabled "enabled"))
+		)
+	)
+)
+
+(def element MapRescueZoneIndicator (entity:gfx) layout=true
+	(style
+		(width = "26px") (height = "26px")
+	)
+
+	(block
+		(style
+			(position = "absolute") (top = "-13px") (left = "-13px")
+			(bind backgroundImage "'url:../battle_hud/markers/zone_markers/map/survivor_gathering.png'")
+		)
+	)
+)
+
+(def element MapDropZoneIndicator (entity:gfx) layout=true
+	(scope
+		(var dropComponent:gfx = "entity.drop" (event "entity.evAdded"))
+		(var isActive:bool = "dropComponent.isActive" (event "dropComponent.evIsActiveChanged"))
+		(var markerName:str = "isActive ? dropComponent.markerNameActive : dropComponent.markerNameInactive")
+		(macro SCOPE_HIGHLIGHT_MARKER_ON_MAP_MOUSE_OVER "entity")
+	)
+
+	(style
+		(width = "MAP_DROP_ZONE_ICON_SIZE") (height = "MAP_DROP_ZONE_ICON_SIZE")
+	)
+
+	(block
+		(macro EFFECT_HIGHLIGHT_MARKER_ON_MOUSE_OVER)
+		(style
+			(position = "absolute")
+			(top = "-MAP_DROP_ZONE_ICON_SIZE/2")
+			(left = "-MAP_DROP_ZONE_ICON_SIZE/2")
+			(width = "MAP_DROP_ZONE_ICON_SIZE")
+			(height = "MAP_DROP_ZONE_ICON_SIZE")
+			(backgroundSize = "fill")
+			(bind backgroundImage "'url:../powerups/drops/icon_marker_' + markerName+ '_small.png'")
+		)
+		(block
+			(style
+				(top = "MAP_DROP_ZONE_ICON_SIZE/2")
+				(left = "MAP_DROP_ZONE_ICON_SIZE/2")
+				(position = "absolute")
+			)
+
+			(controller $Instance (renderer = 'MapInteractiveZoneTimeoutIndicator')
+				
+				(args
+					timeoutEntity="entity"
+					
+					
+					_indicatorType="ZONE_TIMEOUT_TYPES.CIRCLE"
+				)
+			)
+		)
+	)
+)
+
+(def element MapInteractiveZoneTimeoutIndicator (timeoutEntity:gfx, _indicatorType:number) layout=true
+	(scope
+		(var timeoutComponent:gfx = "timeoutEntity.timeout" (event "timeoutEntity.evAdded"))
+		(var timeoutTime:number = "timeoutComponent.time" (event "timeoutComponent.evTimeChanged"))
+		(var totalTime:number = "timeoutComponent.total")
+		(var timeoutIsRunning:bool = "timeoutComponent.running" (event "timeoutComponent.evRunningChanged"))
+
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+
+		(var timeLeft:number = "timeoutIsRunning ? ceil(timeoutTime - timerEntity.timer.currentServerTime) : 0" (event "timerEntity.timer.evFrequent"))
+
+		(var isActive:bool = "timeoutIsRunning && timeLeft > 0 && totalTime > 0")
+		(var arcRad:number = "floor(MAP_DROP_ZONE_ICON_SIZE/2 - 1)")
+		(var arcProgress:number = "isActive > 0 ? 360 * ((totalTime - timeLeft) / totalTime) : 0")
+
+		(var indicatorType:number = "_indicatorType")
+	)
+	(block
+		(bind visible "isActive")
+		(style 
+			(position = "absolute")
+		)
+
+		(block
+			(bind visible "indicatorType == ZONE_TIMEOUT_TYPES.CIRCLE")
+			(style 
+				(position = "absolute")
+				(top = "50%")
+				(left = "50%")
+			)
+			
+			(block 
+				(style 
+					(position = "absolute")
+				)
+
+				(block
+					(style (alpha = 0.2))
+					(controller $Sector
+						(bind enabled "indicatorType == ZONE_TIMEOUT_TYPES.CIRCLE")
+						(bind color "0xFF000000")
+						(bind arc "360")
+						(bind radius "arcRad")
+						(bind innerRadius "arcRad - 2")
+					) 
+				)
+
+				(block
+					(controller $Sector
+						(bind enabled "indicatorType == ZONE_TIMEOUT_TYPES.CIRCLE")
+						(bind color "0xFFFFFFFF")
+						(bind arc "arcProgress")
+						(bind offset "-90")
+						(bind radius "arcRad")
+						(bind innerRadius "arcRad - 2")
+					) 
+				)
+			)
+		)
+	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	)
+)

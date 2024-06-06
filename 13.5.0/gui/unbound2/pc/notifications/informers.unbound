@@ -1,0 +1,501 @@
+(def constant INFORMER_GROUP_LIST {		SC.System_messages.SYS_MESSAGE_TYPE_UI.CLAN_BATTLE_PRIMETIME_CHANGED			: 'InformerClanBattlesPrimetime',
+										SC.System_messages.SYS_MESSAGE_TYPE_UI.PREMUIM_DAY_LEFT							: 'InformerPremDayLeft',
+										SC.System_messages.SYS_MESSAGE_TYPE_UI.CLAN_RULES_HAVE_CHANGED					: 'InformerClanBattlesPrimetime',
+										SC.System_messages.SYS_MESSAGE_TYPE_UI.RANK_BATTLE_STATE_CHANGED				: 'InformerRankBattles',
+										SC.System_messages.SYS_MESSAGE_TYPE_UI.BRAWL_BATTLES_STATE_CHANGED				: 'InformerBrawlBattles',
+										SC.System_messages.SYS_MESSAGE_TYPE_UI.MISSING_EXPENDABLE_ITEMS_IN_SHIP_BUILD	: 'InformerExpendablesExpired',
+										SC.System_messages.SYS_MESSAGE_TYPE_UI.NEWBIE_QUEST_INFORMER					: 'InformerNewbieQuest',
+										SC.System_messages.SYS_MESSAGE_TYPE_UI.BATTLEPASS_REFRESH						: 'InformerBattlePassRefresh',
+										SC.System_messages.SYS_MESSAGE_TYPE_UI.EVENT_HUB_NEW_PHASE						: 'InformerEventHubRefresh' })
+
+(def element InformerLogContainer () layout=true dispatch_size_change=true
+	(scope
+		(macro STAGE_SIZE)
+
+		(var renderedSystemMessageCollection:gfx = "$datahub.getCollection(CC.renderedSysMsg)")
+		(var informersCollection:gfx = "renderedSystemMessageCollection ? renderedSystemMessageCollection.getChildByPath('byClassId.' + CC.informerSysMsgToBeRendered) : null")
+		(var informersCollectionArray:array = "informersCollection ? informersCollection.items : []" (event "informersCollection.evUpdated"))
+
+		(macro USER_PREF_DATA)
+		(var isSmallCarouselView:bool = "userPrefs.isSmallCarouselView == null ? false : userPrefs.isSmallCarouselView")
+		(var curRowCountIndex:number =	"userPrefs.curRowCountIndex == null ? 0 : userPrefs.curRowCountIndex")
+		(var rowsCount:number = "		!isSmallCarouselView	? 1	:
+										curRowCountIndex == 0 	? 2 :
+										curRowCountIndex == 1 	? 3
+																: 4")
+	)
+	(style (bind width "stageWidth") (bind height "stageHeight"))
+
+	(block
+		(class $MiddleAlignedAbsolutely)
+		(style
+			(bind bottom "isSmallCarouselView	?	rowsCount == 2	? 200 :
+													rowsCount == 3	? 263
+																	: 326
+												: 200")
+		)
+
+		(controller $Repeat renderer = 'InformerLogNotificationItem'
+			(bind count "informersCollectionArray ? informersCollectionArray.length : 0")
+			(bindcall removeChildAt	"$event[1]" (event "informersCollection.evRemoved"))
+			(bindcall addChildAt	"$event[1]" (event "informersCollection.evAdded"))
+			(args
+				_collection = "informersCollection"
+			)
+		)
+	)
+)
+
+(def element InformerLogNotificationItem (_collection:gfx) layout=true
+	(scope
+		(event evHideMessage)
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var informerEntity:gfx = "_collection.items[$index]" watch=false)
+		(var sysMessageCoreComponent:gfx = "informerEntity ? informerEntity.sysMessageCore : null")
+		(var timeToLiveComponent:gfx = "informerEntity ? informerEntity.timeToLive : null" (event "informerEntity.evAdded") (event "informerEntity.evRemoved"))
+		(var contentEntitiesIds:array = "sysMessageCoreComponent ? sysMessageCoreComponent.contentEntitiesIds : []" (event "sysMessageCoreComponent.evContentEntitiesIdsChanged"))
+		(var isAvailableForRender:bool = "contentEntitiesIds.length > 0")
+
+		
+		(var isInformerVisible:bool = "timeToLiveComponent	? !timeToLiveComponent.isRemoving : true" (event "timeToLiveComponent.evRemove"))
+		
+	)
+	(macro MOUSE_EVENTS_DISPATCHER)
+	(bindcall externalCall "'direct.action'" "['closeInformer', {id: informerEntity.id}]"	init=false watch=false	(event "evHideMessage"))
+	(bindcall externalCall "isInformerVisible ? 'direct.action' : ''" "['rollOverInformer', {}]" init=false watch=false (event "evRollOver"))
+	(bindcall externalCall "isInformerVisible ? 'direct.action' : ''" "['rollOutInformer', {}]" init=false watch=false (event "evRollOut"))
+
+	(controller $Instance renderer = 'InformerItemWrapper'
+		(bind enabled "isAvailableForRender")
+		(args
+			_entityId = "contentEntitiesIds[0]"
+			_rollOver = "rollOver"
+		)
+	)
+
+	(controller $Animation
+		
+		(play
+			from = 		"{alpha: 0, y: 15}"
+			to =		"{alpha: 1, y: 0}"
+			easing =	"Easing.quad_out"
+			duration =	"0.2"
+		)
+
+		
+		(bindcall play
+			to =		"{alpha: 0, y: -15}"
+			easing =	"Easing.quad_out"
+			duration =	"SC.Ui_common.SYSTEM_MESSAGES_SHOW_CONFIG.LIFE_TIME_AFTER_HIDING"
+			action="kill"
+			(bind enabled "!isInformerVisible")
+		)
+	)
+)
+
+(def element InformerItemWrapper (_entityId:number, _rollOver:bool=false) layout=true
+	(scope
+		(var informerItemEntity:gfx = "$datahub.getEntity(_entityId)")
+		(var informerMessageComponent:gfx = "informerItemEntity ? informerItemEntity.getComponent(CC.informerMessage) : null")
+		(var informerData:dict = "informerMessageComponent ? informerMessageComponent.data : {}")
+		
+		(var typeId:str = "'typeId' in informerData ? toString(informerData.typeId) : ''")
+		(var selectedRenderItem:str = "typeId in INFORMER_GROUP_LIST ? INFORMER_GROUP_LIST[typeId] : ''")
+		(var isAvailableForRender:bool = "selectedRenderItem && typeId")
+
+		(macro GET_PREF 'isUIContrastOptionEnabled' "'graphics.GUI.contrast'")
+		(macro GET_PREF 'isBlurOptionEnabled' "'graphics.GUI.blur'")
+	)
+	(block
+		(class $FullsizeAbsolute)
+		(style (bind alpha 0.8))
+		(block
+			(class $FullsizeAbsolute)
+			(controller $Instance renderer='BlurMapCustom'
+				(bind enabled "isBlurOptionEnabled")
+				(args
+					_map = 'mc_blurmap5_feather'
+				)
+			)
+		)
+		(block
+			(class $FullsizeAbsolute)
+			(style (backgroundImage = "'url:../service_kit/panel_backgrounds/infotip_panel.png'") (scale9grid = 3))
+		)
+
+		(controller $Animation
+			(bindcall play
+				from =		"{alpha: 0.8}"
+				to =		"{alpha: 1.3}"
+				easing =	"Easing.sine_in_out"
+				duration =	"0.15"
+				reverse = "!_rollOver"
+				action = "killAll"
+				(bind trigger "_rollOver")
+			)
+		)
+	)
+	(block
+		(controller $Instance
+			(bind renderer "selectedRenderItem")
+			(bind enabled "isAvailableForRender")
+			(args _data = "informerData")
+		)
+	)
+	(block
+		(style (position = "absolute") (right = "M") (top = "M"))
+		(controller $Instance renderer='CloseButton'
+			(args
+				_dispatchedEv = 'evHideMessage'
+				_tooltipText = 'IDS_CLOSE_NOTIFICATION'
+				_methods = "[{	type: 'direct.action',
+								name: SC.Common.STATISTICS_EVENTS.LOG,
+								args: [SC.Common.UB2_COMMON_STATISTICS.INFORMER_CLOSED_CROSS]
+							}]"
+			)
+		)
+	)
+)
+
+(def element CommonInformer(_iconUrl:str, _textItems:array, _textClass:str='$TextDefaultBold19NM', 
+	_unifiedStatus:str="SC.Ui_styles.UNIFIED_STATUS.DEFAULT", _isStayOnClick:bool = "false", _subtitleText:str="null") layout=true
+	
+	(style 
+		(flow = "horizontal")
+		(width = 466px)
+		(padding = "M") (paddingRight = "L")
+	)
+	(dispatch 'evHideMessage' dir="EventDirection.UP" on='click' (bind enabled "!_isStayOnClick"))
+	
+	(block
+		(style (width = 80px) (height = 80px) (align = "top"))
+
+		(block
+			(style (width = 80px) (height = 80px) (backgroundSize = "cover") (bind backgroundImage "_iconUrl"))
+		)
+	)
+
+	(block
+		(style (paddingLeft = "SXS") (width = "100%") (align = "middle")
+			(bind minHeight "_subtitleText ? 60px : 80px")
+			(bind paddingTop "_subtitleText ? SXS : 0")
+			(bind paddingBottom "_subtitleText ? S : 0")
+		)
+
+		(controller $Repeat renderer = 'CommonInformerTextItem'
+			(bind count "_textItems.length")
+			(args
+				_text = "_textItems[$index]"
+				_textClass = "_textClass"
+				_unifiedStatus = "_unifiedStatus"
+			)
+		)
+
+		(controller $Instance renderer='CommonInformerTextItem'
+			(bind enabled "_subtitleText")
+			(exprs
+				(style (marginTop = "SXS"))
+			)
+
+			(args
+				_text = "_subtitleText" 
+				_textClass = "'$TextDefaultNM'"
+				_hasSubtitle = "true"
+			)
+		)
+	)
+)
+
+
+(def element CommonInformerTextItem (_text:str, _textClass:str, _unifiedStatus:str, _hasSubtitle:bool="false") layout=true
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "_unifiedStatus" "'textColor'" "'textAlpha'")
+	(style (width = "100%") (bind marginTop "$index ? S : 0"))
+
+	(tf
+		(bind class "_textClass")
+		(style
+			(width = 100%)
+			(bind leading "_hasSubtitle ? -2 : -4")
+			(bind alpha "_hasSubtitle ? 0.75 : textAlpha")
+			(bind textColor "textColor")
+		)
+		(bind text "_text")
+	)
+)
+
+
+
+
+
+(def element InformerRankBattles (_data:dict) layout=true
+	(scope
+		(var isPromo:bool = "_data.messageType == SC.Common.RANK_INFORMERS_TYPES.PROMO")
+		(var selectedTime:number = "isPromo ? _data.startTime : _data.finishTime")
+		
+		(macro SERVER_TIME_SCOPE)
+		(macro COUNTDOWN_SCOPE "'timeLeft'" "selectedTime" "'HIGHEST,WITH_DAYS'")
+
+		(var subtitleText:str = "isPromo || _data.messageType == SC.Common.RANK_INFORMERS_TYPES.ACTIVE_SEASON ||
+			_data.messageType == SC.Common.RANK_INFORMERS_TYPES.END_SEASON || _data.messageType == SC.Common.RANK_INFORMERS_TYPES.ACTIVE_SPRINT
+			|| _data.messageType == SC.Common.RANK_INFORMERS_TYPES.END_SPRINT 	? subst('IDS_INFORMER_TIME_LEFT', [], {_timeLeft: toString(timeLeft)}) 
+																				: null")											
+	)
+	(bindcall externalCall "'inputMapping.onAction'" "['RankInformerShown', {	message_type: _data.messageType,
+																				season_id: _data.seasonId,
+																				sprint_id: _data.sprintId }]" init=false watch=false on='addedToStage')
+
+	(controller $Instance renderer='CommonInformer'
+		(args
+			_iconUrl = 'url:../service_kit/battle_types/RankedBattle.png'
+			_textItems = "[ subst('IDS_RANK_BATTLES_INFORMER_TYPE_' + _data.messageType, [], {	_seasonId: toString(_data.seasonId),
+																								_sprintId: toString(_data.sprintId + 1)}) ]"
+			_subtitleText = "subtitleText"
+		)
+	)
+)
+
+(def element InformerPremDayLeft (_data:dict) layout=true
+	(scope
+		(var accountResource:gfx = "$datahub.getSingleEntity(CC.accountResource).accountResource")
+		(var premBefore:number = "accountResource.premBefore" (event "accountResource.evChangedPrem"))
+		(var wowsPremBefore:number = "accountResource.wowsPremBefore" (event "accountResource.evChangedPrem"))
+		(var isWowsPrem:bool = "_data.data.showWOWS == true")
+
+		(var timeBefore:number = "isWowsPrem ? wowsPremBefore : premBefore")
+		(macro SERVER_TIME_SCOPE)
+		(macro COUNTDOWN_SCOPE "'remainingTime'" "timeBefore" "'HIGHESTDAYS'")
+
+		(var iconUrl:str = "isWowsPrem	? 'url:../reward_icons/wows_premium.png'
+										: 'url:../reward_icons/premium.png'")
+	)
+
+	(controller $Instance renderer='CommonInformer'
+		(args
+			_iconUrl = "iconUrl"
+			_textItems = "[tr('IDS_PREMIUM_ACCOUNT_ENDS')]"
+			_subtitleText = "isWowsPrem	? subst('IDS_WOWS_PREMIUM_ACCOUNT_ENDS_TIME', [], {timeLeft: toString(remainingTime)})
+										: subst('IDS_WG_PREMIUM_ACCOUNT_ENDS_TIME', [], {timeLeft: toString(remainingTime)})"
+		)
+	)
+)
+
+(def element InformerClanBattlesPrimetime (_data:dict) layout=true
+	(scope
+		(var primeTimeEntity:gfx = "_data.messageId ? $datahub.getEntity(_data.messageId) : null")
+		(var clanBattlePrimeTime:gfx = "primeTimeEntity ? primeTimeEntity.clanBattlePrimeTime : null")
+		(var primeTimeComponent:gfx = "primeTimeEntity ? primeTimeEntity.primeTime : null")
+
+		(var primeTimeRealm:str = "clanBattlePrimeTime ? clanBattlePrimeTime.realm : ''" (event "clanBattlePrimeTime.evChanged"))
+		(var isChosenPrimeTime:bool = "clanBattlePrimeTime ? clanBattlePrimeTime.isChosen : false" (event "clanBattlePrimeTime.evChanged"))
+		(var primeTimeStartTime:number = "primeTimeComponent ? primeTimeComponent.primeTimeStartTime : null" (event "primeTimeComponent.evChanged"))
+		(var primeTimeFinishTime:number = "primeTimeComponent ? primeTimeComponent.primeTimeFinishTime : null" (event "primeTimeComponent.evChanged"))
+		(var dayLightShift:number = "primeTimeComponent ? primeTimeComponent.daylightshift : null" (event "primeTimeComponent.evChanged"))
+
+		(var primeTime:number = "_data.messageType == SC.Common.CLAN_INFORMERS_TYPES.PRIME_TIME_SOON_START ? primeTimeStartTime : primeTimeFinishTime")
+		(var primeTimeDiff:number = "primeTime - dayLightShift")
+		(macro SERVER_TIME_SCOPE)
+		(macro COUNTDOWN_SCOPE "'timeLeft'" "primeTimeDiff" "'HIGHEST,WITH_DAYS'")
+
+		(var localStartTime:str = "formatTime(primeTimeStartTime - dayLightShift, 'hh:mm', '', true)")
+		(var localFinishTime:str = "formatTime(primeTimeFinishTime - dayLightShift, 'hh:mm', '', true)")
+
+		(var realmText:str = "tr('IDS_REALM_NO_TRANSLATE_' + toUpper(primeTimeRealm))")
+
+		(var hasTimeLeft:bool = "_data.messageType == SC.Common.CLAN_INFORMERS_TYPES.PRIME_TIME_SOON_ENDS || _data.messageType == SC.Common.CLAN_INFORMERS_TYPES.PRIME_TIME_SOON_START")
+		(var subtitleText:str = "hasTimeLeft ? subst('IDS_INFORMER_TIME_LEFT', [], {_timeLeft: toString(timeLeft)}) : null")
+	)
+
+	(element CommonInformer
+		_iconUrl = 'url:../service_kit/battle_types/ClanBattle.png'
+		_textItems = "[	subst('IDS_CLAN_BATTLES_PRIMETIME_INFORMER_TYPE_' + toUpper(_data.messageType), [],
+												{	startTime: localStartTime,
+													endTime: localFinishTime,
+													realm: realmText })	]"
+		_subtitleText = "subtitleText"
+	)
+)
+
+(def element InformerBrawlBattles (_data:dict) layout=true
+	(scope
+		(var brawlSeasonEntity:gfx = "$datahub.getSingleEntity(CC.brawlBattlesSeason)")
+		
+		(var countPlayers:number = "brawlSeasonEntity.divisionRestrictions.shipsCount[0]" (event "brawlSeasonEntity.divisionRestrictions.evUpdate"))
+		(var divisionSize:number = "brawlSeasonEntity.divisionRestrictions.shipsCount[1]" (event "brawlSeasonEntity.divisionRestrictions.evUpdate"))
+		(var isDivisionEnabled:bool = "divisionSize > 1")
+		(var isPromo:bool = "_data.messageType == SC.Common.BRAWL_INFORMER_TYPES.PROMO")
+		(var isStart:bool = "_data.messageType == SC.Common.BRAWL_INFORMER_TYPES.START")
+		(var isFinish:bool = "_data.messageType == SC.Common.BRAWL_INFORMER_TYPES.END")
+		(var hasTime:bool = "isPromo || isFinish")
+		(var brawlFormat:str = "isDivisionEnabled ? '_DIVISION' : '_SOLO'")
+
+		(var countdownTime:number = "isPromo ? _data.startTime : _data.finishTime")
+		(macro SERVER_TIME_SCOPE)
+		(macro COUNTDOWN_SCOPE "'timeLeft'" "countdownTime" "'HIGHEST,WITH_DAYS'")
+
+		(var subtitleText:str = "hasTime 	? subst('IDS_INFORMER_TIME_LEFT', [], {_timeLeft: toString(timeLeft)}) :
+								isStart		? subst('IDS_BRAWL_BATTLE_INFORMER' + brawlFormat, [],
+														{	_maxPlayers: 	toString(countPlayers),
+															_divisionSize: 	toString(divisionSize)})
+											: null")
+	)
+
+	(controller $Instance renderer='CommonInformer'
+		(args
+			_iconUrl = "'url:../service_kit/battle_types/BrawlBattle.png'"
+			_textItems = "['IDS_BRAWL_BATTLE_INFORMER_TYPE_' + _data.messageType]"
+			_subtitleText = "subtitleText"
+		)
+	)
+)
+
+(def element InformerExpendablesExpired (_data:dict) layout=true
+	(controller $Instance renderer='CommonInformer'
+		(args
+			_iconUrl = "'url:../service_kit/markers/marker_attention_huge.png'"
+			_textItems = "[ _data.data ]"
+			_subtitleText = "_data.subtitle ? _data.subtitle : null"
+		)
+	)
+)
+
+(def element InformerNewbieQuest (_data:dict) layout=true
+	(scope
+		(var selectedBattleTypes:gfx =	"$datahub.getCollection(CC.battleType).getChildByPath('selected')")
+		(var selectedBattleTypeGPID:number =	"selectedBattleTypes.items.length > 0	? selectedBattleTypes.items[0].battleType.battleTypeGameParamId 
+																						: 0" 
+																						(event "selectedBattleTypes.evAdded"))
+		(var eventHubPhaseCollection:gfx = "$datahub.getCollection(CC.eventHubPhase)")
+		(var eventHubPhases:array = "eventHubPhaseCollection ? eventHubPhaseCollection.items : []"	(event "eventHubPhaseCollection.evAdded")
+																									(event "eventHubPhaseCollection.evRemoved"))
+		(var currentPhaseEventID:number = "eventHubPhases.length > 0	? eventHubPhases[0].eventHubPhase.battleTypeGameParamId 
+																		: -1"
+																			(event "eventHubPhaseCollection.evAdded") 
+																			(event "eventHubPhaseCollection.evRemoved"))
+		(var isEventModeEnabled:bool = "selectedBattleTypeGPID == currentPhaseEventID")
+
+		(var isQuestDone:bool = "_data.messageType == SC.Common.NEWBIE_QUESTS_INFORMER_TYPES.DONE")
+		(var iconUrl:str = "isQuestDone	? 'url:../sse/newbie_quest/informer_complete.png'
+										: 'url:../sse/newbie_quest/informer_new.png'")
+
+		(var status:str = "isQuestDone ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+		(var textItems:array = "isQuestDone ? [ 'IDS_NEWBIE_QUESTS_INFORMER_DONE'] : [ 'IDS_NEWBIE_QUESTS_INFORMER_NEW']")
+	)
+
+	(block
+		(controller $Instance renderer='CommonInformer'
+			(args
+				_iconUrl = "iconUrl"
+				_textClass = '$TextDefaultBold21NM'
+				_textItems = "textItems"
+				_unifiedStatus = "status"
+				_isStayOnClick = "true"
+			)
+		)
+	)
+	(element HorizontalDividerTwoPx)
+	(block
+		(bind visible "!isEventModeEnabled")
+		(style (width = 100%) (align = "center|middle") (paddingTop = "M") (paddingBottom = "M"))
+
+		(element DefaultButton
+			_width = 140
+			_enabled = true
+			_focusIndex = 1
+			_defaultFocused = false
+			_label = 'IDS_NEWBIE_QUESTS_INFORMER_DETAILS_BUTTON'
+			_dispatchedEv = 'evHideMessage'
+			_methods = "[	{	type: 'inputMapping.onAction',
+								name: 'navigateTo',
+								args: { route: SC.Ui_windows.ROUTE.SSE_NEWBIE_QUESTS,
+										data: { questId: _data.newbieQuestId } } 
+							},
+							{	type: 'inputMapping.onAction',
+								name: 'setUserPref',
+								args: {name:'isNQInformerClicked', value: true}
+							}]"
+		)
+	)
+)
+
+(def element InformerBattlePassRefresh (_data:dict) layout=true
+	(element CommonInformer
+		_iconUrl = 'url:../battlepass/informer_icon.png'
+		_textClass = '$TextDefaultBold21NM'
+		_textItems = "['IDS_BATTLEPASS_INFORMER_HEADER']"
+		_subtitleText = "'IDS_BATTLEPASS_INFORMER_SUBHEADER'"
+		_isStayOnClick = "true"
+	)
+
+	(element HorizontalDividerTwoPx)
+
+	(block
+		(style (width = 100%) (align = "center|middle") (paddingTop = "M") (paddingBottom = "M"))
+
+		(element DefaultButton
+			_width = 140
+			_enabled = true
+			_focusIndex = 1
+			_defaultFocused = false
+			_label = 'IDS_BATTLEPASS_INFORMER_BUTTON'
+			_dispatchedEv = 'evHideMessage'
+			_methods = "[	{	type: 'inputMapping.onRequest',
+								name: 'showBattlePassMain',
+								args: {}
+							},
+							{	type: 'direct.action',
+								name: SC.Common.STATISTICS_EVENTS.LOG,
+								args: ['ub2:battle_pass_informer_button']}]"
+		)
+	)
+)
+
+(def element InformerEventHubRefresh () layout=true
+	(scope
+		(var selectedBattleTypes:gfx =	"$datahub.getCollection(CC.battleType).getChildByPath('selected')")
+		(var selectedBattleTypeGPID:number =	"selectedBattleTypes.items.length > 0	? selectedBattleTypes.items[0].battleType.battleTypeGameParamId 
+																						: 0" 
+																						(event "selectedBattleTypes.evAdded"))
+		(var eventHubPhaseCollection:gfx = "$datahub.getCollection(CC.eventHubPhase)")
+		(var eventHubPhases:array = "eventHubPhaseCollection ? eventHubPhaseCollection.items : []"	(event "eventHubPhaseCollection.evAdded")
+																									(event "eventHubPhaseCollection.evRemoved"))
+		(var eventHubPhase:gfx = "eventHubPhases.length > 0 ? eventHubPhases[0].eventHubPhase : null"	(event "eventHubPhaseCollection.evAdded") 
+																										(event "eventHubPhaseCollection.evRemoved"))
+		(var currentPhaseEventID:number = "eventHubPhase ? eventHubPhase.battleTypeGameParamId : -1" (event "eventHubPhase.evUpdated"))
+		(var isEventModeEnabled:bool = "selectedBattleTypeGPID == currentPhaseEventID")
+
+		(var imageUrl:str = "'url:../service_kit/battle_types/' + eventHubPhase.battleTypeIndex + '.png'"	(event "eventHubPhaseCollection.evAdded") 
+																											(event "eventHubPhaseCollection.evRemoved"))
+	)
+
+	(element CommonInformer
+		_iconUrl = "imageUrl"
+		_textClass = '$TextDefaultBold21NM'
+		_textItems = "['IDS_EVENT_HUB_INFORMER_HEADER']"
+		_subtitleText = "'IDS_EVENT_HUB_INFORMER_REFRESH'"
+		_isStayOnClick = "true"
+	)
+
+	(element HorizontalDividerTwoPx)
+
+	(block
+		(bind visible "isEventModeEnabled")
+		(style (width = 100%) (align = "center|middle") (paddingTop = "M") (paddingBottom = "M"))
+
+		(element DefaultButton
+			_width = 180
+			_enabled = "true"
+			_focusIndex = 1
+			_defaultFocused = false
+			_label = 'IDS_EVENT_HUB_INFORMER_BUTTON'
+			_dispatchedEv = 'evHideMessage'
+			_methods = "[	{	type: 'inputMapping.onAction',
+								name: 'navigateTo',
+								args: {route: SC.Ui_windows.ROUTE.EVENT_HUB_PROGRESS}
+							},
+							{	type: 'direct.action',
+								name: SC.Common.STATISTICS_EVENTS.LOG,
+								args: [SC.Common.EVENT_HUB_STATISTICS.EVENT_HUB_INFORMER_BUTTON]}]"
+		)
+	)
+)

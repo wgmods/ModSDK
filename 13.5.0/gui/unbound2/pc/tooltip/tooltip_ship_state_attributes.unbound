@@ -1,0 +1,174 @@
+(def element ShipStateAttributesTooltip (_stateEntity:gfx) layout=true
+	(scope
+		(var battleConsumable:gfx = "_stateEntity.battleConsumable")
+		(var attributes:gfx = "battleConsumable ? battleConsumable.viewData.attributes : _stateEntity.attributes")
+		(var state:gfx = "_stateEntity.state")
+		(var dataComponent:gfx = "_stateEntity.dataComponent")
+
+		(var rageModeEntity:gfx = "$datahub.getSingleEntity(CC.rageMode)")
+		(var rageMode:gfx = "rageModeEntity.rageMode")
+
+		(var fireModeEntity:gfx = "$datahub.getSingleEntity(CC.fireModeSlot)")
+		(var fireModeComponent:gfx = "fireModeEntity.fireModeSlot")
+		(var fireModeIconPath:str = "fireModeComponent.iconPath")
+
+		(var isAttributes:bool = "attributes")
+		(var hasAttributesFromVehicle:bool = "isIn(state.type, SC.Battle.ENTITY_STATES.WITH_ATTRIBUTES_FROM_VEHICLE)")
+		(var isData:bool = "dataComponent")
+		(var data:dict = "isData ? dataComponent.data : {}" (event "dataComponent.evDataChanged"))
+		(var ownerId:number = "	battleConsumable			? _stateEntity.id :
+								hasAttributesFromVehicle	? $datahub.getSingleEntity(CC.playerAvatar).id
+			 												: 0")
+		(var isNegative:bool = "_stateEntity.shipModifier ? _stateEntity.shipModifier.isNegative : false")
+
+		(var attributesNegative:array = "attributes ? attributes.negative : []" (event "attributes.evChanged"))
+		(var attributesPositive:array = "attributes ? attributes.positive : []" (event "attributes.evChanged"))
+		(var attributesNeutral:array = "attributes ? attributes.neutral : []" (event "attributes.evChanged") (event "battleConsumable.evConsumeNumChanged") (event "battleConsumable.evReloadTimeCoeffChanged") (event "battleConsumable.evWorkTimeCoeffChanged"))
+		(var attributesVisible:bool = "attributesNegative.length > 0 || attributesPositive.length > 0 || attributesNeutral.length > 0")
+
+		(var iconPath:str = "	state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_WEATHER				? 'url:../battle_hud/indicators/weather/' + data['weatherGpName'] + '.png' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_PERKS				? 'url:../crew_commander/skills/' + state.id + '.png' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_ATBA_ACCURACY_PERK	? 'url:../crew_commander/skills/' + state.id + '.png' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_TALENTS				? 'url:../crew_commander/talents/' + state.id + '.png' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_CONSUMABLES			? 'url:' + battleConsumable.viewData.iconPath :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_BUFFS				? 'url:../powerups/modifiers/icon_ship_modifier_' + state.id + '.png' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_INTERACTIVE_ZONE	? 'url:../battle_hud/indicators/interactive_zones/' + state.id + '.png' :
+								state.type == SC.Battle.ENTITY_STATES.REPAIR									? 'url:../battle_hud/indicators/interactive_zones/repair_zone.png' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_RAGE_MODE			? 'url:../consumables/'+state.id+'_preview.png' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_MODULES				? 'url:../battle_hud/indicators/modules/'+state.id+'.png' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_SPECIAL_MODULES		? 'url:../battle_hud/indicators/modules/'+state.id+'.png' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_NOT_SPECIAL_MODULES	? 'url:../battle_hud/indicators/interactive_zones/' + state.id+'.png' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_MODIFIERS			? 'url:../battle_hud/state_panel/events/regenerationHPSpeed_workTime_yamamoto.png' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_BATTERY_STATE		? 'url:../battle_hud/indicators/battery/icon_state_' + state.id + '.png' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_DEPTH				? 'url:../battle_hud/indicators/depths/depth_' + state.id + '.png' :
+								state.type == SC.Battle.ENTITY_STATES.EMERGENCY_SURFACING						? 'url:../battle_hud/indicators/modules/emergency_surfacing.png' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_ARTILLERY_FIRE_MODE	? 'url:' + fireModeIconPath:
+								state.type == SC.Battle.ENTITY_STATES.BY_NIGHT									? 'url:../battle_hud/indicators/interactive_zones/night.png' :
+								state.type == SC.Battle.ENTITY_STATES.ILLUMINATED								? 'url:../battle_hud/indicators/interactive_zones/lighting_bomb.png' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_ANTI_ABUSE_SYSTEM 	? 'url:../battle_hud/lower_log_alerts/mirror_damage_alert.png' :
+								state.type == SC.Battle.ENTITY_STATES.BATTLE_CARD_SELECTOR_AVAILABLE			? 'url:../battle_hud/indicators/modules/'+state.id+'.png'
+																												: 'url:../crew_commander/skills/consumables_duration.png'")
+																											
+		(var header:str = "	state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_WEATHER				? 'IDS_SHIP_PARAM_HEADER_WEATHER_' + toUpper(data['weatherGpName']) :
+							state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_PERKS				? 'IDS_SKILL_' + toUpper(state.id) :
+							state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_ATBA_ACCURACY_PERK	? 'IDS_SKILL_' + toUpper(state.id) :
+							state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_TALENTS				? 'IDS_TALENT_' + toUpper(state.id) :
+							state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_CONSUMABLES			? battleConsumable.viewData.title :
+							state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_BUFFS				? 'IDS_SHIP_MODIFIER_PARAM_HEADER_' + toUpper(state.id) :
+							state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_INTERACTIVE_ZONE	? 'IDS_SHIP_PARAM_HEADER_INTERACTIVE_ZONE_' + toUpper(state.id) :
+							state.type == SC.Battle.ENTITY_STATES.REPAIR									? 'IDS_SHIP_PARAM_HEADER_INTERACTIVE_ZONE_REPAIR_ZONE' :
+							state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_RAGE_MODE			? rageMode.title :
+							state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_MODULES				? 'IDS_SHIP_PARAM_ACTIVE_STATE_' + toUpper(state.id) :
+							state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_SPECIAL_MODULES		? 'IDS_SHIP_PARAM_ACTIVE_STATE_' + toUpper(state.id) :
+							state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_NOT_SPECIAL_MODULES	? 'IDS_SHIP_PARAM_ACTIVE_STATE_' + toUpper(state.id) :
+							state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_MODIFIERS			? 'IDS_DOCK_CONSUME_TITLE_PXY416_BUFFSSHIFT_REGENERATION' :
+							state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_BATTERY_STATE		? 'IDS_SHIP_PARAM_HEADER_BATTERY_STATE_' + toUpper(state.id) :
+							state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_DEPTH				? 'IDS_SUBMARINE_DEPTH_STATE_' + toUpper(state.id) :
+							state.type == SC.Battle.ENTITY_STATES.EMERGENCY_SURFACING						? 'IDS_SHIP_PARAM_ACTIVE_STATE_EMERGENCY_SURFACING' :
+							state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_ARTILLERY_FIRE_MODE	? fireModeComponent.title :
+							state.type == SC.Battle.ENTITY_STATES.BY_NIGHT									? 'IDS_SHIP_PARAM_HEADER_WEATHER_PCOW016_USS_CL_STORM':
+							state.type == SC.Battle.ENTITY_STATES.ILLUMINATED								? 'IDS_SHIP_PARAM_HEADER_WEATHER_PCOW017_USS_CL_LIGHT':
+							state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_ANTI_ABUSE_SYSTEM	? 'IDS_SHIP_PARAM_ACTIVE_STATE_MIRROR_DAMAGE' :
+							state.type == SC.Battle.ENTITY_STATES.BATTLE_CARD_SELECTOR_AVAILABLE			? 'IDS_STATE_BATTLE_CARD_SELECTOR_AVAILABLE'
+																											: _stateEntity.id")
+		
+		(var subHeader:str = "	state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_WEATHER				? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_WEATHER' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_PERKS				? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_PERK' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_ATBA_ACCURACY_PERK	? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_PERK' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_TALENTS				? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_TALENT' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_CONSUMABLES			? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_CONSUMABLE' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_BUFFS				? isNegative ?	'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_DEBUFF' :
+																																'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_BUFF' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_INTERACTIVE_ZONE	? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_INTERACTIVE_ZONE' :
+								state.type == SC.Battle.ENTITY_STATES.REPAIR									? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_INTERACTIVE_ZONE' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_RAGE_MODE			? 'IDS_RAGE_MODE_SUBTITLE' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_MODULES				? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_MODULE' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_SPECIAL_MODULES		? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_MODULE_SPECIAL':
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_NOT_SPECIAL_MODULES	? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_INTERACTIVE_ZONE':
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_MODIFIERS			? '' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_BATTERY_STATE		? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_BATTERY' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_DEPTH				? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_DEPTH' :
+								state.type == SC.Battle.ENTITY_STATES.EMERGENCY_SURFACING						? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_MODULE_SPECIAL' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_ARTILLERY_FIRE_MODE	? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_FIRE_MODE':
+								state.type == SC.Battle.ENTITY_STATES.BY_NIGHT									? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_INTERACTIVE_ZONE':
+								state.type == SC.Battle.ENTITY_STATES.ILLUMINATED								? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_INTERACTIVE_ZONE':
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_ANTI_ABUSE_SYSTEM	? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_MIRROR_DAMAGE' :
+								state.type == SC.Battle.ENTITY_STATES.BATTLE_CARD_SELECTOR_AVAILABLE			? 'IDS_SHIP_PARAM_ACTIVE_EFFECT_TYPE_BUFF'
+																												: _stateEntity.id")
+		
+		(var description:str = "toUpper(state.id) == 'DEFENCE_UW'												? 'IDS_SKILL_DESC_' + toUpper(state.id) :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_WEATHER				? 'IDS_SHIP_PARAM_WEATHER_DESCRIPTION_' + toUpper(data['weatherGpName']) :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_PERKS				? data['triggerDescIds'] :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_ATBA_ACCURACY_PERK	? data['triggerDescIds'] :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_TALENTS				? 'IDS_TALENT_' + toUpper(state.id) + '_DESCRIPTION' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_CONSUMABLES			? battleConsumable.viewData.description :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_BUFFS				? tr('IDS_SHIP_MODIFIER_PARAM_DESCRIPTION_' + toUpper(state.id)) :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_INTERACTIVE_ZONE	? 'IDS_SHIP_PARAM_INTERACTIVE_ZONE_DESCRIPTION_' + toUpper(state.id) :
+								state.type == SC.Battle.ENTITY_STATES.REPAIR									? 'IDS_SHIP_PARAM_INTERACTIVE_ZONE_DESCRIPTION_REPAIR_ZONE' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_RAGE_MODE			? rageMode.description :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_MODULES				? 'IDS_SHIP_PARAM_MODULE_STATE_DESCRIPTION_' + toUpper(state.id) :
+								isIn(SC.Battle.DAMAGE_MODULES[toUpper(state.id)], SC.Battle.DAMAGE_MODULES.WITH_DESCRIPTION)
+																												? 'IDS_SHIP_PARAM_ACTIVE_STATE_DESCRIPTION_' + toUpper(state.id) :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_SPECIAL_MODULES		? '' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_NOT_SPECIAL_MODULES	? '' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_BATTERY_STATE		? 'IDS_SHIP_PARAM_BATTERY_STATE_DESCRIPTION_' + toUpper(state.id) :
+								state.type == SC.Battle.ENTITY_STATES.EMERGENCY_SURFACING						? 'IDS_SHIP_PARAM_ACTIVE_STATE_DESCRIPTION_EMERGENCY_SURFACING' :
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_ARTILLERY_FIRE_MODE	? fireModeComponent.description :
+								state.type == SC.Battle.ENTITY_STATES.BY_NIGHT									? 'IDS_SHIP_PARAM_DESCRIPTION_WEATHER_PCOW016_USS_CL_STORM':
+								state.type == SC.Battle.ENTITY_STATES.ILLUMINATED								? 'IDS_SHIP_PARAM_DESCRIPTION_WEATHER_PCOW017_USS_CL_LIGHT':
+								state.type == SC.Battle.ENTITY_STATES.SHIP_PARAMS_CHANGE_BY_ANTI_ABUSE_SYSTEM	? 'IDS_SHIP_PARAM_ACTIVE_STATE_DESCRIPTION_MIRROR_DAMAGE' :
+								state.type == SC.Battle.ENTITY_STATES.BATTLE_CARD_SELECTOR_AVAILABLE			? 'IDS_STATE_BATTLE_CARD_SELECTOR_AVAILABLE_DESCRIPTION'
+																												: ''")
+	)
+	(style (width = 340) (hitTest = false))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHeaderWithIconAndText'
+				(args
+					_imageUrl="iconPath"
+					_imageWidth=60
+					_imageHeight=60
+					_unifiedStatus=''
+					_headerText="header"
+					_subheaderText="subHeader"
+				)
+			)
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "description && description != ' '")
+		)
+		(block
+			(bind visible "description && description != ' '")
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "description && description != ' '")
+				(args
+					_descriptionText="description"
+				)
+			)
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "attributesVisible")
+		)
+		(block
+			(bind visible "attributesVisible")
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemParamsModifiersList'
+				(bind enabled "attributesVisible")
+				(args
+					_attributesNegative="attributesNegative"
+					_attributesPositive="attributesPositive"
+					_attributesNeutral="attributesNeutral"
+					_ownerId="ownerId"
+				)
+			)
+		)
+	)
+)

@@ -1,0 +1,153 @@
+<ASB028_Iowa_1945_MidBack_lod3.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	MidBack	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	MidBack_crack_MidFront	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	MidBack_crack_MidFront_in	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+			<node>
+				<identifier>	MidBack_crack_Stern	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	MidBack_crack_Stern_in	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+			<node>
+				<identifier>	MidBack_patch_Stern	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	MidBack_crack_MidFront_in	</node>
+		<geometry>
+			<vertices>	MidBack_crack_MidFront_in_lodShape3.vertices	</vertices>
+			<primitive>	MidBack_crack_MidFront_in_lodShape3.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_Crack	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ZSB708_Xuan_Wu/ship/C002_Razlom.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	MidBack_crack_MidFront	</node>
+		<geometry>
+			<vertices>	MidBack_crack_MidFront_lod3Shape.vertices	</vertices>
+			<primitive>	MidBack_crack_MidFront_lod3Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ZSB708_Xuan_Wu/ship/ASB028_Iowa_1945.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	MidBack_crack_Stern_in	</node>
+		<geometry>
+			<vertices>	MidBack_crack_Stern_in_lodShape3.vertices	</vertices>
+			<primitive>	MidBack_crack_Stern_in_lodShape3.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_Crack	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ZSB708_Xuan_Wu/ship/C002_Razlom.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	MidBack_crack_Stern	</node>
+		<geometry>
+			<vertices>	MidBack_crack_Stern_lodShape3.vertices	</vertices>
+			<primitive>	MidBack_crack_Stern_lodShape3.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ZSB708_Xuan_Wu/ship/ASB028_Iowa_1945.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	MidBack	</node>
+		<geometry>
+			<vertices>	MidBack_lod3Shape.vertices	</vertices>
+			<primitive>	MidBack_lod3Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ZSB708_Xuan_Wu/ship/ASB028_Iowa_1945.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	MidBack_patch_Stern	</node>
+		<geometry>
+			<vertices>	MidBack_patch_Stern_lodShape3.vertices	</vertices>
+			<primitive>	MidBack_patch_Stern_lodShape3.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ZSB708_Xuan_Wu/ship/ASB028_Iowa_1945.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-1.1419 -0.6883 -3.8134	</min>
+		<max>	1.1388 2.2982 -0.4625	</max>
+	</boundingBox>
+</ASB028_Iowa_1945_MidBack_lod3.visual>

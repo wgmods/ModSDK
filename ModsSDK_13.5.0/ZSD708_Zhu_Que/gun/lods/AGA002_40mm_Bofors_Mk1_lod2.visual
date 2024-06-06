@@ -1,0 +1,56 @@
+<AGA002_40mm_Bofors_Mk1_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	HP_gunFire1	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.8660 -0.5000 0.0000	</row1>
+					<row2>	0.0000 0.5000 0.8660 0.0000	</row2>
+					<row3>	-0.0081 0.1954 0.1322 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	HP_gunFire2	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.8660 -0.5000 0.0000	</row1>
+					<row2>	0.0000 0.5000 0.8660 0.0000	</row2>
+					<row3>	0.0081 0.1954 0.1322 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret	</node>
+		<geometry>
+			<vertices>	Turret_lod2Shape.vertices	</vertices>
+			<primitive>	Turret_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ZSD708_Zhu_Que/gun/AGA002_40mm_Bofors_Mk1.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.0849 -0.0040 -0.0983	</min>
+		<max>	0.0856 0.1993 0.1345	</max>
+	</boundingBox>
+</AGA002_40mm_Bofors_Mk1_lod2.visual>
