@@ -1,0 +1,230 @@
+(def macro DefaultTorpedo_Dock_Parameters ()
+
+	(element ShipParameter_Number		_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+										_value = "torpedoesReloadTime"
+										_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+	)
+	(element ShipParameter_ClassIcons	_title = 'IDS_SHIP_PARAM_TORPEDOES_AFFECTED_SHIPS'
+										_values = "torpedoTTX.canHitClasses"
+	)
+	(element ShipParameter_Number		_title = 'IDS_SHIP_PARAM_TORPEDO_MAX_DIST'
+										_value = "torpedoTTX.maxDist"
+										_valueConfig = "VALUE_CONFIG.KILOMETER"
+	)
+	(element ShipParameter_Number		_title = 'IDS_SHIP_PARAM_TORPEDO_DAMAGE'
+										_value = "torpedoTTX.damage"
+	)
+	(element ShipParameter_Number		_title = 'IDS_SHIP_PARAM_TORPEDO_SPEED'
+										_value = "torpedoTTX.speed"
+										_valueConfig = "VALUE_CONFIG.KNOT"
+	)
+	(element ShipParameter_Number		_title = 'IDS_SHIP_TOOLTIP_VISIBILITY'
+										_value = "torpedoTTX.visibility"
+										_valueConfig = "VALUE_CONFIG.KILOMETER"
+	)
+	(element ShipParameter_Number_PureDeltaToStr
+		_title = 'IDS_SHIP_PARAM_TORPEDO_DISTANCE_OF_MAX_DAMAGE'
+		_removeTitle = 'IDS_SHIP_PARAM_TORPEDO_DISTANCE_OF_MAX_DAMAGE_REMOVED'
+		_value = "torpedoTTX.distanceOfMaxDamage"
+		_valueConfig = "torpedoTTX.isDamageIncreasing.value	? VALUE_CONFIG.KILOMETER_FROM : VALUE_CONFIG.KILOMETER_TO"
+		_zeroValueHidden = true
+	)
+	(element ShipParameter_Bool			_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_DEPTHSTATE'
+										_value = "torpedoTTX.disabledUnderwater"
+	)
+)
+
+(def layout Torpedo_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var isGroup:bool = "_shipTTX.torpedoGroups != null")
+		(var torpedoesReloadTime:gfx = "isGroup ? _shipTTX.torpedoGroups.bowGroup.reloadTime : _shipTTX.torpedoes.reloadTime")
+		(var torpedoTTX:gfx = "isGroup ? _shipTTX.torpedoGroups.torpedo : _shipTTX.torpedoes.torpedo")
+		(var isMaxDistRemoved:bool = "torpedoTTX.distanceOfMaxDamage.delta != 0 && torpedoTTX.distanceOfMaxDamage.value == 0")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro DefaultTorpedo_Dock_Parameters)
+		)
+	)
+)
+
+(def layout TorpedoAlt_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var isGroup:gfx = "_shipTTX.torpedoGroups != null")
+		(var torpedoesReloadTime:gfx = "isGroup ? _shipTTX.torpedoGroups.bowGroup.reloadTime : _shipTTX.torpedoes.reloadTime")
+		(var torpedoTTX:gfx = "isGroup ? _shipTTX.torpedoGroups.torpedoAlt : _shipTTX.torpedoes.torpedoAlt")
+		(var isMaxDistRemoved:bool = "torpedoTTX.distanceOfMaxDamage.delta != 0 && torpedoTTX.distanceOfMaxDamage.value == 0")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro DefaultTorpedo_Dock_Parameters)
+		)
+	)
+)
+
+(def layout TorpedoDeepwater_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var isGroup:gfx = "_shipTTX.torpedoGroups != null")
+		(var torpedoesReloadTime:gfx = "isGroup ? _shipTTX.torpedoGroups.bowGroup.reloadTime : _shipTTX.torpedoes.reloadTime")
+		(var torpedoTTX:gfx = "isGroup ? _shipTTX.torpedoGroups.torpedoDeepwater : _shipTTX.torpedoes.torpedoDeepwater")
+		(var isMaxDistRemoved:bool = "torpedoTTX.distanceOfMaxDamage.delta != 0 && torpedoTTX.distanceOfMaxDamage.value == 0")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro DefaultTorpedo_Dock_Parameters)
+		)
+	)
+)
+
+(def layout Torpedo_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var isGroup:gfx = "_shipTTX.torpedoGroups != null")
+		(var torpedoesReloadTime:gfx = "isGroup ? _shipTTX.torpedoGroups.bowGroup.reloadTime : _shipTTX.torpedoes.reloadTime")
+		(var torpedoesSwitchTime:gfx = "isGroup ? _shipTTX.torpedoGroups.bowGroup.ammoSwitchTime : _shipTTX.torpedoes.ammoSwitchTime")
+		(var torpedoTTX:gfx = "isGroup ? _shipTTX.torpedoGroups.torpedo : _shipTTX.torpedoes.torpedo")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+											_value = "torpedoesReloadTime"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.torpedoReloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_MIN_SWITCH_TIME'
+											_value = "torpedoesSwitchTime"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.torpedoMinSwitchTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_zeroValueHidden=true
+			)
+			(element ShipParameter_ClassIcons	_title = 'IDS_SHIP_PARAM_TORPEDOES_AFFECTED_SHIPS'
+												_values = "torpedoTTX.canHitClasses"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_MAX_DIST'
+											_value = "torpedoTTX.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_DAMAGE'
+											_value = "torpedoTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.torpedoDamage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_SPEED'
+											_value = "torpedoTTX.speed"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.torpedoSpeed"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_DISTANCE_OF_MAX_DAMAGE'
+											_value = "torpedoTTX.distanceOfMaxDamage"
+											_valueConfig = "torpedoTTX.isDamageIncreasing.value	? VALUE_CONFIG.KILOMETER_FROM
+																								: VALUE_CONFIG.KILOMETER_TO"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Bool		_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_DEPTHSTATE'
+											_value = "torpedoTTX.disabledUnderwater"
+			)
+		)
+	)
+)
+
+(def layout TorpedoAlt_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var isGroup:gfx = "_shipTTX.torpedoGroups != null")
+		(var torpedoesReloadTime:gfx = "isGroup ? _shipTTX.torpedoGroups.bowGroup.reloadTime : _shipTTX.torpedoes.reloadTime")
+		(var torpedoesSwitchTime:gfx = "isGroup ? _shipTTX.torpedoGroups.bowGroup.ammoSwitchTime : _shipTTX.torpedoes.ammoSwitchTime")
+		(var torpedoTTX:gfx = "isGroup ? _shipTTX.torpedoGroups.torpedoAlt : _shipTTX.torpedoes.torpedoAlt")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+											_value = "torpedoesReloadTime"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.torpedoReloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_MIN_SWITCH_TIME'
+											_value = "torpedoesSwitchTime"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.torpedoMinSwitchTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_zeroValueHidden=true
+			)
+			(element ShipParameter_ClassIcons	_title = 'IDS_SHIP_PARAM_TORPEDOES_AFFECTED_SHIPS'
+												_values = "torpedoTTX.canHitClasses"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_MAX_DIST'
+											_value = "torpedoTTX.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_DAMAGE'
+											_value = "torpedoTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.torpedoDamageAlt"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_SPEED'
+											_value = "torpedoTTX.speed"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.torpedoSpeedAlt"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_DISTANCE_OF_MAX_DAMAGE'
+											_value = "torpedoTTX.distanceOfMaxDamage"
+											_valueConfig = "torpedoTTX.isDamageIncreasing.value	? VALUE_CONFIG.KILOMETER_FROM
+																								: VALUE_CONFIG.KILOMETER_TO"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Bool		_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_DEPTHSTATE'
+											_value = "torpedoTTX.disabledUnderwater"
+			)
+		)
+	)
+)
+
+(def layout TorpedoDeepwater_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var isGroup:gfx = "_shipTTX.torpedoGroups != null")
+		(var torpedoesReloadTime:gfx = "isGroup ? _shipTTX.torpedoGroups.bowGroup.reloadTime : _shipTTX.torpedoes.reloadTime")
+		(var torpedoesSwitchTime:gfx = "isGroup ? _shipTTX.torpedoGroups.bowGroup.ammoSwitchTime : _shipTTX.torpedoes.ammoSwitchTime")
+		(var torpedoTTX:gfx = "isGroup ? _shipTTX.torpedoGroups.torpedoDeepwater : _shipTTX.torpedoes.torpedoDeepwater") 
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+											_value = "torpedoesReloadTime"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.torpedoReloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_MIN_SWITCH_TIME'
+											_value = "torpedoesSwitchTime"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.torpedoMinSwitchTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_zeroValueHidden=true
+			)
+			(element ShipParameter_ClassIcons	_title = 'IDS_SHIP_PARAM_TORPEDOES_AFFECTED_SHIPS'
+												_values = "torpedoTTX.canHitClasses"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_MAX_DIST'
+											_value = "torpedoTTX.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_DAMAGE'
+											_value = "torpedoTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.torpedoDamageDeepwater"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_SPEED'
+											_value = "torpedoTTX.speed"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.torpedoSpeedDeepwater"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_DISTANCE_OF_MAX_DAMAGE'
+											_value = "torpedoTTX.distanceOfMaxDamage"
+											_valueConfig = "torpedoTTX.isDamageIncreasing.value	? VALUE_CONFIG.KILOMETER_FROM
+																								: VALUE_CONFIG.KILOMETER_TO"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Bool		_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_DEPTHSTATE'
+											_value = "torpedoTTX.disabledUnderwater"
+			)
+		)
+	)
+)

@@ -1,0 +1,272 @@
+(def element ArtilleryTTX (shipTTX:gfx) layout=true
+	(scope
+		(var mainGun:array = "shipTTX.artillery ? shipTTX.artillery.mainGun : null")
+		(var atba:array = "shipTTX.artillery ? shipTTX.artillery.atba : null")
+
+		(var fireModeSlotCol:gfx = "$datahub.getCollection(CC.fireModeSlot)")
+		(var fireModeEntity:gfx = "fireModeSlotCol ? $datahub.getSingleEntity(CC.fireModeSlot) : null" (event "fireModeSlotCol.evAdded") (event "fireModeSlotCol.evRemoved"))
+		(var isFireModeActive:bool = "fireModeEntity ? fireModeEntity.fireModeSlot.isActive : false" (event "fireModeEntity.fireModeSlot.evUpdated"))
+		(var altGunTTX:gfx = "	shipTTX.artillery.altFireMode && shipTTX.artillery.altFireMode.altGun ?
+								shipTTX.artillery.altFireMode.altGun : null")
+		(var maxDistDiff:gfx = "isFireModeActive && altGunTTX		? altGunTTX.mgMaxDist
+																	: shipTTX.artillery.mgMaxDist")
+	)
+	(class $ParametersPanel)
+	(class $TTXSecondaryPanel)
+
+	(macro TTX_REPEAT 'MainGunTTX' "mainGun")
+	(macro TTX_INSTANCE 'FireModeTTX' "shipTTX.artillery.altFireMode")
+	(macro TTX_REPEAT 'ATBAGunTTX' "atba")
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DIST'
+									_value = "maxDistDiff"
+									_valueConfig = "VALUE_CONFIG.KILOMETER"
+									_zeroValueHidden = "true"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_ARTILLERY_MAX_DIST' 'IDS_TOOLTIP_ARTILLERY_MAX_DIST')
+	)
+)
+
+
+
+(def element MainGunTTX (shipTTX:gfx, mainGunTTX:gfx) layout=true
+	(scope
+		(var fireModeSlotCol:gfx = "$datahub.getCollection(CC.fireModeSlot)")
+		(var fireModeEntity:gfx = "$datahub.getSingleEntity(CC.fireModeSlot)" (event "fireModeSlotCol.evAdded") (event "fireModeSlotCol.evRemoved"))
+		(var isFireModeActive:bool = "fireModeEntity ? fireModeEntity.fireModeSlot.isActive : false" (event "fireModeEntity.fireModeSlot.evUpdated"))
+		(var hasSecondaryAmmoDiff:bool = "	(shipTTX.artillery.ammoSecondaryHE && shipTTX.artillery.ammoSecondaryHE.hasDiff ||
+											shipTTX.artillery.ammoSecondaryCS && shipTTX.artillery.ammoSecondaryCS.hasDiff ||
+											shipTTX.artillery.ammoSecondaryAP && shipTTX.artillery.ammoSecondaryAP.hasDiff) && isFireModeActive")
+		(var hasDiff:bool = "	shipTTX.artillery.mgMaxDist.delta ||
+								shipTTX.artillery.mgDispersion.delta ||
+								shipTTX.artillery.mgReloadTime.delta ||
+								shipTTX.artillery.ammoSwitchTime.delta ||
+								shipTTX.artillery.ammoHE && shipTTX.artillery.ammoHE.hasDiff ||
+								shipTTX.artillery.ammoCS && shipTTX.artillery.ammoCS.hasDiff ||
+								shipTTX.artillery.ammoAP && shipTTX.artillery.ammoAP.hasDiff ||
+								hasSecondaryAmmoDiff")
+	)
+	(class $ParametersPanel)
+	(element ShipParameter_GunConfiguration 'IDS_MAIN_CALIBER' "mainGunTTX" _externalDiff="hasDiff"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro TTX_TOOLTIP 'MainGunTooltipTTX' "mainGunTTX")
+		(element ShipParamExcursionButton	_shipTTX = "shipTTX"	
+											_excursionId="['_Artillery', $index]"
+											_isExcursionOn="false"
+		)
+	)
+)
+
+(def element MainGunTooltipTTX (shipTTX:gfx, mainGunTTX:gfx) layout=true
+	(scope
+		(var fireModeSlotCol:gfx = "$datahub.getCollection(CC.fireModeSlot)")
+		(var fireModeEntity:gfx = "fireModeSlotCol ? $datahub.getSingleEntity(CC.fireModeSlot) : null" (event "fireModeSlotCol.evAdded") (event "fireModeSlotCol.evRemoved"))
+		(var isFireModeActive:bool = "fireModeEntity ? fireModeEntity.fireModeSlot.isActive : false" (event "fireModeEntity.fireModeSlot.evUpdated"))
+		(var altGunTTX:gfx = "	shipTTX.artillery.altFireMode && shipTTX.artillery.altFireMode.altGun ?
+								shipTTX.artillery.altFireMode.altGun : null")
+		(var maxDistDiff:gfx = "isFireModeActive && altGunTTX		? altGunTTX.mgMaxDist
+																	: shipTTX.artillery.mgMaxDist")
+		(var dispersionDiff:gfx = "isFireModeActive && altGunTTX		? altGunTTX.mgDispersion
+																	: shipTTX.artillery.mgDispersion")
+		(var reloadTimeDiff:gfx = "isFireModeActive	? shipTTX.artillery.altFireMode.reloadTime
+													: shipTTX.artillery.mgReloadTime")
+	)
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW "'IDS_SHIP_PARAM_MAIN_GUN'" "'IDS_TOOLTIP_MAIN_GUN'")
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+												_value = "reloadTimeDiff"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MIN_SWITCH_TIME'
+												_value = "shipTTX.artillery.ammoSwitchTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+												_zeroValueHidden = true
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ROTATION_TIME'
+												_value = "mainGunTTX.rotationTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_DISPERSION'
+												_value = "dispersionDiff"
+												_valueConfig = "VALUE_CONFIG.METER_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAX_DIST'
+												_value = "maxDistDiff"
+												_valueConfig = "VALUE_CONFIG.KILOMETER"
+				)
+			)
+		)
+		(macro TTX_INSTANCE 'AmmoHETTX' "shipTTX.artillery.ammoHE" "!isFireModeActive || !shipTTX.artillery.ammoSecondaryHE")
+		(macro TTX_INSTANCE 'AmmoHETTX' "shipTTX.artillery.ammoSecondaryHE" "isFireModeActive")
+		(macro TTX_INSTANCE 'AmmoCSTTX' "shipTTX.artillery.ammoCS" "!isFireModeActive || !shipTTX.artillery.ammoSecondaryCS")
+		(macro TTX_INSTANCE 'AmmoCSTTX' "shipTTX.artillery.ammoSecondaryCS" "isFireModeActive")
+		(macro TTX_INSTANCE 'AmmoAPTTX' "shipTTX.artillery.ammoAP" "!isFireModeActive || !shipTTX.artillery.ammoSecondaryAP")
+		(macro TTX_INSTANCE 'AmmoAPTTX' "shipTTX.artillery.ammoSecondaryAP" "isFireModeActive")
+		(element TooltipSystemExcursionMouseInstruction		_shipTTX="shipTTX")
+	)
+)
+
+
+(def element FireModeTTX (shipTTX:gfx, altFireModeTTX:gfx) layout=true
+	(scope
+		(var fireModeSlotCol:gfx = "$datahub.getCollection(CC.fireModeSlot)")
+		(var fireModeEntity:gfx = "$datahub.getSingleEntity(CC.fireModeSlot)" (event "fireModeSlotCol.evAdded") (event "fireModeSlotCol.evRemoved"))
+		(var title:str = "fireModeEntity ? fireModeEntity.fireModeSlot.title : ''" (event "fireModeEntity.fireModeSlot.evUpdated"))
+	)
+	(class $ParametersPanel)
+	(element ShipParameter_Str "title"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro TTX_TOOLTIP 'FireModeTooltipTTX' "fireModeEntity")
+	)
+)
+
+(def element FireModeTooltipTTX (shipTTX:gfx, fireModeEntity:gfx) layout=true
+	(scope
+
+		(var fireModeSlotComponent:gfx = "fireModeEntity ? fireModeEntity.fireModeSlot : null")
+		(var title:str = "fireModeSlotComponent ? fireModeSlotComponent.title : ''" (event "fireModeSlotComponent.evUpdated"))
+		(var description:str = "fireModeSlotComponent ? fireModeSlotComponent.description : ''" (event "fireModeSlotComponent.evUpdated"))
+
+		(var attributesNegative:array = "fireModeEntity ? fireModeEntity.attributes.negative : null" (event "fireModeSlotComponent.evUpdated"))
+		(var attributesPositive:array = "fireModeEntity ? fireModeEntity.attributes.positive : null" (event "fireModeSlotComponent.evUpdated"))
+		(var attributesNeutral:array = "fireModeEntity ? fireModeEntity.attributes.neutral : null" (event "fireModeSlotComponent.evUpdated"))
+
+		(var isAttributes:number = "fireModeEntity && (attributesNegative.length + attributesPositive.length + attributesNeutral.length) > 0")
+
+		(var ownerEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+	)
+
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW "title" "description")
+
+		(controller $Instance layout=true
+			(bind enabled "isAttributes")
+			(exprs
+				(class $ParametersPanel)
+				(element TooltipSystemHorizontalDivider)
+				(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+					(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+						(element TooltipSystemParamsModifiersListTTX
+								_attributesNegative="attributesNegative"
+								_attributesPositive="attributesPositive"
+								_attributesNeutral="attributesNeutral"
+								_ownerId="ownerEntity.id"
+						)
+					)
+				)
+			)
+		)
+	)
+)
+
+
+
+(def element AmmoHETTX (shipTTX:gfx, ammoHETTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_AMMO_HE_FULL_NAME'" "ammoHETTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+											_value = "ammoHETTX.damage"
+			)
+			(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_ARTILLERY_BURN_PROB'
+											_value = "ammoHETTX.burnChance"
+											_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_ARTILLERY_FLOOD_GENERATION'
+											_value = "ammoHETTX.floodChance"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_ALPHA_PIERCING'
+											_value = "ammoHETTX.piercing"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_AMMO_SPEED'
+											_value = "ammoHETTX.speed"
+											_valueConfig = "VALUE_CONFIG.METER_SECOND"
+			)
+		)
+	)
+)
+
+(def element AmmoCSTTX (shipTTX:gfx, ammoCSTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_AMMO_CS_FULL_NAME'" "ammoCSTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+											_value = "ammoCSTTX.damage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_ALPHA_PIERCING'
+											_value = "ammoCSTTX.piercing"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_AMMO_SPEED'
+											_value = "ammoCSTTX.speed"
+											_valueConfig = "VALUE_CONFIG.METER_SECOND"
+			)
+		)
+	)
+)
+
+(def element AmmoAPTTX (shipTTX:gfx, ammoAPTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_AMMO_AP_FULL_NAME'" "ammoAPTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+											_value = "ammoAPTTX.damage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_AMMO_SPEED'
+											_value = "ammoAPTTX.speed"
+											_valueConfig = "VALUE_CONFIG.METER_SECOND"
+			)
+		)
+	)
+)
+
+
+
+(def element ATBAGunTTX (shipTTX:gfx, atbaGunTTX:gfx) layout=true
+	(scope
+		(var hasDiff:bool = "shipTTX.artillery.atbaMaxDist.delta")
+	)
+	(class $ParametersPanel)
+	(element ShipParameter_GunConfiguration 'IDS_SECONDARY_CALIBER' "atbaGunTTX" _externalDiff="hasDiff"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro TTX_TOOLTIP 'ATBAGunTooltipTTX' "atbaGunTTX")
+		(element ShipParamExcursionButton	_shipTTX = "shipTTX"	
+											_excursionId="['_Atba', $index]"
+											_isExcursionOn="false"
+		)
+	)
+)
+
+(def element ATBAGunTooltipTTX (shipTTX:gfx, atbaGunTTX:gfx) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW "'IDS_SHIP_PARAM_ATBA_GUN'" "'IDS_TOOLTIP_ATBA_GUN'")
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+												_value = "atbaGunTTX.reloadTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAX_DIST'
+												_value = "shipTTX.artillery.atbaMaxDist"
+												_valueConfig = "VALUE_CONFIG.KILOMETER"
+				)
+			)
+		)
+		(macro TTX_INSTANCE 'AmmoHETTX' "atbaGunTTX.ammoHE")
+		(macro TTX_INSTANCE 'AmmoCSTTX' "atbaGunTTX.ammoCS")
+		(macro TTX_INSTANCE 'AmmoAPTTX' "atbaGunTTX.ammoAP")
+		(element TooltipSystemExcursionMouseInstruction		_shipTTX="shipTTX")
+	)
+)

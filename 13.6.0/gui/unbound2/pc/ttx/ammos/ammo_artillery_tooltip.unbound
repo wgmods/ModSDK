@@ -1,0 +1,368 @@
+(def macro GET_ALT_GUN_PARAMS_SCOPE (altModeActive:expression)
+		(var altGunTTX:gfx = "	_shipTTX.artillery.altFireMode && _shipTTX.artillery.altFireMode.altGun ?
+								_shipTTX.artillery.altFireMode.altGun : null")
+		(var useAltGunTTX:bool = "altModeActive && altGunTTX")
+		(var maxDistDiff:gfx = "useAltGunTTX		? altGunTTX.mgMaxDist
+													: _shipTTX.artillery.mgMaxDist")
+		(var dispersionDiff:gfx = "useAltGunTTX		? altGunTTX.mgDispersion
+													: _shipTTX.artillery.mgDispersion")
+		(var leadFireTitle:str = "	useAltGunTTX && altGunTTX.leadFireState.value == SC.Ui_styles.TOOLTIP_SYSTEM_STRING_PARAMS_TYPE.POSITIVE ?	'IDS_PARAMS_MODIFIER_LEADFIRE_POSITIVE' :
+									useAltGunTTX && altGunTTX.leadFireState.value == SC.Ui_styles.TOOLTIP_SYSTEM_STRING_PARAMS_TYPE.NEGATIVE ?	'IDS_PARAMS_MODIFIER_LEADFIRE_NEGATIVE' :
+												null")
+		(var fireArcTitle:str = "	useAltGunTTX && altGunTTX.fireArcState.value == SC.Ui_styles.TOOLTIP_SYSTEM_STRING_PARAMS_TYPE.POSITIVE ?	'IDS_PARAMS_MODIFIER_ARC_POSITIVE' :
+									useAltGunTTX && altGunTTX.fireArcState.value == SC.Ui_styles.TOOLTIP_SYSTEM_STRING_PARAMS_TYPE.NEGATIVE ?	'IDS_PARAMS_MODIFIER_ARC_NEGATIVE' :
+												null")
+)
+
+(def layout AmmoAP_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str, _isSecondaryActive:bool) dispatch_size_change=true
+	(scope
+		(macro GET_ALT_GUN_PARAMS_SCOPE "_isSecondaryActive")
+		(var ammoTTX:gfx = "_isSecondaryActive ? _shipTTX.artillery.ammoSecondaryAP : _shipTTX.artillery.ammoAP")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+											_value = "_shipTTX.artillery.mgReloadTime"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.artilleryReloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MIN_SWITCH_TIME'
+											_value = "_shipTTX.artillery.ammoSwitchTime"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.artilleryMinSwitchTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_CALIBER'
+											_value = "_shipTTX.artillery.mainGun[0].caliber"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+											_value = "ammoTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + toString(_isSecondaryActive ? SC.Battle.PARAMETER.damageAPSecondary : SC.Battle.PARAMETER.damageAP)"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_AMMO_SPEED'
+											_value = "ammoTTX.speed"
+											_valueConfig = "VALUE_CONFIG.METER_SECOND"
+			)
+			(element ShipParameter_Number	_title = 'IDS_TOOLTIP_ARTILLERY_SHOOT_DIST'
+											_value="_shipTTX.artillery.mgMaxDist"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.artilleryMaxDist" 
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_PARAMS_MODIFIER_GMIDEALRADIUS'
+											_value = "dispersionDiff"
+											_valueConfig = "VALUE_CONFIG.METER_NEGATIVE"
+			)
+			(element ShipParameter_Str		_title = "fireArcTitle"
+											_type = "useAltGunTTX ? altGunTTX.fireArcState.value : SC.Ui_styles.TOOLTIP_SYSTEM_STRING_PARAMS_TYPE.NEUTRAL"
+			)
+			(element ShipParameter_Str		_title = "leadFireTitle"
+											_type = "useAltGunTTX ? altGunTTX.leadFireState.value : SC.Ui_styles.TOOLTIP_SYSTEM_STRING_PARAMS_TYPE.NEUTRAL"
+			)
+			(element ShipParameter_Bool	_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_PERISCOPESTATE'
+											_value = "_shipTTX.artillery.disabledUnderwater"
+			)
+		)
+	)
+)
+
+(def layout AmmoHE_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str, _isSecondaryActive:bool) dispatch_size_change=true
+	(scope
+		(macro GET_ALT_GUN_PARAMS_SCOPE "_isSecondaryActive")
+		(var ammoTTX:gfx = "_isSecondaryActive ? _shipTTX.artillery.ammoSecondaryHE : _shipTTX.artillery.ammoHE")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+											_value = "_shipTTX.artillery.mgReloadTime"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.artilleryReloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MIN_SWITCH_TIME'
+											_value = "_shipTTX.artillery.ammoSwitchTime"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.artilleryMinSwitchTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_CALIBER'
+											_value = "_shipTTX.artillery.mainGun[0].caliber"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+											_value = "ammoTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + toString(_isSecondaryActive ? SC.Battle.PARAMETER.damageHESecondary : SC.Battle.PARAMETER.damageHE)"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_AMMO_SPEED'
+											_value = "ammoTTX.speed"
+											_valueConfig = "VALUE_CONFIG.METER_SECOND"
+			)
+			(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_ARTILLERY_BURN_PROB'
+											_value = "ammoTTX.burnChance"
+											_alternativeValueKey = "_ownerEntityId + '_' + toString(_isSecondaryActive ? SC.Battle.PARAMETER.HEBurnProbabilitySecondary : SC.Battle.PARAMETER.HEBurnProbability)"
+											_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_ARTILLERY_FLOOD_GENERATION'
+											_value = "_shipTTX.artillery.ammoHE.floodChance"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_ALPHA_PIERCING'
+											_value = "ammoTTX.piercing"
+											_alternativeValueKey = "_ownerEntityId + '_' + toString(_isSecondaryActive ? SC.Battle.PARAMETER.alphaPiercingHESecondary : SC.Battle.PARAMETER.alphaPiercingHE)"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_TOOLTIP_ARTILLERY_SHOOT_DIST'
+											_value="_shipTTX.artillery.mgMaxDist"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.artilleryMaxDist" 
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_PARAMS_MODIFIER_GMIDEALRADIUS'
+											_value = "dispersionDiff"
+											_valueConfig = "VALUE_CONFIG.METER_NEGATIVE"
+			)
+			(element ShipParameter_Str		_title = "fireArcTitle"
+											_type = "useAltGunTTX ? altGunTTX.fireArcState.value : SC.Ui_styles.TOOLTIP_SYSTEM_STRING_PARAMS_TYPE.NEUTRAL"
+			)
+			(element ShipParameter_Str		_title = "leadFireTitle"
+											_type = "useAltGunTTX ? altGunTTX.leadFireState.value : SC.Ui_styles.TOOLTIP_SYSTEM_STRING_PARAMS_TYPE.NEUTRAL"
+			)
+			(element ShipParameter_Bool	_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_PERISCOPESTATE'
+											_value = "_shipTTX.artillery.disabledUnderwater"
+			)
+		)
+	)
+)
+
+(def layout AmmoCS_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str, _isSecondaryActive:bool) dispatch_size_change=true
+	(scope
+		(macro GET_ALT_GUN_PARAMS_SCOPE "_isSecondaryActive")
+		(var ammoTTX:gfx = "_isSecondaryActive ? _shipTTX.artillery.ammoSecondaryCS : _shipTTX.artillery.ammoCS")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+											_value = "_shipTTX.artillery.mgReloadTime"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.artilleryReloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MIN_SWITCH_TIME'
+											_value = "_shipTTX.artillery.ammoSwitchTime"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.artilleryMinSwitchTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_CALIBER'
+											_value = "_shipTTX.artillery.mainGun[0].caliber"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+											_value = "ammoTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + toString(_isSecondaryActive ? SC.Battle.PARAMETER.damageCSSecondary : SC.Battle.PARAMETER.damageCS)"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_AMMO_SPEED'
+											_value = "ammoTTX.speed"
+											_valueConfig = "VALUE_CONFIG.METER_SECOND"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_ALPHA_PIERCING'
+											_value = "ammoTTX.piercing"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_TOOLTIP_ARTILLERY_SHOOT_DIST'
+											_value="_shipTTX.artillery.mgMaxDist"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.artilleryMaxDist" 
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_PARAMS_MODIFIER_GMIDEALRADIUS'
+											_value = "dispersionDiff"
+											_valueConfig = "VALUE_CONFIG.METER_NEGATIVE"
+			)
+			(element ShipParameter_Str		_title = "fireArcTitle"
+											_type = "useAltGunTTX ? altGunTTX.fireArcState.value : SC.Ui_styles.TOOLTIP_SYSTEM_STRING_PARAMS_TYPE.NEUTRAL"
+			)
+			(element ShipParameter_Str		_title = "leadFireTitle"
+											_type = "useAltGunTTX ? altGunTTX.leadFireState.value : SC.Ui_styles.TOOLTIP_SYSTEM_STRING_PARAMS_TYPE.NEUTRAL"
+			)
+			(element ShipParameter_Bool	_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_PERISCOPESTATE'
+											_value = "_shipTTX.artillery.disabledUnderwater"
+			)
+		)
+	)
+)
+
+(def layout AmmoAP_ParametersForDock (_shipTTX:gfx, _isSecondaryActive:bool) dispatch_size_change=true
+	(scope
+		(var fireModeSlotCol:gfx = "$datahub.getCollection(CC.fireModeSlot)")
+		(var fireModeEntity:gfx = "$datahub.getSingleEntity(CC.fireModeSlot)" (event "fireModeSlotCol.evAdded") (event "fireModeSlotCol.evRemoved"))
+		(var isAltFireModeActive:bool = "fireModeEntity ? fireModeEntity.fireModeSlot.isActive : false" (event "fireModeEntity.fireModeSlot.evUpdated"))
+		(var reloadTimeDiff:gfx = "_shipTTX.artillery.altFireMode && isAltFireModeActive ? _shipTTX.artillery.altFireMode.reloadTime : _shipTTX.artillery.mgReloadTime")
+		(var ammoTTX:gfx = "_isSecondaryActive && _shipTTX.artillery.ammoSecondaryAP ? _shipTTX.artillery.ammoSecondaryAP : _shipTTX.artillery.ammoAP")
+		(macro GET_ALT_GUN_PARAMS_SCOPE "isAltFireModeActive")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+											_value = "reloadTimeDiff"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MIN_SWITCH_TIME'
+											_value = "_shipTTX.artillery.ammoSwitchTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_CALIBER'
+											_value = "_shipTTX.artillery.mainGun[0].caliber"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+											_value = "ammoTTX.damage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_AMMO_SPEED'
+											_value = "ammoTTX.speed"
+											_valueConfig = "VALUE_CONFIG.METER_SECOND"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAX_DIST'
+											_value = "maxDistDiff"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_PARAMS_MODIFIER_GMIDEALRADIUS'
+											_value = "dispersionDiff"
+											_valueConfig = "VALUE_CONFIG.METER_NEGATIVE"
+			)
+			(element ShipParameter_Str		_title = "fireArcTitle"
+											_type = "useAltGunTTX ? altGunTTX.fireArcState.value : SC.Ui_styles.TOOLTIP_SYSTEM_STRING_PARAMS_TYPE.NEUTRAL"
+			)
+			(element ShipParameter_Str		_title = "leadFireTitle"
+											_type = "useAltGunTTX ? altGunTTX.leadFireState.value : SC.Ui_styles.TOOLTIP_SYSTEM_STRING_PARAMS_TYPE.NEUTRAL"
+			)
+			(element ShipParameter_Bool	_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_PERISCOPESTATE'
+											_value = "_shipTTX.artillery.disabledUnderwater"
+			)
+		)
+	)
+)
+
+(def layout AmmoHE_ParametersForDock (_shipTTX:gfx, _isSecondaryActive:bool) dispatch_size_change=true
+	(scope
+		(var fireModeSlotCol:gfx = "$datahub.getCollection(CC.fireModeSlot)")
+		(var fireModeEntity:gfx = "$datahub.getSingleEntity(CC.fireModeSlot)" (event "fireModeSlotCol.evAdded") (event "fireModeSlotCol.evRemoved"))
+		(var isAltFireModeActive:bool = "fireModeEntity ? fireModeEntity.fireModeSlot.isActive : false"  (event "fireModeEntity.fireModeSlot.evUpdated"))
+		(var reloadTimeDiff:gfx = "_shipTTX.artillery.altFireMode && isAltFireModeActive ? _shipTTX.artillery.altFireMode.reloadTime : _shipTTX.artillery.mgReloadTime")
+		(var ammoTTX:gfx = "_isSecondaryActive && _shipTTX.artillery.ammoSecondaryHE ? _shipTTX.artillery.ammoSecondaryHE : _shipTTX.artillery.ammoHE")
+		(macro GET_ALT_GUN_PARAMS_SCOPE "isAltFireModeActive")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+											_value = "reloadTimeDiff"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MIN_SWITCH_TIME'
+											_value = "_shipTTX.artillery.ammoSwitchTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_CALIBER'
+											_value = "_shipTTX.artillery.mainGun[0].caliber"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+											_value = "ammoTTX.damage"
+			)
+			(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_ARTILLERY_BURN_PROB'
+											_value = "ammoTTX.burnChance"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_ARTILLERY_FLOOD_GENERATION'
+											_value = "_shipTTX.artillery.ammoHE.floodChance"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_ALPHA_PIERCING'
+											_value = "ammoTTX.piercing"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_AMMO_SPEED'
+											_value = "ammoTTX.speed"
+											_valueConfig = "VALUE_CONFIG.METER_SECOND"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAX_DIST'
+											_value = "maxDistDiff"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_PARAMS_MODIFIER_GMIDEALRADIUS'
+											_value = "dispersionDiff"
+											_valueConfig = "VALUE_CONFIG.METER_NEGATIVE"
+			)
+			(element ShipParameter_Str		_title = "fireArcTitle"
+											_type = "useAltGunTTX ? altGunTTX.fireArcState.value : SC.Ui_styles.TOOLTIP_SYSTEM_STRING_PARAMS_TYPE.NEUTRAL"
+			)
+			(element ShipParameter_Str		_title = "leadFireTitle"
+											_type = "useAltGunTTX ? altGunTTX.leadFireState.value : SC.Ui_styles.TOOLTIP_SYSTEM_STRING_PARAMS_TYPE.NEUTRAL"
+			)
+			(element ShipParameter_Bool	_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_PERISCOPESTATE'
+											_value = "_shipTTX.artillery.disabledUnderwater"
+			)
+		)
+	)
+)
+
+(def layout AmmoCS_ParametersForDock (_shipTTX:gfx, _isSecondaryActive:bool) dispatch_size_change=true
+	(scope
+		(var fireModeSlotCol:gfx = "$datahub.getCollection(CC.fireModeSlot)")
+		(var fireModeEntity:gfx = "$datahub.getSingleEntity(CC.fireModeSlot)" (event "fireModeSlotCol.evAdded") (event "fireModeSlotCol.evRemoved"))
+		(var isAltFireModeActive:bool = "fireModeEntity ? fireModeEntity.fireModeSlot.isActive : false" (event "fireModeEntity.fireModeSlot.evUpdated"))
+		(var reloadTimeDiff:gfx = "_shipTTX.artillery.altFireMode && isAltFireModeActive ? _shipTTX.artillery.altFireMode.reloadTime : _shipTTX.artillery.mgReloadTime")
+		(var ammoTTX:gfx = "_isSecondaryActive && _shipTTX.artillery.ammoSecondaryCS ? _shipTTX.artillery.ammoSecondaryCS : _shipTTX.artillery.ammoCS")
+		(macro GET_ALT_GUN_PARAMS_SCOPE "isAltFireModeActive")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+											_value = "reloadTimeDiff"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MIN_SWITCH_TIME'
+											_value = "_shipTTX.artillery.ammoSwitchTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+											_value = "ammoTTX.damage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_CALIBER'
+											_value = "_shipTTX.artillery.mainGun[0].caliber"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_ALPHA_PIERCING'
+											_value = "ammoTTX.piercing"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_AMMO_SPEED'
+											_value = "ammoTTX.speed"
+											_valueConfig = "VALUE_CONFIG.METER_SECOND"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAX_DIST'
+											_value = "maxDistDiff"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_PARAMS_MODIFIER_GMIDEALRADIUS'
+											_value = "dispersionDiff"
+											_valueConfig = "VALUE_CONFIG.METER_NEGATIVE"
+			)
+			(element ShipParameter_Str		_title = "fireArcTitle"
+											_type = "useAltGunTTX ? altGunTTX.fireArcState.value : SC.Ui_styles.TOOLTIP_SYSTEM_STRING_PARAMS_TYPE.NEUTRAL"
+			)
+			(element ShipParameter_Str		_title = "leadFireTitle"
+											_type = "useAltGunTTX ? altGunTTX.leadFireState.value : SC.Ui_styles.TOOLTIP_SYSTEM_STRING_PARAMS_TYPE.NEUTRAL"
+			)
+			(element ShipParameter_Bool		_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_PERISCOPESTATE'
+											_value = "_shipTTX.artillery.disabledUnderwater"
+			)
+		)
+	)
+)
