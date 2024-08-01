@@ -1,0 +1,946 @@
+
+
+
+
+
+(def macro SHARED_SQUADRON_PARAMETERS (_squadronTTX:expression)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_HEALTH'
+									_value = "_squadronTTX.health"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED_MAX'
+									_value = "_squadronTTX.maxSpeed"
+									_valueConfig = "VALUE_CONFIG.KNOT"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+									_value = "_squadronTTX.numAttackers"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_PLANES'
+									_value = "_squadronTTX.numPlanes"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_HANGARVOLUME'
+									_value = "_squadronTTX.hangarVolume"
+	)
+	(element ShipParameter_Pair		_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+									_value1 = "_squadronTTX.restorePlanes"
+									_value2 = "_squadronTTX.restoreTime"
+									_valueConfig2 = "VALUE_CONFIG.SECONDS_NEGATIVE"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQ_VISIBILITY_DIST_BY_SHIP'
+									_value = "_squadronTTX.visibility"
+									_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+	)
+	(element ShipParameter_Bool		_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_PERISCOPESTATE'
+									_value = "_squadronTTX.disabledUnderwater"
+	)
+)
+
+(def macro TTX_SQUADRON_PARAMS_TOOLTIP ()
+	(scope (var shipTTX:gfx = "_shipTTX"))
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro SHARED_SQUADRON_PARAMETERS "squadronTTX")
+		)
+	)
+)
+
+(def element Rocket_HE_ParametersForDock (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_SQUADRON_AMMO_ROCKET_HE'" "bombTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro RocketBase_Params)
+		)
+	)
+)
+
+(def element Rocket_AP_ParametersForDock (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_SQUADRON_AMMO_ROCKET_AP'" "bombTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro RocketBase_Params)
+		)
+	)
+)
+
+(def element Bomb_AP_ParametersForDock (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_SQUADRON_AMMO_BOMB_AP'" "bombTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro BombAP_Params)
+		)
+	)
+)
+
+(def element Bomb_HE_ParametersForDock (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_SQUADRON_AMMO_BOMB_HE'" "bombTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro BombHE_Params)
+		)
+	)
+)
+
+
+(def element BombSkipHE_ParametersForDock (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_SQUADRON_AMMO_BOMB_HE'" "bombTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro BombSkipHE_Params)
+		)
+	)
+)
+
+(def element BombSkipAP_ParametersForDock (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_SQUADRON_AMMO_BOMB_AP'" "bombTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro BombSkipAP_Params)
+		)
+	)
+)
+
+(def element AviaTorpedo_ParametersForDock (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_SQUADRON_AMMO_TORPEDO'" "bombTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro TorpedoBase_Params)
+		)
+	)
+)
+
+(def macro Fighter_Tooltip_Parameters ()
+	(macro TTX_SQUADRON_PARAMS_TOOLTIP)
+	(macro TTX_INSTANCE 'Rocket_AP_ParametersForDock' "squadronTTX.rocketAP")
+	(macro TTX_INSTANCE 'Rocket_HE_ParametersForDock' "squadronTTX.rocketHE")
+)
+
+(def layout Squadron_Fighter_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.fighter")
+	)
+	(class $ParametersPanel)
+	(macro Fighter_Tooltip_Parameters)
+)
+(def layout Squadron_FighterAlt_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.fighterAlt")
+	)
+	(class $ParametersPanel)
+	(macro Fighter_Tooltip_Parameters)
+)
+
+(def macro TorpedoBomber_Tooltip_Parameters ()
+	(macro TTX_SQUADRON_PARAMS_TOOLTIP)
+	(macro TTX_INSTANCE 'AviaTorpedo_ParametersForDock' "squadronTTX.torpedo")
+)
+
+(def layout Squadron_TorpedoBomber_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.torpedoBomber")
+	)
+	(class $ParametersPanel)
+	(macro TorpedoBomber_Tooltip_Parameters)
+)
+(def layout Squadron_TorpedoBomberAlt_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.torpedoBomberAlt")
+	)
+	(class $ParametersPanel)
+	(macro TorpedoBomber_Tooltip_Parameters)
+)
+
+
+(def macro DiveBomber_Tooltip_Parameters ()
+	(macro TTX_SQUADRON_PARAMS_TOOLTIP)
+	(macro TTX_INSTANCE 'Bomb_AP_ParametersForDock' "squadronTTX.bombAP")
+	(macro TTX_INSTANCE 'Bomb_HE_ParametersForDock' "squadronTTX.bombHE")
+)
+
+(def layout Squadron_DiveBomber_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.diveBomber")
+	)
+	(class $ParametersPanel)
+	(macro DiveBomber_Tooltip_Parameters)
+)
+(def layout Squadron_DiveBomberAlt_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.diveBomberAlt")
+	)
+	(class $ParametersPanel)
+	(macro DiveBomber_Tooltip_Parameters)
+)
+
+
+
+(def macro SkipBomber_Tooltip_Parameters ()
+	(macro TTX_SQUADRON_PARAMS_TOOLTIP)
+	(macro TTX_INSTANCE 'BombSkipAP_ParametersForDock' "squadronTTX.bombAP")
+	(macro TTX_INSTANCE 'BombSkipHE_ParametersForDock' "squadronTTX.bombHE")
+)
+
+(def layout Squadron_SkipBomber_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.skipBomber")
+	)
+	(class $ParametersPanel)
+	(macro SkipBomber_Tooltip_Parameters)
+)
+(def layout Squadron_SkipBomberAlt_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.skipBomberAlt")
+	)
+	(class $ParametersPanel)
+	(macro SkipBomber_Tooltip_Parameters)
+)
+
+
+
+
+
+
+(def element SquadronWeapon_RocketHETTX (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro RocketHE_Params)
+		)
+	)
+)
+
+(def element SquadronWeapon_RocketAPTTX (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro RocketAP_Params)
+		)
+	)
+)
+
+(def layout Weapon_Fighter_ParametersForDock (shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "shipTTX.squadrons.fighter")
+	)
+	(class $ParametersPanel)
+	(macro TTX_INSTANCE 'SquadronWeapon_RocketAPTTX' "squadronTTX.rocketAP")
+	(macro TTX_INSTANCE 'SquadronWeapon_RocketHETTX' "squadronTTX.rocketHE")
+)
+(def layout Weapon_FighterAlt_ParametersForDock (shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "shipTTX.squadrons.fighterAlt")
+	)
+	(class $ParametersPanel)
+	(macro TTX_INSTANCE 'SquadronWeapon_RocketAPTTX' "squadronTTX.rocketAP")
+	(macro TTX_INSTANCE 'SquadronWeapon_RocketHETTX' "squadronTTX.rocketHE")
+)
+
+
+(def element SquadronWeapon_AviaTorpedo (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro Torpedo_Params)
+		)
+	)
+)
+
+(def layout Weapon_TorpedoBomber_ParametersForDock (shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "shipTTX.squadrons.torpedoBomber")
+	)
+	(class $ParametersPanel)
+	(macro TTX_INSTANCE 'SquadronWeapon_AviaTorpedo' "squadronTTX.torpedo")
+)
+(def layout Weapon_TorpedoBomberAlt_ParametersForDock (shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "shipTTX.squadrons.torpedoBomberAlt")
+	)
+	(class $ParametersPanel)
+	(macro TTX_INSTANCE 'SquadronWeapon_AviaTorpedo' "squadronTTX.torpedo")
+)
+
+
+(def element SquadronWeapon_BombHETTX (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro BombHE_Params)
+		)
+	)
+)
+
+(def element SquadronWeapon_BombAPTTX (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro BombAP_Params)
+		)
+	)
+)
+
+(def layout Weapon_DiveBomber_ParametersForDock (shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "shipTTX.squadrons.diveBomber")
+	)
+	(class $ParametersPanel)
+	(macro TTX_INSTANCE 'SquadronWeapon_BombAPTTX' "squadronTTX.bombAP")
+	(macro TTX_INSTANCE 'SquadronWeapon_BombHETTX' "squadronTTX.bombHE")
+)
+(def layout Weapon_DiveBomberAlt_ParametersForDock (shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "shipTTX.squadrons.diveBomberAlt")
+	)
+	(class $ParametersPanel)
+	(macro TTX_INSTANCE 'SquadronWeapon_BombAPTTX' "squadronTTX.bombAP")
+	(macro TTX_INSTANCE 'SquadronWeapon_BombHETTX' "squadronTTX.bombHE")
+)
+
+
+(def element SquadronWeapon_SkipBombHETTX (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro BombHE_Params)
+		)
+	)
+)
+
+(def element SquadronWeapon_SkipBombAPTTX (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro BombAP_Params)
+		)
+	)
+)
+
+(def layout Weapon_SkipBomber_ParametersForDock (shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "shipTTX.squadrons.skipBomber")
+	)
+	(class $ParametersPanel)
+	(macro TTX_INSTANCE 'SquadronWeapon_SkipBombHETTX' "squadronTTX.bombHE")
+	(macro TTX_INSTANCE 'SquadronWeapon_SkipBombAPTTX' "squadronTTX.bombAP")
+)
+(def layout Weapon_SkipBomberAlt_ParametersForDock (shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "shipTTX.squadrons.skipBomberAlt")
+	)
+	(class $ParametersPanel)
+	(macro TTX_INSTANCE 'SquadronWeapon_SkipBombHETTX' "squadronTTX.bombHE")
+	(macro TTX_INSTANCE 'SquadronWeapon_SkipBombAPTTX' "squadronTTX.bombAP")
+)
+
+
+
+
+
+
+
+(def layout Squadron_Fighter_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.fighter")
+		(var bombTTX:gfx = "	squadronTTX.rocketAP	? squadronTTX.rocketAP :
+								squadronTTX.rocketHE	? squadronTTX.rocketHE :
+														null")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED'
+											_value = "squadronTTX.speed"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.cruiseSpeed"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ROCKET_DAMAGE_SHORT'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.fighterDamage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_FIGHTER'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+											_value = "squadronTTX.numAttackers"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANE_VITALITY'
+											_value = "squadronTTX.health"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.vitality"
+			)
+			(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+											_values = "[squadronTTX.restorePlanes, squadronTTX.restoreTime]"
+											_alternativeValueKeys = "['', _ownerEntityId + '_' + SC.Battle.PARAMETER.planeRespawnTime]"
+											_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+			)
+			(element ShipParameter_Bool		_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_PERISCOPESTATE'
+											_value = "squadronTTX.disabledUnderwater"
+			)
+		)
+	)
+)
+(def layout Squadron_FighterAlt_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.fighterAlt")
+		(var bombTTX:gfx = "	squadronTTX.rocketAP	? squadronTTX.rocketAP :
+								squadronTTX.rocketHE	? squadronTTX.rocketHE :
+														null")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED'
+											_value = "squadronTTX.speed"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.cruiseSpeedAlt"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ROCKET_DAMAGE_SHORT'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.fighterDamageAlt"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_FIGHTER'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+											_value = "squadronTTX.numAttackers"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANE_VITALITY'
+											_value = "squadronTTX.health"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.vitalityAlt"
+			)
+			(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+											_values = "[squadronTTX.restorePlanes, squadronTTX.restoreTime]"
+											_alternativeValueKeys = "['', _ownerEntityId + '_' + SC.Battle.PARAMETER.planeRespawnTimeAlt]"
+											_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+			)
+			(element ShipParameter_Bool		_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_PERISCOPESTATE'
+											_value = "squadronTTX.disabledUnderwater"
+			)
+		)
+	)
+)
+
+
+(def layout Squadron_TorpedoBomber_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.torpedoBomber")
+		(var bombTTX:gfx = "squadronTTX.torpedo")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED'
+											_value = "squadronTTX.speed"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.cruiseSpeed"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_TORPEDO_DAMAGE_SHORT'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.tBomberDamage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_TORPEDO'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+											_value = "squadronTTX.numAttackers"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANE_VITALITY'
+											_value = "squadronTTX.health"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.vitality"
+			)
+			(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+											_values = "[squadronTTX.restorePlanes, squadronTTX.restoreTime]"
+											_alternativeValueKeys = "['', _ownerEntityId + '_' + SC.Battle.PARAMETER.planeRespawnTime]"
+											_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+			)
+			(element ShipParameter_Bool		_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_PERISCOPESTATE'
+											_value = "squadronTTX.disabledUnderwater"
+			)
+		)
+	)
+)
+(def layout Squadron_TorpedoBomberAlt_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.torpedoBomberAlt")
+		(var bombTTX:gfx = "squadronTTX.torpedo")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED'
+											_value = "squadronTTX.speed"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.cruiseSpeedAlt"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_TORPEDO_DAMAGE_SHORT'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.tBomberDamageAlt"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_TORPEDO'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+											_value = "squadronTTX.numAttackers"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANE_VITALITY'
+											_value = "squadronTTX.health"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.vitalityAlt"
+			)
+			(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+											_values = "[squadronTTX.restorePlanes, squadronTTX.restoreTime]"
+											_alternativeValueKeys = "['', _ownerEntityId + '_' + SC.Battle.PARAMETER.planeRespawnTimeAlt]"
+											_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+			)
+			(element ShipParameter_Bool		_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_PERISCOPESTATE'
+											_value = "squadronTTX.disabledUnderwater"
+			)
+		)
+	)
+)
+
+
+(def layout Squadron_DiveBomber_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.diveBomber")
+		(var bombTTX:gfx = "	squadronTTX.bombAP	? squadronTTX.bombAP :
+								squadronTTX.bombHE	? squadronTTX.bombHE :
+								squadronTTX.bombDW	? squadronTTX.bombDW :
+														null")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED'
+											_value = "squadronTTX.speed"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.cruiseSpeed"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_DAMAGE_SHORT'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.diveBomberDamage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_DIVE'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+											_value = "squadronTTX.numAttackers"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANE_VITALITY'
+											_value = "squadronTTX.health"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.vitality"
+			)
+			(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+											_values = "[squadronTTX.restorePlanes, squadronTTX.restoreTime]"
+											_alternativeValueKeys = "['', _ownerEntityId + '_' + SC.Battle.PARAMETER.planeRespawnTime]"
+											_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+			)
+			(element ShipParameter_Bool		_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_PERISCOPESTATE'
+											_value = "squadronTTX.disabledUnderwater"
+			)
+		)
+	)
+)
+(def layout Squadron_DiveBomberAlt_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.diveBomberAlt")
+		(var bombTTX:gfx = "	squadronTTX.bombAP	? squadronTTX.bombAP :
+								squadronTTX.bombHE	? squadronTTX.bombHE :
+								squadronTTX.bombDW	? squadronTTX.bombDW :
+														null")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED'
+											_value = "squadronTTX.speed"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.cruiseSpeedAlt"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_DAMAGE_SHORT'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.diveBomberDamageAlt"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_DIVE'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+											_value = "squadronTTX.numAttackers"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANE_VITALITY'
+											_value = "squadronTTX.health"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.vitalityAlt"
+			)
+			(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+											_values = "[squadronTTX.restorePlanes, squadronTTX.restoreTime]"
+											_alternativeValueKeys = "['', _ownerEntityId + '_' + SC.Battle.PARAMETER.planeRespawnTimeAlt]"
+											_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+			)
+			(element ShipParameter_Bool		_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_PERISCOPESTATE'
+											_value = "squadronTTX.disabledUnderwater"
+			)
+		)
+	)
+)
+
+
+(def layout Squadron_SkipBomber_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.skipBomber")
+		(var bombTTX:gfx = "squadronTTX.bombHE ? squadronTTX.bombHE : squadronTTX.bombAP")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED'
+											_value = "squadronTTX.speed"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.cruiseSpeed"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_DAMAGE_SHORT'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.skipBomberDamage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_SKIP'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_SKIPS_COUNT'
+											_value = "bombTTX.skipsCount"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+											_value = "squadronTTX.numAttackers"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANE_VITALITY'
+											_value = "squadronTTX.health"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.vitality"
+			)
+			(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+											_values = "[squadronTTX.restorePlanes, squadronTTX.restoreTime]"
+											_alternativeValueKeys = "['', _ownerEntityId + '_' + SC.Battle.PARAMETER.planeRespawnTime]"
+											_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+			)
+			(element ShipParameter_Bool		_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_PERISCOPESTATE'
+											_value = "squadronTTX.disabledUnderwater"
+			)
+		)
+	)
+)
+
+(def layout Squadron_SkipBomberAlt_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.skipBomberAlt")
+		(var bombTTX:gfx = "squadronTTX.bombHE ? squadronTTX.bombHE : squadronTTX.bombAP")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED'
+											_value = "squadronTTX.speed"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.cruiseSpeedAlt"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_DAMAGE_SHORT'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.skipBomberDamageAlt"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_SKIP'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_SKIPS_COUNT'
+											_value = "bombTTX.skipsCount"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+											_value = "squadronTTX.numAttackers"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANE_VITALITY'
+											_value = "squadronTTX.health"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.vitalityAlt"
+			)
+			(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+											_values = "[squadronTTX.restorePlanes, squadronTTX.restoreTime]"
+											_alternativeValueKeys = "['', _ownerEntityId + '_' + SC.Battle.PARAMETER.planeRespawnTimeAlt]"
+											_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+			)
+			(element ShipParameter_Bool		_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_PERISCOPESTATE'
+											_value = "squadronTTX.disabledUnderwater"
+			)
+		)
+	)
+)
+
+
+
+
+
+
+(def layout Weapon_Fighter_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.fighter")
+		(var bombTTX:gfx = "	squadronTTX.rocketAP	? squadronTTX.rocketAP :
+								squadronTTX.rocketHE	? squadronTTX.rocketHE :
+														null")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ROCKET_DAMAGE_SHORT'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.fighterDamage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_FIGHTER'
+											_value = "bombTTX.numBombs"
+			)
+			(controller $Instance layout=true
+				(bind enabled "squadronTTX.rocketHE")
+				(exprs
+					(class $ParametersPanel)
+					(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ALPHA_PIERCING_HE'
+													_value = "bombTTX.piercing"
+													_valueConfig = "VALUE_CONFIG.MILLIMETER"
+					)
+					(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_SQUADRON_BURN_PROB_HE'
+													_value = "bombTTX.burnChance"
+													_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+					)
+				)
+			)
+		)
+	)
+)
+(def layout Weapon_FighterAlt_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.fighterAlt")
+		(var bombTTX:gfx = "	squadronTTX.rocketAP	? squadronTTX.rocketAP :
+								squadronTTX.rocketHE	? squadronTTX.rocketHE :
+														null")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ROCKET_DAMAGE_SHORT'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.fighterDamageAlt"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_FIGHTER'
+											_value = "bombTTX.numBombs"
+			)
+			(controller $Instance layout=true
+				(bind enabled "squadronTTX.rocketHE")
+				(exprs
+					(class $ParametersPanel)
+					(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ALPHA_PIERCING_HE'
+													_value = "bombTTX.piercing"
+													_valueConfig = "VALUE_CONFIG.MILLIMETER"
+					)
+					(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_SQUADRON_BURN_PROB_HE'
+													_value = "bombTTX.burnChance"
+													_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+					)
+				)
+			)
+		)
+	)
+)
+
+
+(def layout Weapon_TorpedoBomber_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.torpedoBomber")
+		(var bombTTX:gfx = "squadronTTX.torpedo")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_TORPEDO_DAMAGE_SHORT'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.tBomberDamage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_TORPEDO'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_SPEED'
+											_value = "bombTTX.speed"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_MAX_DIST'
+											_value = "bombTTX.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_TORPEDO_ARMING_DIST'
+											_value = "bombTTX.armingDistance"
+											_valueConfig = "VALUE_CONFIG.METER_NEGATIVE"
+			)
+		)
+	)
+)
+(def layout Weapon_TorpedoBomberAlt_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.torpedoBomberAlt")
+		(var bombTTX:gfx = "squadronTTX.torpedo")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_TORPEDO_DAMAGE_SHORT'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.tBomberDamageAlt"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_TORPEDO'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_SPEED'
+											_value = "bombTTX.speed"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_MAX_DIST'
+											_value = "bombTTX.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_TORPEDO_ARMING_DIST'
+											_value = "bombTTX.armingDistance"
+											_valueConfig = "VALUE_CONFIG.METER_NEGATIVE"
+			)
+		)
+	)
+)
+
+
+(def layout Weapon_DiveBomber_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.diveBomber")
+		(var bombTTX:gfx = "	squadronTTX.bombAP	? squadronTTX.bombAP :
+								squadronTTX.bombHE	? squadronTTX.bombHE :
+								squadronTTX.bombDW	? squadronTTX.bombDW :
+														null")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_DAMAGE_SHORT'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.diveBomberDamage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_DIVE'
+											_value = "bombTTX.numBombs"
+			)
+			(controller $Instance layout=true
+				(bind enabled "squadronTTX.bombHE")
+				(exprs
+					(class $ParametersPanel)
+					(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ALPHA_PIERCING_HE'
+													_value = "bombTTX.piercing"
+													_valueConfig = "VALUE_CONFIG.MILLIMETER"
+					)
+					(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_SQUADRON_BURN_PROB_HE'
+													_value = "bombTTX.burnChance"
+													_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+					)
+				)
+			)
+		)
+	)
+)
+(def layout Weapon_DiveBomberAlt_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.diveBomberAlt")
+		(var bombTTX:gfx = "	squadronTTX.bombAP	? squadronTTX.bombAP :
+								squadronTTX.bombHE	? squadronTTX.bombHE :
+								squadronTTX.bombDW	? squadronTTX.bombDW :
+														null")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_DAMAGE_SHORT'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.diveBomberDamageAlt"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_DIVE'
+											_value = "bombTTX.numBombs"
+			)
+			(controller $Instance layout=true
+				(bind enabled "squadronTTX.bombHE")
+				(exprs
+					(class $ParametersPanel)
+					(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ALPHA_PIERCING_HE'
+													_value = "bombTTX.piercing"
+													_valueConfig = "VALUE_CONFIG.MILLIMETER"
+					)
+					(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_SQUADRON_BURN_PROB_HE'
+													_value = "bombTTX.burnChance"
+													_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+					)
+				)
+			)
+		)
+	)
+)
+
+
+(def layout Weapon_SkipBomber_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.skipBomber")
+		(var bombTTX:gfx = "squadronTTX.bombHE ? squadronTTX.bombHE : squadronTTX.bombAP")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_DAMAGE_SHORT'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.skipBomberDamage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_DIVE'
+											_value = "bombTTX.numBombs"
+			)
+			(controller $Instance layout=true
+				(bind enabled "bombTTX.burnChance != null")
+				(exprs
+					(class $ParametersPanel)
+					(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ALPHA_PIERCING_HE'
+													_value = "bombTTX.piercing"
+													_valueConfig = "VALUE_CONFIG.MILLIMETER"
+					)
+					(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_SQUADRON_BURN_PROB_HE'
+													_value = "bombTTX.burnChance"
+													_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+					)
+				)
+			)
+		)
+	)
+)
+(def layout Weapon_SkipBomberAlt_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.skipBomberAlt")
+		(var bombTTX:gfx = "squadronTTX.bombHE ? squadronTTX.bombHE : squadronTTX.bombAP")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_DAMAGE_SHORT'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.skipBomberDamageAlt"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_DIVE'
+											_value = "bombTTX.numBombs"
+			)
+			(controller $Instance layout=true
+				(bind enabled "bombTTX.burnChance != null")
+				(exprs
+					(class $ParametersPanel)
+					(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ALPHA_PIERCING_HE'
+													_value = "bombTTX.piercing"
+													_valueConfig = "VALUE_CONFIG.MILLIMETER"
+					)
+					(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_SQUADRON_BURN_PROB_HE'
+													_value = "bombTTX.burnChance"
+													_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+					)
+				)
+			)
+		)
+	)
+)

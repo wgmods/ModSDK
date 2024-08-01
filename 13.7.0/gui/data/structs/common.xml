@@ -1,0 +1,134 @@
+<structs>
+	<struct	name="ExcursionTarget">
+		<property name="moduleType"		type="String"/>
+		<property name="moduleId"		type="Number"/>
+	</struct>
+
+	<struct name="AchievementConditionStruct">
+		<property name="max"				type="Number"/>
+		<property name="currentProgress"	type="Number"/>
+		<property name="progress"			type="Number"/>
+		<property name="description"		type="String"/>
+	</struct>
+
+	<struct name="PriceInfoStruct">
+		<property	name='finalPrice'	type="Number"/>
+		<property 	name='basePrice'	type="Number"/>
+		<property 	name='currency'		type="String"/>
+	</struct>
+	
+	<struct name="CounterLineInfoStruct">
+		<property 	name='title'		type="String"/>
+		<property 	name='count'		type="Integer"/>
+		<property 	name='measurement'	type="String"/>
+	</struct>
+
+	<struct name="RankInfoStruct">
+		<property	name='league' 					type="Integer"/>
+		<property	name='rank' 					type="Integer"/>
+		<property	name='stars' 					type="Integer"/>
+		<property	name='victories' 				type="Integer"/>
+	</struct>
+
+	<struct name="DogTagRestrictionsStruct">
+		<property	name='battleTypes' 			type="Array"/>
+		<!--
+		<property	name='isPercent' 		type="Integer"/> 
+		<property	name='prebattle_id' 	type="Integer"/>
+		<property	name='battleCount' 		type="Integer"/>
+		<property	name='winCount' 		type="Integer"/>
+		<property	name='winRate' 			type="Integer"/>
+		<property	name='clearExp' 		type="Integer"/>
+		<property	name='weaponType' 		type="Integer"/>
+		<property	name='damage' 			type="Integer"/>
+		<property	name='damagePotential' 	type="Integer"/>
+		<property	name='damageScout' 		type="Integer"/>
+		<property	name='oil' 				type="Integer"/>
+		<property	name='ownedShipsCount' 	type="Integer"/>
+		<property	name='shipsKill' 		type="Integer"/>
+		<property	name='planesKill' 		type="Integer"/>
+		-->
+	</struct>
+
+	<struct name="ModifierDescriptionStruct">
+		<property	name='paramName' 		type="String"/> 
+		<property	name='measuredValue' 	type="String"/> 
+		<property	name='numericValue' 	type="Number"/> 
+		<property	name='measure' 			type="String"/> 
+		<property	name='category' 		type="String"/> 
+		<property	name='attributeIDS' 	type="String"/> 
+		<property	name='hidden' 			type="Boolean"/> 
+		<property	name='sortIndex' 		type="Integer"/> 
+	</struct>
+
+	<struct name="AmmoSlotData">
+		<property	name='ammoId'				type="String"/>
+		<property	name='title'				type="String"/>
+		<property	name='type'					type="Integer"/>
+		<property	name='subheader'			type="String"/>
+		<property	name='description'			type="String"/>
+		<property	name='iconPath'				type="String"/>
+		<property	name="secondaryIconPath"	type="String"/>
+		<property	name='paramsDescriptor'		type="String"/>
+		<property	name='planeArmament'		type="Array"	contains="AmmoSlotData"/> <!-- Single item stored as an array to avoid cyclic imports in python and endless initialization in as-->
+		<property	name='planeConsumables'		type="Array"	contains="ConsumableSlotData"/>
+
+		<property	name="uniqueFeatures"		type="Array"	contains="UniqueFeature"/>
+	</struct>
+
+	<struct name="UniqueFeature">
+		<property	name='id' 		type="Integer"	/>		<!-- SC.Weapons.AMMO_UNIQUE_FEATURES -->
+		<property	name='params' 	type="Array"	/>		<!-- TTX values connected to the selected feature -->
+	</struct>
+
+	<struct name="ConsumableSlotData">
+		<property	name='abilityId'			type="Number"/>
+		<property	name='title'				type="String"/>
+		<property	name='subheader'			type="String"/>
+		<property	name='description'			type="String"/>
+		<property	name='iconPath'				type="String"/>
+		<property	name='attributes'			type="AttributesStruct"/>
+		<property	name='attributesAlt'		type="AttributesStruct"/>
+	</struct>
+
+	<struct name="RageModeSlotData">
+		<property	name="name"					type="String"	/>
+		<property	name="iconPath"				type="String"	/>
+		<property	name="title"				type="String"	/>
+		<property	name="command"				type="Integer"	/>
+		<property	name="isOwned"				type="Boolean"	/>
+		<property	name="isAutoUsage"			type="Boolean"	/>
+		<property	name="activeAttributes"		type="AttributesStruct"	/>
+		<property	name="activationParams"		type="Array"	contains="RageModeTrigger"/>
+		<property	name="decayAttributes"		type="AttributesStruct"	/>
+	</struct>
+
+	<struct name="RageModeTrigger">
+		<property	name='nameIDS'			type="String"/>
+		<property	name='hasValue'			type="Boolean"/>
+		<property	name='value'			type="String"/>
+		<property	name='percentGain'		type="Number"/>
+	</struct>
+
+	<struct name="AttributesStruct">
+		<property	name='positive'	type="Array"	contains="ModifierDescriptionStruct"/>
+		<property	name='neutral'	type="Array"	contains="ModifierDescriptionStruct"/>
+		<property	name='negative'	type="Array"	contains="ModifierDescriptionStruct"/>
+	</struct>
+
+	<struct name="IntDiff">
+		<property	name='value' 	type="Integer"	/>
+		<property	name='delta' 	type="Integer"	/>
+	</struct>
+
+	<struct name="FloatDiff">
+		<property	name='value' 	type="Number"	/>
+		<property	name='delta' 	type="Number"	/>
+	</struct>
+
+	<struct name="BoolDiff">
+		<property	name='value' 	type="Boolean"	/>
+		<property	name='hasDiff' 	type="Boolean"	/>
+	</struct>
+	
+</structs>

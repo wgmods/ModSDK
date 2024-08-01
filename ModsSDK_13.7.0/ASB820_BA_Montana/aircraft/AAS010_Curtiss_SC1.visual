@@ -1,0 +1,125 @@
+<AAS010_Curtiss_SC1.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	hull	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	HP_gunFireBack	</identifier>
+				<transform>
+					<row0>	-1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 -1.0000 0.0000	</row2>
+					<row3>	0.0000 0.2559 -0.1237 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	hull_wire	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	mod	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	propeller_mod	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.1832 0.1117 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	disc	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	disc	</node>
+		<geometry>
+			<vertices>	discShape.vertices	</vertices>
+			<primitive>	discShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	PROPELLERMAT_propeller	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ASB820_BA_Montana/aircraft/USA_Disk_4Blade_01_alpha.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	hull	</node>
+		<geometry>
+			<vertices>	hullShape.vertices	</vertices>
+			<primitive>	hullShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ASB820_BA_Montana/aircraft/AAS010_Curtiss_SC1.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	hull_wire	</node>
+		<geometry>
+			<vertices>	hull_wireShape.vertices	</vertices>
+			<primitive>	hull_wireShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPWIRE_PBS_Hull	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ASB820_BA_Montana/aircraft/AAS010_Curtiss_SC1_wire.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	mod	</node>
+		<geometry>
+			<vertices>	modShape.vertices	</vertices>
+			<primitive>	modShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/ASB820_BA_Montana/aircraft/AAS010_Curtiss_SC1.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.4168 -0.0046 -0.4873	</min>
+		<max>	0.4168 0.3333 0.2508	</max>
+	</boundingBox>
+</AAS010_Curtiss_SC1.visual>

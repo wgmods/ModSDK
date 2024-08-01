@@ -1,0 +1,189 @@
+(def element WeaponTooltip (_ammoEntityId:number, _isActiveBurst:bool=false, _isSecondaryActive:bool=false, _isShowUB2Tooltip:bool=false) layout=true dispatch_size_change=true
+	(scope
+		(var ammoEntity:gfx = "$datahub.getEntity(_ammoEntityId)")
+		(var viewData:gfx = "ammoEntity ? ammoEntity.ammo.viewData : null" (event "ammoEntity.ammo.evUpdated"))
+
+		(var paramsDescriptor:str = "viewData ? viewData.paramsDescriptor : ''")
+
+		
+		(var iconPath:str = "viewData ? viewData.iconPath : ''")
+		(var secondaryIconPath:str = "viewData ? viewData.secondaryIconPath : ''")
+		(var title:str = "viewData ? viewData.title : ''")
+		(var description:str = "viewData ? viewData.description : ''" (event "ammoEntity.ammo.evUpdated"))
+		(var subheader:str = "viewData ? viewData.subheader : ''")
+
+		(var uniqueFeatures:array = "viewData ? viewData.uniqueFeatures : []" (event "ammoEntity.ammo.evUpdated"))
+		(var hasUniqueFeatures:bool = "uniqueFeatures.length > 0")
+		
+		(macro PULL_SHIP_ID)
+		(var shipInsetEntity:gfx = "$datahub.getPrimaryEntity(CC.ownShip, shipIdForModuleInset)")
+		(var isOwned:bool = "!!shipInsetEntity")
+		
+		(var unifiedStatus:str = "isOwned ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+	)
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (hitTest = false) (width = 340px))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_imageUrl =			"'url:' + (_isSecondaryActive ? secondaryIconPath : iconPath)"
+			_imageWidth =		"60"
+			_imageHeight =		"60"
+			_unifiedStatus =	"unifiedStatus"
+			_headerText =		"title"
+			_subheaderText =	"subheader"
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isOwned"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isOwned")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+					_text = 'IDS_COMMON_MOUNTED'
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemSubstituteDescriptionText
+			_descriptionText = "tr(description)"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element AmmoParametersAdapter
+			_ttxDescriptor = "paramsDescriptor"
+			_isSecondaryActive = "_isSecondaryActive"
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Repeat renderer='WeaponTooltipUniqueFeatureItem'
+				(bind enabled "hasUniqueFeatures")
+				(bind count "uniqueFeatures.length")
+				(args
+					_feature = "uniqueFeatures[$index]"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_isActiveBurst"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "_isActiveBurst")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.BURST_FIRE"
+					_text = "'IDS_DOCK_FIRE_MODE_TITLE_BURST'"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_isActiveBurst"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='FireModeTooltipParams'
+				(bind enabled "_isActiveBurst")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.BURST_FIRE"
+					_text = "'IDS_DOCK_FIRE_MODE_TITLE_BURST'"
+				)
+			)
+		)
+	)
+)
+
+(def element WeaponTooltipUniqueFeatureItem (_feature:gfx)
+	(scope
+		(var featureName:str = "SC.Weapons.AMMO_UNIQUE_FEATURES.VALUE_TO_NAME[_feature.id]")
+		(var iconPath:str = "'url:../ammo/unique_features/' + toLower(featureName) + '.png'")
+		(var text:str = "'IDS_DOCK_AMMO_UNIQUE_FEATURE_TITLE_' + featureName")
+
+		(var paramsRenderer:str = "_feature.params.length == 0	? '' :
+									_feature.id == SC.Weapons.AMMO_UNIQUE_FEATURES.TORPEDO_DAMAGE_BY_DIST_INCREASE	? 'TorpDamageIncParams' :
+									_feature.id == SC.Weapons.AMMO_UNIQUE_FEATURES.TORPEDO_DAMAGE_BY_DIST_DECREASE	? 'TorpDamageDecParams' :
+									_feature.id == SC.Weapons.AMMO_UNIQUE_FEATURES.SKIP_BOMB						? 'SkipBombParams' : ''")
+	)
+	
+	(style
+		(width = 100%)
+	)
+	(element TooltipSystemHorizontalDivider)
+	(block
+		(style
+			(flow = "horizontal")
+			(width = 100%)
+		)
+
+		(block
+			(style
+				(width = 19px) (height = 19px) (marginTop = -4px) (marginLeft = -3px)
+				(marginBottom = -7px) (marginRight = 5px) (backgroundSize = "cover")
+				(bind backgroundImage "iconPath")
+			)
+		)
+
+		(tf
+			(class $TextDefaultNM)
+			(style (alpha = "TC") (leading = "-3") (width = 100%))
+			(bindcall substitute imageOffset=5 sourceText="tr(text)" postfix='' init=true)
+		)
+	)
+
+	(controller $Instance
+		(bind enabled "paramsRenderer != ''")
+		(bind renderer "paramsRenderer")
+		(args
+			_params = "_feature.params"
+		)
+	)
+)
+
+(def element TorpDamageIncParams (_params:gfx)
+	(class $ParametersPanel)
+	(element TooltipSystemHorizontalDivider)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number		_title = 'IDS_SHIP_PARAM_TORPEDO_DISTANCE_OF_MAX_DAMAGE'
+												_value = "_params[0]"
+												_valueConfig = "VALUE_CONFIG.KILOMETER_FROM"
+			)
+		)
+	)
+)
+
+(def element TorpDamageDecParams (_params:gfx)
+	(class $ParametersPanel)
+	(element TooltipSystemHorizontalDivider)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number		_title = 'IDS_SHIP_PARAM_TORPEDO_DISTANCE_OF_MAX_DAMAGE'
+												_value = "_params[0]"
+												_valueConfig = "VALUE_CONFIG.KILOMETER_TO"
+			)
+		)
+	)
+)
+
+(def element SkipBombParams (_params:gfx)
+	(class $ParametersPanel)
+	(element TooltipSystemHorizontalDivider)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_SKIPS_COUNT'
+											_value = "_params[0]"
+			)
+		)
+	)
+)

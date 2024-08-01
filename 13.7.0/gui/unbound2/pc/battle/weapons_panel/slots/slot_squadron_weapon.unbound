@@ -1,0 +1,119 @@
+
+
+
+
+(def element SlotSquadronWeapon () layout=true
+	(scope
+		(var _activeSquadron:number = -1)
+		(var currentSquadronEntity:gfx = "$datahub.getPrimaryEntity(CC.ownSquadron, _activeSquadron)")
+		(var planeComponent:gfx = "currentSquadronEntity.plane")
+		(var healthComponent:gfx = "currentSquadronEntity.health")
+		(var ownSquadronComponent:gfx = "currentSquadronEntity.ownSquadron")
+		(var ammoType:number = "planeComponent.ammoType")
+		(var numPlanes:number = "healthComponent.value" (event "healthComponent.evValueChanged"))
+		(var attackState:number = "ownSquadronComponent.attackState" (event "ownSquadronComponent.evAttackStateChanged"))
+		(var flightState:number = "ownSquadronComponent.state" (event "ownSquadronComponent.evStateChanged"))
+
+		(var cmdEntity:gfx = "$datahub.getPrimaryEntity(CC.commandMappingCommandName, 'CMD_WEAPON_0')")
+		(var commandId:number = "cmdEntity.commandMappingCommand.id" (event "cmdEntity.commandMappingCommand.evChanged"))
+
+		(var ammoName:str = "SC.Common.PLANE_AMMO_TYPES.VALUE_TO_NAME[ammoType]")
+		(var ammoId:str = "planeComponent.hasSubType	? ammoName + planeComponent.subTypePostfix
+														: ammoName")
+
+		(var ammoEntity:gfx = "$datahub.getPrimaryEntity(CC.ammo, ammoId)")
+		(var ammoViewData:gfx = "ammoEntity ? ammoEntity.ammo.viewData : null")
+		(var weaponImageUrl:str = "'url:' + ammoViewData.iconPath")
+
+		(var uniqueFeatures:array = "ammoEntity.ammo ? ammoEntity.ammo.viewData.uniqueFeatures : []" (event "ammoEntity.ammo.evUpdated"))
+
+		(var atWork:bool = "attackState == SC.Battle.SQUADRON_ATTACK_STATE.AIMING")
+		(var isLocked:bool = "flightState == AIRPLANE_FLIGHT_STATE_LAUNCHING")
+		
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+		(var countdown:gfx = "currentSquadronEntity && currentSquadronEntity.hasComponent(CC.countDown) ? currentSquadronEntity.countDown : null" (event "currentSquadronEntity.evAdded") (event "currentSquadronEntity.evRemoved"))
+		(var remainTime:number = "countdown ? countdown.endTime - timerEntity.timer.currentTime : 0" (event "timerEntity.timer.evFrequent"))
+		(var percentPassed:number = "countdown && countdown.duration ? remainTime / countdown.duration : 1")
+		(var showReload:bool =  "remainTime > 0")
+
+		(var _width:number = "SLOT_SIZE")
+		(var _height:number = "SLOT_SIZE")
+	)
+
+	(style
+		(width = "_width")
+		(height = "_height")
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+
+		
+		(element SlotItem
+			(scope
+				(bind _itemImageUrl "weaponImageUrl")
+				(bind _isLocked "isLocked")
+				(bind _isSelectable "commandId")
+				(bind _width "_width")
+				(bind _height "_height")
+				(_isSelected = true)
+			)
+		)
+
+		(htile
+			(class $FullsizeAbsolute)
+			(style
+				(hitTest = false)
+				(width = 42px)
+			)
+			(controller $Repeat renderer='WeaponSlotUniqueFeatureItem'
+				(bind count "uniqueFeatures.length")
+				(args
+					_featureId = "uniqueFeatures[$index].id"
+				)
+			)
+		)
+
+		
+		(element SlotReloadBar
+			(scope
+				(bind _atWork "atWork")
+				(bind _percentPassed "percentPassed")
+				(bind _remainTime "remainTime")
+			)
+			(class $FullsizeAbsolute)
+			(bind visible "remainTime > 0")
+		)
+
+		(controller $FxInstance lifetime=0.5 renderer='SlotWorkStartedFX'
+			(bindcall create (event "ownSquadronComponent.evAttackStateChanged") (bind enabled "atWork"))
+		)
+	)
+
+	
+	(element HotkeyIndicator _commandId="commandId" _fxOnDown=true _toggled=true
+		(style
+			(bottom = "-HOTKEY_SIZE[SIZE.MEDIUM]")
+			(position = "absolute")
+			(hcenter = "0px")
+		)
+		(bind visible "commandId != 0")
+	)
+
+	(element HIT_TEST_TOOLTIP_CONTAINER
+		(controller $Tooltip (renderer = 'BattleWeaponTooltip')
+			(args
+				_ammoViewData = "ammoViewData"
+				_entityId = "currentSquadronEntity.id"
+			)
+
+			(align="bottom|center")
+			(position="border")
+			(offset=[0, 20])
+			(screenBoundsOffset={left:10, top:30, right:10, bottom:100})
+			(cache=false)
+
+			(macro SIMPLE_TOOLTIP_ANIMATION)
+		)
+	)
+)

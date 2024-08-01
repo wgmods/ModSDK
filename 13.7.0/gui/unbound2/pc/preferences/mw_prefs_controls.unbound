@@ -1,0 +1,982 @@
+(def constant PREF_ROW_SIZES {
+	SINGLELINE_HEIGHT:					48,
+	MULTILINE_HEIGHT:					82,
+	DEFAULT_NESTED_HEADER_MARGIN_TOP:	24,
+	FIRST_NESTED_HEADER_MARGIN_TOP:		12,
+	KEYBINDING_RIGHT_PADDING:			80,
+	KEYBINDING_SPACE_BETWEEN_KEYS:		136
+})
+
+(def constant PREF_ROW_SIDE_PADDING 40)
+
+(def css $SingleLinePrefRowSize ()
+	(width = 100%)
+	(height = "PREF_ROW_SIZES.SINGLELINE_HEIGHT")
+)
+
+(def css $MultilinePrefRowSize ()
+	(width = 100%)
+	(height = "PREF_ROW_SIZES.MULTILINE_HEIGHT")
+)
+
+(def css $SingleLinePrefRowCaption ()
+	(position = "absolute")
+	(left = "M")
+)
+
+(def css $MultilinePrefRowCaption ()
+	(position = "absolute")
+	(paddingLeft = "LS")
+	(paddingRight = "M")
+	(width = 100%)
+)
+
+(def css $MultilinePrefRowControl ()
+	(paddingLeft = "LS")
+	(paddingRight = "M")
+	(width = 100%)
+)
+
+(def css $SingleLinePrefRowHeaderSubColumnInitPosition ()
+	(position = "absolute")
+	(align = "center")
+	(width = 0px)
+	(height = 0px)
+)
+
+(def element PrefRow (_ownerModal:str, _data:dict, _isNested:bool=false)
+	(scope
+		(var isRowEnabled:bool = false)
+
+		(controller $Animation		
+			(bindcall play
+				delay = "$index * 0.03"
+				duration = "0.001"
+				from	 = "{ isRowEnabled: false }"
+				to		 = "{ isRowEnabled: true }"
+				init	 = true
+			)
+		)
+
+		(macro IS_TEXT_COMMUNICATION_BLOCKED)
+		(var additionalData:dict = "'data' in _data ? _data.data : {}")
+		(var isYouthProtection:bool = "'isYouthProtection' in additionalData? additionalData.isYouthProtection : false")
+	)
+	(bind visible "!(isYouthProtection && isTextSettingsBlocked)")
+
+	(style
+		(width = 100%)
+		(bind alpha "0")
+	)
+
+	(controller $Instance
+		(bind enabled "isRowEnabled")
+		(bind renderer "'type' in _data ? _data.type : ''") 
+		(args
+			_ownerModal = "_ownerModal"
+			_data = "_data"
+			_isNested = "_isNested"
+		)
+	)
+
+	(controller $Animation
+		(bindcall play
+			duration = "0.2"
+			from = "{ alpha: 0 }"
+			to = "{ alpha: 1 }"
+			(bind trigger "isRowEnabled")
+			(bind enabled "!isRowEnabled")
+		)
+	)
+)
+
+(def element PrefRowHeader (_ownerModal:str, _data:dict, _isNested:bool)
+	(scope
+		(var isFirst:bool = "$index == 0")
+		(var label:str = "'label' in _data ? _data.label : ''")
+		(var isKeybindingRelated:bool = "'isKeybindingRelated' in _data ? _data.isKeybindingRelated : false")
+	)
+
+	(style
+		(width = 100%)
+		(bind height "isFirst	? _isNested ? 60px : 48px
+								: 72px")
+	)
+
+	(controller $Instance renderer='HorizontalDividerTwoPx'
+		(bind enabled "_isNested && isFirst")
+		(exprs
+			(style (position = "absolute") (top = "-XXS") (width = 100%))
+		)
+	)
+
+	(tf
+		(bind class "_isNested ? '$TextDefaultBold21NM' : '$TextDefaultBold25NM'")
+		(style
+			(position = "absolute")
+			(left = "M")
+			(bottom = 15px)
+			(bind left "_isNested ? M : PREF_ROW_SIDE_PADDING + M")
+			(alpha = "TA")
+		)
+
+		(bind text "label")
+	)
+
+	(block
+		(bind visible "isFirst && isKeybindingRelated")
+
+		(style
+			(position = "absolute")
+			(bottom = 26px)
+			(right = "PREF_ROW_SIZES.KEYBINDING_RIGHT_PADDING + PREF_ROW_SIDE_PADDING")
+		)
+
+		(block
+			(class $SingleLinePrefRowHeaderSubColumnInitPosition)
+			(style (right = "PREF_ROW_SIZES.KEYBINDING_SPACE_BETWEEN_KEYS"))
+
+			(tf
+				(class $TextDefaultNM)
+				(style (alpha = "TC"))
+				(text = 'IDS_PREFERENCES_KEYBINDINGS_SECTION_HEADER_SUB_MAIN')
+			)
+		)
+
+		(block
+			(class $SingleLinePrefRowHeaderSubColumnInitPosition)
+
+			(tf
+				(class $TextDefaultNM)
+				(style (alpha = "TC"))
+				(text = 'IDS_PREFERENCES_KEYBINDINGS_SECTION_HEADER_SUB_ALTERNATIVE')
+			)
+		)
+	)
+)
+
+(def element PrefRowControl (_ownerModal:str, _data:dict, _isNested:bool)
+	(scope
+		(event evShowResetBtn)
+		(event evHideResetBtn)
+
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+
+		(var isSingleLinePrefRow:bool = "_ownerModal == OWNER_MODAL_TYPE.main")
+
+		(var option:str = "'option' in _data ? _data.option : null")
+		(var valueEntity:gfx = "option ? $datahub.getPrimaryEntity(CC.preference, option) : null")
+		(var value:number = "valueEntity ? valueEntity.preference.value : 0" (event "valueEntity.preference.evValueChanged"))
+
+		(var nestedHeadersAmount:number = "'nestedHeadersAmount' in _data ? _data.nestedHeadersAmount : 0")
+		(var isLastInSection:bool = "'isLastInSection' in _data ? _data.isLastInSection : false")
+		(var isFirstInNestedSection:bool = "'isFirstInNestedSection' in _data ? _data.isFirstInNestedSection : false")
+		(var additionalData:dict = "'data' in _data ? _data.data : {}")
+		(var controlType:str = "'controlType' in _data ? _data.controlType : ''")
+		(var label:str = "'label' in _data ? _data.label : ''")
+
+		(var isResetablePref:bool = "'isResetable' in additionalData ? additionalData.isResetable : false")
+
+		(var isCustomTooltip:bool = "'tooltipInfo' in additionalData")
+		(var isTooltipVisible:bool = "(option != null && option != '') || isCustomTooltip")
+		(var tooltipRenderer:str = "isCustomTooltip							? additionalData.tooltipInfo.template :
+									option && option in PREF_ROW_TOOLTIP	? PREF_ROW_TOOLTIP[option].tooltip
+																			: ''")
+
+		
+		(var nestedGroupKey:str = "'nestedGroupsRemap' in _data	&&	toString(value) in _data.nestedGroupsRemap	? _data.nestedGroupsRemap[value]
+																												: value")
+		(var areNestedGroupsInData:bool = "'nestedGroups' in _data")
+		(var curGroup:array = "areNestedGroupsInData ? _data.nestedGroups[nestedGroupKey] : []")
+		(var nestedDividersHeight:number = "isLastInSection ? 2 : 0")
+		(var groupHeight:number = "curGroup.length	? isSingleLinePrefRow	?	nestedHeadersAmount	?	(curGroup.length * PREF_ROW_SIZES.SINGLELINE_HEIGHT) + ((nestedHeadersAmount - 1) * PREF_ROW_SIZES.DEFAULT_NESTED_HEADER_MARGIN_TOP) + PREF_ROW_SIZES.FIRST_NESTED_HEADER_MARGIN_TOP + nestedDividersHeight
+																									:	curGroup.length * PREF_ROW_SIZES.SINGLELINE_HEIGHT + nestedDividersHeight
+																			:	nestedHeadersAmount	?	(curGroup.length * PREF_ROW_SIZES.MULTILINE_HEIGHT) + ((nestedHeadersAmount - 1) * PREF_ROW_SIZES.DEFAULT_NESTED_HEADER_MARGIN_TOP) + PREF_ROW_SIZES.FIRST_NESTED_HEADER_MARGIN_TOP + nestedDividersHeight
+																									:	curGroup.length * PREF_ROW_SIZES.MULTILINE_HEIGHT + nestedDividersHeight
+													: 0")
+		(var initialHeight:number="groupHeight" watch=false)
+		
+
+		(var contextResetParams:array = "[ { type: 'direct.action', name: 'option.contextDefault', args: [option] } ]")
+	)
+
+	(dispatch evShowResetBtn (bind trigger "rollOver") (bind enabled "isResetablePref && !rollOver"))
+	(dispatch evHideResetBtn (bind trigger "rollOver") (bind enabled "isResetablePref && rollOver"))
+
+	(style (width = 100%))
+
+	(block
+		(bind class "isSingleLinePrefRow ? '$SingleLinePrefRowSize' : '$MultilinePrefRowSize'")
+		(style
+			(width = 100%)
+			(bind height "isSingleLinePrefRow	? isLastInSection ? 50px : PREF_ROW_SIZES.SINGLELINE_HEIGHT
+												: PREF_ROW_SIZES.MULTILINE_HEIGHT")
+		)
+
+		(block
+			(style
+				(position = "absolute")
+				(width = 100%)
+
+				(bind paddingLeft "	_isNested	? isSingleLinePrefRow		? SXS : M
+												: PREF_ROW_SIDE_PADDING")
+				(bind paddingRight "_isNested	? isSingleLinePrefRow		? SXS : M
+												: PREF_ROW_SIDE_PADDING")
+			)
+
+			(block
+				(bind visible "(_isNested && $index == 0) || (isSingleLinePrefRow ? !_isNested : (!_isNested && $index > 0))")
+				(style
+					(width = "100%")
+					(bind paddingLeft "	_isNested && $index == 0	? isSingleLinePrefRow	? -SXS : -M
+																	: 0px")
+					(bind paddingRight "_isNested && $index == 0	? isSingleLinePrefRow	? -SXS : -M
+																	: 0px")
+				)
+
+				(controller $Instance renderer='HorizontalDividerTwoPx'
+					(bind enabled "(_isNested && $index == 0) || (isSingleLinePrefRow ? !_isNested : (!_isNested && $index > 0))")
+				)
+			)
+
+			(controller $Instance renderer='DottedHorizontalDivider'
+				(bind enabled "_isNested && !isFirstInNestedSection")
+			)
+		)
+
+		(block
+			(bind class "isSingleLinePrefRow	? '$SingleLinePrefRowCaption' : '$MultilinePrefRowCaption'")
+			(style (bind top "isSingleLinePrefRow ? 18px : 0px"))
+
+			(tf
+				(class $TextDefault19NM)
+				(style
+					(bind width "isSingleLinePrefRow ? 'auto' : '100%'")
+					(bind marginTop "isSingleLinePrefRow ? 0px : 18px")
+					(bind marginLeft "_isNested ? 0px : isSingleLinePrefRow	? PREF_ROW_SIDE_PADDING
+																			: 0px")
+					(alpha = "TC")
+					(multiline = false)
+				)
+
+				(bind text "label")
+			)
+		)
+
+		(block
+			(style
+				(position = "absolute")
+				(height = 100%)
+				(left = "isSingleLinePrefRow		? _isNested	? 0px : PREF_ROW_SIDE_PADDING
+													: 0px")
+				(bind right "isSingleLinePrefRow	? _isNested		? isResetablePref	? -PREF_ROW_SIDE_PADDING : 0px
+																	: isResetablePref	? 0px : PREF_ROW_SIDE_PADDING
+													: 0px" (event "stageComponent.evStageSizeChanged"))
+				
+				(backgroundColor = 0x01000000)
+			)
+
+			(controller $Tooltip
+				(bind enabled "isTooltipVisible")
+				(bind renderer "tooltipRenderer")
+				(args
+					_option = "option"
+					_localization = "label"
+					_extraData = "	isCustomTooltip && 'extraData' in additionalData.tooltipInfo	? additionalData.tooltipInfo.extraData :
+									'extraData' in PREF_ROW_TOOLTIP[option] 						? PREF_ROW_TOOLTIP[option].extraData
+																									: null"
+				)
+				
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			)
+		)
+
+		(block
+			(bind class "!isSingleLinePrefRow	? '$MultilinePrefRowControl' : '$None'")
+			(style
+				(position = "absolute")
+				(bind right "isSingleLinePrefRow	? _isNested ? M : PREF_ROW_SIDE_PADDING + M
+													: 0px")
+				(bind top "isSingleLinePrefRow	? 0px : 34px")
+			)
+
+			(block
+				(controller $Instance
+					(bind renderer "controlType")
+					(args
+						_option = "option"
+						_data = "additionalData"
+						_isSingleLinePrefRow = "isSingleLinePrefRow"
+					)
+				)
+			)
+		)
+	)
+
+	(block
+		(bind visible "areNestedGroupsInData")
+
+		(style
+			(paddingLeft = "isSingleLinePrefRow ? PREF_ROW_SIDE_PADDING : 0px")
+			(paddingRight = "isSingleLinePrefRow ? PREF_ROW_SIDE_PADDING : 0px")
+			(width = 100%)
+			
+			(height = "initialHeight")
+		)
+
+		(alpha = "groupHeight > 0 ? 1 : 0")
+
+		(controller $Animation
+			(bind enabled "areNestedGroupsInData")
+
+			(bindcall play
+				duration = 0.3
+				to = "{ height: groupHeight, alpha: groupHeight == 0 ? 0 : 1 }"
+				easing = "Easing.quad_in"
+				action="kill"
+				(bind trigger "nestedGroupKey")
+			)
+		)
+
+		(block
+			(style (width = 100%) (backgroundColor = "SC.Ui_styles.SERVICE_COLORS.INNER_PANEL"))
+
+			(controller $Animation
+				(bind enabled "areNestedGroupsInData")
+
+				(bindcall play
+					duration = 0.4
+					from	 = "{ alpha: 0 }"
+					to		 = "{ alpha: 1 }"
+					easing = "Easing.quad_in"
+					action="kill"
+					(bind trigger "nestedGroupKey")
+				)
+			)
+
+			(controller $Repeat renderer='PrefRow'
+				(bind enabled "curGroup.length && areNestedGroupsInData")
+				(bind count "curGroup.length")
+				(args
+					_ownerModal = "_ownerModal"
+					_data = "curGroup[$index]"
+					_isNested = true
+				)
+			)
+		)
+
+		(controller $Instance renderer='HorizontalDividerTwoPx'
+			(bind enabled "areNestedGroupsInData && isLastInSection")
+			(exprs
+				(style (position = "absolute") (bottom = 0px))
+			)
+		)
+	)
+
+	(block
+		(bind visible "isResetablePref")
+
+		(style
+			(bind alpha "0")
+			(position = "absolute")
+			(bind right "_isNested ? -22px : 18px")
+			(top = "M")
+		)
+
+		(controller $Instance renderer='ImageButton'
+			(bind enabled "isResetablePref")
+			(args
+				_width = 18
+				_height = 18
+				_backgroundImage = 'url:../service_kit/buttons/context/update.png'
+				_hitAreaMargin = "[-XS, -14, -18, -14]"
+				_tooltipText = "'IDS_PREFERENCES_CONTEXT_PREF_RESET'"
+				_methods = "contextResetParams"
+			)
+		)
+
+		(controller $Animation
+			(bind enabled "isResetablePref")
+
+			(bindcall play
+				duration = 0.2
+				to = "{ alpha: 1 }"
+				easing = "Easing.quad_in"
+				action="killAll"
+				(event "evShowResetBtn")
+			)
+			(bindcall play
+				duration = 0.1
+				to = "{ alpha: 0 }"
+				easing = "Easing.quad_in"
+				action="killAll"
+				(event "evHideResetBtn")
+			)
+		)
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER)
+)
+
+(def element PrefRowControllerSwitcher (_option:str, _data:dict, _isSingleLinePrefRow:bool=true)
+	(scope
+		(var valueEntity:gfx="$datahub.getPrimaryEntity(CC.preference, _option)")
+		(var value:bool = "valueEntity ? valueEntity.preference.value : false" (event "valueEntity.preference.evValueChanged"))
+	)
+
+	(style (marginTop = "19px"))
+
+	(element SwitchWithoutLabel
+		_state = "value"
+		_methods = "[ { type: 'direct.action', name: 'option.set', args: [_option, !value] } ]"
+	)
+)
+
+(def element PrefRowControllerItemChooser (_option:str, _data:dict, _isSingleLinePrefRow:bool=true)
+	(scope
+		(event ItemChooser_PrefSelected)
+
+		(var valueEntity:gfx="$datahub.getPrimaryEntity(CC.preference, _option)")
+		(var componentPref:gfx = "valueEntity ? valueEntity.preference : null")
+		(var componentPrefChoices:gfx = "valueEntity ? valueEntity.preferenceChoices : null" (event "valueEntity.evAdded") (event "valueEntity.evRemoved"))
+
+		(var value:number = "componentPref ? componentPref.value : null" (event "componentPref.evValueChanged"))
+		(var valueChoices:array="componentPrefChoices ? componentPrefChoices.choices : []")
+
+		(bindcall externalCall 'direct.action' "['option.set', [_option, $event.selectedIndex]]" init=false watch=false (event "ItemChooser_PrefSelected"))
+
+		(var dropdownWidth:number = "'dropdownWidth' in _data ? _data.dropdownWidth : 200")
+		(var maxDropdownHeight:number = "'maxDropdownHeight' in _data ? _data.maxDropdownHeight : 200")
+	)
+
+	(style
+		(marginTop = "9px")
+		(bind marginLeft "_isSingleLinePrefRow ? 0px : -7px")
+	)
+
+	(element ItemChooser
+		_items = "valueChoices"
+		_listItemRenderer = "'TextListItemRenderer'"
+		_choosedItemRenderer = "'DefaultItemChooserPickedItemRenderer'"
+		_onItemSelectedEvent = "'PrefSelected'"
+		_selectedMaxWidth = "dropdownWidth"
+		_dropDownWidth = "dropdownWidth"
+		_maxDropDownHeight = "maxDropdownHeight"
+		_curIndex = "value"
+	)
+)
+
+(def element PrefRowControllerSliderFloat (_option:str, _data:dict, _isSingleLinePrefRow:bool=true)
+	(scope
+		(event evSliderValueChanged)
+
+		(var valueEntity:gfx = "$datahub.getPrimaryEntity(CC.preference, _option)")
+		(var componentPref:gfx = "valueEntity ? valueEntity.preference : null")
+		(var componentPrefRange:gfx = "valueEntity ? valueEntity.preferenceRange : null")
+
+		(var value:number = "componentPref ? componentPref.value : null" (event "componentPref.evValueChanged"))
+		(var min:number = "componentPrefRange ? componentPrefRange.min : null")
+		(var max:number = "componentPrefRange ? componentPrefRange.max : null")
+
+		(var isContextual:bool = "'isContextual' in _data ? _data.isContextual : false")
+		(var intervalsCount:number = "'intervalsCount' in _data ? _data.intervalsCount : 100")
+		(var multiplier:number = "'multiplier' in _data ? _data.multiplier : 1")
+		(var floatDigits:number = "'floatDigits' in _data ? _data.floatDigits : 2")
+		(var showZeroes:number = "'showZeroes' in _data ? _data.showZeroes : true")
+
+		(var len:number = "max - min")
+		(var unitsInStepInterval:number = "len / intervalsCount")
+		(var sliderValue:number = "round((value - min) / unitsInStepInterval)" watch=false (event "componentPref.evValueChanged"))
+
+		(var displayedValue:str = "isContextual	? formatFloatingPoint((min + (unitsInStepInterval * sliderValue)) * multiplier, floatDigits, showZeroes)
+												: round(sliderValue / intervalsCount * 100)")
+
+		(bindcall externalCall 'direct.action' "['option.set', [_option, roundToDecimal((min + ($event.value * unitsInStepInterval)), 3)]]" init=false watch=false (event "evSliderValueChanged"))
+	)
+
+	(style (flow = "horizontal") (marginTop = "20px"))
+
+	(tf
+		(bind visible "_isSingleLinePrefRow")
+		(class $TextDefaultBoldNM)
+		(style
+			(alpha = "TC")
+			(position = "absolute") 
+			(top = -1px)
+			(left = "-XL")
+			(width = 60px)
+			(textAlign = "right")
+		)
+		(bind text "displayedValue")
+	)
+
+	(element DefaultSlider
+		_value = "sliderValue"
+		_intervalsCount = "intervalsCount"
+		_unitsInStepInterval = "unitsInStepInterval"
+		_width = 200
+	)
+
+	(tf
+		(bind visible "!_isSingleLinePrefRow")
+		(class $TextDefaultBoldNM)
+		(style
+			(alpha = "TC")
+			(position = "absolute") 
+			(top = -1px)
+			(right = "-XL")
+			(width = 60px)
+		)
+		(bind text "displayedValue")
+	)
+)
+
+
+
+
+(def element PrefRowControllerSliderFloatInversed (_option:str, _data:dict, _isSingleLinePrefRow:bool=true)
+	(scope
+		(event evSliderValueChanged)
+
+		(var valueEntity:gfx = "$datahub.getPrimaryEntity(CC.preference, _option)")
+		(var componentPref:gfx = "valueEntity ? valueEntity.preference : null")
+		(var componentPrefRange:gfx = "valueEntity ? valueEntity.preferenceRange : null")
+
+		(var value:number = "componentPref ? componentPref.value : null" (event "componentPref.evValueChanged"))
+		(var min:number = "componentPrefRange ? componentPrefRange.min : null")
+		(var max:number = "componentPrefRange ? componentPrefRange.max : null")
+		(var valueInversed:number = "max - value + min")
+
+		(var isContextual:bool = "'isContextual' in _data ? _data.isContextual : false")
+		(var intervalsCount:number = "'intervalsCount' in _data ? _data.intervalsCount : 100")
+		(var multiplier:number = "'multiplier' in _data ? _data.multiplier : 1")
+		(var floatDigits:number = "'floatDigits' in _data ? _data.floatDigits : 2")
+		(var showZeroes:number = "'showZeroes' in _data ? _data.showZeroes : false")
+
+		(var len:number = "max - min")
+		(var unitsInStepInterval:number = "len / intervalsCount")
+		(var sliderValue:number = "round((valueInversed - min) / unitsInStepInterval)" watch=false (event "componentPref.evValueChanged"))
+		(var displayedValue:str = "isContextual	? formatFloatingPoint((min + (unitsInStepInterval * sliderValue)) * multiplier, floatDigits, showZeroes)
+												: round(sliderValue / intervalsCount * 100)")
+
+		(bindcall externalCall 'direct.action' "['option.set', [_option, roundToDecimal((min + (max - $event.value * unitsInStepInterval)), 3)]]" init=false watch=false (event "evSliderValueChanged"))
+	)
+
+	(style (flow = "horizontal") (marginTop = "20px"))
+
+	(tf
+		(bind visible "_isSingleLinePrefRow")
+		(class $TextDefaultBoldNM)
+		(style
+			(alpha = "TC")
+			(position = "absolute") 
+			(top = -1px)
+			(left = "-XL")
+			(width = 60px)
+			(textAlign = "right")
+		)
+		(bind text "displayedValue")
+	)
+
+	(element DefaultSlider
+		_value = "sliderValue"
+		_intervalsCount = "intervalsCount"
+		_unitsInStepInterval = "unitsInStepInterval"
+		_width = 200
+	)
+
+	(tf
+		(bind visible "!_isSingleLinePrefRow")
+		(class $TextDefaultBoldNM)
+		(style
+			(alpha = "TC")
+			(position = "absolute") 
+			(top = -1px)
+			(right = "-XL")
+			(width = 60px)
+		)
+		(bind text "displayedValue")
+	)
+)
+
+(def element PrefRowControllerSliderInt (_option:str, _data:dict, _isSingleLinePrefRow:bool=true)
+	(scope
+		(event evSliderValueChanged)
+
+		(var valueEntity:gfx = "$datahub.getPrimaryEntity(CC.preference, _option)")
+		(var componentPref:gfx = "valueEntity ? valueEntity.preference : null")
+		(var componentPrefRange:gfx = "valueEntity ? valueEntity.preferenceRange : null")
+
+		(var value:number = "componentPref ? componentPref.value : null" (event "componentPref.evValueChanged"))
+		(var min:number = "componentPrefRange ? componentPrefRange.min : null")
+		(var max:number = "componentPrefRange ? componentPrefRange.max : null")
+
+		(var isContextual:bool = "'isContextual' in _data ? _data.isContextual : false")
+		(var unitsInStepInterval:number = "'unitsInStepInterval' in _data ? _data.unitsInStepInterval : 1")
+		(var multiplier:number = "'multiplier' in _data ? _data.multiplier : 1")
+
+		(var minSliderValue:number = "min / unitsInStepInterval")
+		(var maxSliderValue:number = "max / unitsInStepInterval")
+		(var sliderValue:number = "value / unitsInStepInterval" watch=false (event "componentPref.evValueChanged"))
+
+		(var displayedValue:str = "isContextual	? toString((min + (unitsInStepInterval * sliderValue)) * multiplier)
+												: round(sliderValue / maxSliderValue * 100)")
+
+		(bindcall externalCall 'direct.action' "['option.set', [_option, ($event.value * unitsInStepInterval)]]" init=false watch=false (event "evSliderValueChanged"))
+	)
+
+	(style (flow = "horizontal") (marginTop = "20px"))
+
+	(tf
+		(bind visible "_isSingleLinePrefRow")
+		(class $TextDefaultBoldNM)
+		(style
+			(alpha = "TC")
+			(position = "absolute") 
+			(top = -1px)
+			(left = "-XL")
+			(width = 60px)
+			(textAlign = "right")
+		)
+		(bind text "displayedValue")
+	)
+
+	(element DefaultSlider
+		_value = "sliderValue"
+		_intervalsCount = "maxSliderValue"
+		_unitsInStepInterval = "unitsInStepInterval"
+		_width = 200
+	)
+
+	(tf
+		(bind visible "!_isSingleLinePrefRow")
+		(class $TextDefaultBoldNM)
+		(style
+			(alpha = "TC")
+			(position = "absolute") 
+			(top = -1px)
+			(left = "XS")
+			(width = 60px)
+		)
+		(bind text "displayedValue")
+	)
+)
+
+(def element PrefRowControllerModalOpenBtn (_option:str, _data:dict, _isSingleLinePrefRow:bool=true)
+	(scope
+		(var methods:array = "'modalBtnMethods' in _data ? _data.modalBtnMethods : []")
+	)
+
+	(style (marginTop = "13px"))
+
+	(element DefaultButton
+		_size = "SIZE.SMALL"
+		_type = "SC.Ui_styles.BUTTON_TYPE.SECONDARY"
+		_label = 'IDS_PREFS_OTHER_EXTENDED_SET_BUTTON'
+		_methods = "methods"
+	)
+)
+
+
+
+(def element BindingPagePrefRow (_data:dict, _currentlyEditingCommandMappingId:number, _currentlyEditingCommandIndex:number)
+	(scope
+		(var isRowEnabled:bool = false)
+
+		(controller $Animation		
+			(bindcall play
+				duration = "0.001"
+				from	 = "{ isRowEnabled: false }"
+				to		 = "{ isRowEnabled: true }"
+				init	 = true
+			)
+		)
+	)
+
+	(style (width = 100%))
+
+	(controller $Instance
+		(bind enabled "isRowEnabled")
+		(bind renderer "'type' in _data ? _data.type : ''") 
+		(args
+			_data = "_data"
+			_currentlyEditingCommandMappingId = "_currentlyEditingCommandMappingId"
+			_currentlyEditingCommandIndex = "_currentlyEditingCommandIndex"
+		)
+	)
+)
+
+(def element PrefRowKeybindingHeader (_data:dict, _currentlyEditingCommandMappingId:number, _currentlyEditingCommandIndex:number)
+	(scope
+		(var label:str = "'label' in _data ? _data.label : ''")
+		(var isFirst:bool = "$index == 0 && ('isFirst' in _data ? _data.isFirst : true)")
+	)
+
+	(style
+		(width = 100%)
+		(bind height "isFirst ? 48px : 72px")
+	)
+
+	(tf
+		(class $TextDefaultBold25NM)
+		(style
+			(position = "absolute")
+			(left = "M")
+			(bottom = 15px)
+			(left = "PREF_ROW_SIDE_PADDING + M")
+			(alpha = "TA")
+		)
+
+		(bind text "label")
+	)
+
+	(block
+		(bind visible "isFirst")
+
+		(style
+			(position = "absolute")
+			(bottom = 26px)
+			(right = "PREF_ROW_SIZES.KEYBINDING_RIGHT_PADDING + PREF_ROW_SIDE_PADDING")
+		)
+
+		(block
+			(class $SingleLinePrefRowHeaderSubColumnInitPosition)
+			(style (right = "PREF_ROW_SIZES.KEYBINDING_SPACE_BETWEEN_KEYS"))
+
+			(tf
+				(class $TextDefaultNM)
+				(style (alpha = "TC"))
+				(text = 'IDS_PREFERENCES_KEYBINDINGS_SECTION_HEADER_SUB_MAIN')
+			)
+		)
+
+		(block
+			(class $SingleLinePrefRowHeaderSubColumnInitPosition)
+
+			(tf
+				(class $TextDefaultNM)
+				(style (alpha = "TC"))
+				(text = 'IDS_PREFERENCES_KEYBINDINGS_SECTION_HEADER_SUB_ALTERNATIVE')
+			)
+		)
+	)
+)
+
+(def element PrefRowKeyBinding (_data:dict, _currentlyEditingCommandMappingId:number, _currentlyEditingCommandIndex:number)
+	(scope
+		(var commandId:number = "'commandId' in _data ? _data.commandId : null")
+		(var commandEntity:gfx = "$datahub.getPrimaryEntity(CC.commandMappingCommand, commandId)")
+		(var commandName:str = "commandEntity ? commandEntity.commandForUI.ids : null")
+
+		(var isCommandInEditState:bool = "commandId == _currentlyEditingCommandMappingId")
+
+		(var keyList:array = "commandEntity ? commandEntity.commandKeyList.list : null" (event "commandEntity.commandKeyList.evChanged"))
+		(var commandKeyListEntity0:gfx = "$datahub.getEntity(keyList[0])")
+		(var commandMappingKeyComponent0:gfx = "commandKeyListEntity0 ? commandKeyListEntity0.commandMappingKey : null" (event "commandEntity.commandKeyList.evChanged"))
+		(var commandKeyListEntity1:gfx = "keyList.length > 1 ? $datahub.getEntity(keyList[1]) : null")
+		(var commandMappingKeyComponent1:gfx = "commandKeyListEntity1 ? commandKeyListEntity1.commandMappingKey : null" (event "commandEntity.commandKeyList.evChanged"))
+
+		(var isAnyKeybindingsAssigned:bool = "keyList.length == 1	? commandMappingKeyComponent0
+																	: commandMappingKeyComponent0 || commandMappingKeyComponent1")
+		(var rowStatus:str = "isAnyKeybindingsAssigned ? SC.Ui_styles.UNIFIED_STATUS.DEFAULT : SC.Ui_styles.UNIFIED_STATUS.ATTENTION")
+
+		(var customTooltipHeader:str = "'customTooltipHeader' in _data ? _data.customTooltipHeader : null")
+	)
+
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "rowStatus" "'textColor'" "'textAlpha'")
+
+	(class $SingleLinePrefRowSize)
+
+	(block
+		(style
+			(position = "absolute")
+			(width = 100%)
+			(paddingLeft = "PREF_ROW_SIDE_PADDING")
+			(paddingRight = "PREF_ROW_SIDE_PADDING")
+		)
+		(element HorizontalDividerTwoPx)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(bind alpha "0")
+			(left = "PREF_ROW_SIDE_PADDING")
+			(right = "PREF_ROW_SIDE_PADDING")
+			(top = "XXS")
+			(height = "PREF_ROW_SIZES.SINGLELINE_HEIGHT - XXS")
+			(backgroundColor = 0xffffffff)
+		)
+
+		(controller $Animation
+			(bindcall play
+				duration = 0.1
+				to = "{ alpha: 0.1 }"
+				easing = "Easing.quad_in"
+				action="killAll"
+				(bind enabled "isCommandInEditState")
+				(bind trigger "isCommandInEditState")
+			)
+			(bindcall play
+				duration = 0.1
+				to = "{ alpha: 0 }"
+				easing = "Easing.quad_in"
+				action="killAll"
+				(bind enabled "!isCommandInEditState")
+				(bind trigger "isCommandInEditState")
+			)
+		)
+	)
+
+	(block
+		(class $SingleLinePrefRowCaption)
+		(style (top = 18px))
+
+		(tf
+			(class $TextDefault19NM)
+			(style
+				(bind alpha "	isCommandInEditState		? isAnyKeybindingsAssigned	? TA
+																						: 1 :
+								isAnyKeybindingsAssigned	? TC
+															: 1")
+				(marginLeft = "PREF_ROW_SIDE_PADDING")
+				(bind textColor "textColor")
+			)
+
+			(bind text "commandName")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(height = 100%)
+			(left = "PREF_ROW_SIDE_PADDING")
+			(right = "PREF_ROW_SIDE_PADDING")
+			(backgroundColor = 0x01000000)
+		)
+
+		(controller $Tooltip
+			(renderer = 'PrefRowCommandMappingTooltip')
+			(args
+				_cmdId = "commandName"
+				_customHeader = "customTooltipHeader"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(top = 13px)
+			(right = "PREF_ROW_SIZES.KEYBINDING_RIGHT_PADDING + PREF_ROW_SIDE_PADDING")
+		)
+
+		(block
+			(class $SingleLinePrefRowHeaderSubColumnInitPosition)
+			(style (right = "PREF_ROW_SIZES.KEYBINDING_SPACE_BETWEEN_KEYS"))
+			(element HotkeyAssignmentButton
+				_commandId = "commandId"
+				_index = "0"
+				_currentlyEditingCMDId = "_currentlyEditingCommandMappingId"
+				_currentlyEditingKeyIndex = "_currentlyEditingCommandIndex"
+			)
+		)
+
+		(block
+			(class $SingleLinePrefRowHeaderSubColumnInitPosition)
+			(element HotkeyAssignmentButton
+				_commandId = "commandId"
+				_index = "1"
+				_currentlyEditingCMDId = "_currentlyEditingCommandMappingId"
+				_currentlyEditingKeyIndex = "_currentlyEditingCommandIndex"
+			)
+		)
+	)
+)
+
+(def element HotkeyAssignmentButton (_commandId:number, _index:number, _currentlyEditingCMDId:number, _currentlyEditingKeyIndex:number)
+	(scope
+		(event evCloseKeyAssignmentTooltipByScroll)
+
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var isCapturing:bool = false)
+		(bind isCapturing "false" init=false watch=false (event "evCloseKeyAssignmentTooltipByScroll"))
+		(bind isCapturing "(_currentlyEditingCMDId == _commandId) && (_currentlyEditingKeyIndex == _index)" init=false)
+
+		
+		(var ctRollOver:dict = "{ redMultiplier: 1,	greenMultiplier: 1,	blueMultiplier: 1,	alphaMultiplier: 1.5,
+								  redOffset: 30,	greenOffset: 30,	blueOffset: 30,		alphaOffset: 0 }")
+		(var ctDown:dict = "	{ redMultiplier: 1,	greenMultiplier: 1,	blueMultiplier: 1,	alphaMultiplier: 1,
+								  redOffset: -15,	greenOffset: -15,	blueOffset: -15,	alphaOffset: 0 }")
+		
+	)
+
+	(bind colorTransform "	rollOver && !mouseDown	? ctRollOver :
+							rollOver && mouseDown	? ctDown
+													: CT_NONE")
+
+	(block
+		(controller $Instance renderer='HotkeyIndicator'
+			(bind enabled "!isCapturing")
+			(args
+				_commandId = "_commandId"
+				_size = "SIZE.LARGE"
+				_active = true
+				_fxOnDown = false
+				_isOnSettingsScreen = true
+				_isForceIndex = true
+				_forceShownIndex = "_index"
+			)
+		)
+	)
+
+	(block
+		(bind visible "isCapturing")
+
+		(style
+			(position = "absolute")
+			(backgroundImage = "'url:../service_kit/keybindings/ready_to_set.png'")
+			(width = 24px)
+			(height = 24px)
+			(marginLeft = -50%)
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(width = 24px)
+			(height = 24px)
+			(bind marginLeft "isCapturing ? '-50%' : '0'")
+			(backgroundColor = 0x01000000)
+		)
+
+		(controller $Tooltip
+			(renderer="'PrefCommandMappingInCaptureTooltip'")
+			(bind enabled "isCapturing")
+			(macro DEFAULT_INFOTIP_ANIMATIONS)
+			(bindcall show (bind enabled "isCapturing") (bind trigger "isCapturing"))
+			(bindcall hide (bind enabled "!isCapturing") (bind trigger "isCapturing") (event "evCloseKeyAssignmentTooltipByScroll"))
+
+			(priority = 1)
+			(offset = { x: 12, y: 0 })
+			(align = "middle|right")
+			(position = "border")
+			(screenBoundsOffset = "{ left: M, top: M, right: M, bottom: M }")
+			(cache = false)
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "!_currentlyEditingCMDId"
+		_soundSet = "'button_tab'"
+		_methods = "[ { type: 'inputMapping.onAction', name: 'startKeyCapture', args: { commandId: _commandId, index: _index } } ]"
+	)
+
+	(bindcall externalCall "'inputMapping.onAction'" "['endKeyCapture', {}]" init=false watch=false (event "evCloseKeyAssignmentTooltipByScroll"))
+)

@@ -1,0 +1,351 @@
+(def element SquadronsTTX (shipTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(class $TTXSecondaryPanel)
+
+	(macro TTX_INSTANCE 'SquadronFighterTTXEntry' "shipTTX.squadrons.fighter")
+	(macro TTX_INSTANCE 'SquadronTorpedoBomberTTXEntry' "shipTTX.squadrons.torpedoBomber")
+	(macro TTX_INSTANCE 'SquadronDiveBomberTTXEntry' "shipTTX.squadrons.diveBomber")
+	(macro TTX_INSTANCE 'SquadronSkipBomberTTXEntry' "shipTTX.squadrons.skipBomber")
+
+	(macro TTX_INSTANCE 'SquadronFighterAltTTXEntry' "shipTTX.squadrons.fighterAlt")
+	(macro TTX_INSTANCE 'SquadronTorpedoBomberAltTTXEntry' "shipTTX.squadrons.torpedoBomberAlt")
+	(macro TTX_INSTANCE 'SquadronDiveBomberAltTTXEntry' "shipTTX.squadrons.diveBomberAlt")
+	(macro TTX_INSTANCE 'SquadronSkipBomberAltTTXEntry' "shipTTX.squadrons.skipBomberAlt")
+)
+
+(def macro SQUADRON_ENTRY (_title:str, _tooltipRenderer:str, _excursionId:expression)
+	(class $ParametersPanel)
+	(element ShipParameter_Number	_title="tr(_title) + NEW_LINE + tr(toUpper('IDS_' + squadronTTX.name))"
+									_value="squadronTTX.numSquadrons"
+									_valueConfig="VALUE_CONFIG.ATTACKERS_COUNT"
+		(macro PARAM_APPEAR_ANIMATION)
+		(controller $Tooltip
+			(renderer="_tooltipRenderer")
+			(args "shipTTX" "squadronTTX")
+			(macro SIMPLE_TOOLTIP_ANIMATION)
+			(align="bottom|left")
+			(offset=[10, 0])
+			(screenBoundsOffset=50)
+		)
+		(element ShipParamExcursionButton _shipTTX="shipTTX" _excursionId="_excursionId" _isExcursionOn="false")
+	)
+)
+
+(def element SquadronFighterTTXEntry (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(macro SQUADRON_ENTRY 'IDS_FIGHTER' 'FighterTooltipTTX' "['_Fighter', 0]")
+)
+
+(def element SquadronDiveBomberTTXEntry (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(macro SQUADRON_ENTRY 'IDS_DIVEBOMBER' 'DiveBomberTooltipTTX'  "['_Bomber', 0]")
+)
+
+(def element SquadronSkipBomberTTXEntry (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(macro SQUADRON_ENTRY 'IDS_SKIPBOMBER' 'SkipBomberTooltipTTX' "['_Skipbomber', 0]")
+)
+
+(def element SquadronTorpedoBomberTTXEntry (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(macro SQUADRON_ENTRY 'IDS_TORPEDOBOMBER' 'TorpedoBomberTooltipTTX' "['_Tbomber', 0]")
+)
+
+(def element SquadronFighterAltTTXEntry (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(macro SQUADRON_ENTRY 'IDS_FIGHTER' 'FighterTooltipTTX' "['_Fighter_alt', 0]")
+)
+
+(def element SquadronDiveBomberAltTTXEntry (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(macro SQUADRON_ENTRY 'IDS_DIVEBOMBER' 'DiveBomberTooltipTTX'  "['_Bomber_alt', 0]")
+)
+
+(def element SquadronSkipBomberAltTTXEntry (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(macro SQUADRON_ENTRY 'IDS_SKIPBOMBER' 'SkipBomberTooltipTTX' "['_Skipbomber_alt', 0]")
+)
+
+(def element SquadronTorpedoBomberAltTTXEntry (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(macro SQUADRON_ENTRY 'IDS_TORPEDOBOMBER' 'TorpedoBomberTooltipTTX' "['_Tbomber_alt', 0]")
+)
+
+(def macro TTX_SQUADRON_PARAMS ()
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_HEALTH'
+									_value = "squadronTTX.health"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED'
+									_value = "squadronTTX.speed"
+									_valueConfig="VALUE_CONFIG.KNOT"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED_MAX'
+									_value = "squadronTTX.maxSpeed"
+									_valueConfig = "VALUE_CONFIG.KNOT"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_MAX_FORSAGE_AMOUNT'
+									_value = "squadronTTX.forsageTime"
+									_valueConfig = "VALUE_CONFIG.SECONDS"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_FORSAGE_RESTORE_TIME'
+									_value = "squadronTTX.forsageRestore"
+									_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+									_zeroValueHidden = true
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+									_value = "squadronTTX.numAttackers"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_PLANES'
+									_value = "squadronTTX.numPlanes"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_HANGARVOLUME'
+									_value = "squadronTTX.hangarVolume"
+	)
+	(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+									_values = "[squadronTTX.restorePlanes, squadronTTX.restoreTime]"
+									_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQ_VISIBILITY_DIST_BY_SHIP'
+									_value = "squadronTTX.visibility"
+									_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+	)
+)
+
+(def element FighterTooltipTTX (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW "'IDS_FIGHTER'" "'IDS_SQUADRON'")
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(macro TTX_SQUADRON_PARAMS)
+			)
+		)
+		(macro TTX_INSTANCE 'RocketAPTTX' "squadronTTX.rocketAP")
+		(macro TTX_INSTANCE 'RocketHETTX' "squadronTTX.rocketHE")
+		(element TooltipSystemExcursionMouseInstruction		_shipTTX="shipTTX")
+	)
+)
+
+(def element DiveBomberTooltipTTX (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW "'IDS_DIVEBOMBER'" "'IDS_SQUADRON'")
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(macro TTX_SQUADRON_PARAMS)
+			)
+		)
+		(macro TTX_INSTANCE 'BombAPTTX' "squadronTTX.bombAP")
+		(macro TTX_INSTANCE 'BombHETTX' "squadronTTX.bombHE")
+		(element TooltipSystemExcursionMouseInstruction		_shipTTX="shipTTX")
+	)
+)
+
+(def element SkipBomberTooltipTTX (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW "'IDS_SKIPBOMBER'" "'IDS_SQUADRON'")
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(macro TTX_SQUADRON_PARAMS)
+			)
+		)
+		(macro TTX_INSTANCE 'BombSkipHETTX' "squadronTTX.bombHE")
+		(macro TTX_INSTANCE 'BombSkipAPTTX' "squadronTTX.bombAP")
+		(element TooltipSystemExcursionMouseInstruction		_shipTTX="shipTTX")
+	)
+)
+
+(def element TorpedoBomberTooltipTTX (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER	
+		(macro TTX_HEADER_ROW "'IDS_TORPEDOBOMBER'" "'IDS_SQUADRON'")
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(macro TTX_SQUADRON_PARAMS)
+			)
+		)
+		(macro TTX_INSTANCE 'AviaTorpedoTTX' "squadronTTX.torpedo")
+		(element TooltipSystemExcursionMouseInstruction		_shipTTX="shipTTX")
+	)
+)
+
+
+
+(def macro RocketBase_Params ()
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_FIGHTER'
+									_value = "bombTTX.numBombs"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ROCKET_DAMAGE'
+									_value = "bombTTX.damage"
+	)
+)
+
+(def macro RocketAP_Params ()
+	(macro RocketBase_Params)
+)
+
+(def macro RocketHE_Params ()
+	(macro RocketBase_Params)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ALPHA_PIERCING_HE'
+									_value = "bombTTX.piercing"
+									_valueConfig = "VALUE_CONFIG.MILLIMETER"
+	)
+	(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_SQUADRON_BURN_PROB_HE'
+									_value = "bombTTX.burnChance"
+									_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+	)
+)
+
+(def element RocketHETTX (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_SQUADRON_AMMO_ROCKET_HE'" "bombTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro RocketHE_Params)
+		)
+	)
+)
+
+(def element RocketAPTTX (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_SQUADRON_AMMO_ROCKET_AP'" "bombTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro RocketAP_Params)
+		)
+	)
+)
+
+(def macro BombBase_Params ()
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_DIVE'
+									_value = "bombTTX.numBombs"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_DAMAGE'
+									_value = "bombTTX.damage"
+	)
+)
+
+(def macro BombHE_Params ()
+	(macro BombBase_Params)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ALPHA_PIERCING_HE'
+									_value = "bombTTX.piercing"
+									_valueConfig = "VALUE_CONFIG.MILLIMETER"
+	)
+	(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_SQUADRON_BURN_PROB_HE'
+									_value ="bombTTX.burnChance"
+									_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+	)
+)
+
+(def macro BombAP_Params ()
+	(macro BombBase_Params)
+)
+
+(def macro BombDW_Params ()
+	(macro BombBase_Params)
+)
+
+(def element BombHETTX (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_SQUADRON_AMMO_BOMB_HE'" "bombTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro BombHE_Params)
+		)
+	)
+)
+
+(def element BombAPTTX (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_SQUADRON_AMMO_BOMB_AP'" "bombTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro BombAP_Params)
+		)
+	)
+)
+
+(def element BombDWTTX (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_SQUADRON_AMMO_BOMB_DEPTH_CHARGE'" "bombTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro BombDW_Params)
+		)
+	)
+)
+
+(def macro BombSkipAP_Params ()
+	(macro BombBase_Params)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_SKIPS_COUNT'
+									_value = "bombTTX.skipsCount"
+	)
+)
+
+(def macro BombSkipHE_Params ()
+	(macro BombBase_Params)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ALPHA_PIERCING_HE'
+									_value = "bombTTX.piercing"
+									_valueConfig = "VALUE_CONFIG.MILLIMETER"
+	)
+	(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_SQUADRON_BURN_PROB_HE'
+									_value ="bombTTX.burnChance"
+									_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_SKIPS_COUNT'
+									_value = "bombTTX.skipsCount"
+	)
+)
+
+(def element BombSkipHETTX (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_SQUADRON_AMMO_BOMB_HE'" "bombTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro BombHE_Params)
+		)
+	)
+)
+
+(def element BombSkipAPTTX (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_SQUADRON_AMMO_BOMB_AP'" "bombTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro BombAP_Params)
+		)
+	)
+)
+
+
+(def macro TorpedoBase_Params ()
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_TORPEDO'
+									_value = "bombTTX.numBombs"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_TORPEDO_DAMAGE'
+									_value = "bombTTX.damage"
+	)
+)
+
+(def macro Torpedo_Params ()
+	(macro TorpedoBase_Params)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_TORPEDO_SPEED'
+									_value = "bombTTX.speed"
+									_valueConfig = "VALUE_CONFIG.KNOT"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDOES_MAX_DIST'
+									_value = "bombTTX.maxDist"
+									_valueConfig = "VALUE_CONFIG.KILOMETER"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_TORPEDO_ARMING_DIST'
+									_value ="bombTTX.armingDistance"
+									_valueConfig = "VALUE_CONFIG.METER_NEGATIVE"
+	)
+)
+
+(def element AviaTorpedoTTX (shipTTX:gfx, bombTTX:gfx) layout=true
+	(class $ParametersPanel)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_SQUADRON_AMMO_TORPEDO'" "bombTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro Torpedo_Params)
+		)
+	)
+)
