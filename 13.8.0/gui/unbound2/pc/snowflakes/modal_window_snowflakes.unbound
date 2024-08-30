@@ -1,0 +1,699 @@
+(def element SnowflakesScrollBarV () layout=true
+	(scope
+		(event snowflakesScrollValueChanged)
+		(event snowflakesScrollCanScrollChanged)
+	)
+
+	(scroll_bar
+		(orientation="vertical")
+		(track = 'SBVTrackLight')
+		(thumb = 'SBVThumbLight')
+		(singleStep="54")
+		(scrollDuration="700")
+		(dispatch 'snowflakesScrollValueChanged' dir="EventDirection.UP" args="$event" on='valueChanged')
+		(dispatch 'snowflakesScrollCanScrollChanged' dir="EventDirection.UP" args="$event" on='canScrollChanged')
+	)
+)
+
+(def element SnowflakesShipsAutoSelectButton (_isEnabled:bool=true, _hasSelectedShips:bool=false)
+	(scope
+		(var playerShips:gfx =					"$datahub.getCollection(CC.ownShip)")
+		(var flakesShipsCollection:gfx =		"playerShips ? playerShips.getChildByPath('shipsHaveSnowflakes.sorted') : null")
+		(var flakesShipsArray:array =			"flakesShipsCollection ? flakesShipsCollection.items : []" (event "flakesShipsCollection.evUpdated"))
+		(var flakesShipsArrayLength:number =	"flakesShipsArray.length")
+
+		(var bonustagSeasonEntity:gfx = "$datahub.getCollection(CC.bonusTagSeason).getChildByPath('snowflakeSeasonCollection').items[0]")
+		(var bonusTagSeason:gfx = "bonustagSeasonEntity ? bonustagSeasonEntity.bonusTagSeason : null" (event "bonustagSeasonEntity.bonusTagSeason.evChanged"))		
+		(var bonusSnowflakesCount:number = "bonusTagSeason ? bonusTagSeason.bonusSnowflakes : 0" (event "bonusTagSeason.evChanged"))
+
+		(var buttonText:str = "_hasSelectedShips ? 'IDS_SNOWFLAKES_UNINSTALL_ALL' : 'IDS_SNOWFLAKES_AUTOSELECT'")
+		(var mouseInstructions:str = "_hasSelectedShips	? 'IDS_SNOWFLAKES_TOOLTIP_DESELECT_ALL_SHIPS' 
+														: 'IDS_SNOWFLAKES_SELECT_SEVERAL_SHIPS'")
+
+		(var methods:gfx = "_hasSelectedShips	? [{	type: 'inputMapping.onAction',
+														name: 'resetSelectedShipsWithSnowflakes',
+														args: {}}]
+												: [{	type: 'inputMapping.onAction',
+														name: 'selectSeveralShips',
+														args: {selectionState: !_hasSelectedShips}}]")
+	)
+
+	(style
+		(bind alpha "_isEnabled ? 1 : 0.5")
+		(bind hitTest "_isEnabled")
+	)
+
+	(element DockButton
+		_label = "buttonText"
+		_methods = "methods"
+	)
+
+	(controller $Tooltip
+		(renderer='SimpleStatusTooltip')
+		(args
+			_text = "mouseInstructions"
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element SnowflakesRewardsTooltip (_rewards:array, _isSelected:bool = false) layout=true dispatch_size_change=true
+	(scope
+		(var bonustagSeasonEntity:gfx = "$datahub.getCollection(CC.bonusTagSeason).getChildByPath('snowflakeSeasonCollection').items[0]")
+		(var bonusTagSeason:gfx = "bonustagSeasonEntity ? bonustagSeasonEntity.bonusTagSeason : null" (event "bonustagSeasonEntity.bonusTagSeason.evChanged"))		
+		(var bonusSnowflakesCount:number = "bonusTagSeason ? bonusTagSeason.bonusSnowflakes : 0" (event "bonusTagSeason.evChanged"))
+		(var hasSnowflakes:bool = "bonusSnowflakesCount > 0")
+
+		(var mouseInstructions:str = "hasSnowflakes ? _isSelected	? 'IDS_HINT_LEFT_DESELECT_SHIPS' 
+																	: 'IDS_SNOWFLAKES_TOOLTIP_MOUSE_INSTRUCTION_SELECT_SHIP'
+													: 'IDS_SNOWFLAKES_TOOLTIP_MOUSE_INSTRUCTION_NO_SNOWFLAKES'")
+		(var mouseStatus:str = "hasSnowflakes ? SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT :  SC.Ui_styles.UNIFIED_STATUS.ATTENTION")
+
+	)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(style (width = 300px) (hitTest = false))
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_SNOWFLAKES_SHIP_TOOLTIP_TITLE'
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemDHRewards
+			_rewards = "_rewards"
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "hasSnowflakes")
+		)
+		(controller $Instance renderer='TooltipSystemStatusLine'
+			(bind enabled "hasSnowflakes")
+			(args
+				_unifiedStatus = "mouseStatus"
+				_text =	"mouseInstructions"
+			)
+		)
+	)
+)
+
+(def element ModalWindowSnowflakes () dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+
+	(scope
+		(var playerShips:gfx =					"$datahub.getCollection(CC.ownShip)")
+		(var flakesShipsCollection:gfx =		"playerShips ? playerShips.getChildByPath('shipsHaveSnowflakes.sorted') : null")
+		(var flakesShipsArray:array =			"flakesShipsCollection ? flakesShipsCollection.items : []"	(event "flakesShipsCollection.evAdded")
+																											(event "flakesShipsCollection.evRemoved")
+																											(event "flakesShipsCollection.evUpdated"))
+		(var flakesShipsArrayLength:number =	"flakesShipsArray.length")
+
+		(var selectedShipsCollection:gfx =		"$datahub.getCollection(CC.snowflakeSelected)")
+		(var selectedShipsArray:array =			"selectedShipsCollection ? selectedShipsCollection.items : []"	(event "selectedShipsCollection.evAdded")
+																												(event "selectedShipsCollection.evRemoved"))
+		(var selectedShipsArrayLength:number =	"selectedShipsArray.length")
+
+		(var bonustagSeasonEntity:gfx = "$datahub.getCollection(CC.bonusTagSeason).getChildByPath('snowflakeSeasonCollection').items[0]")
+		(var bonusTagSeason:gfx = "bonustagSeasonEntity ? bonustagSeasonEntity.bonusTagSeason : null" (event "bonustagSeasonEntity.bonusTagSeason.evChanged"))
+		(var rewardsStack:gfx = "bonustagSeasonEntity ? bonustagSeasonEntity.rewardsStack : null" (event "bonustagSeasonEntity.rewardsStack.evChanged"))
+		
+		(var bonusSnowflakesCount:number = "bonusTagSeason ? bonusTagSeason.bonusSnowflakes : 0" (event "bonusTagSeason.evChanged"))
+		(var bonusSnowflakeProgress:number = "bonusTagSeason ? bonusTagSeason.bonusSnowflakeProgress : 0" (event "bonusTagSeason.evChanged"))
+		(var bonusSnowflakeThreshold:number = "bonusTagSeason ? bonusTagSeason.bonusSnowflakeThreshold : 0" (event "bonusTagSeason.evChanged"))
+		(var minShipsCount:number = "bonusTagSeason ? bonusTagSeason.minShipsCount : 0" (event "bonusTagSeason.evBannerStateChanged"))
+		(var bannerState:number = "bonusTagSeason ? bonusTagSeason.bannerState : 0" (event "bonusTagSeason.evBannerStateChanged"))
+		(var bonusTagsFinishTime:number = "bonusTagSeason ? bonusTagSeason.finishTime : 0" (event "bonusTagSeason.evChanged"))
+		(var rewards:array = "rewardsStack ? rewardsStack.rewards : []" (event "rewardsStack.evChanged"))
+
+		(var bonusSnowflakePercent:number = "bonusSnowflakeThreshold > 0 ? bonusSnowflakeProgress / bonusSnowflakeThreshold : 0")
+		(var hasSnowflakes:bool = "bonusSnowflakesCount > 0")
+
+		(var isActive:bool = "!(!hasSnowflakes || (hasSnowflakes && bannerState == SC.Ui_common.SNOWFLAKES_BANNER_STATE.INACTIVE))")
+		(var isAllShipsSelected:bool = "min(flakesShipsArrayLength, bonusSnowflakesCount) == selectedShipsArrayLength")
+		(var hasSelectedShips:bool = "selectedShipsArrayLength > 0")
+		(var hasShipsToSelect:bool = "flakesShipsArrayLength > 0")
+		(var restSnowflakesAmount:number = "bonusSnowflakesCount - selectedShipsArrayLength")
+
+		(var formattedBonusTagsFinishTime:str = "formatTime(bonusTagsFinishTime, 'dd.MM.yy', '', true)")
+
+		(var subheaderText:str = "	!hasShipsToSelect	? 'IDS_SNOWFLAKES_WINDOW_SUBHEADER_NO_SHIPS_NO_REWARD' :
+										hasSnowflakes	? isAllShipsSelected	? 'IDS_SNOWFLAKES_WINDOW_SUBHEADER_ALL_SHIPS_SELECTED' :
+															hasSelectedShips	? subst('IDS_SNOWFLAKES_WINDOW_SUBHEADER_PICK_MORE_REWARDS', [], {_snowflakesAmount: restSnowflakesAmount}, restSnowflakesAmount)
+																				: subst('IDS_SNOWFLAKES_WINDOW_SUBHEADER_PICK_REWARDS', [], {_snowflakesAmount: bonusSnowflakesCount}, bonusSnowflakesCount)
+														: 'IDS_SNOWFLAKES_WINDOW_SUBHEADER_NO_MORE_REWARDS'")
+
+		(var isSmallLayout:bool = "stageHeight <= 1015")
+
+		(var progressbarPriceInfo:dict = "{currency: SC.Common.CURRENCIES.XP, finalPrice: bonusSnowflakeThreshold - bonusSnowflakeProgress}")
+
+		
+		(var sortingOptions:array = "['IDS_SORT_BY_LEVEL',
+									'IDS_SORT_BY_NATION',
+									'IDS_SORT_BY_SHIPTYPE',
+									'IDS_SORT_BY_LASTBATTLETIME']")
+		(event ItemChooser_SortingOptionSelected)
+		(macro USER_PREF_DATA)
+		(var selectedSortingOrder:number = "userPrefs.shipsHaveSnowflakesSortOrder == null ? 0 : userPrefs.shipsHaveSnowflakesSortOrder")
+		(var selectedSortingDirection:bool = "userPrefs.shipsHaveSnowflakesSortReverse == null ? false : userPrefs.shipsHaveSnowflakesSortReverse")
+		
+	)
+
+	(name = "'window_ModalWindowSnowflakesRewards'")
+
+	(bindcall externalCall 'inputMapping.onAction' "['resortBonusTagShipsCollections', {sortOrder: $event.selectedIndex, 
+																						sortReverse: $event.direction}]" 
+																						init=false watch=false 
+																						(event "ItemChooser_SortingOptionSelected"))
+
+	(class $FullsizeAbsolute)
+	(style	(align = "center"))
+
+	(block
+		(class $FullsizeAbsolute)
+		(style	(backgroundImage = 'url:../events/snowflakes/bg.jpg')
+				(backgroundSize = "cover"))
+		(controller $Animation
+			(bindcall play  duration=0.2
+							from = "{ alpha: 0 }"
+							to = "{ alpha: 1 }"
+							(event "startShow")
+			)
+			(bindcall play  duration=0.2
+							delay=0.2
+							from = "{ alpha: 1 }"
+							to = "{ alpha: 0 }"
+							action="kill"
+							(event "startHide")
+			)
+		)
+	)
+
+	
+	(block
+		(style
+			(width = 100%) (align = "center")
+			(maxHeight = "1080px") (height = "100%")
+		)
+
+		
+		(block
+			(style (width = 100%) (align = "center"))
+
+			
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+				(style (width = 100%) (marginBottom = "M"))
+
+				(element ModalWindowHeaderFullSize
+					_windowName = 'IDS_SNOWFLAKES_WINDOW_HEADER'
+					_paddingRight = "M"
+					_paddingLeft = "M"
+					_paddingTop = "MS"
+				)
+			)
+
+			
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+				(style (width = 100%) (align = "center"))
+				
+				(tf
+					(class $TextDefaultNM)
+					(style
+						(alpha = "TA")
+						(marginBottom = "M")
+					)
+					(bind text "subheaderText")
+				)
+
+				(block
+					(style (width = 100%) (marginBottom = "M"))
+					(element HorizontalDividerTwoPx)
+				)
+			)
+		)
+
+		
+		(block
+			(bind visible "!hasShipsToSelect && !isSmallLayout")
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+			(class $FullsizeAbsolute)
+			(style (align = "center|middle"))
+
+			(element ModalWindowSnowflakesNoShipsAttention)
+		)
+
+		(block
+			(style (width = "1128px") (height = "100%") (align = "center"))
+
+			
+			(hblock
+				(bind visible "hasShipsToSelect")
+
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+				(style (width = 100%) (marginBottom = "M") (align = "middle"))
+
+				(tf
+					(class $TextDefaultBold17NM)
+					(style (marginRight = "XS"))
+					(bind class "'$FontColorBlueish'")
+
+					(text = "'IDS_SNOWFLAKES_FILTER_ORDER_COLON'")
+				)
+
+				(element ItemChooser
+					_items = "sortingOptions"
+					_listItemRenderer = "'TextListItemRenderer'"
+					_choosedItemRenderer = "'DefaultItemChooserPickedItemRenderer'"
+					_onItemSelectedEvent = "'SortingOptionSelected'"
+					_itemChooserTooltipText = "'IDS_HINT_SHIP_CAROUSEL_SORT'"
+					_curIndex = "selectedSortingOrder"
+					_curDirection = "selectedSortingDirection"
+					_dropDownWidth = "200"
+				)
+
+				(block
+					(style (width = 100%) (align = "right"))
+
+					(element SnowflakesShipsAutoSelectButton
+						_isEnabled = "hasShipsToSelect && hasSnowflakes"
+						_hasSelectedShips = "hasSelectedShips"
+					)
+
+				)
+			)
+
+			
+			(block
+				(bind visible "hasShipsToSelect")
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+				(style (width = 100%))
+
+				(scrollArea
+					(style
+						(width = 100%)
+						(height = "{720: 407, 1080: 512}")
+						(backgroundColor = "0x01000000")
+					)
+
+					(verticalSlider = 'SnowflakesScrollBarV')
+
+					(hscrollPolicy = 'off')
+					(vscrollPolicy = 'auto')
+
+					(wheelScrollSpeed = "1.0")
+					(wheelScrollAcceleration = "0.8")
+					(maxScrollingAnimatedDistance = "280") 
+
+					(activeControlsAlpha = "1")
+					(inactiveControlsAlpha = "0.5")
+					(animationDuration = "0.2")
+					(animationEasing = "Easing.cubic_out")
+
+					(repeatController='snowflakesShipSlotContainer')
+
+					(content
+						(style
+							(width = 1128px)
+							(height = "{720: 407, 1080: 512}")
+						)
+						(htile
+							(style (width = "100%"))
+							(controller $Repeat renderer='SnowflakesShipSlot' name='snowflakesShipSlotContainer'
+								(bind count "flakesShipsArrayLength")
+
+								(reuseElements=true)
+
+								(itemHeight =	"CAROUSEL_SLOT_SMALL_HEIGHT")
+								(itemWidth =	"CAROUSEL_SLOT_DEFAULT_WIDTH")
+								(itemOffset =	"CAROUSEL_SLOT_DEFAULT_WIDTH")
+
+								(args
+									_shipEntity =	"flakesShipsArray[$index]"
+									_isAllSelected = "isAllShipsSelected"
+									_isLocked = "!isActive"
+								)
+							)
+						)
+					)
+				)
+
+				(block
+					(style (width = 100%))
+					(element HorizontalDividerTwoPx)
+				)
+			)
+
+			
+			(block
+				(bind visible "!hasShipsToSelect && isSmallLayout")
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+				(style
+					(align = "center|middle") (width = "100%")
+					(height = "{720: 455, 1080: 560}")
+				)
+
+				(element ModalWindowSnowflakesNoShipsAttention)
+			)
+
+			
+			(block
+				(bind visible "!isSmallLayout")
+				(style
+					(width = 100%) (position = "absolute") (bottom = "0")
+					(marginBottom = "L")
+				)
+
+				(block
+					(bind visible "hasShipsToSelect")
+					(macro DEFAULT_MODAL_WINDOW_ANIMATION 3)
+					(style (width = "1128px") (minHeight = "238px") (align = "center|middle"))
+
+					
+					(block
+						(bind visible "!hasSelectedShips && hasSnowflakes")
+						(style (width = "100%") (align = "center|middle"))
+						
+						
+						(tf
+							(class $TextDefault17NM)
+							(style
+								(alpha = "TA")
+								(marginTop = "XL") 
+								(marginBottom = "XL")
+							)
+
+							(text = "'IDS_SNOWFLAKES_TAKE_BONUSES_SELECT_SHIPS'")
+						)
+					)
+
+					
+					(block
+						(bind visible "!hasSnowflakes")
+						(style (width = "100%") (align = "center|middle"))
+
+						
+						(tf
+							(class $TextDefaultBold21NM)
+							(style
+								(alpha = "TA")
+								(marginTop = "XL") 
+								(marginBottom = "SXS")
+							)
+
+							(text = 'IDS_SNOWFLAKES_TAKE_BONUSES_NO_REWARDS_HEADER')
+						)
+						
+						
+						(tf
+							(class $TextDefault17NM)
+							(style
+								(alpha = "TA")
+								(marginBottom = "XL")
+								(width = "750px")
+								(textAlign = "center")
+							)
+							(bind text "subst('IDS_SNOWFLAKES_TAKE_BONUSES_NO_REWARDS_DESC', [], {_expGeneralThreshold: bonusSnowflakeThreshold})")
+						)
+					)
+
+					
+					(block
+						(bind visible "hasSelectedShips")
+						(style (width = "100%") (align = "center|middle"))
+						
+						(block
+							(tf
+								(class $TextDefault17NM)
+								(style
+									(alpha = "TA")
+									(marginTop = "M") 
+									(marginBottom = "SXS")
+								)
+
+								(text = "'IDS_SNOWFLAKES_TAKE_BONUSES_REWARDS_COLON'")
+							)
+
+							(hblock
+								(style (width = 100%) (align = "center") (marginBottom = "MS"))
+								(controller $Repeat renderer='RewardItemAdapter' name='rewardsContainer'
+									(bind count "rewards.length")
+									(args
+										_entityId = "rewards[$index]"
+									)
+								)
+							)
+						)
+
+						
+						(block
+							(style (width = 100%) (align = "center") (marginBottom = "L"))
+
+							(element DefaultButton
+								_width = 164
+								_enabled = "hasSelectedShips && isActive"
+								_label = 'IDS_SNOWFLAKES_TAKE_BONUSES_BUTTON'
+								_focusIndex = 1
+								_defaultFocused = true
+								_methods = "[{	type: 'inputMapping.onAction',
+												name: 'SSEProxyCommonUSS.dropBonusSnowflakes',
+												args: {}
+												}]"
+							)
+						)
+					)
+				)
+
+				(block
+					(macro DEFAULT_MODAL_WINDOW_ANIMATION 3.5)
+					(style (width = 100%) (marginBottom = "M"))
+					(element HorizontalDividerTwoPx)
+				)
+
+				
+				(block
+					(macro DEFAULT_MODAL_WINDOW_ANIMATION 4)
+					(style (width = "1128px") (align = "center"))
+
+					
+					(hblock
+						(tf
+							(class $TextDefault17NM)
+							(style
+								(alpha = "TC") (leading = "-2") (marginBottom = "S")
+								(marginRight = "S")
+							)
+							
+							(text = "'IDS_SNOWFLAKES_WINDOW_PROGRESSBAR_DESC_LEFT'")
+						)
+
+						(element PriceTag
+							_priceInfo = "progressbarPriceInfo"
+							_size = "SIZE.MEDIUM"
+							_isColumnAlign = true
+						)
+
+						(tf
+							(class $TextDefault17NM)
+							(style
+								(alpha = "TC") (leading = "-2") (marginBottom = "S")
+							)
+							(text = "'IDS_SNOWFLAKES_WINDOW_PROGRESSBAR_DESC_RIGHT'")
+						)
+					)
+
+					
+					(block
+						(style (width = 100%) (marginBottom = "L"))
+						(element DefaultProgressBar
+							_progress = "bonusSnowflakePercent"
+							_height = "9"
+
+							(style (width = "100%") (marginRight = "-1px") (marginLeft = "-1px"))
+						)
+					)
+
+					
+					(hblock
+						(style (width = 100%) (align = "center|middle"))
+
+						(tf
+							(class $TextDefaultNM)
+							(style (alpha = "TA") (leading = "-2") (marginRight = "L"))
+							(bind text "subst('IDS_SNOWFLAKES_SEASON_END_DATE', [], {date: formattedBonusTagsFinishTime})")
+						)
+
+						(element VerticalDivider
+							(style (marginRight = "L"))
+						)
+
+						(element RulesButton
+							_methods = "[{	type: 'inputMapping.onRequest',
+											name: 'showRules',
+											args: { _rulesType: 'snowflakes' } }]"
+							_label = "'IDS_SNOWFLAKES_SEASON_RULES_BUTTON_LABEL'"
+						)
+					)
+				)
+			)
+
+			
+			(block
+				(bind visible "isSmallLayout")
+				(style (width = "100%"))
+
+				(block
+					(bind visible "!hasShipsToSelect")
+					(style (width = 100%))
+					(element HorizontalDividerTwoPx)
+				)
+
+				(hblock
+					(style (width = 100%) (marginTop = "MS"))
+					
+					(block
+						(macro DEFAULT_MODAL_WINDOW_ANIMATION 4)
+						(style (width = "732px") (marginRight = "LS"))
+
+						
+						(hblock
+							(tf
+								(class $TextDefaultNM)
+								(style
+									(alpha = "TC") (leading = "-2") (marginBottom = "S")
+									(marginRight = "S")
+								)
+								
+								(text = "'IDS_SNOWFLAKES_WINDOW_PROGRESSBAR_DESC_LEFT'")
+							)
+
+							(element PriceTag
+								_priceInfo = "progressbarPriceInfo"
+								_size = "SIZE.MEDIUM"
+								_isColumnAlign = true
+							)
+
+							(tf
+								(class $TextDefaultNM)
+								(style
+									(alpha = "TC") (leading = "-2") (marginBottom = "S")
+								)
+								(text = "'IDS_SNOWFLAKES_WINDOW_PROGRESSBAR_DESC_RIGHT'")
+							)
+						)
+
+						
+						(block
+							(style (width = 100%) (marginBottom = "SXS"))
+							(element DefaultProgressBar
+								_progress = "bonusSnowflakePercent"
+								_height = "9"
+
+								(style (width = "100%") (marginRight = "-1px") (marginLeft = "-1px"))
+							)
+						)
+
+						
+						(hblock
+							(style (width = 100%) (align = "middle"))
+
+							(tf
+								(class $TextDefaultNM)
+								(style (alpha = "TA") (leading = "-2") (marginRight = "L"))
+								(bind text "subst('IDS_SNOWFLAKES_SEASON_END_DATE', [], {date: formattedBonusTagsFinishTime})")
+							)
+
+							(element VerticalDivider
+								(style (marginRight = "L"))
+							)
+
+							(element RulesButton
+								_methods = "[{	type: 'inputMapping.onRequest',
+												name: 'showRules',
+												args: { _rulesType: 'snowflakes' } }]"
+								_label = "'IDS_SNOWFLAKES_SEASON_RULES_BUTTON_LABEL'"
+							)
+						)
+					)
+
+					(block
+						(macro DEFAULT_MODAL_WINDOW_ANIMATION 3)
+						(style (width = "360px"))
+						
+						(block
+							(bind visible "!hasSelectedShips")
+							(style (width = 100%))
+							
+							(block
+								(style (width = "329px") (align = "center|middle"))
+								
+								
+								(tf
+									(class $TextDefaultNM)
+									(style (alpha = "TA") (marginTop = "M"))
+									(text = "'IDS_SNOWFLAKES_TAKE_BONUSES_SELECT_SHIPS'")
+								)
+							)
+						)
+
+						
+						(hblock
+							(bind visible "hasSelectedShips")
+							(block
+								(style (width = "164px") (marginRight = "MS"))
+								(tf
+									(class $TextDefaultNM)
+									(style (alpha = "TA") (leading = "2") (marginBottom = "20px") (width = "164px"))
+									(text = "'IDS_SNOWFLAKES_TAKE_BONUSES_REWARDS_COLON'")
+								)
+								(block
+									(style (width = 100%) (align = "center"))
+
+									(element DefaultButton
+										_width = 164
+										_enabled = "hasSelectedShips && isActive"
+										_label = 'IDS_SNOWFLAKES_TAKE_BONUSES_BUTTON'
+										_focusIndex = 1
+										_defaultFocused = true
+										_methods = "[{	type: 'inputMapping.onAction',
+														name: 'SSEProxyCommonUSS.dropBonusSnowflakes',
+														args: {}
+													}]"
+									)
+								)
+							)
+							(hblock
+								(style (width = "168px") (align = "center") )
+								(controller $Repeat renderer='RewardItemAdapter' name='rewardsContainer'
+									(bind count "rewards.length")
+									(args
+										_entityId = "rewards[$index]"
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element ModalWindowSnowflakesNoShipsAttention ()
+	(style (width = "750px") (align = "center"))
+
+	(tf
+		(class $TextDefaultBold21NM)
+		(style (alpha = "TA") (marginBottom = "M"))
+
+		(text = "'IDS_MODAL_WINDOW_SNOWFLAKES_ALL_REWARD_RECEIVED'")
+	)
+
+	(tf
+		(class $TextDefault17NM)
+		(style (alpha = "TC"))
+
+		(text = "'IDS_MODAL_WINDOW_SNOWFLAKES_GET_MORE_SHIPS'")
+	)
+)

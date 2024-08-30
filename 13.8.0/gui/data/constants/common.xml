@@ -1,0 +1,1308 @@
+<?xml version="1.0"?>
+<constants>
+	<enum name="PRMP_OFFER_TYPES" type="String">
+		<const name="ANNOUNCEMENT"		value="announcement"/>
+		<const name="CRITICAL"			value="critical"/>
+
+		<range name="EXTERNAL_PLATFORMS_ALLOWED_DEFAULT" values="ANNOUNCEMENT, CRITICAL"/>
+	</enum>
+
+	<enum name="PRMP_CONTENT_TYPES" type="String">
+		<const name="TEXT"		value="text"/>
+		<const name="VIDEO"		value="video"/>
+		<const name="SURVEY"	value="survey"/>
+
+		<range name="URL_REQUIRED" values="VIDEO, SURVEY"/>
+	</enum>
+
+	<enum name="PRMP_ACTION_BUTTON_TYPE" type="Integer">
+		<const name="EXTERNAL_RESOURCE"	value="0"/>
+		<const name="INTERNAL_RESOURCE"	value="1"/>
+		<const name="CLIENT_ACTION"		value="2"/>
+		<const name="SHOW_REWARDS"		value="3"/>
+
+		<enum name="NAMES" type="String">
+			<const name="EXTERNAL_RESOURCE"	value="external_resource"/>
+			<const name="INTERNAL_RESOURCE"	value="internal_resource"/>
+			<const name="CLIENT_ACTION"		value="client_action"/>
+			<const name="SHOW_REWARDS"		value="show_rewards"/>
+		</enum>
+
+		<name_to_value/>
+	</enum>
+
+	<enum name="WGNC_NOTIFICATION_STATE" type="Integer">
+		<const name="READ"		value="0"/>
+		<const name="UNREAD"	value="1"/>
+
+		<enum name="NAMES" type="String">
+			<const name="READ"		value="read"/>
+			<const name="UNREAD"	value="unread"/>
+		</enum>
+
+		<name_to_value/>
+	</enum>
+
+	<enum name="ABUSE_STATUS" type="Integer">
+		<const name="NORMAL"	value="0"/>
+		<const name="SUSPECT"	value="1"/>
+		<const name="CONFIRMED"	value="2"/>
+		<range name="NEGATIVE" values="NORMAL, CONFIRMED"/>
+
+		<enum name="NAMES" type="String">
+			<const name="NORMAL"	value="NORMAL"/>
+			<const name="SUSPECT"	value="SUSPECT"/>
+			<const name="CONFIRMED"	value="CONFIRMED"/>
+		</enum>
+
+		<name_to_value/>
+	</enum>
+	
+	<enum name="RESAON_COMMUNICATION_RESTRICTION" type="Integer">
+		<const name="MINOR"		value="1"/>
+		<const name="WATCHER"	value="2"/>
+	</enum>
+
+	<enum name="PLAYTIME_RESTRICTION_TYPE" type="Integer">
+		<const name="PARENTAL_CONTROL"		value="1"/>
+		<const name="GOVERNMENT_CONTROL"	value="2"/>
+	</enum>
+
+	<enum name="PARENTAL_CONTROL_STATUS" type="Integer">
+		<const name="BLOCK_IMMINENT"		value="1"/>
+		<const name="BLOCK_APPLIED"			value="2"/>
+		<const name="SESSION_END_IMMINENT"	value="3"/>
+	</enum>
+
+	<enum name="PREMIUM_TYPE" type="Integer">
+		<const name="NONE"		value="0"/>
+		<const name="COMMON"	value="1"/>
+		<const name="WOWS"		value="2"/>
+		
+		<range name="RANGE" values="COMMON, WOWS"/>
+	</enum>
+
+	<enum name="LEVELING_STEP_TYPES" type="Integer">
+		<const name="NONE"				value="0"/>
+		<const name="FUNCTIONAL"		value="1"/>
+		<const name="FUNCTIONAL_PROMO"	value="2"/>
+		<const name="REWARD"			value="3"/>
+		<const name="REWARD_PROMO"		value="4"/>
+	</enum>
+
+	<enum name="CONTENT_CATEGORY" type="Integer">
+		<const name="NEWS"						value="0"  />
+		<const name="DOGTAGS"					value="1"  />
+		<const name="SYMBOL"					value="2"  />
+		<const name="PATCH"						value="3"  />
+		<const name="EMBLEM"					value="4"  />
+		<const name="BG_SHAPE"					value="5"  />
+		<const name="BG_COLOR"					value="6"  />
+		<const name="BG_BORDER_COLOR"			value="7"  />
+		<const name="BG_MATERIAL"				value="8"  />
+		<const name="ALBUMS"					value="9" />
+		<const name="SUBALBUMS"					value="10" />
+		<const name="CARDS"						value="11" />
+		<const name="CAMPAIGNS"					value="12" />
+		<const name="LOOTBOX"					value="13" />
+		<const name="PORTS"						value="14" />
+		<const name="SHIPS"						value="15" />
+		<const name="SSETAGS"					value="16" />
+		<const name="BATTLE_TYPES"				value="17" />
+		<const name="SHIP_ACES"					value="18" />
+		<const name="SNOWFLAKE_SEASON"			value="19" />
+		<const name="NEWBIE_QUEST"				value="20" />
+		<const name="OPEN_ENDED_SSE"			value="21" />
+		<const name="SYS_MSGS_BATTLE_RESULTS"	value="22" />
+		<const name="SYS_MSGS_STORAGE_CHANGES"	value="23" />
+		<const name="SYS_MSGS_INFO" 			value="24" />
+		<const name="SYS_MSGS_VERSION_UPDATERS"	value="25" />
+		<const name="STRATEGIC_ACTIONS_EVENT"	value="26"/>
+		<const name="PORT_BUFF"					value="27" />
+		<const name="BATTLE_CARD"				value="28" />
+		<const name="EVENT_HUB_PROGRESS"		value="29" />
+		<const name="EVENT_HUB_BRIEFING"		value="30" />
+		<const name="EVENT_HUB_BANNER"			value="31" />
+	</enum>
+
+	<enum name="UBSCOPE_EVENT_DIRECTIONS" type="Integer">
+		<const name="UP"	value="0" />
+		<const name="DOWN"	value="1" />
+		<const name="NONE"	value="2" />
+	</enum>
+
+	<enum name="EASING_FUNCTIONS" type="Integer">
+		<const name="LINEAR"		value="0" />
+		<const name="OUT_QUAD"		value="1" />
+		<const name="IN_QUAD"		value="2" />
+		<const name="ON_OUT_QUAD"	value="3" />
+	</enum>
+
+	<enum name="REFERRAL_TYPE" type="Integer">
+		<const name="RECRUIT"	value="0" />
+		<const name="VETERAN"	value="1" />
+	</enum>
+
+	<enum name="HAS_RECRUITS_STATUS" type="Integer">
+		<const name="UNKNOWN"	value="0" />
+		<const name="YES"		value="1" />
+		<const name="NO"		value="2" />
+	</enum>
+
+	<enum name="PARAGON_DENY_REASONS" type="Integer">
+		<const name="IS_IN_BATTLE"		value="1" />
+		<const name="IS_IN_DIVISION"	value="2" />
+		<const name="IS_NEED_SERVICE"	value="3" />
+	</enum>
+
+	<enum name="ENSIGN_TYPE" type="Integer">
+		<const name="REWARD"			value="1" />
+		<const name="HISTORICAL"		value="2" />
+		<const name="SPECIAL"			value="3" />
+
+		<value_to_name/>
+	</enum>
+
+	<enum name="SKILL_GROUP" type="Integer">
+		<const name="ATTACK"			value="0"/>
+		<const name="DEFENCE"			value="1"/>
+		<const name="SUPPORT"			value="2"/>
+		<const name="ACUMEN"			value="3"/>
+
+		<value_to_name/>
+	</enum>
+
+	<enum name="UNIQUE_SKILLS" type="Integer">
+		<const name="ADDITIONAL_CONSUMABLES"		value="0" />
+		<const name="REGEN"							value="1" />
+		<const name="MAIN_BATTERY_RELOAD_BOOSTER"	value="2" />
+		<const name="VISIBILITY_BOOSTER"			value="3" />
+		<const name="ADDITIONAL_COOL_CONSUMABLE"	value="4" />
+		<const name="CRASH_CREW"					value="5" />
+		<const name="SHOOT_SHIFT"					value="6" />
+		<const name="BURN_PROBABILITY"				value="7" />
+		<const name="SHIP_SPEED_BOOSTER"			value="8" />
+		<const name="MAX_DIST_GM"					value="9" />
+		<const name="CONSUMABLE_WORK_TIME_COEFF"	value="10" />
+		<const name="TORPEDO_RELOAD_BOOSTER"		value="11" />
+		<const name="AIRPLANE_RELOAD_BOOSTER"		value="12" />
+		<const name="ARTILLERY_RELOAD_BOOSTER"		value="13" />
+		<const name="ATBA_RELOAD_BOOSTER"			value="14" />
+		<const name="SQUADRON_SPEED_BOOSTER"		value="15" />
+		<const name="AA_NEAR_DAMAGE_COEFF"			value="16" />
+		<const name="CONSUMABLE_RELOAD_TIME_COEFF"	value="17" />
+		<const name="TORPEDO_SPEED_BOOSTER"			value="18" />
+		<const name="TORPEDO_RELOADER_BOOSTER"		value="19" />
+		<const name="RAGE_MODE_BOOSTER"				value="20" />
+
+		<value_to_name/>
+	</enum>
+
+	<enum name="CREW_TRAINING_TYPE" type="Integer">
+		<const name="BaseTraining"	value="0"/>
+		<const name="MoneyTraining"	value="1"/>
+		<const name="GoldTraining"	value="2"/>
+
+		<name_to_value/>
+	</enum>
+
+	<enum name="CREW_RESET_SKILL_TYPE" type="Integer">
+		<const name="GoldReset"			value="0"/>
+		<const name="XPReset"			value="1"/>
+
+		<range name="RESET_SKILL_OPTIONS" values="GoldReset, XPReset"/> 
+	</enum>
+
+	<enum name="CREW_RETRAINING_TYPE" type="Integer">
+		<const name="NoRetraining"		value="0"/>
+		<const name="FreeRetraining"	value="1"/>
+		<const name="GoldRetraining"	value="2"/>
+		<const name="XPRetraining"		value="3"/>
+
+		<name_to_value/>
+
+		<range name="RETRAINING_OPTIONS" values="GoldRetraining, XPRetraining, FreeRetraining"/>
+		<range name="INSTANT_RETRAINING_OPTIONS" values="GoldRetraining, XPRetraining"/>
+	</enum>
+
+	<enum name="CREW_FIRING_TYPE" type="Integer">
+		<const name="TO_OPS"			value="0"/>
+		<const name="BASE"				value="1"/>
+		<const name="MONEY"				value="2"/>
+		<const name="GOLD"				value="3"/>
+
+		<range name="FIRING_OPTIONS" values="GOLD, MONEY, BASE"/>
+	</enum>
+
+	<enum name="CREW_SKILL_TRIGGERS" type="String">
+		<const name="ENTITY_IS_VISIBLE"						value="entityIsVisibleTrigger"/>
+		<const name="ENTITY_IS_INVISIBLE"					value="entityIsInvisibleTrigger"/>
+		<const name="NO_ENEMIES_WITHIN_VISIBILITY"			value="noEnemiesWithinVisibilityTrigger"/>
+		<const name="ENEMY_WITHIN_VISIBILITY"				value="enemyWithinVisibilityTrigger"/>
+		<const name="VISIBLE_ENEMY_WITHIN_GS"				value="visibleEnemyWithinGsTrigger"/>
+		<const name="VISIBLE_ENEMY_WITHIN_GM"				value="VisibleEnemyWithinGmTrigger"/>
+		<const name="ENEMIES_NOT_LESS_THAN_ALLIES_WITHIN_GM"	value="EnemiesNotLessThanAlliesWithinGMTrigger"/>
+		<const name="ACTIVATION_ON_DETECT"					value="activationOnDetectTrigger"/>
+		<const name="ACTIVATION_ON_BATTERY"					value="activationOnBattery"/>
+		<const name="ACTIVATION_ON_CONSUMABLE"				value="activationOnConsumable"/>
+		<const name="ACTIVE_AIR_DEFENSE"					value="activeAirDefense"/>
+		<const name="POTENTIAL_DAMAGE_RATIO"				value="potentialDamageRatio"/>
+		<const name="ACTIVATION_ON_BURN_FLOOD"				value="activationOnBurnFlood"/>
+		<const name="ATBA_HEAT"								value="atbaHeat"/>
+	</enum>
+
+	<enum name="UNIQUE_SKILLS_TRIGGERS"	type="String">
+		<const name="CONSUMABLE"	value="consumable"/>
+		<const name="HEALTH"		value="health" 		/>
+		<const name="RIBBONS"		value="ribbons" 	/>
+		<const name="DAMAGE"		value="damage" 		/>
+		<const name="ACHIEVEMENT"	value="achievement" />
+		<const name="RAGE_MODE"	value="rageMode" />
+	</enum>
+
+	<enum name="BATTLE_TYPES" type="String">
+		<const name="STANDART_BATTLE"		value="StandartBattle"		/>
+		<const name="SINGLE_BATTLE"			value="SingleBattle"		/>
+		<const name="STUDY_BATTLE"			value="Study"				/>
+		<const name="RANDOM_BATTLE"			value="RandomBattle"		/>
+		<const name="TRAINING_BATTLE"		value="TrainingBattle"		/>
+		<const name="COOPERATIVE_BATTLE"	value="CooperativeBattle"	/>
+		<const name="RANKED_BATTLE"			value="RankedBattle"		/>
+		<const name="OLD_RANKED_BATTLE"		value="OldRankedBattle"		/>
+		<const name="INTRO_MISSION"			value="TutorialBattle"		/>
+		<const name="CLUB_BATTLE"			value="ClubBattle"			/>
+		<const name="PVE_BATTLE"			value="PVEBattle"			/>
+		<const name="CLAN_BATTLE"			value="ClanBattle"			/>
+		<const name="EVENT_BATTLE"			value="EventBattle"			/>
+		<const name="BRAWL_BATTLE"			value="BrawlBattle"			/>
+
+		<range name="MAP_TEAMBUILDTYPE_TO_BATTLETYPE" values="RANDOM_BATTLE, TRAINING_BATTLE, COOPERATIVE_BATTLE, INTRO_MISSION, RANKED_BATTLE, CLUB_BATTLE, PVE_BATTLE, PVE_BATTLE, CLAN_BATTLE, EVENT_BATTLE, BRAWL_BATTLE"/>
+		<range name="BATTLE_TYPES_WITH_HARD_FILTER" values="PVE_BATTLE, EVENT_BATTLE, RANKED_BATTLE, CLAN_BATTLE, BRAWL_BATTLE"/>
+		<range name="CHAT_AVAILABLE" values="RANDOM_BATTLE, COOPERATIVE_BATTLE, PVE_BATTLE"/>
+		<range name="DYNAMIC_DIVISION_AVAILABLE" values="COOPERATIVE_BATTLE, RANDOM_BATTLE, EVENT_BATTLE, BRAWL_BATTLE"/>
+		<range name="BATTLE_TYPES_WITH_BATTLECARD" values="PVE_BATTLE, EVENT_BATTLE"/>
+	</enum>
+
+	<enum name="NATION"	type="String">
+		<const name="RUSSIA"		value='Russia' />
+		<const name="JAPAN"			value='Japan' />
+		<const name="USA"			value='USA' />
+		<const name="UK"			value='United_Kingdom' />
+		<const name="GERMANY"		value='Germany' />
+		<const name="FRANCE"		value='France' />
+		<const name="ITALY"			value='Italy' />
+		<const name="EUROPE"		value='Europe' />
+		<const name="PANASIA"		value='Pan_Asia' />
+		<const name="COMMONWEALTH"	value='Commonwealth' />
+		<const name="EVENTS"		value='Events' />
+		<const name="PANAMERICA"	value='Pan_America' />
+		<const name="NETHERLANDS"	value='Netherlands' />
+		<const name="SPAIN"			value='Spain' />
+		
+		<range name="SORT_ORDER"			values="JAPAN, USA, RUSSIA, GERMANY, UK, FRANCE, ITALY, PANASIA, EUROPE, NETHERLANDS, COMMONWEALTH, PANAMERICA, SPAIN, EVENTS"/>
+		<range name="RESEARCH_TREE_ORDER"	values="JAPAN, USA, RUSSIA, GERMANY, UK, FRANCE, ITALY, PANASIA, EUROPE, NETHERLANDS, COMMONWEALTH, PANAMERICA, SPAIN"/>
+		<range name="SHIP_ACES_ORDER"		values="JAPAN, USA, RUSSIA, GERMANY, UK, FRANCE, ITALY, PANASIA, EUROPE, NETHERLANDS, COMMONWEALTH, PANAMERICA, SPAIN"/>
+	</enum>
+
+	<enum name="SHIP_TYPE"	type="String">
+		<const name="AIRCARRIER"		value='AirCarrier' />
+		<const name="BATTLESHIP"		value='Battleship' />
+		<const name="CRUISER"			value='Cruiser' />
+		<const name="DESTROYER"			value='Destroyer' />
+		<const name="AUXILIARY"			value='Auxiliary' />
+		<const name="SUBMARINE"			value='Submarine' />
+		
+		<range name="SORT_ORDER"			values="AUXILIARY, SUBMARINE, DESTROYER, CRUISER, BATTLESHIP, AIRCARRIER"/>
+		<range name="PLAYABLE_SHIP_TYPES"	values="SUBMARINE, DESTROYER, CRUISER, BATTLESHIP, AIRCARRIER"/>
+		<range name="SHIP_ACES_ORDER"		values="SUBMARINE, DESTROYER, CRUISER, BATTLESHIP, AIRCARRIER"/>
+	</enum>
+
+	<enum name="LOWER_LOG_ITEM_RENDERERS" type="Integer">
+		<const name="DEFAULT" 		value="0" 		/>
+		<const name="MULTILINE" 	value="1" 		/>
+	</enum>
+
+	<enum name="BIP_SESSION_TYPE" type="Integer">
+		<const name="NONE" 		value="0"	/>
+		<const name="REGULAR"	value="1"	/>
+		<const name="PREMIUM"	value="2"	/>
+
+		<value_to_name/>
+		<name_to_value/>
+	</enum>
+
+	<!-- INFORMERS TYPES -->
+	<enum name="RANK_INFORMERS_TYPES" type="Integer">
+		<const name="INVALID"		value="0"	/>
+		<const name="PROMO"			value="1"	/> <!-- До начала N-го сезона ранговых боев: -->
+		<const name="START_SEASON"	value="2"	/> <!-- 1 сезон ранговых боев начался! -->
+		<const name="ACTIVE_SEASON"	value="3"	/> <!-- До окончания N сезона Ранговых боев: -->
+		<const name="END_SEASON"	value="4"	/> <!-- До окончания N сезона Ранговых боев: -->
+		<const name="START_SPRINT"	value="5"	/> <!-- N спринт Ранговых боев начался! -->
+		<const name="ACTIVE_SPRINT"	value="6"	/> <!-- До окончания N спринта Ранговых боев: -->
+		<const name="END_SPRINT"	value="7"	/> <!-- До окончания N спринта Ранговых боев: -->
+
+		<value_to_name/>
+
+		<range name="SEASON_INFORMER"	values="PROMO, START_SEASON, ACTIVE_SEASON, END_SEASON"/>
+		<range name="SPRINT_INFORMER"	values="END_SPRINT, ACTIVE_SPRINT, START_SPRINT"/>
+	</enum>
+
+	<enum name="CLAN_INFORMERS_TYPES" type="String">
+		<const name="PRIME_TIME_SOON_START"	value="soon_start"	/>
+		<const name="PRIME_TIME_START"		value="start"		/>
+		<const name="PRIME_TIME_SOON_ENDS"	value="soon_end"	/>
+		<const name="PRIME_TIME_END"		value="end"			/>
+		<const name="PRIME_TIME_CHOSEN"		value="chosen"		/>
+		<const name="PRIME_TIME_FIXED"		value="fixed"		/>
+	</enum>
+
+	<enum name="BRAWL_INFORMER_TYPES" type="Integer">
+		<const name="PROMO"			value="1"	/>
+		<const name="START"			value="2"	/>
+		<const name="END"			value="3"	/>
+
+		<!-- <range name="ALL_TYPES"	values="PROMO, START, END"/> -->
+	</enum>
+
+	<enum name="NEWBIE_QUESTS_INFORMER_TYPES" type="Integer">
+		<const name="NEW"			value="1"	/>
+		<const name="DONE"			value="2"	/>
+	</enum>
+	<!-- INFORMERS TYPES -->
+
+	<enum name="DIRECTION" type="Integer">
+		<const name="NONE"		value="0"	/>
+		<const name="UP"		value="1"	/>
+		<const name="DOWN"		value="2"	/>
+		<const name="LEFT"		value="3"	/>
+		<const name="RIGHT"		value="4"	/>
+	</enum>
+
+	<enum name="BATTLE_LOADING_TAB" type="Integer">
+		<const name="TASKS"					value="0"	/>
+		<const name="TEAMS"					value="1"	/>
+		<const name="TIPS"					value="2"	/>
+		<const name="DYNAMIC_DIVISIONS"		value="3"	/>
+		<const name="STRATEGIC_ACTIONS"		value="4"	/>
+	</enum>
+
+	<enum name="USER_TASKS_FLAGS" type="BinaryShift">
+		<const name="KNOWS_ABOUT_PVP"							value="0"	/>
+		<const name="KNOWS_ABOUT_EXPLORATION"					value="1"	/>
+		<const name="KNOWS_ABOUT_CAPTAIN"						value="2"	/>
+		<const name="KNOWS_ABOUT_MODERNIZATION"					value="3"	/>
+		<const name="KNOWS_ABOUT_SIGNALS"						value="4"	/>
+		<const name="KNOWS_ABOUT_CAMOUFLAGES"					value="5"	/>
+		<const name="KNOWS_ABOUT_FLAGS"							value="6"	/>
+		<const name="VIDEO_SEEN_SHIP_DEVELOPMENT"				value="7"	/>
+		<const name="CONTROL_SEEN_PLAYTOGETHER"					value="8"	/>
+		<const name="VIDEO_SEEN_COMMANDERS"						value="9"	/>
+		<const name="KNOWS_ABOUT_TUTORIAL"						value="10"	/>
+		<const name="SEEN_ANIMATION_CRUISERS"					value="11"	/>
+		<const name="SEEN_ALL_ANIMATION"						value="12"	/>
+		<const name="KNOWS_ABOUT_DIVISION_IN_RANKES"			value="13"	/>
+		<const name="KNOWS_ABOUT_JUNIOR_RANKED_RULES"			value="14"	/>
+		<const name="KNOWS_ABOUT_WOWS_PREM"						value="15"	/>
+		<const name="KNOWS_ABOUT_ACCOUNT_COMPLETION_4_LEVEL"	value="16"	/>
+		<const name="KNOWS_ABOUT_ACCOUNT_COMPLETION_8_LEVEL"	value="17"	/>
+		<const name="KNOWS_ABOUT_ACCOUNT_COMPLETION_12_LEVEL"	value="18"	/>
+		<const name="KNOWS_ABOUT_PARAGONS_IN_SHIP_TREE"			value="19"	/>
+		<const name="FIRST_BATTLE_AUDIO_PROMPT_LISTENED"		value="20"	/>
+		<const name="KNOWS_ABOUT_ECOBOOSTS"						value="21"	/>
+		<const name="KNOWS_ABOUT_NEWS"							value="22"	/>
+	</enum>
+
+	<enum name="BRAWLS_DENY_REASONS" type="BinaryShift">
+		<const name="NO_SHIP"									value="0"	/>
+		<const name="SEASON_NOT_ACTIVE"							value="1"	/>
+		<const name="SEASON_NOT_STARTED"						value="3"	/>
+		<const name="WRONG_SHIP_LEVEL"							value="4"	/>
+		<const name="WRONG_ACCOUNT_LEVEL"						value="5"	/>
+		<const name="NO_CURRENT_PRIME_TIME"						value="6"	/>
+		<const name="WRONG_DIVISION_STRUCTURE"					value="7"	/>
+	</enum>
+
+	<enum name="SHIP_FILTER_TYPE" type="Integer">
+		<const name="SHIP_TYPE"		value='0' />
+		<const name="SHIP_LEVEL"	value='1' />
+		<const name="SHIP_NATION"	value='2' />
+		<const name="SHIP_SPECIAL"	value='3' />
+
+		<value_to_name/>
+	</enum>
+
+	<enum name="SHIP_SPECIAL_FILTER_TYPE" type="String">
+		<const name="SELECTED_BY_USER"	value='selected_by_user' />
+		<const name="NOT_ELITE"			value='not_elite' />
+		<const name="ELITE"				value='elite' />
+		<const name="SPECIAL"			value='special' />
+		<const name="PREMIUM"			value='premium' />
+		<const name="RENTED"			value='rented' />
+		<const name="EXP_BONUS"			value='exp_bonus' />
+		<const name="WITH_COMMANDER"	value='with_commander' />
+		<const name="WITHOUT_COMMANDER"	value='without_commander' />
+		<const name="SNOWFLAKES"		value='snowflakes' />
+		<const name="PARAGON_BONUS"		value='paragon_bonus' />
+	</enum>
+
+	<enum name="LOADING_PROCESS" type="Integer">
+		<const name="NOT_LOADED"			value="0"	/>
+		<const name="LOADING"				value="1"	/>
+		<const name="LOADED"				value="2"	/>
+	</enum>
+
+	<enum name="PLANE_AMMO_TYPES" type="Integer">
+		<const name="NONE"					value="-1"	/>
+		<const name="PROJECTILE"			value="0"	/>
+		<const name="BOMB_HE"				value="1"	/>
+		<const name="BOMB_AP"				value="2"	/>
+		<const name="SKIP_BOMB_HE"			value="3"	/>
+		<const name="SKIP_BOMB_AP"			value="4"	/>
+		<const name="TORPEDO"				value="5"	/>
+		<const name="TORPEDO_DEEPWATER"		value="6"	/>
+		<const name="PROJECTILE_AP"			value="7"	/>
+		<const name="DEPTH_CHARGE"			value="8"	/>
+		<const name="MINE"					value="9"	/>
+		<const name="SMOKE"					value="10"	/>
+
+		<value_to_name/>
+		<name_to_value/>
+
+		<enum name="ICON_NAMES" type="String">
+			<const name="NONE"					value=""					/>
+			<const name="PROJECTILE"			value="PROJECTILE"			/>
+			<const name="BOMB_HE"				value="BOMB_HE"				/>
+			<const name="BOMB_AP"				value="BOMB_AP"				/>
+			<const name="SKIP_BOMB_HE"			value="BOMB_HE"				/>
+			<const name="SKIP_BOMB_AP"			value="BOMB_AP"				/>
+			<const name="TORPEDO"				value="TORPEDO"				/>
+			<const name="TORPEDO_DEEPWATER"		value="TORPEDO_DEEPWATER"	/>
+			<const name="PROJECTILE_AP"			value="PROJECTILE_AP"		/>
+			<const name="DEPTH_CHARGE"			value="DEPTH_CHARGE"		/>
+			<const name="MINE"					value="MINE"				/>
+			<const name="SMOKE"					value="SMOKE"				/>
+		</enum>
+
+		<enum name="NAMES" type="String">
+			<const name="NONE"					value=""						/>
+			<const name="PROJECTILE"			value="FIGHTER_HE"				/>
+			<const name="BOMB_HE"				value="DIVE_HE"					/>
+			<const name="BOMB_AP"				value="DIVE_AP"					/>
+			<const name="SKIP_BOMB_HE"			value="SKIP_HE"					/>
+			<const name="SKIP_BOMB_AP"			value="SKIP_AP"					/>
+			<const name="TORPEDO"				value="BOMBER_TORPEDO"			/>
+			<const name="TORPEDO_DEEPWATER"		value="BOMBER_TORPEDO_DEEPWATER"/>
+			<const name="PROJECTILE_AP"			value="FIGHTER_AP"				/>
+			<const name="DEPTH_CHARGE"			value="DIVE_DEPTH_CHARGE"		/>
+			<const name="MINE"					value="MINE"					/>
+			<const name="SMOKE"					value="SMOKE"					/>
+		</enum>
+
+		<enum name="SHORT_NAMES" type="String">
+			<const name="PROJECTILE"			value="_he"				/>
+			<const name="BOMB_HE"				value="_he"				/>
+			<const name="BOMB_AP"				value="_ap"				/>
+			<const name="SKIP_BOMB_HE"			value="_he"				/>
+			<const name="SKIP_BOMB_AP"			value="_ap"				/>
+			<const name="TORPEDO"				value="_regular"		/>
+			<const name="TORPEDO_DEEPWATER"		value="_deepwater"		/>
+			<const name="PROJECTILE_AP"			value="_ap"				/>
+			<const name="DEPTH_CHARGE"			value="_depth_charge"	/>
+			<const name="MINE"					value="_mine"			/>
+			<const name="SMOKE"					value="_smoke"			/>
+		</enum>
+	</enum>
+
+	<enum name="TORPEDO_TYPE" type="Integer">
+		<const name="COMMON"				value="0"/>
+		<const name="SUBMARINE"				value="1"/>
+	</enum>
+
+	<enum name="TORPEDOES_GROUP_TYPE" type="Integer">
+		<const name="LOOK_FORWARD" 		value="0" 	/>
+		<const name="LOOK_BACKWARD" 	value="1" 	/>
+	</enum>
+
+	<enum name="HIGHLIGHT"  type="Integer">
+		<const name="HIDDEN"					value="0"/>
+		<const name="DEFAULT"					value="1"/>
+		<const name="HIGHLIGHTED"				value="2"/>
+	</enum>
+
+	<enum name="TRAINING_ROOM_TEAMS_IDS" type="Integer">
+		<const name="SELF_TEAM"			value="0"	/>
+		<const name="NEUTRAL_TEAM"		value="-1"	/>
+		<const name="OTHER_TEAM"		value="1"	/>
+		<const name="OBSERVER_TEAM"		value="100"	/>
+
+		<range name="SELF_TEAM_RANGE" values="SELF_TEAM"/>
+		<range name="AVAILABLE_TEAMS" values="SELF_TEAM, OTHER_TEAM"/>
+	</enum>
+
+	<enum name="SHIP_BATTLE_LOCK_REASON" type="Integer">
+		<const name="NONE"				value="0"	/>
+		<const name="COOLDOWN"			value="1"	/> <!-- DEPRICATED SINCE [WWSD-182915] -->
+		<const name="TELECOM"			value="2"	/>
+		<const name="PAYMENT"			value="3"	/>
+	</enum>
+
+	<enum name="CURRENCIES" type="String">
+		<const name="CREDITS"				value="credits"				/>
+		<const name="GOLD"					value="gold"				/>
+		<const name="ELITE_XP"				value="eliteXP"				/>
+		<const name="CREW_XP"				value="crewXP"				/>
+		<const name="STEEL"					value="steel"				/>
+		<const name="COAL"					value="coal"				/>
+		<const name="MOLYBDENUM"			value="molybdenum"			/>
+		<const name="BRASS"					value="brass"				/>
+		<const name="SALTPETER"				value="saltpeter"			/>
+		<const name="RECRUITMENT_POINTS"	value="recruitment_points"	/>
+		<const name="EVENTUM_1"				value="eventum_1"			/>
+		<const name="EVENTUM_2"				value="eventum_2"			/>
+		<const name="EVENTUM_3"				value="eventum_3"			/>
+		<const name="EVENTUM_4"				value="eventum_4"			/>
+		<const name="EVENTUM_5"				value="eventum_5"			/>
+		<const name="EVENTUM_6"				value="eventum_6"			/>
+		<const name="EVENTUM_7"				value="eventum_7"			/>
+		<const name="EVENTUM_8"				value="eventum_8"			/>
+		<const name="EVENTUM_9"				value="eventum_9"			/>
+		<const name="EVENTUM_10"			value="eventum_10"			/>
+		<const name="EVENTUM_CN"			value="eventum_cn"			/>
+		<const name="CLIENTUM_1"			value="clientum_1"			/>
+		<const name="CLIENTUM_2"			value="clientum_2"			/>
+		<const name="SANTIUM"				value="santium"				/>
+		<const name="DOCKYARDUM_1"			value="dockyardum_1"		/>
+		<const name="DOCKYARDUM_2"			value="dockyardum_2"		/>
+		<const name="EVENTUM_11"			value="eventum_11"			/>
+		<const name="EVENTUM_12"			value="eventum_12"			/>
+		<const name="EVENTUM_13"			value="eventum_13"			/>
+		<const name="EVENTUM_14"			value="eventum_14"			/>
+		<const name="PARAGON_XP"			value="paragonXP"			/>
+		<const name="FREE_XP"				value="freeXP"				/>
+		<const name="XP"					value="exp"					/>
+		<const name="ACCOUNT_LEVELING"		value="accountLeveling"		/>
+		<const name="CLAN_RESOURCE"			value="clan_resource"		/>
+		<const name="MONEY"					value="money"				/>
+		<const name="ACC_POINTS"			value="accPoints"			/>
+		<const name="SNOWFLAKE"				value="snowflake"			/>
+		<const name="CAMPAIGN_STAR"			value="campaignStar"		/>
+		<const name="VALUE"					value="value"				/>
+		<const name="BP_POINTS"				value="bpPoints"			/>
+		<const name="FOR_FREE"				value="for_free"			/>
+		<const name="STRATEGIC_POINTS"		value="strategic_points"	/>
+		<const name="COLLECTION_TOKEN"		value="collection_token"	/>
+
+		<range name="IS_EVENT_CURRENCY"		values="EVENTUM_1, EVENTUM_2, EVENTUM_3, 
+													EVENTUM_4, EVENTUM_5, EVENTUM_6, 
+													EVENTUM_7, EVENTUM_8, EVENTUM_9, 
+													EVENTUM_10, EVENTUM_11, EVENTUM_12,
+													EVENTUM_13, EVENTUM_14, SANTIUM"/>
+	</enum>
+
+	<enum name="ACCOUNT_FEATURE" type="Integer">
+		<const name="BATTLE_TUTORIAL"				value="0"	/>
+		<const name="BATTLE_COOP"					value="1"	/>
+		<const name="BATTLE_JUNIOR"					value="2"	/>
+		<const name="BATTLE_SENIOR"					value="3"	/>
+		<const name="RESEARCH_USE"					value="4"	/>
+		<const name="FREE_EXP_USE"					value="5"	/>
+		<const name="FREE_EXP_TRANSIT"				value="6"	/>
+		<const name="SKILL_TREE_USE"				value="7"	/>
+		<const name="DAILYQUESTS_USE"				value="8"	/>
+		<const name="SSE_USE"						value="9"	/>
+		<const name="GOLD_USE"						value="10"	/>
+		<const name="ECOBOOSTS"						value="11"	/>
+		<const name="MODERNIZATIONS"				value="12"	/>
+		<const name="CREW"							value="13"	/>
+		<const name="EXT_SIGNALS"					value="14"	/>
+		<const name="EXT_CAMOUFLAGE"				value="15"	/>
+		<const name="RANK_BATTLES"					value="16"	/>
+		<const name="NATIONS_TREE"					value="17"	/>
+		<const name="SSE"							value="18"	/>
+		<const name="CLUBS"							value="19"	/>
+		<const name="ARMOR_IN_PORT"					value="20"	/>
+		<const name="LOOTBOXES"						value="21"	/>
+		<const name="CAMPAIGNS"						value="22"	/>
+		<const name="WEB_STORAGE"					value="23"	/>
+		<const name="PVE"							value="24"	/>
+		<const name="CAMOUFLAGE_PAINT"				value="25"	/>
+		<const name="FLAGS_ADDITION"				value="26"	/>
+		<const name="CLAN_BATTLE"					value="27"	/>
+		<const name="TRAINING_BATTLE"				value="28"	/>
+		<const name="METASHOP"						value="29"	/>
+		<const name="RESOURCE_LOOTBOXES"			value="30"	/>
+		<const name="EVENT_BATTLES"					value="31"	/>
+
+		<value_to_name/>
+
+		<!-- ### НЕ ДОБАВЛЯЙТЕ БОЛЕЕ НОВЫЕ КОНСТАНТЫ ИЗ-ЗА ПЕРЕПОЛНЕНИЯ! НУЖЕН РЕФАКТОРИНГ И ИЗБАВЛЕНИЕ ОТ БИТОВОЙ МАСКИ! ### -->
+		<enum name="BIT_MASKS" type="Integer">
+			<const name="BATTLE_TUTORIAL"				value="1"			/>
+			<const name="BATTLE_COOP"					value="2"			/>
+			<const name="BATTLE_JUNIOR"					value="4"			/>
+			<const name="BATTLE_SENIOR"					value="8"			/>
+			<const name="RESEARCH_USE"					value="16"			/>
+			<const name="FREE_EXP_USE"					value="32"			/>
+			<const name="FREE_EXP_TRANSIT"				value="64"			/>
+			<const name="SKILL_TREE_USE"				value="128"			/>
+			<const name="DAILYQUESTS_USE"				value="256"			/>
+			<const name="SSE_USE"						value="512"			/>
+			<const name="GOLD_USE"						value="1024"		/>
+			<const name="ECOBOOSTS"						value="2048"		/>
+			<const name="MODERNIZATIONS"				value="4096"		/>
+			<const name="CREW"							value="8192"		/>
+			<const name="EXT_SIGNALS"					value="16384"		/>
+			<const name="EXT_CAMOUFLAGE"				value="32768"		/>
+			<const name="RANK_BATTLES"					value="65536"		/>
+			<const name="NATIONS_TREE"					value="131072"		/>
+			<const name="SSE"							value="262144"		/>
+			<const name="CLUBS"							value="524288"		/>
+			<const name="ARMOR_IN_PORT"					value="1048576"		/>
+			<const name="LOOTBOXES"						value="2097152"		/>
+			<const name="CAMPAIGNS"						value="4194304"		/>
+			<const name="WEB_STORAGE"					value="8388608"		/>
+			<const name="PVE"							value="16777216"	/>
+			<const name="CAMOUFLAGE_PAINT"				value="33554432"	/>
+			<const name="FLAGS_ADDITION"				value="67108864"	/>
+			<const name="CLAN_BATTLE"					value="134217728"	/>
+			<const name="TRAINING_BATTLE"				value="268435456"	/>
+			<const name="METASHOP"						value="536870912"	/>
+			<const name="RESOURCE_LOOTBOXES"			value="1073741824"	/>
+			<const name="EVENT_BATTLES"					value="2147483648"	/>
+		</enum>
+	</enum>
+
+	<enum name="ACCOUNT_FEATURE_NAME_TO_NEWBIE_QUEST_NAME" type="String">
+		<const name="NATIONS_TREE"					value="RESEARCH"		/>
+		<const name="BATTLE_SENIOR"					value="PVP"				/>
+		<const name="EXT_CAMOUFLAGE"				value="EXTERIOR"		/>
+		<const name="EXT_SIGNALS"					value="BATTLE_BONUSES"	/>
+		<const name="FREE_EXP_USE"					value="FREE_XP"			/>
+		<const name="ECOBOOSTS"						value="ECO_BONUSES"		/>
+		<const name="LOOTBOXES"						value="LOOTBOXES"		/>
+		<const name="CREW"							value="CREW"			/>
+		<const name="SSE_USE"						value="SSE"				/>
+		<const name="MODERNIZATIONS"				value="MODERNIZATION"	/>
+		<const name="CAMPAIGNS"						value="CAMPAIGN"		/>
+		<const name="METASHOP"						value="METASHOP"		/>
+		<const name="PVE"							value="PVE"				/>
+		<const name="WEB_STORAGE"					value="WEB_STORAGE"		/>
+		<const name="RANK_BATTLES"					value="RANK"			/>
+		<const name="CLAN_BATTLE"					value="CLANS"			/>
+	</enum>
+
+	<enum name="SEASON_BATTLES_STAGES" type="Integer">
+		<const name="INACTIVE"		value="0"	/>	<!-- season hasn't started yet -->
+		<const name="WAITING"		value="1"	/>	<!-- season has been announced: appears on the UI, but can't enter battles yet -->
+		<const name="ACTIVE"		value="2"	/>	<!-- season is ongoing -->
+		<const name="FINISHED"		value="3"	/>	<!-- season is finished, can't enter a new battle, but ongoing battles are being waited for -->
+		<const name="CLOSED"		value="4"	/>	<!-- season is fully finished, can't play any more. Will be shown as a past season in the UI, until the next season is announced -->
+		<!--<const name="PENDING"	value="5"	/>-->	<!-- (deprecated) season has started, but is awaiting for a prime time to start -->
+	</enum>
+	
+	<enum name="PERFECT_LOGIN" type="Number">
+		<const name="HIDE_TIME"		value="1"	/>
+	</enum>
+
+	<enum name="COMMANDER_CLASSIFICATIONS" type="Integer">
+		<const name="COMMON"		value="0"/>
+		<const name="SPECIAL"		value="1"/>
+		<const name="ADVANCED"		value="2"/>
+		<const name="UNIQUE"		value="3"/>
+	</enum>
+
+	<enum name="RETRAINING_OPTION_BLOCK_REASON" type="Integer">
+		<const name="NO_REASON"					value="0"/>
+		<const name="ALREADY_FREE_RETRAIN"		value="1"/>
+		<const name="NEED_MORE_EXP"				value="2"/>
+		<const name="NEED_MORE_GOLD"			value="3"/>
+	</enum>
+
+	<enum name="CLAN_RULES_CHANGED_TYPE" type="String">
+		<const name="RULES_HAVE_CHANGED"			value="rules_have_changed"/>
+		<const name="FINISH_TIME_HAVE_CHANGED"		value="finish_time_have_changed"/>
+		<const name="PRIME_TIMES_HAVE_CHANGED"		value="prime_times_have_changed"/>
+		<const name="RESTRICTIONS_HAVE_CHANGED"		value="restrictions_have_changed"/>
+	</enum>
+	
+	<enum name="XP_TYPE" type="Integer">
+		<const name="ELITE"					value="0"/>
+		<const name="FREE"					value="1"/>
+	</enum>
+
+	<enum name="SKILL_POINTS" type="Integer">
+		<const name="MAX_FREE_SKILL_POINTS"		value="21"/>
+	</enum>
+	
+	<enum name="GUI_MODE" type="Integer">
+		<const name="DOCK"			value="0"	/>
+		<const name="LOADING"		value="1"	/>
+		<const name="BATTLE"		value="2"	/>
+		<const name="SHIPYARD"		value="3"	/>
+	</enum>
+	<enum name="ALMANAC_CONSTANTS" type="Integer">
+		<const name="MAIN_STAGES_NUMBER"		value="24"/>
+		<const name="ALL_STAGES_NUMBER"			value="44"/> <!--Number of stages including main, extra and closed-->
+	</enum>
+
+	<enum name="ALMANAC_STAGES_TYPE" type="Integer">
+		<const name="REGULAR_REWARD"		value="0"/>
+		<const name="EXTRA_REWARD"			value="1"/>
+		<const name="NEXT_MONTH_REWARD"		value="2"/>
+	</enum>
+	
+	<enum name="ACHIEVEMENT_TYPE"		type="String">
+		<const name="HEROIC"			value="heroic"/>
+		<const name="HONORABLE"			value="honorable"/>
+		<const name="COMMON"			value="common"/>
+		<const name="SERVICE_MEDAL"		value="service_medal"/>
+		<const name="SQUAD"				value="squad"/>
+	</enum>
+
+	<enum name="MODERNIZATION_AVAILABILITY" type="Integer">
+		<const name="AVAILABLE_ON_STORAGE_OR_COMMON"		value="0"/>
+		<const name="NEED_TO_BE_PURCHASED_IN_METASHOP"		value="1"/>
+	</enum>
+
+	<enum name="ENTITY_AFFILIATION" type="String">
+		<const name="PLAYER"		value="player"/>
+		<const name="ALLY"			value="ally"/>
+		<const name="ENEMY"			value="enemy"/>
+		<const name="NEUTRAL"		value="neutral"/>
+	</enum>
+
+	<enum name="UI_SCALE" type="Number">
+		<const name="UI_SCALE_STEP"			value="0.25"/>
+	</enum>
+
+	<enum name="RENT_TYPES" type="String">
+		<const name="SHIP"			value="ship"/>
+		<const name="CREW"			value="crew"/>
+	</enum>
+
+	<!-- WWSD-174446 константы с типами лутбоксов испльзуются в юзерпрфеах (selectedLootboxType, окно выбора лутбокса за полученную экспу)
+	при изменении значений констнат надо не хабыть поправить значение в префах-->
+	<enum name="COMMON_LOOTBOX_TYPES" type="Integer">
+		<const name="UNKNOWN"		value="0"/>
+		<const name="CREDITS"		value="1"/>
+		<const name="SIGNALS"		value="2"/>
+		<const name="RESOURCES"		value="3"/>
+		<const name="LUCKY"			value="4"/>
+	</enum>
+	<!--/WWSD-174446-->
+
+	<enum name="ROMAN_DIGITS" type="String">
+		<const name="NONE"		value="–"/>
+		<const name="I"			value="I"/>
+		<const name="II"		value="II"/>
+		<const name="III"		value="III"/>
+		<const name="IV"		value="IV"/>
+		<const name="V"			value="V"/>
+		<const name="VI"		value="VI"/>
+		<const name="VII"		value="VII"/>
+		<const name="VIII"		value="VIII"/>
+		<const name="IX"		value="IX"/>
+		<const name="X"			value="X"/>
+		<const name="XI"		value="XI"/>
+		<const name="XII"		value="XII"/>
+		<const name="XIII"		value="XIII"/>
+
+		<const name="SUPER_SHIP"	value="★"/>
+
+		<range name="COMMON"		values="NONE, I, II, III, IV, V, VI, VII, VIII, IX, X, XI, XII, XIII"/>
+		<range name="SHIP_LEVELS"	values="NONE, I, II, III, IV, V, VI, VII, VIII, IX, X, SUPER_SHIP, XII, XIII"/>
+	</enum>
+
+	<enum name="MIXING_PRESETS" type="String">
+		<const name="ORIGINAL"/>
+		<const name="CINEMATIC"/>
+		<const name="SIMPLIFIED"/>
+		<const name="NIGHT"/>
+		<const name="CUSTOM"/>
+	</enum>
+
+	<enum name="LOOTBOX_CONSTANTS" type="Integer">
+		<const name="MAX_PER_LOOTBOX_TYPE"			value="100"/>
+		<const name="MAX_MASS_LOOTBOX_OPEN_AMOUNT"	value="1000"/>
+		<const name="MAX_REWARDS"					value="3"/>
+		<const name="MAX_SLOTS"						value="3"/>
+	</enum>
+	<enum name="PRICE_ACTION" type="Integer">
+		<const name="RESEARCH"		value="0" />
+		<const name="BUY"			value="1" />
+		<const name="INFO"			value="2" />
+		<const name="GROUP"			value="3" />
+		<const name="UNLOCK_BATTLE"	value="4" />
+	</enum>
+
+	<enum name="SPECTATOR_STATE" type="Integer">
+		<!-- Состояние, когда корабль уже уничтожен, но мы ещё не нажали Shift, чтобы отключить догтег и перейти в режим наблюдателя -->
+		<const name="PRE_SPECTATOR"			value="1"/>
+		<!-- Режим наблюдателя после смерти корабля -->
+		<const name="SPECTATOR"				value="2"/>
+		<!-- Режим наблюдателя в тренировочном режиме -->
+		<const name="TRAINING_SPECTATOR"	value="3"/>
+	</enum>
+
+	<enum name="ECOBOOST_TYPES" type="Integer">
+		<const name="COMMON"			value="0"/>
+		<const name="LINKABLE"			value="1"/>
+		<const name="GLOBAL"			value="2"/>
+		<const name="CLANBASE"			value="3"/>
+	</enum>
+
+	<!--Values of this constants should match the modifiers in eco boosts-->
+	<enum name="ECOBOOST_MODIFIERS" 		type="String">
+		<const name="SERVICE"			value="afterBattleRepair"/> <!--not used in common boosts-->
+		<const name="CREDITS"			value="creditsFactor"/>
+		<const name="EXP"				value="expFactor"/>
+		<const name="CREW_EXP"			value="crewExpFactor"/>
+		<const name="FREE_EXP"			value="freeExpFactor"/>
+
+		<range name="CONTROLLED_BY_PLAYER"		values="CREDITS, EXP, CREW_EXP, FREE_EXP"/>
+	</enum>
+
+	<enum name="AUTOPURCHASABLE_ITEMS" 		type="Integer">
+		<const name="CAMOUFLAGE"			value="0"/>
+		<const name="ECOBOOST"				value="1"/>
+		<const name="SIGNAL"				value="2"/>
+	</enum>
+
+	<enum name="REWARD_TYPE" type="String">
+		<const name="LOOTBOX"					value="Lootbox"/>
+		<const name="RESOURCE"					value="Resource"/>
+		<const name="RESOURCECOEFF"				value="ResourceCoeff"/>
+		<const name="COLLECTION"				value="Collection"/>
+		<const name="TOKEN"						value="Token"/>
+		<const name="EXTERIOR"					value="Exterior"/>
+		<const name="RANDOM_REWARD"				value="RandomReward"/>
+		<const name="UNIVERSAL_COLLECTION_CARD"	value="UniversalCollectionCard"/>
+	</enum>
+
+	<enum name="REWARD_SUBTYPE" type="String">
+		<const name="LOOTBOX_LUCKY"		value="PCL004_Lucky"/>
+		<const name="LOOTBOX_SUPER"		value="PCL005_Epic"/>
+		<const name="LOOTBOX_SIGNALS"	value="PCL002_Signals"/>
+		<const name="LOOTBOX_RESOURCES"	value="PCL034_Resourses"/>
+		<const name="LOOTBOX_CREDITS"	value="PCL001_Credits"/>
+
+		<const name="WOWS_PREMIUM"		value="wows_premium"/>
+		<const name="PREMIUM"			value="premium"/>
+
+		<const name="CAMOUFLAGE"		value="Camouflage"/>
+		<const name="SIGNALS"			value="Signals"/>
+
+		<const name="SLOTS"				value="slots"/>
+
+		<const name="CAMPAIGN"			value="Campaign"/>
+
+		<const name="CREDITSCOEFF"		value="creditsCoeff"/>
+		<const name="CREWPOINTSCOEFF"	value="crewPointsCoeff"/>
+		<const name="FREEXPCOEFF"		value="freexpCoeff"/>
+
+		<const name="MULTIBOOST"		value="Multiboost"/>
+		<const name="CLANRESOURCE"		value="clanResource"/>
+	</enum>
+
+	<enum name="FORMATTING_OPTIONS_SLIDERS" type="Integer">
+		<const name="WITHOUT_FORMATTING"	value="0"/>
+		<const name="DEGREES"				value="1"/>
+	</enum>
+
+	<enum name="STATISTICS_EVENTS"		type="String">
+		<const name="LOG"			value="statistics.log"/>
+		<const name="LOG_START"		value="statistics.logStart"/>
+		<const name="LOG_END"		value="statistics.logEnd"/>
+	</enum>
+
+	<enum name="STATISTICS_UNBOUND_COLLECTORS" 		type="Integer">
+		<const name="BLOCK_COLLECTOR"				/>
+		<const name="ELEMENT_COLLECTOR"				/>
+		<const name="CLICK_BLOCK_COLLECTOR"			/>
+		<const name="CLICK_ELEMENT_COLLECTOR"		/>
+		<const name="OVER_BLOCK_COLLECTOR"			/>
+		<const name="OVER_ELEMENT_COLLECTOR"		/>
+		<const name="TEXT_COLLECTOR"				/>
+		<const name="IMAGE_COLLECTOR"				/>
+	</enum>
+
+	<enum name="CLIENT_BATTLE_STATE"	type="Integer">
+		<const name="INVALID"			value="-1"/>
+		<const name="STARTED"			value="0"/>
+		<const name="COUNTDOWN"			value="1"/>
+		<const name="WAITING"			value="2"/>
+		<const name="END_BATTLE_IDLING"	value="3"/>
+
+		<enum name="NAMES" type="String">
+			<const name="STARTED"				value="Started"	/>
+			<const name="COUNTDOWN"				value="COUNTDOWN"	/>
+			<const name="WAITING"				value="WAITING"	/>
+			<const name="END_BATTLE_IDLING"		value="END_BATTLE_IDLING"	/>
+		</enum>
+
+		<range name="IN_BATTLE"		values="STARTED, END_BATTLE_IDLING"/>
+	</enum>
+
+	<enum name="END_BATTLE_IDLING" type="Number">
+		<const name="DURATION" value="8.0"/>
+		<const name="UI_START_HIDE_TIME" value="1.5"/>
+		<const name="UI_HIDE_TIME" value="1.0"/>
+	</enum>
+
+	<enum name="OPERATION_DIFFICULTY" type="Integer">
+		<const name="NORMAL"		value="0" />
+		<const name="HARD"			value="1" />
+		<const name="NIGHTMARE"		value="2" />
+		<name_to_value/>
+	</enum>
+
+	<enum name="PVE_OPERATION_STATUS"	type="Integer">
+		<const name="INACTIVE" 	value="0"/>
+		<const name="LOCKED" 	value="1" 		/>
+		<const name="ACTIVE" 	value="2" 	/>
+		<const name="WEEKLY" 	value="3" 		/>
+	</enum>
+
+	<enum name="ARC_EVENT_TABS"	type="Integer">
+		<const name="PROGRESS"		value="0" />
+		<const name="TASKS"			value="1" />
+	</enum>
+
+	<enum name="EXCHANGE_EXP_INSET"	type="Integer">
+		<const name="SHIP_XP"			value="0" />
+		<const name="ELITE_XP"			value="1" />
+	</enum>
+
+	<enum name="CONTACTS_AND_CHANNELS_INSET"	type="Integer">
+		<const name="CONTACTS"			value="0" />
+		<const name="CHANNELS"			value="1" />
+	</enum>
+
+	<enum name="DIVISION_INFOTIP_STATE"		type="Integer">
+		<const name="TAB_PLAYER"		value="0" />
+		<const name="TAB_BOT"			value="1" />
+		<const name="SEARCH"			value="2" />
+	</enum>
+
+	<enum name="CONTACTS_AND_CHANNELS_SEARCH_STATE"	type="Integer">
+		<const name="OFF"			value="0" />
+		<const name="ON"			value="1" />
+	</enum>
+
+	<enum name="BATTLE_PASS_TAB_INDEX"	type="Integer">
+		<const name="MAIN"			value="0" />
+		<const name="TASKS"			value="1" />
+	</enum>
+
+	<enum name="SHIP_FEATURES_TAB_INDEX"	type="Integer">
+		<const name="MAIN"			value="0" />
+		<const name="OTHER"			value="1" />
+	</enum>
+
+	<enum name="BATTLEPASS_SEASON_STATE" type="Integer">
+		<const name="WAITING"		value="0" />
+		<const name="ACTIVE"		value="1" />
+		<const name="FINISHED"		value="2" />
+		<name_to_value/>
+	</enum>
+
+	<enum name="BATTLEPASS_SEASON_REMINDERS" type="Integer">
+		<const name="DAYS_TO_SEASON_FINISH"				value="5"/>
+		<const name="REQUIRED_FINISHED_LEVELS_COUNT"	value="15"/>
+	</enum>
+
+	<enum name="BATTLEPASS_SEASON_FLAGS" type="Integer">
+		<const name="END_SEASON_OFFER_SHOWN"		value="1"/>
+		<const name="END_SEASON_REMINDER_SHOWN"		value="2"/>
+		<const name="START_SEASON_REMINDER_SHOWN"	value="3"/>
+		<const name="ONBOARDING_SHOWN"				value="4"/>
+	</enum>
+
+	<enum name="BATTLEPASS_TYPES" type="Integer">
+		<const name="FREE"			value="0" />
+		<const name="PAID_REGULAR"	value="1" />
+		<const name="PAID_ENHANCED"	value="2" />
+
+		<enum name="TO_PRICE" type="String">
+			<const name="PAID_REGULAR"	value="BATTLEPASS_REGULAR"/>
+			<const name="PAID_ENHANCED"	value="BATTLEPASS_ENHANCED"/>
+		</enum>
+
+		<range name="PAID"		values="PAID_REGULAR, PAID_ENHANCED"/>
+
+		<value_to_name/>
+		<name_to_value/>
+	</enum>
+
+	<enum name="BATTLEPASS_REWARD_TYPES" type="Integer">
+		<const name="FREE" value="0"/>
+		<const name="PAID" value="1"/>
+	</enum>
+
+	<enum name="BATTLEPASS_REWARD_STATE" type="Integer">
+		<const name="UNAVAILABLE" 	value="0"/>
+		<const name="AVAILABLE" 	value="1"/>
+		<const name="CLAIMED" 		value="2"/>
+	</enum>
+
+	<enum name="BATTLEPASS_BONUSES" type="String">
+		<const name="SSE_CHAIN" 					value="SSE_CHAIN"/>
+		<const name="RESOURCES" 					value="RESOURCES"/>
+		<const name="DAILY_WIN_EXP" 				value="DAILY_WIN_EXP"/>
+		<const name="CREW_RESET" 					value="CREW_RESET"/>
+		<const name="CREW_RESET_GOLD"		 		value="CREW_RESET_GOLD"/>
+		<const name="CREW_RESET_ELXP" 				value="CREW_RESET_ELXP"/>
+		<const name="CREW_RETRAIN" 					value="CREW_RETRAIN"/>
+		<const name="CREW_RETRAIN_GOLD"		 		value="CREW_RETRAIN_GOLD"/>
+		<const name="CREW_RETRAIN_ELXP"				value="CREW_RETRAIN_ELXP"/>
+		<const name="MODERNIZATION_DISMOUNT" 		value="MODERNIZATION_DISMOUNT"/>
+		<const name="MODERNIZATION_FOR_CREDITS" 	value="MODERNIZATION_FOR_CREDITS"/>
+		<const name="BP_POINTS" 					value="BP_POINTS"/>
+		<const name="GOLD_CONVERT_RATE" 			value="GOLD_CONVERT_RATE"/>
+	</enum>
+
+	<enum name="BANNER_ALIGNMENT" type="Integer">
+		<const name="CENTER"/>
+		<const name="LEFT"/>
+	</enum>
+
+	<enum name="LOBBY_CONSTANTS" type="Integer">
+		<const name="MODERNIZATION_SET"		value="1"/>
+		<const name="MODERNIZATION_UNSET"	value="2"/>
+		<const name="MODERNIZATION_BUY"		value="4"/>
+		<const name="MODERNIZATION_SELL"	value="8"/>
+	</enum>
+
+	<enum name="GAME_LOGIC_TRIGGER_TYPE" type="String">
+		<const name="EVENT"		value="EventTrigger"/>
+		<const name="SWITCH"	value="SwitchTrigger"/>
+	</enum>
+
+	<enum name="GAME_LOGIC_ACTIVATOR" type="String">
+		<const name="ACHIEVEMENT"			value="AchievementActivator"/>
+		<const name="RIBBON"				value="RibbonActivator"/>
+		<const name="ADJUSTMENT_SHOT"		value="AdjustmentShotActivator"/>
+		<const name="VISIBILITY_CHANGED"	value="VisibilityChangedActivator"/>
+		<const name="TIMER"					value="TimerActivator"/>
+		<const name="POTENTIAL_DAMAGE"		value="PotentialDamageActivator"/>
+	</enum>
+
+	<enum name="GAME_LOGIC_ACTION" type="String">
+		<const name="RAGE_MODE_PROGRESS"			value="RageModeProgressAction"/>
+		<const name="TOGGLE_TRIGGER"				value="ToggleTriggerAction"/>
+		<const name="SWITCH_VEHICLE_VISUAL_STATE"	value="SwitchVehicleVisualStateAction"/>
+	</enum>
+
+	<!-- Warning reason bit flags -->
+	<enum name="CONTINUOUS_BATTLE_ENTER_WARNING_REASON" type="Integer">
+		<const name="BATTLE_TYPE" 		value="1"	/>
+		<const name="BATTLE_SHIP" 		value="2"	/>
+		<const name="BATTLE_CREW" 		value="4"	/>
+		<const name="FREE_SKILLS" 		value="8"	/>
+		<const name="EXPENDABLES" 		value="16"	/>
+	</enum>
+
+	<enum name="PREFERENCE_UTILITY_SUBMODAL_TYPE" type="Integer">
+		<const name="APPLY_CHANGES"					value="0"/>
+		<const name="SET_DEFAULT_PREFS"				value="1"/>
+		<const name="APPLY_WITH_ORPHANS"			value="2"/>
+		<const name="CONFIRM_RESTART"				value="3"/>
+		<const name="APPLY_CHANGES_WITH_ORPHANS"	value="4"/>
+	</enum>
+
+	<enum name="DOGTAG_CATEGORIES" type="Integer">
+		<const name="CONSTRUCTOR"		value="0"	/>
+		<const name="PATCH"				value="1"	/>
+		<const name="EMBLEM"			value="2"	/>
+
+		<enum name="NAMES" type="String">
+			<const name="CONSTRUCTOR"		value="constructor"	/>
+			<const name="PATCH"				value="patch"	/>
+			<const name="EMBLEM"			value="emblem"	/>
+		</enum>
+
+		<value_to_name/>
+		<range name="ORDER" values="CONSTRUCTOR, PATCH, EMBLEM"/>
+		<range name="ORDER_NO_PATCH" values="CONSTRUCTOR, EMBLEM"/>
+	</enum>
+
+	<enum name="DOGTAG_ELEMENTS" type="Integer">
+		<const name="SYMBOL"			value="0"	/>
+		<const name="PATCH"				value="1"	/>
+		<const name="EMBLEM"			value="2"	/>
+		<const name="BG_SHAPE"			value="3"	/>
+		<const name="BG_COLOR"			value="4"	/>
+		<const name="BG_BORDER_COLOR"	value="5"	/>
+		<const name="BG_MATERIAL"		value="6"	/>
+
+		<enum name="NAMES" type="String">
+			<const name="SYMBOL"			value="symbol"	/>
+			<const name="PATCH"				value="patch"	/>
+			<const name="EMBLEM"			value="emblem"	/>
+			<const name="BG_SHAPE"			value="bgShape"	/>
+			<const name="BG_COLOR"			value="bgColor"	/>
+			<const name="BG_BORDER_COLOR"	value="bgBorderColor"	/>
+			<const name="BG_MATERIAL"		value="bgMaterial"	/>
+		</enum>
+
+		<value_to_name/>
+		<name_to_value/>
+		<range name="ORDER" values="SYMBOL, BG_SHAPE, BG_COLOR, BG_BORDER_COLOR, BG_MATERIAL"/>
+	</enum>
+
+	<enum name="BATTLE_TYPE_STATE" type="Integer">
+		<const name="AVAILABLE"				value="0"	/>
+		<const name="INACTIVE" 				value="1"	/>
+		<const name="INACTIVE_BY_PRIMETIME" value="2"	/>
+		<const name="DISABLED" 				value="3"	/>
+	</enum>
+
+	<enum name="VALIDATION_STATE" type="String">
+		<const name="VALIDATION"			value="validation"	/>
+		<const name="VALID"					value="valid"	/>
+		<const name="INVALID"				value="invalid"	/>
+	</enum>
+
+	<enum name="STRATEGIC_ACTIONS_EVENT_STATE" type="Integer">
+		<const name="FINISHED"		value="0" />
+		<const name="ACTIVE"		value="1" />
+		<const name="COMPLETED"		value="2" />
+
+		<range name="ACTIVE_STATES"	values="ACTIVE, COMPLETED"/>
+	</enum>
+
+	<enum name="STRATEGIC_ACTIONS_FLAGS" type="Integer">
+		<const name="NEW_EVENT_SEEN"			value="1" />
+		<const name="ONBOARDING_SEEN"			value="2" />
+		<const name="FIRST_EVENT_BATTLE_DONE"	value="3" />
+	</enum>
+
+	<enum name="STRATEGIC_ACTIONS_TERRITORY_LEVEL" type="Integer">
+		<const name="EASY"		value="1" />
+		<const name="NORMAL"	value="2" />
+		<const name="HARD"		value="3" />
+	</enum>
+
+	<enum name="STRATEGIC_ACTIONS_NAMES" type="String">
+		<const name="GLOBAL_VIEW_NAME"		value="global" />
+	</enum>
+
+	<enum name="STRATEGIC_ACTIONS_TERRITORY_STATUS" type="Integer">
+		<const name="LOCKED"			value="0" />
+		<const name="AVAILABLE"			value="1" />
+		<const name="SELECTED"			value="2" />
+		<const name="REWARDS_CLAIM"		value="3" />
+		<const name="COMPLETED"			value="4" />
+
+		<range name="DONE"				values="REWARDS_CLAIM, COMPLETED"/>
+		<range name="IMPLIES_MESSAGE"	values="AVAILABLE, SELECTED, REWARDS_CLAIM, COMPLETED"/>
+		<range name="UNLOCKED"			values="AVAILABLE, SELECTED"/>
+
+		<value_to_name/>
+	</enum>
+
+	<enum name="STRATEGIC_ACTIONS_MESSAGE_TYPES" type="Integer">
+		<const name="START"			value="0" />
+		<const name="END"			value="1" />
+
+		<value_to_name/>
+	</enum>
+
+	<enum name="CONDITION_TYPES" type="Integer">
+		<const name="SINGLE"		value="0" />
+		<const name="OR"			value="1" />
+		<const name="AND"			value="2" />
+		<const name="THRESHOLD"		value="3" />
+
+		<range name="SINGLE_SET"	values="SINGLE, THRESHOLD"/> <!-- only one condition set created in dh -->
+	</enum>
+
+	<enum name="STRATEGIC_ACTIONS_STATISTICS"		type="String">
+		<const name="LORE_MESSAGES_BUTTON_CLICKED"		value="ub2:lore_messages_clicked"/>
+		<const name="TERRITORY_CHOOSE_BUTTON_CLICKED"	value="ub2:territory_choose_button_clicked"/>
+		<const name="TERRITORY_INFO_CARD_CLICKED"		value="ub2:territory_info_card_clicked"/>
+	</enum>
+
+	<enum name="POST_BATTLE_SCREEN_TAB"	type="Integer">
+		<const name="PERSONAL_REPORT"		value="0"	/>
+		<const name="TEAM_REPORT"			value="1"	/>
+		<const name="DETAILED_REPORT"		value="2"	/>
+		<const name="CREDITS_AND_EXP"		value="3"	/>
+	</enum>
+
+	<enum name="UNLOCK_TYPES" type="Integer">
+		<const name="SECOND_COLOR_CAMOUFLAGE"		value="0" />
+		<const name="SECOND_ENSIGN"					value="1" />
+		<const name="PORT"							value="2" />
+		<const name="SPECIAL_ABILITY"				value="3" />
+	</enum>
+
+	<enum name="SHIPINFO_STATISTICS"		type="String">
+		<const name="TOOLTIP_ALLY"			value="ub2:ship_info_tooltip_ally"/>
+		<const name="TOOLTIP_ENEMY"			value="ub2:ship_info_tooltip_enemy"/>
+		<const name="INFOTIP_ALLY"			value="ub2:ship_info_infotip_ally"/>
+		<const name="INFOTIP_ENEMY"			value="ub2:ship_info_infotip_enemy"/>
+		<const name="INTEGRALS_OPEN"		value="ub2:ship_info_integrals_open"/>
+		<const name="PARAMS_OPEN"			value="ub2:ship_info_params_open"/>
+		<const name="ARMAMENT_OPEN"			value="ub2:ship_info_armament_open"/>
+		<const name="CONSUMABLE_OPEN"		value="ub2:ship_info_consumable_open"/>
+		<const name="SQUADRON_OPEN"			value="ub2:ship_info_squadron_open"/>
+		<const name="SQUADRON_SWITCH"		value="ub2:ship_info_squadron_switch"/>
+		<const name="SQUADRON_ARMAMENT"		value="ub2:ship_info_squadron_armament"/>
+		<const name="SQUADRON_CONSUMABLE"	value="ub2:ship_info_squadron_consumable"/>
+	</enum>
+
+	<enum name="EVENT_HUB_FLAGS" type="Integer">
+		<const name="ONBOARDING_SHOWN"			value="0"/>
+		<const name="PROGRESS_TAB_SEEN"			value="1"/>
+		<const name="BRIEFING_TAB_SEEN"			value="2"/>
+		<const name="BANNER_SEEN"				value="3"/>
+
+		<range name="NEW_MARKER"	values="PROGRESS_TAB_SEEN, BRIEFING_TAB_SEEN, BANNER_SEEN"/>
+	</enum>
+
+	<enum name="UB2_COMMON_STATISTICS" type="String">
+		<const name="INFORMER_CLOSED_CROSS"				value="ub2:informer_closed_cross"/>
+	</enum>
+
+	<enum name="UB2_TIPS_STATISTICS" type="String">
+		<const name="TIP_SHOWN"							value="ub2:guiding_tip_shown"/>
+		<const name="TIP_CLOSED_CROSS"					value="ub2:guiding_tip_closed_cross"/>
+	</enum>
+
+	<enum name="EVENT_HUB_STATISTICS" type="String">
+		<const name="BRIEFING_DESCRIPTION_TIP_SHOWN"	value="ub2:briefing_description_tip_shown"/>
+		<const name="BRIEFING_DESCRIPTION_BUTTON_NEXT"	value="ub2:briefing_description_button_next"/>
+		<const name="PROGRESS_REWARDS_TIP_SHOWN"		value="ub2:progress_rewards_tip_shown"/>
+		<const name="PROGRESS_REWARDS_BUTTON_NEXT"		value="ub2:progress_rewards_button_next"/>
+		<const name="CARD_INSTALLATION_TIP_SHOWN"		value="ub2:card_installation_tip_shown"/>
+		<const name="CARD_FINAL_TIP_SHOWN"				value="ub2:card_final_tip_shown"/>
+		<const name="CARD_FINAL_BUTTON_FINISH"			value="ub2:card_final_button_finish"/>
+
+		<const name="EVENT_HUB_INFORMER_BUTTON"			value="ub2:event_hub_informer_button"/>
+		
+		<const name="EVENT_HUB_RENDERER_CLICKED"		value="ub1:event_hub_renderer_clicked"/>
+		
+		<const name="EVENT_HUB_BANNER_ENTER"			value="ub2:event_hub_banner_enter"/>
+		<const name="EVENT_HUB_BANNER_LEAVE"			value="ub2:event_hub_banner_leave"/>
+	</enum>
+
+	<enum name="MINORS_COMMUNICATION" type="String">
+		<const name="ENABLED"	value="enabled"/>
+		<const name="DISABLED"	value="disabled"/>
+	</enum>
+
+	<enum name="EXTERNAL_IMAGE_CONSTANT_URLS" type="String">
+		<const name="BATTLE_PASS_CDN"		value="https://wows-common-media.wgcdn.co/client/battlepass/"/>
+	</enum>
+
+	<enum name="BATTLE_PASS_BANNERS" type="String">
+		<const name="BANNER_0"		value="battlePassSpecialReward_0.png"/>
+		<const name="BANNER_1"		value="battlePassSpecialReward_1.png"/>
+		<const name="BANNER_2"		value="battlePassSpecialReward_2.png"/>
+
+		<range name="NAMES" values="BANNER_0, BANNER_1, BANNER_2"/>
+	</enum>
+</constants>
+

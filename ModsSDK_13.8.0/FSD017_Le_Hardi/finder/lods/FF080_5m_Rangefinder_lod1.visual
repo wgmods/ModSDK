@@ -1,0 +1,61 @@
+<FF080_5m_Rangefinder_lod1.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	FF080_Rangefinder	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	wire	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	FF080_Rangefinder	</node>
+		<geometry>
+			<vertices>	FF080_Rangefinder_lod1Shape.vertices	</vertices>
+			<primitive>	FF080_Rangefinder_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/FSD017_Le_Hardi/finder/FF080_5m_Rangefinder.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	wire	</node>
+		<geometry>
+			<vertices>	wire_lod1Shape.vertices	</vertices>
+			<primitive>	wire_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPWIRE_PBS_Director	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/FSD017_Le_Hardi/finder/FF080_5m_Rangefinder_wire.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1763 0.0035 -0.0306	</min>
+		<max>	0.1763 0.1251 0.0564	</max>
+	</boundingBox>
+</FF080_5m_Rangefinder_lod1.visual>

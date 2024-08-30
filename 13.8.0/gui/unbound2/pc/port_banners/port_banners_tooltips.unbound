@@ -1,0 +1,1629 @@
+(def element ArcEventBannerTooltip (_isShowUB2Tooltip:bool) layout=true dispatch_size_change=true
+	(scope
+		(var arcEventEntity:gfx = "$datahub.getSingleEntity(CC.arcEvent)")
+		(var arcEventComponent:gfx = "arcEventEntity ? arcEventEntity.arcEvent : null" (event "arcEventEntity.arcEvent.evChanged"))
+		
+		(var state:str = "arcEventComponent ? arcEventComponent.state : ''" (event "arcEventComponent.evEventStateChanged"))
+		(var nextStageStartTime:number = "arcEventComponent ? arcEventComponent.nextStageAt : ''" (event "arcEventComponent.evChanged"))
+		(var primeTimeFinishTime:number = "arcEventComponent ? arcEventComponent.finishPrimeAt : ''" (event "arcEventComponent.evEventStateChanged"))
+
+		(var playerArcEventInfo:gfx = "arcEventEntity ? arcEventEntity.playerArcEventInfo : null")
+		(var playerSideId:gfx = "playerArcEventInfo ? playerArcEventInfo.sideId : ARC_EVENT_SIDE_NEUTRAL" (event "playerArcEventInfo.evSideChanged"))
+		(var isSideChosen:bool = "playerSideId != ARC_EVENT_SIDE_NEUTRAL")
+
+		(var playerProgressEntity:gfx = "$datahub.getPrimaryEntity(CC.progressWithRewards, 'personal' + toString(playerSideId))")
+		(var progressWithRewards:gfx = "playerProgressEntity ? playerProgressEntity.progressWithRewards : null" (event "playerProgressEntity.progressWithRewards.evChanged"))
+
+		(var personalRewardIndex:number = "progressWithRewards ? progressWithRewards.activeIndex - 1 : 0" (event "progressWithRewards.evChanged")) 
+		(var personalProgress:number = "progressWithRewards ? progressWithRewards.pointsCurrent : 0" (event "progressWithRewards.evChanged"))
+		(var personalProgressArray:array = "progressWithRewards ? progressWithRewards.pointsArray : []" (event "progressWithRewards.evChanged"))
+
+		(var pointsTillNextRewardTotal:number = "personalRewardIndex >= 0	? personalProgressArray[personalRewardIndex + 1]
+																			: personalProgressArray[0]")
+
+		(macro SERVER_TIME_SCOPE)
+		(var stageDaysLeft:number = "floor((nextStageStartTime - serverTime) / DAY_IN_SEC)")
+		(var isPrimeTimeActive:bool = "primeTimeFinishTime - serverTime > 0")
+		(var isNeedShowPrimeTimeBlock:bool = "isPrimeTimeActive && isSideChosen")
+
+		(var hasReceivedAllRewards:bool = "personalProgress && (personalRewardIndex == personalProgressArray.length - 1) && isSideChosen")
+		(var isRewardProgressShown:bool = "isSideChosen && !hasReceivedAllRewards && isPrimeTimeActive")
+
+		
+		(var isDescriptionVisible:bool = "isIn(state,	[	(1 << SC.Sse.RVR_EVENT_STATE.EVENT_ACTIVE),
+															(1 << SC.Sse.RVR_EVENT_STATE.EVENT_ACTIVE) | (1 << SC.Sse.RVR_EVENT_STATE.PARTICIPATING),
+															(1 << SC.Sse.RVR_EVENT_STATE.EVENT_ACTIVE) | (1 << SC.Sse.RVR_EVENT_STATE.SIDE_CHOSEN),
+															(1 << SC.Sse.RVR_EVENT_STATE.EVENT_ACTIVE) | (1 << SC.Sse.RVR_EVENT_STATE.PARTICIPATING) | (1 << SC.Sse.RVR_EVENT_STATE.SIDE_CHOSEN)
+														])")
+
+		(macro COUNTDOWN_SCOPE "'currentStageEndsIn'"	"nextStageStartTime"	"'HIGHEST,WITH_DAYS'")
+		(macro COUNTDOWN_SCOPE "'primetimeEndsIn'"		"primeTimeFinishTime"	"'HIGHEST,WITH_DAYS'")
+
+		(var eventUnifiedStatus:str = "isSideChosen ? SC.Ui_styles.UNIFIED_STATUS.DATE : SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+
+		(var eventStatusText:str = "state == (1 << SC.Sse.RVR_EVENT_STATE.EVENT_FINISHED)	? 'IDS_ARC_EVENT_COMMON_STATUS_EVENT_FINISHED' :
+									isSideChosen											? subst('IDS_SUBST_ARC_EVENT_STAGE_ENDS_IN', [], { _timeLeft: currentStageEndsIn })
+																							: 'IDS_ARC_EVENT_COMMON_STATUS_CHOOSE_SIDE'")
+	)
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (width = "BANNER_TOOLTIP_WIDTH") (hitTest = false))
+	(name = "'ArcEventBannerTooltip'")
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_ARC_EVENT_COMMON_EVENT_TITLE'
+			_subheaderText = "isDescriptionVisible ? 'IDS_ARC_EVENT_INTRO_SUBHEADER' : ''"
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isNeedShowPrimeTimeBlock"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isNeedShowPrimeTimeBlock")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DATE"
+					_text = "subst(	'IDS_SUBST_ARC_EVENT_COMMON_STATUS_PRIMETIME_ENDS_IN_FULL', [], { _timeTillPrimeTimeEnd: primetimeEndsIn })"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "eventUnifiedStatus"
+			_text = "eventStatusText"
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isRewardProgressShown"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemProgressBarBlock'
+				(bind enabled "isRewardProgressShown")
+				(args
+					_title = 'IDS_ARC_EVENT_PORT_TOOLTIP_NEXT_REWARD'
+					_currentValue = "personalProgress"
+					_maxValue = "pointsTillNextRewardTotal"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "hasReceivedAllRewards"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "hasReceivedAllRewards")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+					_text = 'IDS_SUBST_ARC_EVENT_PORT_STATUS_ALL_REWARDS_RECEIVED'
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+			_text = 'IDS_ARC_EVENT_PORT_BANNER_TOOLTIP_HINT'
+		)
+	)
+)
+
+(def element LootboxBannerTooltip (_isShowUB2Tooltip:bool) layout=true dispatch_size_change=true
+	(scope
+		(var lootboxEntity:gfx = "$datahub.getSingleEntity(CC.lootboxConfigComponent)")
+		(var lootboxStorageComponent:gfx = "lootboxEntity.lootboxStorageComponent" )
+		(var lootboxConfigComponent:gfx = "lootboxEntity.lootboxConfigComponent")
+		
+		(var lootboxExp:number =		"lootboxStorageComponent.lootExp"		(event "lootboxStorageComponent.evUpdate"))
+		(var boughtToday:number =		"lootboxStorageComponent.boughtToday"	(event "lootboxStorageComponent.evUpdate"))
+		(var lootboxInStorage:number =	"lootboxStorageComponent.inStorage"		(event "lootboxStorageComponent.evUpdate"))
+		(var dropTimeStamp:number =		"lootboxStorageComponent.dropAt"		(event "lootboxStorageComponent.evUpdate"))
+		(var maxBought:number =			"lootboxConfigComponent.maxBought"		(event "lootboxConfigComponent.evUpdate"))
+
+		(var lootboxPrices:array = "lootboxConfigComponent.prices" (event "lootboxConfigComponent.evUpdate"))
+		(var isMaxDailyExp:bool = "lootboxExp >= lootboxPrices[2]")
+
+		(var lootboxIndex:number = "lootboxExp <= lootboxPrices[2] && 
+									lootboxExp >= lootboxPrices[1]		? 2 :
+									lootboxExp < lootboxPrices[1] &&
+									lootboxExp >= lootboxPrices[0]		? 1
+																		: 0")
+	
+		(var isLootboxes:bool = "lootboxInStorage > 0")
+		(var canBuyLootbox:bool = "boughtToday <= lootboxPrices.length-1 && lootboxExp >= lootboxPrices[boughtToday]")
+	
+		(var headerUnifiedStatus:str = "canBuyLootbox ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+
+		
+		(var dailyLootCurrProgress:number = "lootboxIndex == 0	? lootboxExp
+																: lootboxExp - lootboxPrices[lootboxIndex - 1]")
+		(var dailyLootMaxProgress:number = "lootboxIndex == 0	? lootboxPrices[lootboxIndex]
+																: lootboxPrices[lootboxIndex] - lootboxPrices[lootboxIndex - 1]")
+	)
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (width = "BANNER_TOOLTIP_WIDTH") (hitTest = false))	
+	(name = "'LootboxBannerTooltip'")
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_LOOTBOXES_TOOLTIP'
+			_unifiedStatus = "headerUnifiedStatus"
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isLootboxes"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemCounterLine'
+				(bind enabled "isLootboxes")
+				(args
+					_title = 'IDS_WAREHOUSE_LOOTBOXES'
+					_count = "lootboxInStorage"
+				)
+			)
+		)
+		
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "canBuyLootbox"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "canBuyLootbox")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CONTAINER_REWARD"
+					_text = 'IDS_LOOTBOX_AVAILABLE'
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemTimeLeftStatusLine'
+				(bind enabled "isMaxDailyExp")
+				(args
+					_timeLeftTimeStamp = "dropTimeStamp"
+					_substTextIDS = 'IDS_TIME_LEFT_FOR_LOOTEXP'
+				)
+			)
+
+			(controller $Instance renderer='TooltipSystemProgressBarBlock'
+				(bind enabled "!isMaxDailyExp")
+				(args
+					_title = 'IDS_TO_THE_NEXT_LOOTBOX'
+					_currentValue = "dailyLootCurrProgress"
+					_maxValue = "dailyLootMaxProgress"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+			_text = 'IDS_GO_TO_LOOTBOXES_MOUSE_INSTRUCTION'
+		)
+	)
+)
+(def element SseBannerTooltip (_isShowUB2Tooltip:bool) layout=true dispatch_size_change=true
+	(scope
+		(var sseCategoriesAll:gfx = "$datahub.getCollection(CC.sseTag).getChildByPath('SSETagsVisible.sorted')")
+		(var sseCategoriesAllItems:array = "sseCategoriesAll ? sseCategoriesAll.items : []" (event "sseCategoriesAll.evAdded") (event "sseCategoriesAll.evRemoved"))
+		(var sseAmount:number = "sseCategoriesAllItems.length")
+
+		(var sseWindowStateEntity:gfx = "$datahub.getSingleEntity(CC.sseWindowState)")
+		(var sseWindowState:gfx = "sseWindowStateEntity ? sseWindowStateEntity.sseWindowState : null" (event "sseWindowStateEntity.sseWindowState.evChanged"))
+		(var isUnclaimed:bool = "sseWindowStateEntity.sseWindowState.unclaimedRewardCount > 0" (event "sseWindowState.evChanged"))
+
+		(var headerUnifiedStatus:str = "isUnclaimed ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+
+		(var sseOpenEndedEntity:gfx = "$datahub.getSingleEntity(CC.sseOpenEnded)")
+		(var sseOpenEndedList:gfx = "$datahub.getCollection(CC.sseCore).getChildByPath('openEndedSSE.sorted')")
+		(var isSseOpenEndedActive:bool = "sseOpenEndedList && sseOpenEndedList.items.length > 0 && sseOpenEndedList.items[0]")
+		(var isSseOpenEndedNew:bool = "sseOpenEndedEntity && sseOpenEndedEntity.hasComponent(CC.newItem)" (event "sseOpenEndedEntity.evAdded") (event "sseOpenEndedEntity.evRemoved"))
+
+		(var sseOpenEndedCounterEntity:gfx = "$datahub.getSingleEntity(CC.sseOpenEndedCounter)")
+		(var sseOpenEndedCounter:gfx = "sseOpenEndedCounterEntity ? sseOpenEndedCounterEntity.sseOpenEndedCounter : null")
+		(var activeSseOpenEndedTasks:number = "sseOpenEndedCounter ? sseOpenEndedCounter.activeAmount : 0" (event "sseOpenEndedCounter.evChanged"))
+
+		
+		(var shipAcesSeasonCollection:gfx = "$datahub.getCollection(CC.shipAcesSeason)")
+		(var shipAcesSeasonEntity:gfx = "	shipAcesSeasonCollection &&
+											shipAcesSeasonCollection.items.length > 0	? shipAcesSeasonCollection.items[0]
+																						: null"
+											(event "shipAcesSeasonCollection.evAdded") (event "shipAcesSeasonCollection.evRemoved"))
+
+		(var shipAcesSeason:gfx = "shipAcesSeasonEntity ? shipAcesSeasonEntity.shipAcesSeason : null" (event "shipAcesSeasonEntity.evAdded") (event "shipAcesSeasonEntity.evRemoved"))
+		(var activeSprintId:number = "shipAcesSeason ? shipAcesSeason.activeSprintId : null" (event "shipAcesSeason.evChanged"))
+		(var seasonFinishTime:number = "shipAcesSeason ? shipAcesSeason.finishTime : 0" (event "shipAcesSeason.evChanged"))
+		(var isNew:bool = "shipAcesSeasonEntity && shipAcesSeasonEntity.hasComponent(CC.newItem)" (event "shipAcesSeasonEntity.evAdded") (event "shipAcesSeasonEntity.evRemoved"))
+
+		
+		(var shipAcesSprintCollection:gfx = "$datahub.getCollection(CC.shipAcesSprint)")
+		(var shipAcesSprintEntity:gfx = "$datahub.getPrimaryEntity(CC.shipAcesSprint, activeSprintId)" (event "shipAcesSeason.evChanged") (event "shipAcesSprintCollection.evAdded") (event "shipAcesSprintCollection.evRemoved"))
+		(var shipAcesSprint:gfx = "shipAcesSprintEntity ? shipAcesSprintEntity.shipAcesSprint : null" (event "shipAcesSprintEntity.shipAcesSprint.evChanged"))
+		(var taskTotal:number = "shipAcesSprint ? shipAcesSprint.taskTotal : 0" (event "shipAcesSprint.evChanged"))
+		(var nextSprintTime:number = "shipAcesSprint ? shipAcesSprint.nextSprintTime : 0" (event "shipAcesSprint.evChanged"))
+
+		(macro SERVER_TIME_SCOPE) 
+		(macro COUNTDOWN_SCOPE "'formattedFinishSprintTime'"	"nextSprintTime"	"'HIGHEST,WITH_DAYS'")
+		(macro COUNTDOWN_SCOPE "'formattedLastDayLeft'"			"nextSprintTime"	"'HH:mm:ss'")
+
+		(var isShipAcesSeasonActive:bool = "serverTime < seasonFinishTime")
+		(var timeLeftNext:number = "nextSprintTime - serverTime")
+		(var daysUntilShipAcesSprintFinish:number = "floor(timeLeftNext / DAY_IN_SEC)")
+		
+		(var sprintTimeLeftUnifiedStatus:str = "daysUntilShipAcesSprintFinish ? SC.Ui_styles.UNIFIED_STATUS.DATE : SC.Ui_styles.UNIFIED_STATUS.DATE_ATTENTION")
+		(var sprintTimeLeftStatusText:str = "subst('IDS_SUBST_SHIP_ACES_TIME_STATUS_FINISHING_SPRINT', [], { timeLeft: daysUntilShipAcesSprintFinish ? formattedFinishSprintTime : formattedLastDayLeft })")
+
+		(var newbieQuestsCollection:gfx = "$datahub.getCollection(CC.newbieQuest)")
+		(var isNewbieQuestsVisible:bool = "newbieQuestsCollection.items.length > 0" (event "newbieQuestsCollection.evUpdated"))
+
+		(macro FEATURES "9")
+
+		(var newbieQuestsExpireTimerEntity:gfx = "$datahub.getSingleEntity(CC.newbieQuestsExpireTimer)")
+		(var newbieQuestsExpireTimerComponent:gfx = "newbieQuestsExpireTimerEntity ? newbieQuestsExpireTimerEntity.newbieQuestsExpireTimer : null")
+		(var newbieQuestsExpireTimer:number = "newbieQuestsExpireTimerComponent ? newbieQuestsExpireTimerComponent.expire : 0" (event "newbieQuestsExpireTimerComponent.evAdded"))
+
+		(var nqTimeLeft:number = "newbieQuestsExpireTimer - serverTime")
+		(macro COUNTDOWN_SCOPE "'NQFormattedLastDayLeft'"	"newbieQuestsExpireTimer"	"'HH:mm:ss'")
+		(var daysUntilNQFinish:number = "floor(nqTimeLeft / DAY_IN_SEC)")
+
+		(var statusTextTimeLeft:str = "subst(	daysUntilNQFinish 	? 'IDS_SUBST_PL_NEWBIE_QUESTS_TIME_LEFT_DAYS'
+																	: 'IDS_SUBST_NEWBIE_QUESTS_TIME_LEFT_LAST_DAY',
+												[],
+												{ timeLeft: daysUntilNQFinish 	? toString(daysUntilNQFinish)
+																				: NQFormattedLastDayLeft},
+												daysUntilNQFinish)")
+
+		(var newbieQuestsExpireStatus:dict = "nqTimeLeft > 0 ? { unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.DATE, text: statusTextTimeLeft } : null")
+		(var activeNewbieQuestsCollection:gfx = "newbieQuestsCollection ? newbieQuestsCollection.getChildByPath('notDone.byTier') : null")
+		(var activeNewbieQuestsCollectionLength:number = "activeNewbieQuestsCollection ? activeNewbieQuestsCollection.items.length : 0" (event "activeNewbieQuestsCollection.evAdded") (event "activeNewbieQuestsCollection.evRemoved"))
+
+		(var attributesShipAces:array = "[	{	attributeIDS: 'IDS_SHIP_ACES_METRICS_TASKS_TOTAL',
+												measuredValue: taskTotal,
+												category: 'neutral'
+											}]")
+
+		(var attributesSseOpenEnded:array = "[	{	attributeIDS: 'IDS_SSE_PORTAL_METRICS_TASKS_TOTAL',
+													measuredValue: activeSseOpenEndedTasks,
+													category: 'neutral'
+												}]")
+
+		(var attributesNewbieQuests:array = "[	{	attributeIDS: 'IDS_NEWBIE_QUESTS_BANNER_TOOLTIP_AVAILABLE_TASKS',
+													measuredValue: activeNewbieQuestsCollectionLength,
+													category: 'neutral'
+												}]")
+
+		(var mouseInstructionText:str = "feature_9 == 'locked' && isNewbieQuestsVisible		? 'IDS_GO_TO_SSE_NEWBIE_QUESTS_MOUSE_INSTRUCTION'
+																							: 'IDS_GO_TO_SSE_BATTLE_TASKS_MOUSE_INSTRUCTION'")
+	)
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (width = "BANNER_TOOLTIP_WIDTH") (hitTest = false))
+	(name = "'SseBannerTooltip'")
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHeaderSubheaderText'
+				(bind enabled "feature_9 != 'locked'")
+				(args
+					_unifiedStatus = "headerUnifiedStatus"
+					_headerText = 'IDS_BATTLE_TASKS'
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "feature_9 != 'locked' && isUnclaimed"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "feature_9 != 'locked' && isUnclaimed")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE"
+					_text = 'IDS_SSE_REWARD_AVAILABLE'
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "feature_9 != 'locked'"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "feature_9 != 'locked' && sseAmount < 1")
+				(args
+					_descriptionText = 'IDS_SSE_UNAVAILABLE_NOW'
+				)
+			)
+		)
+
+		(block
+			
+			(bind visible "feature_9 != 'locked' && sseAmount > 0")
+			(style (width = 100%))
+			(macro TOOLTIP_SYSTEM_INNER_PANEL_BACKGROUND)
+			
+			(block
+				(style (width = 100%))
+				(controller $Repeat renderer='SseCategoryTooltipContent'
+					(bind enabled "sseCategoriesAllItems.length")
+					(bind count "sseCategoriesAllItems.length")
+					(args
+						_entity = "sseCategoriesAllItems[$index]"
+					)
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isShipAcesSeasonActive"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHeaderSubheaderTextWithMarkerNew'
+				(bind enabled "isShipAcesSeasonActive")
+				(args
+					_headerText = 'IDS_SHIP_ACES_COMMON_TITLE'
+					_isMarkerNew = "isNew"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isShipAcesSeasonActive"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isShipAcesSeasonActive")
+				(args
+					_unifiedStatus = "sprintTimeLeftUnifiedStatus"
+					_text = "sprintTimeLeftStatusText"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isShipAcesSeasonActive"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemParamsModifiersList'
+				(bind enabled "isShipAcesSeasonActive")
+				(args
+					_attributesNeutral = "attributesShipAces"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isSseOpenEndedActive"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHeaderSubheaderTextWithMarkerNew'
+				(bind enabled "isSseOpenEndedActive")
+				(args
+					_headerText = 'IDS_PORTAL_SSE_COMMON_TITLE'
+					_isMarkerNew = "isSseOpenEndedNew"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isSseOpenEndedActive"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemParamsModifiersList'
+				(bind enabled "isSseOpenEndedActive")
+				(args
+					_attributesNeutral = "attributesSseOpenEnded"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isNewbieQuestsVisible && feature_9 != 'locked'"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHeaderSubheaderText'
+				(bind enabled "isNewbieQuestsVisible")
+				(args
+					_unifiedStatus = "headerUnifiedStatus"
+					_headerText = 'IDS_NEWBIE_QUESTS_BANNER_TOOLTIP_TITLE'
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isNewbieQuestsVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemParamsModifiersList'
+				(bind enabled "isNewbieQuestsVisible")
+				(args
+					_attributesNeutral = "attributesNewbieQuests"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isNewbieQuestsVisible && newbieQuestsExpireStatus"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isNewbieQuestsVisible && newbieQuestsExpireStatus")
+				(args
+					_unifiedStatus = "newbieQuestsExpireStatus.unifiedStatus"
+					_text = "newbieQuestsExpireStatus.text"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+			_text = "mouseInstructionText"
+		)
+	)
+)
+
+(def element CampaignsBannerTooltip (_isShowUB2Tooltip:bool) layout=true dispatch_size_change=true
+	(scope
+		(var tasksStateDoneCollection:gfx = "$datahub.getCollection(CC.campaignTaskPlayer).getChildByPath('active.taskStateDone')")
+
+		(var isCampaignReward:bool = "tasksStateDoneCollection && tasksStateDoneCollection.items.length > 0" (event "tasksStateDoneCollection.evAdded") (event "tasksStateDoneCollection.evRemoved"))
+		(var headerUnifiedStatus:str = "isCampaignReward ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+	)
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (width = "BANNER_TOOLTIP_WIDTH") (hitTest = false))
+	(name = "'CampaignsBannerTooltip'")
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_unifiedStatus = "headerUnifiedStatus"
+			_headerText = 'IDS_DOCK_BANNER_TOOLTIP_CAMPAIGNS'
+		)
+		
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isCampaignReward"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isCampaignReward")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CAMPAIGN_REWARD"
+					_text = 'IDS_AVAILABLE_REWARD'
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+			_text = 'IDS_GO_TO_CAMPAIGNS_MOUSE_INSTRUCTION'
+		)
+	)
+)
+
+(def element PremShopBannerTooltip (_isShowUB2Tooltip:bool) layout=true dispatch_size_change=true
+	(scope
+		(var premiumShopBannerStateEntity:gfx = "$datahub.getSingleEntity(CC.premiumShopBannerState)")
+		(var premiumShopBannerState:gfx = "premiumShopBannerStateEntity ? premiumShopBannerStateEntity.premiumShopBannerState : null" (event "premiumShopBannerStateEntity.premiumShopBannerState.evUpdate"))
+		
+		(var isActive:bool = "premiumShopBannerState ? premiumShopBannerState.isActive : false" (event "premiumShopBannerState.evUpdate"))
+		(var description:str = "premiumShopBannerState ? premiumShopBannerState.description : ''" (event "premiumShopBannerState.evUpdate"))
+		(var isDescriptionVisible:bool = "description && !isActive")
+	)
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (width = "BANNER_TOOLTIP_WIDTH") (hitTest = false))
+	(name = "'PremShopBannerTooltip'")
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+			_headerText = 'IDS_DOCK_BANNER_TOOLTIP_PREMSHOP'
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isActive"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isActive")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE"
+					_text = 'IDS_NEW_METASHOP_REWARD_AVAILABLE'
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isDescriptionVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "isDescriptionVisible")
+				(args
+					_descriptionText = "description"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+			_text = 'IDS_GO_TO_PREMSHOP_MOUSE_INSTRUCTION'
+		)
+	)
+)
+
+(def element MetaShopBannerTooltip (_isShowUB2Tooltip:bool) layout=true dispatch_size_change=true
+	(scope
+		(macro FEATURES "29")
+
+		(var metashopBannerStateEntity:gfx = "$datahub.getSingleEntity(CC.metashopBannerState)")
+		(var metashopBannerState:gfx = "metashopBannerStateEntity ? metashopBannerStateEntity.metashopBannerState : null" (event "metashopBannerStateEntity.metashopBannerState.evUpdate"))
+
+		(var isActive:bool = "metashopBannerState ? metashopBannerState.isActive : false" (event "metashopBannerState.evUpdate"))
+		(var description:str = "metashopBannerState ? metashopBannerState.description : ''" (event "metashopBannerState.evUpdate"))
+		(var isDescriptionVisible:bool = "description && !isActive")
+
+		(var accountLevelEntity:gfx = "$datahub.getSingleEntity(CC.accountLevel)")
+		(var accountLevelComponent:gfx = "accountLevelEntity ? accountLevelEntity.accountLevel : null" (event "accountLevelEntity.accountLevel.evLevelChanged"))
+
+		(var curAccountLevel:number = "accountLevelComponent ? accountLevelComponent.level : 0" (event "accountLevelComponent.evLevelChanged"))
+		(var isMetaShopLevelReached:bool = "feature_29 != 'locked'")
+
+		(var realmConstantsEntity:gfx = "$datahub.getSingleEntity(CC.realmConstants)")
+		(var realmConstantsComponent:gfx = "realmConstantsEntity ? realmConstantsEntity.realmConstants : null")
+		(var isMergedShopsRealm:bool = "realmConstantsComponent ? realmConstantsComponent.isMergedShopsRealm : false")
+
+		(var subheaderText:str = "isMergedShopsRealm	? 'IDS_DOCK_BANNER_METASHOP_TOOLTIP_SUBHEADER' : ''")
+		(var unifiedHeaderStatus:str = "isMergedShopsRealm	? isActive && isMetaShopLevelReached	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+																									: SC.Ui_styles.UNIFIED_STATUS.DEFAULT
+															: isActive								? SC.Ui_styles.UNIFIED_STATUS.CHECK
+																									: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+	)
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (width = "BANNER_TOOLTIP_WIDTH") (hitTest = false))
+	(name = "'MetaShopBannerTooltip'")
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_DOCK_BANNER_METASHOP_TOOLTIP_HEADER'
+			_subheaderText = "subheaderText"
+			_unifiedStatus = "unifiedHeaderStatus"
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isMergedShopsRealm && feature_29 == 'locked'"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isMergedShopsRealm && feature_29 == 'locked'")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+					_text = 'IDS_DOCK_BANNER_METASHOP_TOOLTIP_MERGED_SHOPS_ATTENTION'
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isMergedShopsRealm ? isActive && isMetaShopLevelReached : isActive"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isMergedShopsRealm ? isActive && isMetaShopLevelReached : isActive")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE"
+					_text = 'IDS_NEW_METASHOP_REWARD_AVAILABLE'
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isDescriptionVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "isDescriptionVisible")
+				(args
+					_descriptionText = "description"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+			_text = 'IDS_GO_TO_METASHOP_MOUSE_INSTRUCTION'
+		)
+	)
+)
+
+(def element CvCBannerTooltip (_isShowUB2Tooltip:bool) layout=true dispatch_size_change=true
+	(scope
+		(macro PULL_SELF_PLAYER_SCOPE)
+
+		(var cwInfoEntity:gfx = "$datahub.getPrimaryEntity(CC.clanWarsInfo, selfPlayerDbId)")
+		(var clanWarsInfo:gfx = "cwInfoEntity ? cwInfoEntity.clanWarsInfo : null" (event "cwInfoEntity.clanWarsInfo.evChanged"))
+
+		(var stage:str = "clanWarsInfo ? clanWarsInfo.stage : ''" (event "clanWarsInfo.evChanged"))
+		(var nextStageTimestamp:number = "clanWarsInfo ? clanWarsInfo.nextStageTimestamp : 0" (event "clanWarsInfo.evChanged"))
+		(var attemptsLeft:number = "clanWarsInfo ? clanWarsInfo.attemptsLeft : 0" (event "clanWarsInfo.evChanged"))
+		(var attemptsMax:number = "clanWarsInfo ? clanWarsInfo.attemptsMax : 0" (event "clanWarsInfo.evChanged"))
+		(var clanMaxPreparationProgress:number = "clanWarsInfo ? clanWarsInfo.clanMaxPreparationProgress : 0" (event "clanWarsInfo.evChanged"))
+		(var clanPreparationProgress:number = "clanWarsInfo ? clanWarsInfo.clanPreparationProgress : 0" (event "clanWarsInfo.evChanged"))
+
+		(var isPlayerParticipating:bool = "clanWarsInfo ? clanWarsInfo.playerParticipate : false" (event "clanWarsInfo.evChanged"))
+		(var isPlayerMissPreparation:bool = "clanWarsInfo ? clanWarsInfo.playerMissPreparation : false" (event "clanWarsInfo.evChanged"))
+
+		(macro SERVER_TIME_SCOPE)
+		(var isStageTimeUp:bool = "serverTime >= nextStageTimestamp")
+		(macro COUNTDOWN_SCOPE "'formattedTimeLeft'"	"nextStageTimestamp"	"'HIGHEST,WITH_DAYS'")
+
+		(var isAwardStage:bool = "stage == SC.Ui_common.CVC_PORT_BANNER_STAGE.REWARDING")
+		(var isWarStage:bool = "stage == SC.Ui_common.CVC_PORT_BANNER_STAGE.WAR")
+		(var isMatchingStage:bool = "stage == SC.Ui_common.CVC_PORT_BANNER_STAGE.MATCHMAKING")
+		(var isQualificationStage:bool = "stage == SC.Ui_common.CVC_PORT_BANNER_STAGE.PREPARATION")
+
+		(var isAttempts:bool = "attemptsLeft > 0")
+		(var isQualificationDone:bool = "clanMaxPreparationProgress == clanPreparationProgress")
+		(var isQualificationActive:bool = "isQualificationStage && !isQualificationDone")
+		(var isQualificationFailed:bool = "!isQualificationStage && !isQualificationDone")
+		(var isAvailableBattleStage:bool = "isWarStage && isAttempts && isQualificationDone && !isPlayerMissPreparation")
+		(var isNoActiveAttempts:bool = "isQualificationDone && !isWarStage && !isAwardStage && !isPlayerMissPreparation")
+
+		(var unifiedHeaderStatus:str = "	isAvailableBattleStage && !isPlayerParticipating	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+																								: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+
+		(var textDescription:str = "	isQualificationStage					? '' :
+										isPlayerMissPreparation					? 'IDS_CASUAL_CVC_MISSED_PREPARATION_DESCR' :
+										isAwardStage							? 'IDS_CASUAL_CVC_REWARDING_STAGE_DESCR' :
+										isQualificationFailed					? 'IDS_CASUAL_CVC_QUALIFICATION_STAGE_FAILED_DESCR' :
+										isWarStage && !isAttempts				? 'IDS_CASUAL_CVC_WAR_STAGE_ATTEMPTS_ENDS_DESCR' :
+										isWarStage && !isPlayerParticipating	? 'IDS_CASUAL_CVC_WAR_STAGE_TO_PARTICIPATE_DESCR' :
+										isWarStage && isAttempts				? 'IDS_CASUAL_CVC_WAR_STAGE_ATTEMPTS_LEFT_DESCR'
+																				: ''")
+		
+
+		(var nextStageLockStatus:str = "isQualificationFailed		? isStageTimeUp ? 'STATUS_TILL_QUALIFICATION_STAGE_IN_SEC'
+																					: 'STATUS_TILL_QUALIFICATION_STAGE' :
+										isQualificationStage		? '' :
+										isPlayerMissPreparation		? isStageTimeUp ? 'STATUS_TILL_QUALIFICATION_STAGE_IN_SEC'
+																					: 'STATUS_TILL_QUALIFICATION_STAGE' :
+										isWarStage && !isAttempts	? isStageTimeUp ? 'STATUS_TILL_AWARD_STAGE_IN_SEC'
+																					: 'STATUS_TILL_AWARD_STAGE' :
+										isNoActiveAttempts			? isStageTimeUp ? 'STATUS_TILL_BATTLE_STAGE_IN_SEC'
+																					: 'STATUS_TILL_BATTLE_STAGE'
+																	: ''")
+
+		(var unifiedAttemptsStatus:str = "	isPlayerParticipating	? SC.Ui_styles.UNIFIED_STATUS.DEFAULT
+																	: SC.Ui_styles.UNIFIED_STATUS.OUT_BATTLE")
+		(var attemptsStatusText:str = "subst('IDS_PL_CASUAL_CVC_WAR_STAGE_ATTEMPTS_STATUS', [], {_attemptsLeft: toString(attemptsLeft)}, attemptsLeft)")
+	)
+
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (width = "BANNER_TOOLTIP_WIDTH") (hitTest = false))
+	(name = "'CvCBannerTooltip'")
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_CASUAL_CVC'
+			_unifiedStatus = "unifiedHeaderStatus"
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isAvailableBattleStage"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isAvailableBattleStage")
+				(args
+					_text = "attemptsStatusText"
+					_unifiedStatus = "unifiedAttemptsStatus"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isNoActiveAttempts"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isNoActiveAttempts")
+				(args
+					_text = 'IDS_CASUAL_CVC_MATCHING_STAGE_DESCR'
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.IN_BATTLE"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isQualificationActive"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemTimeLeftStatusLine'
+				(bind enabled "isQualificationActive")
+				(args
+					_timeLeftTimeStamp = "nextStageTimestamp"
+					_substTextIDS = 'IDS_CASUAL_CVC_STATUS_TILL_QUALIFICATION_STAGE_END'
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "nextStageLockStatus"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "nextStageLockStatus")
+				(args
+					_text = "isStageTimeUp	? tr(toUpper('IDS_CASUAL_CVC_' + nextStageLockStatus))
+											: subst('IDS_CASUAL_CVC_' + nextStageLockStatus, [], {_timeLeft: formattedTimeLeft})"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.LOCK"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "textDescription"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "textDescription")
+				(args
+					_descriptionText = "textDescription"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isQualificationActive"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemProgressBarBlock'
+				(bind enabled "isQualificationActive")
+				(args
+					_title = 'IDS_CASUAL_CVC_PROGRESS_QUALIFICATION'
+					_currentValue = "clanPreparationProgress"
+					_maxValue = "clanMaxPreparationProgress"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_text = 'IDS_CASUAL_CVC_INSTRUCTION'
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+		)
+	)
+)
+
+(def element ShipyardBannerTooltip (_isShowUB2Tooltip:bool) layout=true dispatch_size_change=true
+	(scope
+		(var shipyardBannerStateEntity:gfx = "$datahub.getSingleEntity(CC.shipyardBannerState)")
+		(var shipyardBannerState:gfx = "shipyardBannerStateEntity ? shipyardBannerStateEntity.shipyardBannerState : null" (event "shipyardBannerStateEntity.shipyardBannerState.evUpdate"))
+
+		(var shipyardProgressbar:dict = "shipyardBannerState ? shipyardBannerState.progressbar : null" (event "shipyardBannerState.evUpdate"))
+		(var rewardsAvailable:bool = "shipyardBannerState ? shipyardBannerState.availableRewards > 0 : false" (event "shipyardBannerState.evUpdate"))
+		(var boosterAvailable:bool = "shipyardBannerState ? shipyardBannerState.boosterAvailable : false" (event "shipyardBannerState.evUpdate"))
+		(var finishTimestamp:number = "shipyardBannerState ? shipyardBannerState.finishTimestamp : null" (event "shipyardBannerState.evUpdate"))
+		(var isActiveState:bool = "shipyardBannerState ? shipyardBannerState.type != 'finished' : false" (event "shipyardBannerState.evUpdate"))
+
+		(macro SERVER_TIME_SCOPE)
+		(var timeIsUp:bool = "finishTimestamp - serverTime > 0")
+
+		(var headerUnifiedStatus:str = "boosterAvailable || rewardsAvailable	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+																				: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+	)
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (width = "BANNER_TOOLTIP_WIDTH") (hitTest = false))
+	(name = "'ShipyardBannerTooltip'")
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_DOCK_BANNER_SHIPYARD_TOOLTIP'
+			_unifiedStatus = "headerUnifiedStatus"
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "timeIsUp && isActiveState"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemTimeLeftStatusLine'
+				(bind enabled "timeIsUp && isActiveState")
+				(args
+					_timeLeftTimeStamp = "finishTimestamp"
+					_substTextIDS = 'IDS_SHIPYARD_BUILD_DAYS_LEFT'
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "boosterAvailable"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "boosterAvailable")
+				(args
+					_text = 'IDS_BOOSTER_AVAILABLE'
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.SALE_AVAILABLE"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "rewardsAvailable"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "rewardsAvailable")
+				(args
+					_text = 'IDS_REWARD_AVAILABLE'
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_text = 'IDS_GO_TO_SHIPYARD_MOUSE_INSTRUCTION'
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+		)
+	)
+)
+
+(def element ProspectiveEventBannerTooltip (_isShowUB2Tooltip:bool) layout=true dispatch_size_change=true
+	(scope
+		(var prospectiveEventBannerStateEntity:gfx = "$datahub.getSingleEntity(CC.prospectiveEventBannerState)")
+		(var prospectiveEventBannerState:gfx = "prospectiveEventBannerStateEntity ? prospectiveEventBannerStateEntity.prospectiveEventBannerState : null")
+
+		(var startTime:number = "prospectiveEventBannerState ? prospectiveEventBannerState.startTime : 0" (event "prospectiveEventBannerState.evStartTimeChanged"))
+		(var isRewardAvailable:number = "prospectiveEventBannerState ? prospectiveEventBannerState.isRewardAvailable : false" (event "prospectiveEventBannerState.evIsRewardAvailableChanged"))
+
+		(macro SERVER_TIME_SCOPE)
+		(var isEventAhead:bool = "startTime > serverTime")
+
+		(var formattedStartTime:str = "formatTime(startTime, 'h:m', '', true)")
+		(var formattedStartDate:str = "formatTime(startTime, 'dd.MM.yy', '', true)")
+
+		(var title:str = "prospectiveEventBannerStateEntity ? prospectiveEventBannerStateEntity.tooltip.title : ''" (event "prospectiveEventBannerStateEntity.tooltip.evTitleChanged"))
+		(var description:str = "prospectiveEventBannerStateEntity && prospectiveEventBannerStateEntity.tooltip.description	? prospectiveEventBannerStateEntity.tooltip.description
+																															: null" (event "prospectiveEventBannerStateEntity.tooltip.evDescriptionChanged"))
+		
+		(var isDescriptionVisible:bool = "description != null")
+
+		(var eventStatus:dict = "	isEventAhead 		? 	{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.DATE,
+																text: subst('IDS_TOOLTIP_EVENT_WILL_START_DATE_TIME', [], { _time: formattedStartTime, _date: formattedStartDate }) } :
+									isRewardAvailable	?	{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE,
+																text: 'IDS_TOOLTIP_JOIN_EVENT_AND_GET_REWARD' }
+														:	null")
+	)
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (width = "BANNER_TOOLTIP_WIDTH") (hitTest = false))
+	(name = "'ProspectiveEventBannerTooltip'")
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = "100%"))
+			(bind name "'eventRewardAvailable_' + isRewardAvailable")
+			(controller $Instance renderer='TooltipSystemHeaderSubheaderText'
+				(args
+					_headerText = "title"
+					_unifiedStatus = "isRewardAvailable ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "eventStatus"))
+		)
+		(block
+			(style (width = "100%"))
+			(name = "'eventBannerTooltipStatusLine'")
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "eventStatus")
+				(args
+					_text = "eventStatus.text"
+					_unifiedStatus = "eventStatus.unifiedStatus"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isDescriptionVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "isDescriptionVisible")
+				(args
+					_descriptionText = "description"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_text = 'IDS_TOOLTIP_GO_TO_EVENT_WINDOW'
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+		)
+	)
+)
+(def element ProspectiveEventLeftBannerTooltip (_isShowUB2Tooltip:bool) layout=true dispatch_size_change=true
+	(scope
+		(var prospectiveEventBannerStateEntity:gfx = "$datahub.getSingleEntity(CC.prospectiveEventBannerState)")
+		(var prospectiveEventBannerState:gfx = "prospectiveEventBannerStateEntity ? prospectiveEventBannerStateEntity.prospectiveEventBannerState : null")
+
+		(var finishTime:number = "prospectiveEventBannerState ? prospectiveEventBannerState.finishTime : 0" (event "prospectiveEventBannerState.evStartTimeChanged"))  
+		(macro SERVER_TIME_SCOPE)
+		(macro COUNTDOWN_SCOPE "'countdownFinishTime'"	"finishTime"	"'HIGHEST'")
+	
+		(var keyTargetMarkerDockWatcher:gfx = "$datahub.getFirstWatcher(CC.keyTargetMarkerDock)")
+		(var keyTargetMarkerDockEntity:gfx = "keyTargetMarkerDockWatcher.entity" (event "keyTargetMarkerDockWatcher.event"))
+
+		(var shipRestrictionsId:number = "keyTargetMarkerDockEntity ? keyTargetMarkerDockEntity.id : 0" (event "keyTargetMarkerDockEntity.evAdded") (event "keyTargetMarkerDockEntity.evRemoved"))
+
+		(var battleTypesRestrictions:array = "keyTargetMarkerDockEntity ? keyTargetMarkerDockEntity.keyTargetMarkerDock.battleTypes : []" (event "keyTargetMarkerDockEntity.evAdded") (event "keyTargetMarkerDockEntity.evRemoved"))
+	)
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (width = "BANNER_TOOLTIP_WIDTH") (hitTest = false))
+	(name = "'ProspectiveEventLeftBannerTooltip'")
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_DOCK_BANNER_KEY_TARGET_TOOLTIP_HEADER'
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "keyTargetMarkerDockEntity"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "keyTargetMarkerDockEntity")
+				(args
+					_text = "'IDS_DOCK_BANNER_KEY_TARGET_YOU_R_KEY_TARGET'"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.KEY_TARGET"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_text = "subst('IDS_ARC_EVENT_MAIN_SCREEN_EVENT_ENDS_IN', [], { _timeLeft: countdownFinishTime })"
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DATE"
+		)
+
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemDescriptionText
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			_descriptionText = "keyTargetMarkerDockEntity	? 'IDS_DOCK_BANNER_KEY_TARGET_DESCRIPTION_FOR_KEY_TARGET'
+															: 'IDS_DOCK_BANNER_KEY_TARGET_DESCRIPTION_FOR_REGULAR'"
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "shipRestrictionsId"))
+		)
+		(block
+			(controller $Instance renderer='TooltipSystemTaskRestrictions'
+				(bind enabled "shipRestrictionsId")
+				(args
+					_restrictionEntity = "keyTargetMarkerDockEntity"
+					_battleTypes = "battleTypesRestrictions"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_text = 'IDS_TOOLTIP_GO_TO_KEY_TARGET_MOUSE_INSTRUCTION'
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+		)
+	)
+)
+
+(def element SnowflakesBannerTooltip (_isShowUB2Tooltip:bool) layout=true dispatch_size_change=true
+	(scope
+		(var playerShips:gfx = "$datahub.getCollection(CC.ownShip)")
+		(var bonustagSeasonEntity:gfx = "$datahub.getCollection(CC.bonusTagSeason).getChildByPath('snowflakeSeasonCollection').items[0]")
+		(var bonusTagSeason:gfx = "bonustagSeasonEntity ? bonustagSeasonEntity.bonusTagSeason : null" (event "bonustagSeasonEntity.bonusTagSeason.evChanged"))
+		
+		(var bonusSnowflakes:number = "bonusTagSeason ? bonusTagSeason.bonusSnowflakes : 0" (event "bonusTagSeason.evChanged"))
+		(var bonusSnowflakeProgress:number = "bonusTagSeason ? bonusTagSeason.bonusSnowflakeProgress : 0" (event "bonusTagSeason.evChanged"))
+		(var bonusSnowflakeThreshold:number = "bonusTagSeason ? bonusTagSeason.bonusSnowflakeThreshold : 0" (event "bonusTagSeason.evChanged"))
+		(var minShipsCount:number = "bonusTagSeason ? bonusTagSeason.minShipsCount : 0" (event "bonusTagSeason.evBannerStateChanged"))
+	)
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (width = "BANNER_TOOLTIP_WIDTH") (hitTest = false))
+	(name = "'SnowflakesBannerTooltip'")
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_SNOWFLAKES_TOOLTIP_HEADER'
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_text = 'IDS_SNOWFLAKES_BANNER_DESC'
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemProgressBarBlock
+			_title = 'IDS_SNOWFLAKES_BANNER_TOOLTIP_PROGRESSBAR_TITLE'
+			_currentValue = "bonusSnowflakeProgress"
+			_maxValue = "bonusSnowflakeThreshold"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_text = "'IDS_SNOWFLAKES_TOOLTIP_MOUSE_INSTRUCTION'"
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+		)
+	)
+)
+
+(def element IngameNewsTooltip (_isShowUB2Tooltip:bool) layout=true dispatch_size_change=true
+	(scope
+		(macro GET_UNREAD_NEW_COUNTER_AND_GIFT_STATUS_SCOPE) 
+		(var descriptionText:str = "subst('IDS_RECOMMENDED_NEWS_LEFT', [], {_count: toString(unreadRecomendedNewsCount)})")
+	)
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (width = "BANNER_TOOLTIP_WIDTH") (hitTest = false))
+	(name = "'IngameNewsTooltip'")
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_unifiedStatus = "isRewardAvailable ? SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE : SC.Ui_styles.UNIFIED_STATUS.DEFAULT "
+			_headerText = "tr('IDS_NEWS')"
+		)
+		
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isRewardAvailable"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isRewardAvailable")
+				(args
+					_text = "'IDS_GIFT_FOR_READING_NEWS_IS_AVALAIBLE'"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isUnreadRecomendedNews"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "isUnreadRecomendedNews")
+				(args
+					_descriptionText = "descriptionText"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_text = 'IDS_GO_TO_NEWS_TOOLTIP'
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+		)
+	)
+)
+
+(def element BattlePassBannerTooltip (_isShowUB2Tooltip:bool) layout=true dispatch_size_change=true
+	(scope
+		(var unclaimedRewards:gfx = "$datahub.getCollection(CC.battlePassReward).getChildByPath('unclaimedRewards')")
+		(var hasReward:bool = "unclaimedRewards && unclaimedRewards.items.length > 0" (event "unclaimedRewards.evAdded") (event "unclaimedRewards.evRemoved"))
+
+		(var battlePassCurrentLevelCollection:gfx = "$datahub.getCollection(CC.battlePassCurrentLevel)")
+		(var battlePassCurrentLevelEntity:gfx = "	battlePassCurrentLevelCollection &&
+													battlePassCurrentLevelCollection.items.length > 0	? battlePassCurrentLevelCollection.items[0]
+																										: null"
+													(event "battlePassCurrentLevelCollection.evAdded") (event "battlePassCurrentLevelCollection.evRemoved"))
+
+		(var battlePassCurrentLevel:gfx = "battlePassCurrentLevelEntity ? battlePassCurrentLevelEntity.battlePassLevel : null" (event "battlePassCurrentLevelEntity.battlePassLevel.evChanged"))
+
+		(var curLevel:number = "battlePassCurrentLevel ? battlePassCurrentLevel.level : 0" (event "battlePassCurrentLevel.evChanged"))
+		(var curPoints:number = "battlePassCurrentLevel ? battlePassCurrentLevel.points : 0" (event "battlePassCurrentLevel.evChanged"))
+		(var maxPoints:number = "battlePassCurrentLevel ? battlePassCurrentLevel.pointsPerLevel : 0" (event "battlePassCurrentLevel.evChanged"))
+
+		(var battlePassPostProgressionLevel:gfx = "battlePassCurrentLevelEntity ? battlePassCurrentLevelEntity.battlePassPostProgressionLevel : null" (event "battlePassCurrentLevelEntity.battlePassPostProgressionLevel.evChanged"))
+
+		(var countCompleted:number = "battlePassPostProgressionLevel ? battlePassPostProgressionLevel.countCompleted : 0" (event "battlePassPostProgressionLevel.evChanged"))
+
+		(var deltaPoints:number = "maxPoints - curPoints")
+		(var curPointsProgress:number = "maxPoints ? (curPoints * 100) / maxPoints : 0")
+		(var level:number = "countCompleted		? curLevel + countCompleted - 1
+												: curLevel - 1")
+
+		(var battlePassEntity:gfx = "$datahub.getSingleEntity(CC.battlePass)")
+		(var battlePass:gfx = "battlePassEntity ? battlePassEntity.battlePass : null" (event "battlePassEntity.battlePass.evChanged"))
+
+		(var finishTime:number = "battlePass ? battlePass.finishTime : 0" (event "battlePass.evChanged"))
+		(var type:number = "battlePass ? battlePass.type : ''" (event "battlePass.evChanged"))
+
+		(var headerUnifiedStatus:str = "hasReward ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+
+		(macro SERVER_TIME_SCOPE)
+		(macro COUNTDOWN_SCOPE "'formattedFinishTime'"	"finishTime"	"'HIGHESTDAYS'")
+		
+		(var timeLeft:number = "finishTime - serverTime")
+		(var isBattlePassStatusVisible:bool = "type != SC.Common.BATTLEPASS_TYPES.PAID_REGULAR")
+	)
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (width = "BANNER_TOOLTIP_WIDTH") (hitTest = false))
+	(name = "'BattlePassBannerTooltip'")
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_DOCK_BANNER_BATTLEPASS_TOOLTIP_HEADER'
+			_unifiedStatus = "headerUnifiedStatus"
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "hasReward"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "hasReward")
+				(args
+					_text = "'IDS_DOCK_BANNER_BATTLEPASS_TOOLTIP_STATUS_REWARDS'"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE"
+				)
+			)
+		)
+		
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isBattlePassStatusVisible"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isBattlePassStatusVisible")
+				(args
+					_text = "'IDS_DOCK_BANNER_BATTLEPASS_TOOLTIP_STATUS_' + type"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemProgressBarBlock
+			_title = "subst('IDS_SUBST_DOCK_BANNER_BATTLEPASS_PROGRESS_TEXT', [], {_level: toString(level)})"
+			_currentValue = "curPoints"
+			_maxValue = "maxPoints"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_text = "subst('IDS_SUBST_DOCK_BANNER_BATTLEPASS_TOOLTIP_TIME', [], {_timeLeft: formattedFinishTime})"
+			_unifiedStatus = "timeLeft < DAY_IN_SEC	? SC.Ui_styles.UNIFIED_STATUS.DATE_ATTENTION
+													: SC.Ui_styles.UNIFIED_STATUS.DATE"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+			_text = 'IDS_GO_TO_SSE_BATTLEPASS_MOUSE_INSTRUCTION'
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+		)
+	)
+)
+
+(def element StrategicActionsTooltip (_isShowUB2Tooltip:bool) layout=true dispatch_size_change=true
+	(scope
+		(var strategicActionsCol:gfx = "$datahub.getCollection(CC.strategicActionsEvent)")  
+		(var strategicActionsEntity:gfx = "$datahub.getSingleEntity(CC.strategicActionsEvent)" (event "strategicActionsCol.evAdded") (event "strategicActionsCol.evRemoved"))
+		(var strategicActionsEvent:gfx = "strategicActionsEntity ? strategicActionsEntity.strategicActionsEvent : null")
+		(var finishTime:number = "strategicActionsEvent ? strategicActionsEvent.finishTime : 0" (event "strategicActionsEvent.evChanged"))
+		(var doneTerritories:number = "strategicActionsEvent ? strategicActionsEvent.doneTerritories : 0" (event "strategicActionsEvent.evChanged"))
+		(var isAnyRewardClaim:bool = "strategicActionsEvent ? strategicActionsEvent.isAnyRewardClaim : false" (event "strategicActionsEvent.evChanged"))
+		(var selectedTerritory:number = "strategicActionsEvent ? strategicActionsEvent.selectedTerritory : 0" (event "strategicActionsEvent.evChanged"))
+		(var territoriesThresholds:array = "strategicActionsEvent ? strategicActionsEvent.thresholds : []" (event "strategicActionsEvent.evChanged"))
+
+		(var territories:gfx = "$datahub.getCollection(CC.strategicActionsTerritory)")
+
+		(var territoryEntity:gfx = "$datahub.getEntity(selectedTerritory)")
+		(var territory:gfx = "territoryEntity ? territoryEntity.strategicActionsTerritory : null")
+		(var territoryId:str = "territory ? territory.id : 'global'" (event "territory.evChanged"))
+		(var currentTaskIndex:number = "territory ? territory.currentTaskIndex : 0" (event "territory.evChanged"))
+		(var progressMax:number = "territory ? territory.maxProgress : 1" (event "territory.evChanged"))
+		(var progressCurrent:number = "territory ? territory.progress : 0" (event "territory.evChanged"))
+		(var restrictionsEntityId:number = "territory ? territory.restrictionsEntity : 0" (event "territory.evChanged"))
+
+		(var restrictionsEntity:gfx = "$datahub.getEntity(restrictionsEntityId)")
+		(var battleTypes:array = "restrictionsEntity ? restrictionsEntity.sseConditions.battleTypes : []" (event "territory.evChanged"))
+
+		(var taskActiveEntity:gfx = "$datahub.getPrimaryEntity(CC.strategicActionsTask, territoryId + '_' + toString(currentTaskIndex))")
+
+		(macro SERVER_TIME_SCOPE)
+		(macro COUNTDOWN_SCOPE "'timeLeft'" "finishTime" "'HIGHEST,WITH_DAYS'")
+
+		(var isTerritoryAvailable:bool = "selectedTerritory == 0")
+		(var isThresholdsCompleted:bool = "doneTerritories >= territoriesThresholds[territoriesThresholds.length-1]")
+		(var isCompleted:bool = "doneTerritories == territories.items.length")
+		(var isTerritoryAvailableVisible:bool = "isTerritoryAvailable && !isCompleted")
+		(var isProgressVisible:bool = "!isCompleted && !isTerritoryAvailable")
+		(var isThresholdsStatusVisible:bool = "isThresholdsCompleted && isTerritoryAvailableVisible")
+		(var isTimeVisible:bool = "!isCompleted")
+	)
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (width = "BANNER_TOOLTIP_WIDTH") (hitTest = false))
+	(name = "'StrategicActionsTooltip'")
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText _headerText = "'IDS_STRATEGIC_ACTIONS_COMMON_EVENT_TITLE'")
+		(element TooltipSystemHorizontalDivider)
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isThresholdsCompleted")
+				(args
+					_text = 'IDS_STRATEGIC_ACTIONS_STATUS_COMPLETED'
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+				)
+			)
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isThresholdsCompleted"))
+		)
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isAnyRewardClaim")
+				(args
+					_text = 'IDS_AVAILABLE_REWARD'
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE"
+				)
+			)
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isAnyRewardClaim"))
+		)
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isTerritoryAvailableVisible")
+				(args
+					_text = 'IDS_STRATEGIC_ACTIONS_STATUS_TERRITORY'
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.WARNING"
+				)
+			)
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isTerritoryAvailableVisible"))
+		)
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isTimeVisible")
+				(args
+					_text = "subst('IDS_SUBST_STRATEGIC_ACTIONS_COMMON_EVENT_STATUS_TIME', [], {_timeLeft: timeLeft})"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DATE"
+				)
+			)
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isTimeVisible"))
+		)
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemProgressBarBlock'
+				(bind enabled "isProgressVisible")
+				(args
+					_title = 'IDS_STRATEGIC_ACTIONS_TOOLTIP_PROGRESSBAR_TITLE'
+					_currentValue = "progressCurrent"
+					_maxValue = "progressMax"
+				)
+			)
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isProgressVisible"))
+		)
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isThresholdsStatusVisible")
+				(args _text = 'IDS_STRATEGIC_ACTIONS_STATUS_TASK')
+			)
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isThresholdsStatusVisible"))
+		)
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemSecondaryHeaderText'
+				(bind enabled "!isTerritoryAvailable")
+				(args _headerText = 'IDS_STRATEGIC_ACTIONS_TASK')
+			)
+		)
+		(block
+			(style (width = 100%) (bind marginTop "isTerritoryAvailable ? 0 : SXS"))
+			(controller $Instance renderer='StrategicActionsTaskDescription'
+				(bind enabled "!isTerritoryAvailable && taskActiveEntity")
+				(args
+					_entityId = "taskActiveEntity.id"
+					_textClass = '$TextDefaultNM'
+				)
+			)
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "!isTerritoryAvailable"))
+		)
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemTaskRestrictions'
+				(bind enabled "!isTerritoryAvailable && restrictionsEntity")
+				(args
+					_battleTypes = "battleTypes"
+					_restrictionEntity = "restrictionsEntity"
+				)
+			)
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "!isTerritoryAvailable"))
+		)
+		
+		(element TooltipSystemStatusLine
+			_text = 'IDS_GO_TO_STRATEGIC_ACTIONS_MOUSE_INSTRUCTION'
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+		)
+	)
+)
+
+(def element EventHubEnterTooltip (_isShowUB2Tooltip:bool) layout=true dispatch_size_change=true
+	(scope
+		(macro SERVER_TIME_SCOPE)
+
+		(var eventHubSeasonEntity:gfx = "$datahub.getSingleEntity(CC.eventHubSeason)")
+		(var eventHubSeason:gfx = "eventHubSeasonEntity ? eventHubSeasonEntity.eventHubSeason : null")
+		(var eventHubSeasonFinishTime:number = "eventHubSeason.finishTime")
+		(macro COUNTDOWN_SCOPE "'eventHubTimeLeft'" "eventHubSeasonFinishTime" "'HIGHESTDAYS'")
+
+		(var eventHubPhasesCollection:gfx = "$datahub.getCollection(CC.eventHubPhase)")
+		(var eventHubPhases:array = "eventHubPhasesCollection ? eventHubPhasesCollection.items : []"	(event "eventHubPhasesCollection.evAdded")
+																										(event "eventHubPhasesCollection.evRemoved"))
+		(var eventHubCurrentPhase:gfx = "eventHubPhases ? eventHubPhases[0].eventHubPhase : null")
+		(var eventHubPhaseFinishTime:number = "eventHubPhases.length > 1	? eventHubPhases[1].eventHubPhase.startTime
+																			: eventHubPhases[0].eventHubPhase.startTime")
+		(macro COUNTDOWN_SCOPE "'eventHubPhaseTimeLeft'" "eventHubPhaseFinishTime" "'HIGHESTDAYS'")
+
+		(var activePhase:number = "(TOTAL_NUMBER_OF_PHASES - eventHubPhases.length) + 1") 
+		(var currentLevelCollection:gfx = "$datahub.getCollection(CC.eventHubCurrentLevel)")
+		(var currentLevelEntity:gfx = "currentLevelCollection ? currentLevelCollection.items[0] : null" (event "currentLevelCollection.evAdded")
+																										(event "currentLevelCollection.evRemoved"))
+		(var progressionLevel:gfx = "currentLevelEntity ? currentLevelEntity.progressionLevel : null")
+		(var progressionLevelProgress:gfx = "currentLevelEntity ? currentLevelEntity.progressionLevelProgress : null")
+		(var isPostProgressionLevel:bool = "currentLevelEntity ? currentLevelEntity.hasComponent(CC.postProgressionLevel) : false")
+
+		(var currentLevel:number = "progressionLevel ? progressionLevel.level : 0")
+		(var maxPoints:number = "progressionLevel ? progressionLevel.points : 0")
+		(var currentPoints:number = "progressionLevelProgress ? progressionLevelProgress.currentPoints : 0" (event "progressionLevelProgress.evChanged"))
+
+		(var battleTypeEntity:gfx = "$datahub.getPrimaryEntity(CC.battleType, SC.Common.BATTLE_TYPES.EVENT_BATTLE + '_' + toString(eventHubCurrentPhase.battleTypeGameParamId))")
+		(var battleTypeComponent:gfx = "battleTypeEntity ? battleTypeEntity.battleType : null" (event "battleTypeEntity.evAdded") (event "battleTypeEntity.evRemoved"))
+		(var restrictionEntity:gfx = "battleTypeComponent ? $datahub.getEntity(battleTypeComponent.restrictionEntityId) : null")
+		(var hasRestrictions:bool = "restrictionEntity && restrictionEntity.hasComponent(CC.filteringGroup)" (event "restrictionEntity.evAdded") (event "restrictionEntity.evRemoved"))
+		(var bannerIconLink:str = "'url:../service_kit/battle_types/' + battleTypeEntity.eventBattleState.name + '.png'")
+	)
+
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (width = "360px") (hitTest = false))
+	(name = "'EventHubEnterTooltip'")
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(hblock
+			(style (width = 100%) (align = "middle"))
+			(block
+				(style (marginRight ="SXS"))
+				(element TooltipSystemSimpleIcon 
+					_imageUrl = "bannerIconLink"
+					_imageWidth = "80"
+					_imageHeight = "80"
+				)
+			)
+			(element TooltipSystemHeaderSubheaderText 
+				_headerText = "'IDS_DOCK_BANNER_ENTER_EVENT_HUB_TOOLTIP_HEADER'"
+				_subheaderText = "'IDS_DOCK_BANNER_ENTER_EVENT_HUB_TOOLTIP_SUBHEADER'"
+			)
+		)
+		(element TooltipSystemHorizontalDivider)
+
+		
+		(block
+			(bind visible "eventHubPhases.length > 1")
+			(style (width = 100%))
+			(element StatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DATE"
+				_text = "subst('IDS_SUBST_EVENT_HUB_STATUS_TIME', [], {_timeLeft: eventHubPhaseTimeLeft})"
+				_textClass = '$TextDefaultNM'
+				_width = 'auto'
+			)
+		)
+
+		(block
+			(style (width = 100%) (marginTop = "SXS"))
+
+			(element StatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CALENDAR"
+				_text = "subst('IDS_SUBST_EVENT_HUB_ENDS_IN', [], {_timeLeft: eventHubTimeLeft})"
+				_textClass = '$TextDefaultNM'
+				_width = 'auto'
+			)
+		)
+
+		
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "hasRestrictions"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='ShipRestrictions'
+				(bind enabled "hasRestrictions")
+				(args
+					_restrictionsEntityId = "restrictionEntity.id"
+					_isFromTooltip = "true"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemProgressBarBlock'
+				
+				(args
+					_text = "subst('IDS_SUBST_EVENT_HUB_STATUS_TIME', [], {_timeLeft: eventHubPhaseTimeLeft})"
+					_title = "isPostProgressionLevel	? 'IDS_EVENT_HUB_BANNER_TOOLTIP_POST_PROGRESSION_LEVEL_HEADER'
+														: subst('IDS_EVENT_HUB_BANNER_TOOLTIP_CURRENT_LEVEL_HEADER', [], {_currentLevel: currentLevel})"
+					_currentValue = "currentPoints"
+					_maxValue = "maxPoints"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		
+		(block
+			(style (width = 100%))
+			(element TooltipSystemDescriptionText
+				_descriptionText = "'IDS_EVENT_HUB_TOOLTIP_DESCR'"
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		
+		(element TooltipSystemStatusLine
+			_text = 'IDS_GO_TO_EVENT_HUB_MOUSE_INSTRUCTION'
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+		)
+	)
+)
+
+(def element EventHubExitTooltip (_isShowUB2Tooltip:bool) layout=true dispatch_size_change=true
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (width = "BANNER_TOOLTIP_WIDTH") (hitTest = false))
+	(name = "'EventHubEnterTooltip'")
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		
+		(element TooltipSystemStatusLine
+			_text = 'IDS_DOCK_EXIT_EVENT_HUB_MOUSE_INSTRUCTION'
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+		)
+	)
+)

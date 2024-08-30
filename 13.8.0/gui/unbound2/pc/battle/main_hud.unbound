@@ -1,0 +1,426 @@
+(def element MainHud () layout=true
+	(scope
+		
+		(var customElementsVisibilityComponent:gfx = "$datahub.getSingleEntity(CC.customElementsVisibility)")
+		(var enabledElements:number = "customElementsVisibilityComponent ? customElementsVisibilityComponent.customElementsVisibility.enabledElements : null" (event "customElementsVisibilityComponent.customElementsVisibility.evChanged"))
+
+		(var avatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var healthComponent:gfx = "avatarEntity.health")
+		(var isAlive:bool = "healthComponent ? healthComponent.isAlive : false" (event "healthComponent.evIsAliveChanged"))
+		(var isSubmarineHudVisible:bool = "avatarEntity.avatar ? (avatarEntity.avatar.ship.ref.ship.subtype == ShipTypes.SUBMARINE) : false")
+
+		(var aircarrierSqudronsCollection:gfx = "$datahub.getCollection(CC.ownSquadron)")
+		(var isAircraftHudVisible:bool = "aircarrierSqudronsCollection.items.length > 0")
+
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+
+		
+		
+		
+
+		
+		
+		
+
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var gameModeId:number = "battleDataEntity.battleInfo.gameModeId")
+
+		(var battleState:number = "battleDataEntity.battleState.battleState" (event "battleDataEntity.battleState.evBattleStateChanged"))
+		(var isEndBattleResultsVisible:bool = "battleState == SC.Common.CLIENT_BATTLE_STATE.END_BATTLE_IDLING")
+
+		(var screenplayMessageEntity:gfx = "$datahub.getSingleEntity(CC.battleScreenplayMessage)")
+		(var screenplayMessage:str = "screenplayMessageEntity.battleScreenplayMessage.text" (event "screenplayMessageEntity.battleScreenplayMessage.evChanged"))
+		(var isScreenplayMessageVisible:bool = "!!screenplayMessage")
+
+		(var invCollection:gfx = "$datahub.getCollection(CC.invitationToDivision)")
+		(var hasInvitation:bool = "invCollection.items.length > 0" (event "invCollection.evAdded")(event "invCollection.evRemoved"))
+		(var invitationEntity:gfx = "invCollection.items[0]" (event "invCollection.evAdded")(event "invCollection.evRemoved"))
+		
+		
+		(var cameraComponent:gfx = "$datahub.getSingleComponent(CC.camera)") 
+		(var observedShipId:number = "cameraComponent ? cameraComponent.observedShipId : INVALID_OBSERVED_AVATAR_ID" (event "cameraComponent.evObservedShipChanged"))
+		(var observedAvatarId:number = "cameraComponent ? cameraComponent.observedPlayerId : INVALID_OBSERVED_AVATAR_ID" (event "cameraComponent.evObservedPlayerIdChanged"))
+		(var isTacticalMap:bool = "cameraComponent ? cameraComponent.isTactical : false" (event "cameraComponent.evTacticalStateChanged"))
+		(var isSubmarineHudEnabled:bool = "cameraComponent.mode != SC.Battle.CAMERA_MODE.PLANETRACKER" (event "cameraComponent.evModeChanged"))
+
+		(var selfAvatarEntity:gfx =  "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var selfAvatarComponent:gfx = "selfAvatarEntity ? selfAvatarEntity.avatar : null")
+		(var selfAvatarId:number = "selfAvatarComponent ? selfAvatarComponent.id : INVALID_PLAYER_AVATAR_ID")
+		(var isSelfObserved:bool = "selfAvatarId == observedAvatarId")
+
+		(var killerId:number = "selfAvatarEntity ? selfAvatarEntity.health.killerId : null" (event "selfAvatarEntity.health.evKillerIdChanged"))
+
+		(macro IS_SPECTATOR_MODE)
+		(var hotKeysParamsCmdEntity:gfx = "$datahub.getPrimaryEntity(CC.commandMappingCommandName, 'CMD_SPECTATOR_HOTKEYS')")
+		(var isHotKeysModalWindowVisible:bool = "hotKeysParamsCmdEntity.commandMappingCommand.isDown" (event "hotKeysParamsCmdEntity.commandMappingCommand.evIsDownChanged"))
+
+		(var isDogTagSpectatorVisible:bool = "isSpectatorTrainingMode ? !isIn(observedShipId, [0, INVALID_OBSERVED_AVATAR_ID]) : isSpectator && (observedShipId != 0) && !isSelfObserved")
+		(var isVisibleHSpectatorPanel:bool = "isSpectator && !isHotKeysModalWindowVisible && !isTacticalMap")
+
+		(macro GET_PREF 'hearFoghorn' "'sound.foghorn.enabled'")
+		
+		(var selfVehicleEntity:gfx = "$datahub.getSingleEntity(CC.selfVehicle)")
+		(var submarine:gfx = "isSubmarineHudVisible ? selfVehicleEntity.submarine : null")
+		(var depthIndex:number = "submarine ? submarine.depthIndex : SC.Battle.DEPTH_STATE.SURFACE" (event "submarine.evDepthIndexChanged"))
+		(var isUnderwater:number = "depthIndex > SC.Battle.DEPTH_STATE.PERISCOPE")
+		
+	)
+
+	(style
+		(bind width "stageWidth")
+		(bind height "stageHeight")
+	)
+
+	(controller $Instance renderer='EndBattleIdlingResults'
+		(bind enabled "isEndBattleResultsVisible")
+	)
+
+	(controller $Instance renderer='CustomWinMessage'
+		(bind enabled "isScreenplayMessageVisible")
+	)
+
+	(controller $Instance renderer='AircraftHud'
+		(bind enabled "isAircraftHudVisible == true")
+	)
+
+	(controller $Instance renderer='SubmarineHud'
+		(bind enabled "isAlive && isSubmarineHudVisible && isSubmarineHudEnabled")
+	)
+
+	(controller $Instance renderer='CentralDangersContainer'
+		(bind enabled "isAlive")
+	)
+
+	(controller $Instance renderer = 'BattleIndicatorsContainer'
+		(bind enabled "!isSpectatorTrainingMode")
+	)
+	
+
+	(controller $Instance renderer='PrebattleText'
+		(bind enabled "battleState == SC.Common.CLIENT_BATTLE_STATE.COUNTDOWN")
+		(exprs
+			(class $MiddleAlignedAbsolutely)
+			(style (top = "XXL"))
+		)
+	)
+	
+	(controller $Instance renderer='BattleTimer'
+		(bind enabled "!(isIn(gameModeId, SC.Battle.GAME_MODE.BATTLE_TIMER_HIDDEN)) && battleState == SC.Common.CLIENT_BATTLE_STATE.STARTED")
+		(args _battleState="battleState")
+		(exprs
+			(style
+				(position = "absolute")
+				(top = "SXS")
+				(right = "176")
+			)
+		)
+	)
+
+	(controller $Instance renderer='InvitationToDivision'
+		(bind enabled "hasInvitation")
+		(args
+			_invitationEntity="invitationEntity"
+		)
+		(exprs
+			(style
+				(position = "absolute")
+				(top = "XS")
+				(left = "XS")
+			)
+		)
+		(bindcall recreate (bind trigger "invitationEntity"))
+	)
+
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+	
+	(block
+		(style
+			(position = "absolute")
+			(right = "XS") (top = "XS")
+			(align = "top|right")
+		)
+
+		(element PortalCountdownHolder $autoPerfTestGroup='pve_progress'
+			(style
+				(marginTop = "M")
+				(marginRight = "M")
+			)
+		)
+
+		(hblock $autoPerfTestGroup='ribbons'
+			(style (marginTop = "SXS"))
+			
+			(element RibbonsClaimedContainer _reduceRibbonColsByOne="gameModeId == SC.Battle.GAME_MODE.ARMS_RACE")
+			(element DamageWidget
+				(style
+					(marginTop = "XXS")
+					(marginLeft = "XS")
+				)
+			)
+		)
+	)
+
+	
+	(element BattleStatsContainer
+		(style
+			(width = "100%")
+			(align = "center")
+		)
+	)
+
+	
+	(block
+		(style
+			(position = "absolute")
+			(left = "XS") (bottom = "XS")
+			(align = "bottom|left")
+		)
+
+		(controller $Instance renderer='AutopilotIndicator' $autoPerfTestGroup='header'
+			(bind enabled "isAlive")
+			(exprs
+				(style
+					(position = "absolute")
+					(left = 250) (bottom = 203)
+				)
+			)
+		)
+
+		(controller $Instance renderer='DogTagInHUDSpectator' $autoPerfTestGroup='indicator_compass'
+			(bind enabled "isDogTagSpectatorVisible")
+			(args
+				_observedShipId = "observedShipId"
+			)
+			(exprs
+				(style
+					(position = "absolute")
+					(left = 30) (bottom = 203)
+				)
+			)
+		)
+	)
+
+	
+	(element CombatLogPanel
+		(style
+			(position = "absolute")
+			(left = 10) (bottom = 326)
+		)
+		(block
+			(style
+				(hitTest = false)
+				(position = "absolute")
+				(bottom = 0)
+				(alpha = "isUnderwater ? 0 : 1")
+			)
+			(controller $Animation
+				(bindcall play to={alpha:1} action="kill" duration=0.2 (bind enabled "!isUnderwater"))
+				(bindcall play to={alpha:0} action="kill" duration=0.2 (bind enabled "isUnderwater"))
+			)
+			(controller $Instance renderer='FogHornIndicator'
+				(bind enabled "isAlive && hearFoghorn")
+			)
+		)
+		
+	)
+
+
+	
+	(block
+		(class $MiddleAlignedAbsolutely)
+		(style
+			(bottom = "0")
+		)
+
+		(block 
+			(bind visible "isVisibleHSpectatorPanel")
+
+			(class $MiddleAlignedAbsolutely)
+			(style (bottom = "MS"))
+			(block
+				(style (alpha = "isVisibleHSpectatorPanel"))
+
+				(controller $Animation
+					(bindcall play from={y:15, alpha:0} to={y:0, alpha:1} action="killAll" duration=0.2 (bind enabled "isVisibleHSpectatorPanel"))
+				)
+				(controller $Instance renderer='HotKeySpectatorPanel')
+			)
+		)
+
+		(block 
+			(bind visible "isPreSpectator")
+
+			(class $MiddleAlignedAbsolutely)
+			(style (bottom = "XXS"))
+			(block
+				(style (alpha = 0))
+
+				(controller $Animation
+					(bindcall play from={alpha:0} to={alpha:1} duration=1 delay=2 easing="Easing.sine_in"watch=false (bind enabled "isPreSpectator"))
+				)
+				(controller $Instance renderer='KillerInfoContainer' $autoPerfTestGroup='indicator_compass'
+					(bind enabled "!isAlive")
+					(args
+						_killerId = "killerId"
+					)
+				)
+			)
+		)
+
+		(element HUDbottomElementsContainer
+			(style
+				(marginBottom = "S")
+			)
+		)
+	)
+
+
+	
+	(block
+		(style
+			(position = "absolute")
+			(right = "XS") (bottom = "XS")
+			(align = "bottom|right")
+		)
+
+		(block
+			(style 
+				(align = "right")
+				(marginRight = "MS")
+				(marginBottom = "MS")
+			)
+
+			(element RibbonsAppearContainer $autoPerfTestGroup='ribbons'
+				(style (marginBottom = "S"))
+			)
+
+			(element DeathLogContainer $autoPerfTestGroup='logs')
+		)
+		
+		(element BattleMinimapUb2 $autoPerfTestGroup='minimap')
+	)
+)
+
+(def macro DRAW_GUIDE (_x1:expression, _y1:expression, _x2:expression, _y2:expression)
+	(block
+		(.graphics
+			(lineStyle "1" "0x00FFFF" "1")
+			(moveTo "_x1" "_y1")
+			(lineTo "_x2" "_y2")
+			(endFill)
+		)
+	)
+)
+
+(def element Guides () layout=true
+	(scope
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+	)
+	(style
+		(position = "absolute")
+		(bind width "stageWidth")
+		(bind height "stageHeight")
+	)
+
+	(macro DRAW_GUIDE "stageWidth/2" "0" "stageWidth/2" "stageHeight")
+	(macro DRAW_GUIDE "0" "stageHeight/2" "stageWidth" "stageHeight/2")
+)
+
+(def element HUDbottomElementsContainer () dispatch_size_change=true
+	(scope
+		(var avatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var healthComponent:gfx = "avatarEntity.health")
+		(var isAlive:bool = "healthComponent ? healthComponent.isAlive : false" (event "healthComponent.evIsAliveChanged"))
+	)
+
+	(controller $Instance renderer='HUDbottomElementsContent'
+		(bind enabled "isAlive == true")
+	)
+)
+
+(def element HUDbottomElementsContent () layout=true
+	(style
+		(align = "center|bottom")
+	)
+
+	(element ZonesCapturingIndicatorContainer
+		(style
+			(marginBottom = "XS")
+			(hitTest = "false")
+		)
+	)
+
+	(element LowerLog $autoPerfTestGroup="'logs'"
+		(style
+			(marginBottom = "XS")
+			(hitTest = "false")
+		)
+	)
+	
+	(element AngleControl $autoPerfTestGroup="'indicator_angle'"
+		(style
+			(marginBottom = 17)
+			(hitTest = "false")
+		)
+	)
+
+	(element StatePanel $autoPerfTestGroup="'weapons_panel'"
+		(style
+			(marginBottom = "XXS")
+		)
+	)
+
+	(element GunsReloadBarContainer $autoPerfTestGroup="'weapons_panel'"
+		(style
+			(marginBottom = "XS")
+			(hitTest = "false")
+		)
+	)
+	
+	(element ShipWeaponsPanel $autoPerfTestGroup="'weapons_panel'"
+		(style
+			(marginBottom = "20") 
+		)
+	)
+)

@@ -1,0 +1,5427 @@
+
+
+(def constant SC {
+	Achievements_classifications: {
+		ACHIEVEMENT_GROUP: {
+			BATTLE: 'battle',
+			ADVANCED: 'advanced',
+			EXPLORING: 'exploring',
+			MEMORABLE: 'memorable',
+			NOT_USED: 'not_used',
+
+			VALUE_TO_NAME: {
+				'battle': 'BATTLE', 
+				'advanced': 'ADVANCED', 
+				'exploring': 'EXPLORING', 
+				'memorable': 'MEMORABLE', 
+				'not_used': 'NOT_USED'
+			},
+
+			ALL: ['battle', 'advanced', 'exploring', 'memorable', 'not_used'], 
+			SORT_ORDER: ['battle', 'advanced', 'exploring', 'memorable']
+		}, 
+		ACHIEVEMENT_VISIBILITY: {
+			VISIBLE: 'visible',
+			HIDDEN: 'hidden',
+
+			VALUE_TO_NAME: {
+				'visible': 'VISIBLE', 
+				'hidden': 'HIDDEN'
+			},
+
+			ALL: ['visible', 'hidden'], 
+			SORT_ORDER: ['visible', 'hidden']
+		}, 
+		BATTLE_ACHIEVEMENT: {
+			RANDOM_OR_RANK: 'random_or_rank',
+			SQUAD: 'squad',
+			OPERATIONS: 'operations',
+			HEROIC: 'heroic',
+			HONORABLE: 'honorable',
+
+			VALUE_TO_NAME: {
+				'random_or_rank': 'RANDOM_OR_RANK', 
+				'squad': 'SQUAD', 
+				'operations': 'OPERATIONS', 
+				'heroic': 'HEROIC', 
+				'honorable': 'HONORABLE'
+			},
+
+			ALL: ['random_or_rank', 'squad', 'operations', 'heroic', 'honorable'], 
+			SUBGROUP_SORT_ORDER: ['random_or_rank', 'squad', 'operations'], 
+			REMAINING_SORT_ORDER: ['heroic', 'honorable']
+		}, 
+		ADVANCED_ACHIEVEMENT: {
+			CLANS: 'clans',
+			RANKS: 'ranks',
+			HEROIC: 'heroic',
+			HONORABLE: 'honorable',
+			COMMON: 'common',
+
+			VALUE_TO_NAME: {
+				'clans': 'CLANS', 
+				'ranks': 'RANKS', 
+				'heroic': 'HEROIC', 
+				'honorable': 'HONORABLE', 
+				'common': 'COMMON'
+			},
+
+			ALL: ['clans', 'ranks', 'heroic', 'honorable', 'common'], 
+			SUBGROUP_SORT_ORDER: ['clans', 'ranks'], 
+			REMAINING_SORT_ORDER: ['heroic', 'honorable', 'common']
+		}, 
+		EXPLORING_ACHIEVEMENT: {
+			COMMON: 'common',
+			OPERATIONS: 'operations',
+			CAMPAIGNS: 'campaigns',
+			COLLECTIONS: 'collections',
+			PARAGONS: 'paragons',
+			STANDART: 'standart',
+			NEWBIE: 'newbie',
+			MULTIPLE: 'multiple',
+			SINGLE: 'single',
+			TEMPORARY: 'temporary',
+			PERMANENT: 'permanent',
+
+			VALUE_TO_NAME: {
+				'common': 'COMMON', 
+				'operations': 'OPERATIONS', 
+				'campaigns': 'CAMPAIGNS', 
+				'collections': 'COLLECTIONS', 
+				'paragons': 'PARAGONS', 
+				'standart': 'STANDART', 
+				'newbie': 'NEWBIE', 
+				'multiple': 'MULTIPLE', 
+				'single': 'SINGLE', 
+				'temporary': 'TEMPORARY', 
+				'permanent': 'PERMANENT'
+			},
+
+			ALL: ['common', 'operations', 'campaigns', 'collections', 'paragons', 'standart', 'newbie', 'multiple', 'single', 'temporary', 'permanent'], 
+			SUBGROUP_SORT_ORDER: ['common', 'operations', 'campaigns', 'collections'], 
+			REMAINING_SORT_ORDER: ['paragons', 'standart', 'newbie', 'multiple', 'single', 'temporary', 'permanent']
+		}, 
+		MEMORABLE_ACHIEVEMENT: {
+			EVENT_BATTLES: 'event_battles',
+			COMPETITIONS: 'competitions',
+			ACHIEVEMENTS_MARATHON: 'achievements_marathon',
+			SPECIAL: 'special',
+			IRL_EVENTS: 'irl_events',
+			PARTICIPATING_IN_DEVELOPMENT: 'participating_in_development',
+			EXTERNAL_PLATFORMS: 'external_platforms',
+
+			VALUE_TO_NAME: {
+				'event_battles': 'EVENT_BATTLES', 
+				'competitions': 'COMPETITIONS', 
+				'achievements_marathon': 'ACHIEVEMENTS_MARATHON', 
+				'special': 'SPECIAL', 
+				'irl_events': 'IRL_EVENTS', 
+				'participating_in_development': 'PARTICIPATING_IN_DEVELOPMENT', 
+				'external_platforms': 'EXTERNAL_PLATFORMS'
+			},
+
+			ALL: ['event_battles', 'competitions', 'achievements_marathon', 'special', 'irl_events', 'participating_in_development', 'external_platforms'], 
+			SUBGROUP_SORT_ORDER: ['competitions', 'achievements_marathon', 'special', 'event_battles'], 
+			REMAINING_SORT_ORDER: ['participating_in_development', 'external_platforms', 'irl_events']
+		}
+	}, 
+	Battle: {
+		CRUISE_CONTROL_TYPE: {
+			SPEED: 0,
+			ANGLE: 1,
+			DEPTH: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		DEPTH_STATE: {
+			INVALID_STATE: -1,
+			SURFACE: 0,
+			PERISCOPE: 1,
+			WORKING: 2,
+			INVULNERABLE: 3,
+
+			VALUE_TO_NAME: {
+				'-1': 'INVALID_STATE', 
+				'0': 'SURFACE', 
+				'1': 'PERISCOPE', 
+				'2': 'WORKING', 
+				'3': 'INVULNERABLE'
+			},
+
+			ALL: [-1, 0, 1, 2, 3], 
+			AVAILABLE_STATES: [0, 1, 2, 3], 
+			TTX_DISPLAY_STATES: [0, 1, 3], 
+			FOR_EVENT_BLOCK: [1, 2, 3], 
+			LOCK_CONSUMABLE_PERISCOPE_AND_DEPTH_STATE: [0], 
+			LOCK_CONSUMABLE_AT_DEPTH_STATE: [0, 1]
+		}, 
+		BUOYANCY_LIMIT_STATE: {
+			SPEED_UP: 0,
+			NEUTRAL: 1,
+			SLOW_DOWN: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		DEPTH_CHARGES_STATE: {
+			EMPTY: 0,
+			RELOADING: 1,
+			READY: 2,
+			WORKING: 3,
+			DESTROYED: 4,
+
+
+			ALL: [0, 1, 2, 3, 4]
+		}, 
+		CARRIER_STATE: {
+			NONE: 0,
+			COLLISION: 1,
+			SPOTTED_BY_PLANE: 2,
+			SPOTTED_BY_SHIP: 4,
+			HEAVY_DAMAGE: 8,
+			ARTILLERY_ALERT: 16,
+			TORPEDO_ALERT: 32,
+			MINEFIELD: 64,
+
+
+			ALL: [0, 1, 2, 4, 8, 16, 32, 64], 
+			ORDER: [16, 8, 32, 64, 4, 2, 1]
+		}, 
+		COLLISION_DANGER_STATE: {
+			FAR: 1,
+			CLOSE: 2,
+			VERY_CLOSE: 3,
+			COLLISION: 4,
+
+
+			ALL: [1, 2, 3, 4]
+		}, 
+		POI_TYPE: {
+			OWN_SHIP: 0,
+			DEPTH_CHARGE: 1,
+			WAVE_HIT: 2,
+			SHIP_WITH_DEPTH_CHARGES: 3,
+			AIRSHIP: 4,
+			SEA_MINE: 5,
+
+
+			ALL: [0, 1, 2, 3, 4, 5]
+		}, 
+		DANGER_LEVEL: {
+			NORMAL: 0,
+			WARNING: 1,
+			CRITICAL: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		BATTERY_PENALTY_STATE: {
+			NORMAL: 0,
+			WARNING: 1,
+			CRITICAL: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		MINIMAP_MARKERS_LAYER: {
+			SCENARIO_TAGS: 'scenario_tags',
+			RANGES: 'ranges',
+			CAPTURE_POINTS: 'capture_points',
+			SHIPS: 'ships',
+			BUILDINGS: 'buildings',
+			SQUADRONS: 'squadrons',
+			NAVPOINTS: 'navpoints',
+			AIM: 'aim',
+			PATHS: 'paths',
+
+
+			ALL: ['scenario_tags', 'ranges', 'capture_points', 'ships', 'buildings', 'squadrons', 'navpoints', 'aim', 'paths'], 
+			ORDERED: ['paths', 'scenario_tags', 'ranges', 'capture_points', 'ships', 'buildings', 'squadrons', 'navpoints', 'aim']
+		}, 
+		CAMERA_MODE: {
+			AIRPLANES: 1,
+			DOCK: 2,
+			TACTICALMAP: 3,
+			DEVFREE: 4,
+			SHELLTRACKER: 5,
+			PLANETRACKER: 6,
+			DOCKMODULE: 7,
+			SNAKETAIL: 8,
+			SPECTATOR: 9,
+			REPLAY_FPC: 10,
+			UNDERWATER: 11,
+			DOCKFLAGS: 19,
+			DOCKENSIGN: 20,
+			DOCKLOOTBOX: 21,
+			DOCKNAVALFLAG: 22,
+			IDLEGAME: 23,
+
+
+			ALL: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 19, 20, 21, 22, 23]
+		}, 
+		WORLD_MARKERS_LAYER: {
+			SEA: 'sea',
+			SHIPS: 'ships',
+			SKY: 'sky',
+			NAVPOINTS: 'navpoints',
+
+
+			ALL: ['sea', 'ships', 'sky', 'navpoints'], 
+			VISIBLE: ['ships', 'sea'], 
+			ORDERED: ['sea', 'ships', 'sky', 'navpoints']
+		}, 
+		EMERGENCY_SURFACING_STATE: {
+			DISABLED: 0,
+			COUNTDOWN: 1,
+			IN_PROGRESS: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		GAME_MODE: {
+			INVALID: -1,
+			TEST: 0,
+			STANDART: 1,
+			SINGLEBASE: 2,
+			DOMINATION: 7,
+			TUTORIAL: 8,
+			MEGABASE: 9,
+			FORTS: 10,
+			STANDARD_DOMINATION: 11,
+			EPICENTER: 12,
+			ASSAULT_DEFENSE: 13,
+			PVE: 14,
+			ARMS_RACE: 15,
+			EPICENTER_RING: 16,
+			ANTI_STANDARD: 17,
+			ATTACK_DEFENSE: 18,
+			TORPEDO_BEAT: 19,
+			TEAM_BATTLE_ROYALE: 20,
+			ESCAPE_TO_PORTAL: 21,
+			DOMINATION_ASYMM: 22,
+			KEY_BATTLE: 23,
+			PORTAL_2021: 24,
+			TEAM_BATTLE_ROYALE_2021: 25,
+			CONVOY_EVENT: 26,
+			CONVOY_AIRSHIP: 27,
+			TWO_TEAMS_BATTLE_ROYALE: 28,
+			PINATA_EVENT: 29,
+
+			VALUE_TO_NAME: {
+				'-1': 'INVALID', 
+				'0': 'TEST', 
+				'1': 'STANDART', 
+				'2': 'SINGLEBASE', 
+				'7': 'DOMINATION', 
+				'8': 'TUTORIAL', 
+				'9': 'MEGABASE', 
+				'10': 'FORTS', 
+				'11': 'STANDARD_DOMINATION', 
+				'12': 'EPICENTER', 
+				'13': 'ASSAULT_DEFENSE', 
+				'14': 'PVE', 
+				'15': 'ARMS_RACE', 
+				'16': 'EPICENTER_RING', 
+				'17': 'ANTI_STANDARD', 
+				'18': 'ATTACK_DEFENSE', 
+				'19': 'TORPEDO_BEAT', 
+				'20': 'TEAM_BATTLE_ROYALE', 
+				'21': 'ESCAPE_TO_PORTAL', 
+				'22': 'DOMINATION_ASYMM', 
+				'23': 'KEY_BATTLE', 
+				'24': 'PORTAL_2021', 
+				'25': 'TEAM_BATTLE_ROYALE_2021', 
+				'26': 'CONVOY_EVENT', 
+				'27': 'CONVOY_AIRSHIP', 
+				'28': 'TWO_TEAMS_BATTLE_ROYALE', 
+				'29': 'PINATA_EVENT'
+			},
+
+			ALL: [-1, 0, 1, 2, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], 
+			BATTLE_TIMER_HIDDEN: [24, 25, 23, 26]
+		}, 
+		BATTLE_RESULT: {
+			DEFEAT: 0,
+			VICTORY: 1,
+			DRAW: 2,
+			SUCCESS: 3,
+			FAILURE: 4,
+			PORTAL: 5,
+			MATCH: 6,
+			DEATH: 7,
+			TEAM_LADDER_WINNER: 8,
+			TEAM_LADDER_LOSER: 9,
+
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 
+			SUCCESS_RESULTS: [1, 3, 5, 6, 8], 
+			FAIL_RESULTS: [0, 4], 
+			KEY_BATTLE: [5, 6, 7]
+		}, 
+		DIPLOMACY_EVENT_TYPE: {
+			INVITE: 0,
+			REQUEST: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		DIPLOMACY_RELATIONS: {
+			SELF: 0,
+			ALLY: 1,
+			NEUTRAL: 2,
+			ENEMY: 3,
+			AGGRESSOR: 4,
+
+
+			ALL: [0, 1, 2, 3, 4], 
+			CAN_INVITE_TO_TEAM: [2, 4], 
+			FRIENDLY: [1, 2]
+		}, 
+		RESOURCE_TYPES: {
+			SURVIVOR: 1,
+			MARINES: 2,
+			FILTHIOR: 3,
+			FILTHIOR_SAVED: 4,
+			KEYS: 5,
+			POINTS: 6,
+
+
+			ALL: [1, 2, 3, 4, 5, 6], 
+			HIDDEN_RESOURCE_ZONES: [6, 4]
+		}, 
+		HEAT_STATE: {
+			NONE: 0,
+			LOW: 1,
+			MEDIUM: 2,
+			HIGH: 3,
+
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		DEATH_REASON_NAME: {
+			NONE: 'NONE',
+			ARTILLERY: 'ARTILLERY',
+			ATBA: 'ATBA',
+			TORPEDO: 'TORPEDO',
+			BOMB: 'BOMB',
+			TBOMB: 'TBOMB',
+			BURNING: 'BURNING',
+			RAM: 'RAM',
+			TERRAIN: 'TERRAIN',
+			FLOOD: 'FLOOD',
+			MIRROR: 'MIRROR',
+			SEA_MINE: 'SEA_MINE',
+			SPECIAL: 'SPECIAL',
+			DBOMB: 'DBOMB',
+			ROCKET: 'ROCKET',
+			DETONATE: 'DETONATE',
+			HEALTH: 'HEALTH',
+			AP_SHELL: 'AP_SHELL',
+			HE_SHELL: 'HE_SHELL',
+			CS_SHELL: 'CS_SHELL',
+			FEL: 'FEL',
+			PORTAL: 'PORTAL',
+			SKIP_BOMB: 'SKIP_BOMB',
+			SECTOR_WAVE: 'SECTOR_WAVE',
+			ACID: 'ACID',
+			LASER: 'LASER',
+			MATCH: 'MATCH',
+			TIMER: 'TIMER',
+			ADBOMB: 'ADBOMB',
+
+
+			ALL: ['NONE', 'ARTILLERY', 'ATBA', 'TORPEDO', 'BOMB', 'TBOMB', 'BURNING', 'RAM', 'TERRAIN', 'FLOOD', 'MIRROR', 'SEA_MINE', 'SPECIAL', 'DBOMB', 'ROCKET', 'DETONATE', 'HEALTH', 'AP_SHELL', 'HE_SHELL', 'CS_SHELL', 'FEL', 'PORTAL', 'SKIP_BOMB', 'SECTOR_WAVE', 'ACID', 'LASER', 'MATCH', 'TIMER', 'ADBOMB']
+		}, 
+		FINISH_TYPE: {
+			UNKNOWN: 0,
+			EXTERMINATION: 1,
+			BASE: 2,
+			TIMEOUT: 3,
+			FAILURE: 4,
+			TECHNICAL: 5,
+			SCORE: 8,
+			SCORE_ON_TIMEOUT: 9,
+			PVE_MAIN_TASK_SUCCEEDED: 10,
+			PVE_MAIN_TASK_FAILED: 11,
+			SCORE_ZERO: 12,
+			SCORE_EXCESS: 13,
+
+
+			ALL: [0, 1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13]
+		}, 
+		SLOT_VISUALIZATION_TYPE: {
+			NONE: 0,
+			SELECTION_BUTTON: 1,
+			TORPEDO_ANGLE_SELECTION: 2,
+			SERIAL_LOADER: 3,
+			AIRPLANES: 4,
+			TORPEDO_ACOUSTIC: 5,
+			FIRE_MODE_SELECTION: 6,
+			PINGER_ACTIVE_COUNT: 7,
+
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7], 
+			SLOT_ADDITIONAL_VISUALS: [2]
+		}, 
+		SQUADRON_ATTACK_STATE: {
+			DEFAULT: 0,
+			PREPARATION: 1,
+			AIMING: 2,
+			MAIN_SQUADRON_ATTACK: 3,
+
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		WARD_TYPE: {
+			DEFAULT: 0,
+			FIGHTER: 1,
+			RECON: 2,
+
+
+			ALL: [0, 1, 2], 
+			WITH_WORLD_MARKER: [1]
+		}, 
+		ENTITY_STATES: {
+			EMPTY: 0,
+			REPAIR: 1,
+			GATHERING_SURVIVORS: 2,
+			FILTH: 3,
+			FROZEN: 4,
+			UNLOADING_MARINES: 5,
+			INSIDE_WEATHER: 6,
+			NEAR_WEATHER: 7,
+			ILLUMINATED: 8,
+			BY_NIGHT: 9,
+			INSIDE_MINEFIELD: 10,
+			NEAR_MINEFIELD: 11,
+			CAPTURING_LOCKED: 12,
+			DANGER: 13,
+			TEAM_01: 14,
+			TEAM_02: 15,
+			TEAM_03: 16,
+			TEAM_11: 17,
+			TEAM_12: 18,
+			TEAM_13: 19,
+			TEAM_21: 20,
+			TEAM_22: 21,
+			TEAM_23: 22,
+			TEAM_31: 23,
+			TEAM_32: 24,
+			TEAM_33: 25,
+			SPOTTED_BY_ENEMY: 26,
+			INVULNERABLE: 27,
+			BURN: 101,
+			FLOOD: 102,
+			HOLD_RESOURCE: 103,
+			HOLD_RESOURCE_FILTHIOR_TEAM_0: 104,
+			HOLD_RESOURCE_FILTHIOR_TEAM_1: 105,
+			HOLD_RESOURCE_FILTHIOR_TEAM_2: 106,
+			HOLD_RESOURCE_FILTHIOR_TEAM_3: 107,
+			HOLD_RESOURCE_POINTS: 108,
+			SHIP_PARAMS_CHANGE_BY_MODULES: 109,
+			SHIP_PARAMS_CHANGE_BY_SPECIAL_MODULES: 110,
+			SHIP_PARAMS_CHANGE_BY_MODIFIERS: 111,
+			SHIP_PARAMS_CHANGE_BY_TALENTS: 112,
+			SHIP_PARAMS_CHANGE_BY_ATBA_ACCURACY_PERK: 113,
+			SHIP_PARAMS_CHANGE_BY_PERKS: 114,
+			SHIP_PARAMS_CHANGE_BY_BUFFS: 115,
+			SHIP_PARAMS_CHANGE_BY_WEATHER: 116,
+			SHIP_PARAMS_CHANGE_BY_INTERACTIVE_ZONE: 117,
+			EMERGENCY_SURFACING: 118,
+			SHIP_PARAMS_CHANGE_BY_BATTERY_STATE: 119,
+			SHIP_PARAMS_CHANGE_BY_DEPTH: 120,
+			SHIP_PARAMS_CHANGE_BY_ARTILLERY_FIRE_MODE: 121,
+			SHIP_PARAMS_CHANGE_BY_RAGE_MODE: 122,
+			SHIP_PARAMS_CHANGE_BY_CONSUMABLES: 123,
+			SHIP_PARAMS_CHANGE_BY_NOT_SPECIAL_MODULES: 124,
+			SHIP_PARAMS_CHANGE_BY_CONSUMABLE_LOCKER: 125,
+			SHIP_PARAMS_CHANGE_BY_ANTI_ABUSE_SYSTEM: 126,
+			BATTLE_CARD_SELECTOR_AVAILABLE: 127,
+
+			VALUE_TO_NAME: {
+				'0': 'EMPTY', 
+				'1': 'REPAIR', 
+				'2': 'GATHERING_SURVIVORS', 
+				'3': 'FILTH', 
+				'4': 'FROZEN', 
+				'5': 'UNLOADING_MARINES', 
+				'6': 'INSIDE_WEATHER', 
+				'7': 'NEAR_WEATHER', 
+				'8': 'ILLUMINATED', 
+				'9': 'BY_NIGHT', 
+				'10': 'INSIDE_MINEFIELD', 
+				'11': 'NEAR_MINEFIELD', 
+				'12': 'CAPTURING_LOCKED', 
+				'13': 'DANGER', 
+				'14': 'TEAM_01', 
+				'15': 'TEAM_02', 
+				'16': 'TEAM_03', 
+				'17': 'TEAM_11', 
+				'18': 'TEAM_12', 
+				'19': 'TEAM_13', 
+				'20': 'TEAM_21', 
+				'21': 'TEAM_22', 
+				'22': 'TEAM_23', 
+				'23': 'TEAM_31', 
+				'24': 'TEAM_32', 
+				'25': 'TEAM_33', 
+				'26': 'SPOTTED_BY_ENEMY', 
+				'27': 'INVULNERABLE', 
+				'101': 'BURN', 
+				'102': 'FLOOD', 
+				'103': 'HOLD_RESOURCE', 
+				'104': 'HOLD_RESOURCE_FILTHIOR_TEAM_0', 
+				'105': 'HOLD_RESOURCE_FILTHIOR_TEAM_1', 
+				'106': 'HOLD_RESOURCE_FILTHIOR_TEAM_2', 
+				'107': 'HOLD_RESOURCE_FILTHIOR_TEAM_3', 
+				'108': 'HOLD_RESOURCE_POINTS', 
+				'109': 'SHIP_PARAMS_CHANGE_BY_MODULES', 
+				'110': 'SHIP_PARAMS_CHANGE_BY_SPECIAL_MODULES', 
+				'111': 'SHIP_PARAMS_CHANGE_BY_MODIFIERS', 
+				'112': 'SHIP_PARAMS_CHANGE_BY_TALENTS', 
+				'113': 'SHIP_PARAMS_CHANGE_BY_ATBA_ACCURACY_PERK', 
+				'114': 'SHIP_PARAMS_CHANGE_BY_PERKS', 
+				'115': 'SHIP_PARAMS_CHANGE_BY_BUFFS', 
+				'116': 'SHIP_PARAMS_CHANGE_BY_WEATHER', 
+				'117': 'SHIP_PARAMS_CHANGE_BY_INTERACTIVE_ZONE', 
+				'118': 'EMERGENCY_SURFACING', 
+				'119': 'SHIP_PARAMS_CHANGE_BY_BATTERY_STATE', 
+				'120': 'SHIP_PARAMS_CHANGE_BY_DEPTH', 
+				'121': 'SHIP_PARAMS_CHANGE_BY_ARTILLERY_FIRE_MODE', 
+				'122': 'SHIP_PARAMS_CHANGE_BY_RAGE_MODE', 
+				'123': 'SHIP_PARAMS_CHANGE_BY_CONSUMABLES', 
+				'124': 'SHIP_PARAMS_CHANGE_BY_NOT_SPECIAL_MODULES', 
+				'125': 'SHIP_PARAMS_CHANGE_BY_CONSUMABLE_LOCKER', 
+				'126': 'SHIP_PARAMS_CHANGE_BY_ANTI_ABUSE_SYSTEM', 
+				'127': 'BATTLE_CARD_SELECTOR_AVAILABLE'
+			},
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127], 
+			STATES_ON_MARKER: [103, 108, 4, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 27, 104, 105, 106, 107, 26], 
+			STATES_ON_HW2020_KEY: [6, 7], 
+			STATES_FOR_LOCAL_WEATHER_INDICATOR: [6, 7, 8, 9], 
+			STATES_FOR_DANGEROUS_INDICATOR: [3, 11, 13], 
+			STATES_WITH_TEXT: [2, 103, 108, 104, 105, 106, 107], 
+			STATES_BY_SHIP_PARAMS_CHANGING: [112, 114, 113, 115, 117, 116, 109, 110, 122, 123, 111, 120, 119, 1, 118, 121, 124, 8, 9, 126, 127], 
+			SHIP_PARAMS_STATES_FOR_EVENT_BLOCK: [112, 114, 113, 115, 117, 116, 109, 110, 122, 123, 1, 119, 118, 120, 121, 124, 8, 9, 126], 
+			SHIP_PARAMS_STATES_FOR_STATUS_PANEL: [120, 112, 114, 113, 115, 111, 109, 110, 118, 124, 1, 127], 
+			SHIP_STATE_AND_EQUIPMENT_TYPES: [123, 109, 110, 119, 118, 120, 121, 122], 
+			WITH_ATTRIBUTES_FROM_VEHICLE: [121], 
+
+            NAMES : {
+                EMPTY: 'empty', 
+                REPAIR: 'repair', 
+                GATHERING_SURVIVORS: 'gatheringSurvivors', 
+                FILTH: 'filth', 
+                FROZEN: 'frozen', 
+                UNLOADING_MARINES: 'unloadingMarines', 
+                INSIDE_WEATHER: 'insideWeather', 
+                NEAR_WEATHER: 'nearWeather', 
+                ILLUMINATED: 'illuminated', 
+                BY_NIGHT: 'by_night', 
+                INSIDE_MINEFIELD: 'insideMinefield', 
+                NEAR_MINEFIELD: 'nearMinefield', 
+                CAPTURING_LOCKED: 'capturingLocked', 
+                DANGER: 'danger', 
+                TEAM_01: 'team_01', 
+                TEAM_02: 'team_02', 
+                TEAM_03: 'team_03', 
+                TEAM_11: 'team_11', 
+                TEAM_12: 'team_12', 
+                TEAM_13: 'team_13', 
+                TEAM_21: 'team_21', 
+                TEAM_22: 'team_22', 
+                TEAM_23: 'team_23', 
+                TEAM_31: 'team_31', 
+                TEAM_32: 'team_32', 
+                TEAM_33: 'team_33', 
+                SPOTTED_BY_ENEMY: 'spotted_by_enemy', 
+                BURN: 'burn', 
+                FLOOD: 'flood'
+            }
+		}, 
+		PLAYER_RELATION: {
+			SELF: 0,
+			ALLY: 1,
+			ENEMY: 2,
+			NEUTRAL: 3,
+
+			VALUE_TO_NAME: {
+				'0': 'SELF', 
+				'1': 'ALLY', 
+				'2': 'ENEMY', 
+				'3': 'NEUTRAL'
+			},
+
+			ALL: [0, 1, 2, 3], 
+
+            NAMES : {
+                SELF: 'own', 
+                ALLY: 'ally', 
+                ENEMY: 'enemy', 
+                NEUTRAL: 'neutral'
+            }
+		}, 
+		RAGE_MODE_STATE: {
+			IDLE: 0,
+			PREPARATION: 1,
+			CHARGED: 2,
+			ACTIVE: 3,
+			DECAY_DELAY: 4,
+			DECAYING: 5,
+
+			VALUE_TO_NAME: {
+				'0': 'IDLE', 
+				'1': 'PREPARATION', 
+				'2': 'CHARGED', 
+				'3': 'ACTIVE', 
+				'4': 'DECAY_DELAY', 
+				'5': 'DECAYING'
+			},
+
+			ALL: [0, 1, 2, 3, 4, 5], 
+			STATES_WITH_COUNTDOWN: [3, 4, 5]
+		}, 
+		RAGE_MODE_TRIGGER_TYPE: {
+			ADJUSTMENT_SHOT: 'AdjustmentShotActivator',
+			RIBBON: 'RibbonActivator',
+			ACHIEVMENT: 'AchievementActivator',
+			TIMER: 'TimerActivator',
+			POTENTIAL_DAMAGE: 'PotentialDamageActivator',
+			MAIN_GUN_HIT: 'main_gun_hit',
+			STAY_INVISIBLE: 'stay_invisible',
+			STAY_SPOTTED: 'stay_spotted',
+
+			VALUE_TO_NAME: {
+				'AdjustmentShotActivator': 'ADJUSTMENT_SHOT', 
+				'RibbonActivator': 'RIBBON', 
+				'AchievementActivator': 'ACHIEVMENT', 
+				'TimerActivator': 'TIMER', 
+				'PotentialDamageActivator': 'POTENTIAL_DAMAGE', 
+				'main_gun_hit': 'MAIN_GUN_HIT', 
+				'stay_invisible': 'STAY_INVISIBLE', 
+				'stay_spotted': 'STAY_SPOTTED'
+			},
+
+			ALL: ['AdjustmentShotActivator', 'RibbonActivator', 'AchievementActivator', 'TimerActivator', 'PotentialDamageActivator', 'main_gun_hit', 'stay_invisible', 'stay_spotted'], 
+			WITH_VALUES: ['RibbonActivator', 'AchievementActivator', 'TimerActivator', 'stay_invisible', 'PotentialDamageActivator', 'stay_spotted']
+		}, 
+		SCENARIO_OBJECT_APPEARANCE: {
+			KEY_OBJECT: 0,
+			ATTENTION_TAG: 1,
+			ATTENTION_MARKER: 2,
+			ENTITY_STATE: 3,
+			MAP_ATTENTION_MARKER: 4,
+
+
+			ALL: [0, 1, 2, 3, 4]
+		}, 
+		SCENARIO_TAG_VALUE: {
+			EMPTY: 0,
+			DEFEND: 1,
+			ATTACK: 2,
+			ESCORT: 3,
+			REPAIR: 4,
+			MAIN_MONSTER: 5,
+			DEFEND_ALLY_ATTACK_ENEMY: 6,
+			DAMAGE: 7,
+			HEALTH: 8,
+			RELOAD: 9,
+			KEY_TARGET: 10,
+			KEY_TARGET_ALLY: 11,
+			RESCUE: 12,
+
+			VALUE_TO_NAME: {
+				'0': 'EMPTY', 
+				'1': 'DEFEND', 
+				'2': 'ATTACK', 
+				'3': 'ESCORT', 
+				'4': 'REPAIR', 
+				'5': 'MAIN_MONSTER', 
+				'6': 'DEFEND_ALLY_ATTACK_ENEMY', 
+				'7': 'DAMAGE', 
+				'8': 'HEALTH', 
+				'9': 'RELOAD', 
+				'10': 'KEY_TARGET', 
+				'11': 'KEY_TARGET_ALLY', 
+				'12': 'RESCUE'
+			},
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+		}, 
+		SCENARIO_MARKER_VALUE: {
+			EMPTY: 0,
+			FINISH: 1,
+			ATTACK: 2,
+			FOLLOW: 3,
+			MOVE_TO: 4,
+			DEFEND: 5,
+			REPAIR: 6,
+			CHECK_POINT_AIR: 7,
+			FINISH_ENEMY: 8,
+			PORTAL: 9,
+			PORTAL_ON: 10,
+			PORTAL_OFF: 11,
+			MONSTER: 12,
+			MY_ATTENTION_POINT: 13,
+			TEAMMATE_ATTENTION_POINT: 14,
+			MAIN_MONSTER: 15,
+			FINISH_ALLY: 16,
+			REPAIR_ALLY: 17,
+			REPAIR_ENEMY: 18,
+			DEFEND_ALLY: 19,
+			ATTACK_ENEMY: 20,
+			FINISH_ALLY_ENEMY: 21,
+			DEFEND_ALLY_ATTACK_ENEMY: 22,
+			REPAIR_ALLY_ENEMY: 23,
+			ATTACK_KEY_TARGET: 24,
+			PINATA: 25,
+			PICKUP_TC: 26,
+			MOVE_TO_ALLY: 27,
+			MOVE_TO_ENEMY: 28,
+			RESCUE: 29,
+
+			VALUE_TO_NAME: {
+				'0': 'EMPTY', 
+				'1': 'FINISH', 
+				'2': 'ATTACK', 
+				'3': 'FOLLOW', 
+				'4': 'MOVE_TO', 
+				'5': 'DEFEND', 
+				'6': 'REPAIR', 
+				'7': 'CHECK_POINT_AIR', 
+				'8': 'FINISH_ENEMY', 
+				'9': 'PORTAL', 
+				'10': 'PORTAL_ON', 
+				'11': 'PORTAL_OFF', 
+				'12': 'MONSTER', 
+				'13': 'MY_ATTENTION_POINT', 
+				'14': 'TEAMMATE_ATTENTION_POINT', 
+				'15': 'MAIN_MONSTER', 
+				'16': 'FINISH_ALLY', 
+				'17': 'REPAIR_ALLY', 
+				'18': 'REPAIR_ENEMY', 
+				'19': 'DEFEND_ALLY', 
+				'20': 'ATTACK_ENEMY', 
+				'21': 'FINISH_ALLY_ENEMY', 
+				'22': 'DEFEND_ALLY_ATTACK_ENEMY', 
+				'23': 'REPAIR_ALLY_ENEMY', 
+				'24': 'ATTACK_KEY_TARGET', 
+				'25': 'PINATA', 
+				'26': 'PICKUP_TC', 
+				'27': 'MOVE_TO_ALLY', 
+				'28': 'MOVE_TO_ENEMY', 
+				'29': 'RESCUE'
+			},
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+		}, 
+		DOG_TAG_SIZE: {
+			SMALL: 'small',
+			MEDIUM: 'medium',
+			BIG: 'big',
+
+
+			ALL: ['small', 'medium', 'big']
+		}, 
+		TORPEDO_MARKER_TYPE: {
+			NORMAL: 'normal',
+			DEEP_WATER: 'deepwater',
+			ACOUSTIC: 'acoustic',
+			MAGNETIC: 'magnetic',
+			NOT_DANGEROUS: 'not_dangerous',
+
+
+			ALL: ['normal', 'deepwater', 'acoustic', 'magnetic', 'not_dangerous'], 
+			GUIDED_TYPES: ['acoustic', 'magnetic']
+		}, 
+		BATTERY_STATE: {
+			IDLE: 0,
+			CHARGING: 1,
+			FROZEN: 2,
+			SPENDING_NORMAL: 3,
+			SPENDING_WARNING: 4,
+			SPENDING_CRITICAL: 5,
+			BURNING: 6,
+			EMPTY: 7,
+
+			VALUE_TO_NAME: {
+				'0': 'IDLE', 
+				'1': 'CHARGING', 
+				'2': 'FROZEN', 
+				'3': 'SPENDING_NORMAL', 
+				'4': 'SPENDING_WARNING', 
+				'5': 'SPENDING_CRITICAL', 
+				'6': 'BURNING', 
+				'7': 'EMPTY'
+			},
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7], 
+			FOR_EVENT_BLOCK: [1, 3, 4, 5, 6], 
+			SPENDING_STATES: [3, 4, 5, 6]
+		}, 
+		DAMAGE_MODULES: {
+			ENGINE: 0,
+			MAIN_CALIBER: 1,
+			ATBA_GUN: 2,
+			AVIATION: 3,
+			AIR_DEFENSE: 4,
+			OBSERVATION: 5,
+			TORPEDO_TUBE: 6,
+			PATH_CONTROL: 7,
+			DEPTH_CHARGE_GUN: 8,
+			BURN: 9,
+			FLOOD: 10,
+			ACID: 11,
+			HEATED: 12,
+			WAVED: 13,
+			PINGER: 14,
+			OIL_LEAK: 15,
+			OIL_LEAK_PENDING: 16,
+			WILD_FIRE: 17,
+
+			VALUE_TO_NAME: {
+				'0': 'ENGINE', 
+				'1': 'MAIN_CALIBER', 
+				'2': 'ATBA_GUN', 
+				'3': 'AVIATION', 
+				'4': 'AIR_DEFENSE', 
+				'5': 'OBSERVATION', 
+				'6': 'TORPEDO_TUBE', 
+				'7': 'PATH_CONTROL', 
+				'8': 'DEPTH_CHARGE_GUN', 
+				'9': 'BURN', 
+				'10': 'FLOOD', 
+				'11': 'ACID', 
+				'12': 'HEATED', 
+				'13': 'WAVED', 
+				'14': 'PINGER', 
+				'15': 'OIL_LEAK', 
+				'16': 'OIL_LEAK_PENDING', 
+				'17': 'WILD_FIRE'
+			},
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17], 
+			SHIP_PARTS: [0, 1, 2, 3, 4, 6, 7, 8, 14], 
+			SPECIALS: [9, 10, 11, 13, 15, 16, 17], 
+			WITH_DESCRIPTION: [13, 15, 16], 
+			HEATED_STATE: [12]
+		}, 
+		SHIP_PARAMS_RENDERER_TYPE: {
+			CONTEXT: 0,
+			CONTEXT_BASE: 1,
+			CONTEXT_MAX: 2,
+			CONTEXT_MAX_COLOR: 3,
+			COEFFICIENT: 4,
+			CURRENT_NO_DIFF: 5,
+
+
+			ALL: [0, 1, 2, 3, 4, 5]
+		}, 
+		MINIMAP_ATTENTION_APPEARANCE: {
+			SENDER: 1,
+			RECEIVER: 2,
+
+
+			ALL: [1, 2]
+		}, 
+		MINIMAP_ATTENTION_VALUE: {
+			EMPTY: 0,
+			TEAM_ATTENTION: 1,
+			COMMON: 2,
+			COMMON_ALLY: 3,
+			COMMON_ENEMY: 4,
+			COMMON_NEUTRAL: 5,
+			SPOTTED: 6,
+
+			VALUE_TO_NAME: {
+				'0': 'EMPTY', 
+				'1': 'TEAM_ATTENTION', 
+				'2': 'COMMON', 
+				'3': 'COMMON_ALLY', 
+				'4': 'COMMON_ENEMY', 
+				'5': 'COMMON_NEUTRAL', 
+				'6': 'SPOTTED'
+			},
+
+			ALL: [0, 1, 2, 3, 4, 5, 6]
+		}, 
+		IN_EVENT_BLOCK_STATE_CATEGORY: {
+			MODIFIERS_AND_EQUIPMENT_OF_SQUADRON: 0,
+			MODIFIERS_OF_SHIP: 1,
+			SHIP_STATE_AND_EQUIPMENT: 2,
+			MODIFIERS_OF_BATTLE_CARDS: 3,
+
+			VALUE_TO_NAME: {
+				'0': 'MODIFIERS_AND_EQUIPMENT_OF_SQUADRON', 
+				'1': 'MODIFIERS_OF_SHIP', 
+				'2': 'SHIP_STATE_AND_EQUIPMENT', 
+				'3': 'MODIFIERS_OF_BATTLE_CARDS'
+			},
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		MODULES_STATES: {
+			NORMAL: 0,
+			DAMAGED: 1,
+			CRIT: 2,
+			DEAD: 3,
+			DETONATED: 4,
+
+			VALUE_TO_NAME: {
+				'0': 'NORMAL', 
+				'1': 'DAMAGED', 
+				'2': 'CRIT', 
+				'3': 'DEAD', 
+				'4': 'DETONATED'
+			},
+
+			ALL: [0, 1, 2, 3, 4]
+		}, 
+		PARAMETER: {
+			shootRange: 'shootRange',
+			visibilityRange: 'visibilityRange',
+			visibilityPlaneRange: 'visibilityPlaneRange',
+			visibilitySmokeRange: 'visibilitySmokeRange',
+			visibilitySubmarineRange: 'visibilitySubmarineRange',
+			currentVisibilityRange: 'currentVisibilityRange',
+			currentVisibilityPlaneRange: 'currentVisibilityPlaneRange',
+			currentShootTARange: 'currentShootTARange',
+			sonarShipRange: 'sonarShipRange',
+			rlsShipRange: 'rlsShipRange',
+			hydrophoneRange: 'hydrophoneRange',
+			sonarTorpedoRange: 'sonarTorpedoRange',
+			submarineLocatorRange: 'submarineLocatorRange',
+			aaState: 'aaState',
+			aaRangeFar: 'aaRangeFar',
+			aaRangeMid: 'aaRangeMid',
+			aaRangeNear: 'aaRangeNear',
+			aaRangeMax: 'aaRangeMax',
+			atbaState: 'atbaState',
+			visibilityByShipRangeBase: 'visibilityByShipRangeBase',
+			visibilityByPlaneRangeBase: 'visibilityByPlaneRangeBase',
+			visibilityByShipRangeFire: 'visibilityByShipRangeFire',
+			visibilityByPlaneRangeFire: 'visibilityByPlaneRangeFire',
+			visibilityByPlaneRangeGK: 'visibilityByPlaneRangeGK',
+			guaranteedVisibilityRange: 'guaranteedVisibilityRange',
+			visibilityInSmokeRangeGK: 'visibilityInSmokeRangeGK',
+			visibilityBySubmarineRangeBase: 'visibilityBySubmarineRangeBase',
+			health: 'health',
+			maxVisibilityByDepth: 'maxVisibilityByDepth',
+			visibilityByDepthPeriscope: 'visibilityByDepthPeriscope',
+			visibilityByDepthInvulnerable: 'visibilityByDepthInvulnerable',
+			visibilityAfterPingByShipRange: 'visibilityAfterPingByShipRange',
+			visibilityByShipAtDepthRange: 'visibilityByShipAtDepthRange',
+			visibilityByPlaneAtDepthRange: 'visibilityByPlaneAtDepthRange',
+			visibilityBySubmarineAtDepthRange: 'visibilityBySubmarineAtDepthRange',
+			visionRange: 'visionRange',
+			visionRangeAtDepth: 'visionRangeAtDepth',
+			mgVisibilityTime: 'mgVisibilityTime',
+			airDefenseVisibilityTime: 'airDefenseVisibilityTime',
+			shootRangesSummary: 'shootRangesSummary',
+			shootShift: 'shootShift',
+			rudderTime: 'rudderTime',
+			airSupportCharges: 'airSupportCharges',
+			artilleryReloadTime: 'artilleryReloadTime',
+			artilleryMinSwitchTime: 'artilleryMinSwitchTime',
+			artilleryMaxDist: 'artilleryMaxDist',
+			damageHE: 'damageHE',
+			damageHESecondary: 'damageHESecondary',
+			damageAP: 'damageAP',
+			damageAPSecondary: 'damageAPSecondary',
+			damageCS: 'damageCS',
+			damageCSSecondary: 'damageCSSecondary',
+			alphaPiercingHE: 'alphaPiercingHE',
+			alphaPiercingHESecondary: 'alphaPiercingHESecondary',
+			atbaReloadTime: 'atbaReloadTime',
+			atbaMaxDist: 'atbaMaxDist',
+			airplanesReloadTime: 'airplanesReloadTime',
+			airplanesMaxDist: 'airplanesMaxDist',
+			floodGenerationProbHE_UI: 'floodGenerationProbHE_UI',
+			torpedoReloadTime: 'torpedoReloadTime',
+			torpedoMinSwitchTime: 'torpedoMinSwitchTime',
+			torpedoMaxDist: 'torpedoMaxDist',
+			torpedoMaxDistConst: 'torpedoMaxDistConst',
+			alternativeTorpedoMaxDistConst: 'alternativeTorpedoMaxDistConst',
+			deepwaterTorpedoMaxDistConst: 'deepwaterTorpedoMaxDistConst',
+			torpedoDamage: 'torpedoDamage',
+			torpedoDamageAlt: 'torpedoDamageAlt',
+			torpedoDamageDeepwater: 'torpedoDamageDeepwater',
+			torpedoSpeed: 'torpedoSpeed',
+			torpedoSpeedAlt: 'torpedoSpeedAlt',
+			torpedoSpeedDeepwater: 'torpedoSpeedDeepwater',
+			pingerReloadTime: 'pingerReloadTime',
+			pingerMaxDist: 'pingerMaxDist',
+			pingerDurationFirst: 'pingerDurationFirst',
+			pingerDurationSecond: 'pingerDurationSecond',
+			pingerWaveSpeed: 'pingerWaveSpeed',
+			batteryCapacity: 'batteryCapacity',
+			batteryCurrentRate: 'batteryCurrentRate',
+			batteryRegenRate: 'batteryRegenRate',
+			depthChargeBombMaxDamage: 'depthChargeBombMaxDamage',
+			depthChargePacks: 'depthChargePacks',
+			depthChargeNumBombsInPack: 'depthChargeNumBombsInPack',
+			depthChargePackReloadTime: 'depthChargePackReloadTime',
+			duckySeaMinesBombMaxDamage: 'duckySeaMinesBombMaxDamage',
+			duckySeaMinesPacks: 'duckySeaMinesPacks',
+			duckySeaMinesNumBombsInPack: 'duckySeaMinesNumBombsInPack',
+			duckySeaMinesPackReloadTime: 'duckySeaMinesPackReloadTime',
+			airSupportBombDamage: 'airSupportBombDamage',
+			buoyancyRudderTime: 'buoyancyRudderTime',
+			maxBuoyancySpeed: 'maxBuoyancySpeed',
+			charge_laserReloadTime: 'charge_laserReloadTime',
+			charge_laserMaxDist: 'charge_laserMaxDist',
+			impulse_laserReloadTime: 'impulse_laserReloadTime',
+			impulse_laserMaxDist: 'impulse_laserMaxDist',
+			axis_laserReloadTime: 'axis_laserReloadTime',
+			axis_laserMaxDist: 'axis_laserMaxDist',
+			wavesReloadTime: 'wavesReloadTime',
+			wavesMaxDist: 'wavesMaxDist',
+			air_supportReloadTime: 'air_supportReloadTime',
+			air_supportMaxDist: 'air_supportMaxDist',
+			GMIdealRadius: 'GMIdealRadius',
+			airDefenseAverageDPS: 'airDefenseAverageDPS',
+			aaBubbleDPS: 'aaBubbleDPS',
+			airDefenseExplosionCount: 'airDefenseExplosionCount',
+			guaranteedShipDetection: 'guaranteedShipDetection',
+			torpedoDetection: 'torpedoDetection',
+			HEBurnProbability: 'HEBurnProbability',
+			HEBurnProbabilitySecondary: 'HEBurnProbabilitySecondary',
+			hangarSize: 'hangarSize',
+			maxPlanesNum: 'maxPlanesNum',
+			attackPrepareTime: 'attackPrepareTime',
+			attackProcessTime: 'attackProcessTime',
+			attackReloadTime: 'attackReloadTime',
+			planeRespawnTime: 'planeRespawnTime',
+			numPlanesInSquadron: 'numPlanesInSquadron',
+			attackerSize: 'attackerSize',
+			cruiseSpeed: 'cruiseSpeed',
+			maxSpeed: 'maxSpeed',
+			fighterDamage: 'fighterDamage',
+			tBomberDamage: 'tBomberDamage',
+			diveBomberDamage: 'diveBomberDamage',
+			skipBomberDamage: 'skipBomberDamage',
+			vitality: 'vitality',
+			visibilityRangeAlt: 'visibilityRangeAlt',
+			visibilityPlaneRangeAlt: 'visibilityPlaneRangeAlt',
+			visionRangeAlt: 'visionRangeAlt',
+			hangarSizeAlt: 'hangarSizeAlt',
+			maxPlanesNumAlt: 'maxPlanesNumAlt',
+			attackPrepareTimeAlt: 'attackPrepareTimeAlt',
+			attackProcessTimeAlt: 'attackProcessTimeAlt',
+			attackReloadTimeAlt: 'attackReloadTimeAlt',
+			planeRespawnTimeAlt: 'planeRespawnTimeAlt',
+			numPlanesInSquadronAlt: 'numPlanesInSquadronAlt',
+			attackerSizeAlt: 'attackerSizeAlt',
+			cruiseSpeedAlt: 'cruiseSpeedAlt',
+			maxSpeedAlt: 'maxSpeedAlt',
+			fighterDamageAlt: 'fighterDamageAlt',
+			tBomberDamageAlt: 'tBomberDamageAlt',
+			diveBomberDamageAlt: 'diveBomberDamageAlt',
+			skipBomberDamageAlt: 'skipBomberDamageAlt',
+			vitalityAlt: 'vitalityAlt',
+			visDistance: 'visDistance',
+			maxSpeedUnderwater: 'maxSpeedUnderwater',
+			reloadTimeFull_BurstFire: 'reloadTimeFull_BurstFire',
+			reloadTimeShot_BurstFire: 'reloadTimeShot_BurstFire',
+
+
+			ALL: ['shootRange', 'visibilityRange', 'visibilityPlaneRange', 'visibilitySmokeRange', 'visibilitySubmarineRange', 'currentVisibilityRange', 'currentVisibilityPlaneRange', 'currentShootTARange', 'sonarShipRange', 'rlsShipRange', 'hydrophoneRange', 'sonarTorpedoRange', 'submarineLocatorRange', 'aaState', 'aaRangeFar', 'aaRangeMid', 'aaRangeNear', 'aaRangeMax', 'atbaState', 'visibilityByShipRangeBase', 'visibilityByPlaneRangeBase', 'visibilityByShipRangeFire', 'visibilityByPlaneRangeFire', 'visibilityByPlaneRangeGK', 'guaranteedVisibilityRange', 'visibilityInSmokeRangeGK', 'visibilityBySubmarineRangeBase', 'health', 'maxVisibilityByDepth', 'visibilityByDepthPeriscope', 'visibilityByDepthInvulnerable', 'visibilityAfterPingByShipRange', 'visibilityByShipAtDepthRange', 'visibilityByPlaneAtDepthRange', 'visibilityBySubmarineAtDepthRange', 'visionRange', 'visionRangeAtDepth', 'mgVisibilityTime', 'airDefenseVisibilityTime', 'shootRangesSummary', 'shootShift', 'rudderTime', 'airSupportCharges', 'artilleryReloadTime', 'artilleryMinSwitchTime', 'artilleryMaxDist', 'damageHE', 'damageHESecondary', 'damageAP', 'damageAPSecondary', 'damageCS', 'damageCSSecondary', 'alphaPiercingHE', 'alphaPiercingHESecondary', 'atbaReloadTime', 'atbaMaxDist', 'airplanesReloadTime', 'airplanesMaxDist', 'floodGenerationProbHE_UI', 'torpedoReloadTime', 'torpedoMinSwitchTime', 'torpedoMaxDist', 'torpedoMaxDistConst', 'alternativeTorpedoMaxDistConst', 'deepwaterTorpedoMaxDistConst', 'torpedoDamage', 'torpedoDamageAlt', 'torpedoDamageDeepwater', 'torpedoSpeed', 'torpedoSpeedAlt', 'torpedoSpeedDeepwater', 'pingerReloadTime', 'pingerMaxDist', 'pingerDurationFirst', 'pingerDurationSecond', 'pingerWaveSpeed', 'batteryCapacity', 'batteryCurrentRate', 'batteryRegenRate', 'depthChargeBombMaxDamage', 'depthChargePacks', 'depthChargeNumBombsInPack', 'depthChargePackReloadTime', 'duckySeaMinesBombMaxDamage', 'duckySeaMinesPacks', 'duckySeaMinesNumBombsInPack', 'duckySeaMinesPackReloadTime', 'airSupportBombDamage', 'buoyancyRudderTime', 'maxBuoyancySpeed', 'charge_laserReloadTime', 'charge_laserMaxDist', 'impulse_laserReloadTime', 'impulse_laserMaxDist', 'axis_laserReloadTime', 'axis_laserMaxDist', 'wavesReloadTime', 'wavesMaxDist', 'air_supportReloadTime', 'air_supportMaxDist', 'GMIdealRadius', 'airDefenseAverageDPS', 'aaBubbleDPS', 'airDefenseExplosionCount', 'guaranteedShipDetection', 'torpedoDetection', 'HEBurnProbability', 'HEBurnProbabilitySecondary', 'hangarSize', 'maxPlanesNum', 'attackPrepareTime', 'attackProcessTime', 'attackReloadTime', 'planeRespawnTime', 'numPlanesInSquadron', 'attackerSize', 'cruiseSpeed', 'maxSpeed', 'fighterDamage', 'tBomberDamage', 'diveBomberDamage', 'skipBomberDamage', 'vitality', 'visibilityRangeAlt', 'visibilityPlaneRangeAlt', 'visionRangeAlt', 'hangarSizeAlt', 'maxPlanesNumAlt', 'attackPrepareTimeAlt', 'attackProcessTimeAlt', 'attackReloadTimeAlt', 'planeRespawnTimeAlt', 'numPlanesInSquadronAlt', 'attackerSizeAlt', 'cruiseSpeedAlt', 'maxSpeedAlt', 'fighterDamageAlt', 'tBomberDamageAlt', 'diveBomberDamageAlt', 'skipBomberDamageAlt', 'vitalityAlt', 'visDistance', 'maxSpeedUnderwater', 'reloadTimeFull_BurstFire', 'reloadTimeShot_BurstFire'], 
+			MINIMAP_RANGES: ['artilleryMaxDist', 'torpedoMaxDist', 'atbaMaxDist', 'pingerMaxDist', 'charge_laserMaxDist', 'impulse_laserMaxDist', 'axis_laserMaxDist', 'wavesMaxDist', 'air_supportMaxDist', 'aaRangeMax', 'visibilityRange', 'visibilityPlaneRange', 'visibilityRangeAlt', 'visibilityPlaneRangeAlt', 'visibilityAfterPingByShipRange', 'sonarShipRange', 'rlsShipRange', 'sonarTorpedoRange', 'hydrophoneRange', 'submarineLocatorRange'], 
+			WITH_MINIMAP_OPTION: ['currentVisibilityRange', 'currentVisibilityPlaneRange', 'visibilityAfterPingByShipRange', 'atbaMaxDist', 'aaRangeMax', 'sonarShipRange', 'rlsShipRange', 'hydrophoneRange', 'submarineLocatorRange', 'artilleryMaxDist', 'currentShootTARange', 'pingerMaxDist', 'charge_laserMaxDist', 'impulse_laserMaxDist', 'axis_laserMaxDist', 'wavesMaxDist', 'air_supportMaxDist']
+		}, 
+		MINIMAP_OPTION_CATEGORY: {
+			SHIP_PARAMETERS: 0,
+			SHIP_WEAPONS: 1,
+			MINIMAP_APPEARANCE: 2,
+			MINIMAP_ACTIONS: 3,
+			MINIMAP_ALPHAS: 4,
+
+
+			ALL: [0, 1, 2, 3, 4]
+		}, 
+		MINIMAP_OPTION: {
+			visibilityRangeEnabled: 'visibilityRangeEnabled',
+			visibilityPlaneRangeEnabled: 'visibilityPlaneRangeEnabled',
+			visibilityByShipRangePingerEnabled: 'visibilityByShipRangePingerEnabled',
+			atbaRangeEnabled: 'atbaRangeEnabled',
+			aaRangeMaxEnabled: 'aaRangeMaxEnabled',
+			sonarRangeEnabled: 'sonarRangeEnabled',
+			rlsRangeEnabled: 'rlsRangeEnabled',
+			hydrophoneRangeEnabled: 'hydrophoneRangeEnabled',
+			submarineLocatorRangeEnabled: 'submarineLocatorRangeEnabled',
+			shootMGRangeEnabled: 'shootMGRangeEnabled',
+			shootTARangeEnabled: 'shootTARangeEnabled',
+			shootPingerRangeEnabled: 'shootPingerRangeEnabled',
+			shootChargeLaserRangeEnabled: 'shootChargeLaserRangeEnabled',
+			shootImpulseLaserRangeEnabled: 'shootImpulseLaserRangeEnabled',
+			shootAxisLaserRangeEnabled: 'shootAxisLaserRangeEnabled',
+			shootWaveGunRangeEnabled: 'shootWaveGunRangeEnabled',
+			shootAirSupportRangeEnabled: 'shootAirSupportRangeEnabled',
+			distanceDisplayEnabled: 'distanceDisplayEnabled',
+			shipNamesDisplayEnabled: 'shipNamesDisplayEnabled',
+			minimapRotationEnabled: 'minimapRotationEnabled',
+			pointAttentionEnabled: 'pointAttentionEnabled',
+			mouseCommandsEnabled: 'mouseCommandsEnabled',
+			rangesAlpha: 'rangesAlpha',
+			waterAlpha: 'waterAlpha',
+			minimapSizeIndex: 'minimapSizeIndex',
+
+
+			ALL: ['visibilityRangeEnabled', 'visibilityPlaneRangeEnabled', 'visibilityByShipRangePingerEnabled', 'atbaRangeEnabled', 'aaRangeMaxEnabled', 'sonarRangeEnabled', 'rlsRangeEnabled', 'hydrophoneRangeEnabled', 'submarineLocatorRangeEnabled', 'shootMGRangeEnabled', 'shootTARangeEnabled', 'shootPingerRangeEnabled', 'shootChargeLaserRangeEnabled', 'shootImpulseLaserRangeEnabled', 'shootAxisLaserRangeEnabled', 'shootWaveGunRangeEnabled', 'shootAirSupportRangeEnabled', 'distanceDisplayEnabled', 'shipNamesDisplayEnabled', 'minimapRotationEnabled', 'pointAttentionEnabled', 'mouseCommandsEnabled', 'rangesAlpha', 'waterAlpha', 'minimapSizeIndex'], 
+			PER_SHIP: ['sonarRangeEnabled', 'rlsRangeEnabled', 'hydrophoneRangeEnabled', 'submarineLocatorRangeEnabled', 'visibilityRangeEnabled', 'visibilityPlaneRangeEnabled', 'atbaRangeEnabled', 'aaRangeMaxEnabled', 'shootMGRangeEnabled', 'shootTARangeEnabled', 'shootPingerRangeEnabled', 'shootChargeLaserRangeEnabled', 'shootImpulseLaserRangeEnabled', 'shootAxisLaserRangeEnabled', 'shootWaveGunRangeEnabled', 'shootAirSupportRangeEnabled']
+		}, 
+		BATTLE_SLOT_TYPE: {
+			WEAPON: 1,
+			CONSUMABLE: 2,
+
+
+			ALL: [1, 2]
+		}, 
+		WEAPON_FIRE_MODES: {
+			SINGLE: 'single',
+			BURST: 'burst',
+
+
+			ALL: ['single', 'burst']
+		}, 
+		FIRE_MODE_TYPES: {
+			BURST_AND_SECONDARY_AMMO: 'burst_sec',
+			BURST: 'burst',
+			SECONDARY_AMMO: 'sec',
+
+
+			ALL: ['burst_sec', 'burst', 'sec']
+		}, 
+		CANT_HIT_REASON: {
+			NONE: 0,
+			COMMON: 1,
+			CANT_REACH_DEPTH: 2,
+			CRASH_CREW_WORKING: 3,
+
+			VALUE_TO_NAME: {
+				'0': 'NONE', 
+				'1': 'COMMON', 
+				'2': 'CANT_REACH_DEPTH', 
+				'3': 'CRASH_CREW_WORKING'
+			},
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		OIL_LEAK_STATE: {
+			NO_LEAK: 0,
+			PENDING_LEAK: 1,
+			LEAKING: 2,
+
+			VALUE_TO_NAME: {
+				'0': 'NO_LEAK', 
+				'1': 'PENDING_LEAK', 
+				'2': 'LEAKING'
+			},
+
+			ALL: [0, 1, 2], 
+			CRASH_CREW_REMOVABLE: [1, 2]
+		}, 
+		PLANES_TYPES: {
+			SCOUT: 0,
+			DIVEBOMBER: 1,
+			TORPEDOBOMBER: 2,
+			FIGHTER: 3,
+			AUXILIARY: 4,
+			SKIP_BOMBER: 5,
+			AIR_SUPPORT: 6,
+			AIRSHIP: 7,
+
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7]
+		}, 
+		CONSUMABLE_STATES: {
+			READY: 0,
+			SELECTED: 1,
+			AT_WORK: 2,
+			RELOAD: 3,
+			NO_AMMO: 4,
+			PREPARATION: 5,
+
+
+			ALL: [0, 1, 2, 3, 4, 5], 
+			WITH_TIME_STATES: [2, 3, 5], 
+			RELOADING_STATES: [3, 5]
+		}, 
+		CUSTOM_BATTLE_ELEMENTS: {
+			MULTYTEAMS: 1,
+			HIDE_WEATHER: 2,
+
+
+			ALL: [1, 2]
+		}, 
+		PULL_TARGET_STATES: {
+			INVALID: 0,
+			CART_STOPPED: 1,
+			CART_SLOW_FORWARD: 2,
+			CART_FAST_FORWARD: 3,
+			CART_BLOCKED: 4,
+			CART_NORMAL: 5,
+			CART_SUPER_FAST_FORWARD: 6,
+
+
+			ALL: [0, 1, 2, 3, 4, 5, 6], 
+			SLOW_STATES: [1, 2, 4], 
+			FAST_STATES: [3, 6]
+		}, 
+		ENTITY_TYPES: {
+			INVALID: -1,
+			SHIP: 0,
+			PLANE: 1,
+			TORPEDO: 2,
+			BUILDING: 3,
+			CAPTURE_POINT: 11,
+			PLAYER: 12,
+			EPICENTER: 13,
+			SCENARIO_OBJECT: 14,
+			DROP_ZONE: 15,
+			ATTENTION_POINT: 16,
+			KEY_OBJECT: 17,
+			INTERACTIVE_ZONE: 18,
+			PINATA_SHIP: 27,
+			NAVPOINT: 99,
+			EMPTY: 100,
+
+			VALUE_TO_NAME: {
+				'-1': 'INVALID', 
+				'0': 'SHIP', 
+				'1': 'PLANE', 
+				'2': 'TORPEDO', 
+				'3': 'BUILDING', 
+				'11': 'CAPTURE_POINT', 
+				'12': 'PLAYER', 
+				'13': 'EPICENTER', 
+				'14': 'SCENARIO_OBJECT', 
+				'15': 'DROP_ZONE', 
+				'16': 'ATTENTION_POINT', 
+				'17': 'KEY_OBJECT', 
+				'18': 'INTERACTIVE_ZONE', 
+				'27': 'PINATA_SHIP', 
+				'99': 'NAVPOINT', 
+				'100': 'EMPTY'
+			},
+
+			ALL: [-1, 0, 1, 2, 3, 11, 12, 13, 14, 15, 16, 17, 18, 27, 99, 100], 
+			NON_SHIP_WORLD_TARGETS: [1, 3], 
+			PRIOR_TARGETS: [0, 3], 
+			MARKER_CLICK_COMMAND_ALLOWED: [0, 1, 3, 11, 15]
+		}, 
+		BUILDING_TYPES: {
+			ANTI_AIRCRAFT: 'AntiAircraft',
+			AIR_BASE: 'AirBase',
+			COASTAL_ARTILLERY: 'CoastalArtillery',
+			MILITARY: 'Military',
+			SENSOR_TOWER: 'SensorTower',
+			COMPLEX: 'Complex',
+			RAY_TOWER: 'RayTower',
+			GENERATOR: 'Generator',
+			SPACE_STATION: 'SpaceStation',
+
+
+			ALL: ['AntiAircraft', 'AirBase', 'CoastalArtillery', 'Military', 'SensorTower', 'Complex', 'RayTower', 'Generator', 'SpaceStation']
+		}, 
+		INTERACTIVE_ZONE_VISUAL_TYPE: {
+			NO_STATE: 0,
+			INVERSED: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		TASK_STATUS: {
+			NOT_STARTED: 0,
+			IN_PROGRESS: 1,
+			SUCCESS: 2,
+			FAILURE: 3,
+			CANCELED: 4,
+			UPDATED: 5,
+
+
+			ALL: [0, 1, 2, 3, 4, 5]
+		}
+	}, 
+	Camo_classification: {
+		CAMOUFLAGE_GROUPS: {
+			COMMON: 'common',
+			SINGLE_COLOR: 'single_color',
+			ABSTRACT_PATTERNS: 'abstract_pattern',
+			PAINTWORK: 'paintwork',
+			AWARD: 'award',
+			COLLABORATIVE: 'collaborative',
+
+
+			ALL: ['common', 'single_color', 'abstract_pattern', 'paintwork', 'award', 'collaborative'], 
+			SORT_ORDER: ['common', 'single_color', 'abstract_pattern', 'paintwork', 'award', 'collaborative'], 
+			DISCOUNTABLE: ['common', 'single_color', 'abstract_pattern', 'paintwork'], 
+			UNPURCHASABLE: ['award', 'collaborative'], 
+
+            PRICES_IDS : {
+                COMMON: 'CAMO_CATEGORY_22', 
+                SINGLE_COLOR: 'CAMO_CATEGORY_45', 
+                ABSTRACT_PATTERNS: 'CAMO_CATEGORY_75', 
+                PAINTWORK: 'CAMO_CATEGORY_90', 
+                AWARD: 'CAMO_CATEGORY_45', 
+                COLLABORATIVE: 'CAMO_CATEGORY_90'
+            }
+		}, 
+		COMMON_CAMOS: {
+			WITH_COLOR_SCHEMES: 'withColorSchemes',
+			WO_COLOR_SCHEMES: 'woColorSchemes',
+
+
+			ALL: ['withColorSchemes', 'woColorSchemes'], 
+			SORT_ORDER: ['withColorSchemes', 'woColorSchemes']
+		}, 
+		SINGLE_COLOR_CAMOS: {
+			VISUAL_HIDING: 'visualHiding',
+			BRIGHT_AND_COLORFULL: 'brightAndColorfull',
+
+
+			ALL: ['visualHiding', 'brightAndColorfull'], 
+			SORT_ORDER: ['visualHiding', 'brightAndColorfull']
+		}, 
+		ABSTRACT_PATTERN_CAMOS: {
+			BRIGHT_AND_COLORFULL: 'brightAndColorfull',
+			SINGLE_PATTERN: 'singlePattern',
+
+
+			ALL: ['brightAndColorfull', 'singlePattern'], 
+			SORT_ORDER: ['brightAndColorfull', 'singlePattern']
+		}, 
+		PAINTWORK_CAMOS: {
+			NATIONAL: 'national',
+			COMPLEX_WO_ACCIENT: 'complexWoAccient',
+			COMPLEX: 'complex',
+
+
+			ALL: ['national', 'complexWoAccient', 'complex'], 
+			SORT_ORDER: ['national', 'complexWoAccient', 'complex']
+		}, 
+		AWARD_CAMOS: {
+			SPECIAL: 'special',
+			COMPETITIVE: 'competitive',
+			RANGS: 'rangs',
+
+
+			ALL: ['special', 'competitive', 'rangs'], 
+			SORT_ORDER: ['special', 'competitive', 'rangs']
+		}, 
+		COLLABORATIVE_CAMOS: {
+			EAST_ORIENTAL: 'east_oriental',
+			BRANDS: 'brands',
+			KONG_AND_GODZILLA: 'kong_and_godzilla',
+			TRANSFORMERS: 'transformers',
+			WARHAMMER: 'warhammer',
+			AZUR_LANE: 'azur_lane',
+			LOTGH: 'lotgh',
+			NATU: 'natu',
+			HOLOLIVE: 'hololive',
+
+
+			ALL: ['east_oriental', 'brands', 'kong_and_godzilla', 'transformers', 'warhammer', 'azur_lane', 'lotgh', 'natu', 'hololive'], 
+			SORT_ORDER: ['east_oriental', 'brands', 'kong_and_godzilla', 'transformers', 'warhammer', 'azur_lane', 'lotgh', 'natu', 'hololive']
+		}, 
+		TILEFLAGE_GROUPS: {
+			COMMON: 'common',
+			SINGLE_COLOR: 'single_color',
+			ABSTRACT_PATTERNS: 'abstract_pattern',
+			PAINTWORK: 'paintwork',
+			AWARD: 'award',
+			COLLABORATIVE: 'collaborative',
+
+
+			ALL: ['common', 'single_color', 'abstract_pattern', 'paintwork', 'award', 'collaborative'], 
+			SORT_ORDER: ['common', 'single_color', 'abstract_pattern', 'paintwork', 'award', 'collaborative'], 
+			DISCOUNTABLE: ['common', 'single_color', 'abstract_pattern', 'paintwork'], 
+			UNPURCHASABLE: ['award', 'collaborative'], 
+
+            PRICES_IDS : {
+                COMMON: 'TILE_CATEGORY_22', 
+                SINGLE_COLOR: 'TILE_CATEGORY_45', 
+                ABSTRACT_PATTERNS: 'TILE_CATEGORY_75', 
+                PAINTWORK: 'TILE_CATEGORY_90', 
+                AWARD: 'TILE_CATEGORY_45', 
+                COLLABORATIVE: 'TILE_CATEGORY_90'
+            }
+		}, 
+		COMMON_TILEFLAGES: {
+			WITH_COLOR_SCHEMES: 'withColorSchemes',
+			WO_COLOR_SCHEMES: 'woColorSchemes',
+
+
+			ALL: ['withColorSchemes', 'woColorSchemes'], 
+			SORT_ORDER: ['withColorSchemes', 'woColorSchemes']
+		}, 
+		SINGLE_COLOR_TILEFLAGES: {
+			VISUAL_HIDING: 'visualHiding',
+			BRIGHT_AND_COLORFULL: 'brightAndColorfull',
+
+
+			ALL: ['visualHiding', 'brightAndColorfull'], 
+			SORT_ORDER: ['visualHiding', 'brightAndColorfull']
+		}, 
+		ABSTRACT_PATTERN_TILEFLAGES: {
+			BRIGHT_AND_COLORFULL: 'brightAndColorfull',
+			SINGLE_PATTERN: 'singlePattern',
+
+
+			ALL: ['brightAndColorfull', 'singlePattern'], 
+			SORT_ORDER: ['brightAndColorfull', 'singlePattern']
+		}, 
+		PAINTWORK_TILEFLAGES: {
+			NATIONAL: 'national',
+			COMPLEX_WO_ACCIENT: 'complexWoAccient',
+			COMPLEX: 'complex',
+
+
+			ALL: ['national', 'complexWoAccient', 'complex'], 
+			SORT_ORDER: ['national', 'complexWoAccient', 'complex']
+		}, 
+		AWARD_TILEFLAGES: {
+			SPECIAL: 'special',
+			COMPETITIVE: 'competitive',
+			RANGS: 'rangs',
+
+
+			ALL: ['special', 'competitive', 'rangs'], 
+			SORT_ORDER: ['special', 'competitive', 'rangs']
+		}, 
+		COLLABORATIVE_TILEFLAGES: {
+			EAST_ORIENTAL: 'east_oriental',
+			BRANDS: 'brands',
+			KONG_AND_GODZILLA: 'kong_and_godzilla',
+			TRANSFORMERS: 'transformers',
+			WARHAMMER: 'warhammer',
+			AZUR_LANE: 'azur_lane',
+			LOTGH: 'lotgh',
+			NATU: 'natu',
+			HOLOLIVE: 'hololive',
+			TMNT: 'tmnt',
+
+
+			ALL: ['east_oriental', 'brands', 'kong_and_godzilla', 'transformers', 'warhammer', 'azur_lane', 'lotgh', 'natu', 'hololive', 'tmnt'], 
+			SORT_ORDER: ['east_oriental', 'brands', 'kong_and_godzilla', 'transformers', 'warhammer', 'azur_lane', 'lotgh', 'natu', 'hololive', 'tmnt']
+		}
+	}, 
+	Channel: {
+		CHANNEL_TYPE_IDENT_VALUE: {
+			UNKNOWN: 'unknown',
+			GROUP_OPEN: 'group_open',
+			GROUP_CLOSED: 'group_closed',
+			PREBATTLE: 'division',
+			COMMON: 'common',
+			PRIVATE: 'private',
+			CLAN: 'clan',
+			TRAINING_ROOM: 'training_room',
+
+
+			ALL: ['unknown', 'group_open', 'group_closed', 'division', 'common', 'private', 'clan', 'training_room'], 
+			DOCK_AND_CLAN: ['private', 'clan', 'group_open', 'group_closed'], 
+			PREBATTLE_AND_TRAINING: ['training_room', 'division']
+		}, 
+		BATTLE_CHAT_CHANNEL_TYPE: {
+			SYSTEM: -1,
+			GENERAL: 0,
+			TEAM: 1,
+			DIVISION: 2,
+
+
+			ALL: [-1, 0, 1, 2]
+		}
+	}, 
+	Clan: {
+		CLAN_ROLE: {
+			EXECUTIVE_OFFICER: 'executive_officer',
+			PRIVATE: 'private',
+			OFFICER: 'officer',
+			COMMISSIONED_OFFICER: 'commissioned_officer',
+			RECRUITMENT_OFFICER: 'recruitment_officer',
+			COMMANDER: 'commander',
+
+
+			ALL: ['executive_officer', 'private', 'officer', 'commissioned_officer', 'recruitment_officer', 'commander'], 
+			CAN_INVITE: ['executive_officer', 'recruitment_officer', 'commander']
+		}, 
+		CLAN_BATTLE_STAGE: {
+			PROMOTION: 'promotion',
+			DEMOTION: 'demotion',
+			LEAGUE: 'league',
+
+
+			ALL: ['promotion', 'demotion', 'league']
+		}, 
+		CLAN_BATTLE_PROGRESS: {
+			VICTORY: 'victory',
+			DEFEAT: 'defeat',
+			DRAW: 'draw',
+			UNKNOWN: 'unknown',
+
+
+			ALL: ['victory', 'defeat', 'draw', 'unknown']
+		}, 
+		CLAN_LEAGUE_COLORS: {
+			HURRICANE: 0xAB45E6,
+			TYPHOON: 0xE5124A,
+			STORM: 0xF1AE07,
+			GALE: 0x0644D9,
+			SQUALL: 0x00D8D0,
+			DEFAULT: 0xFFFFFF,
+
+
+			ALL: [0xAB45E6, 0xE5124A, 0xF1AE07, 0x0644D9, 0x00D8D0, 0xFFFFFF]
+		}, 
+		CLAN_MESSAGE_OF_THE_DAY_STATE: {
+			DEFAULT: 0,
+			PRE_MODERATION: 1,
+			PRE_MODERATION_OTHER: 2,
+
+			VALUE_TO_NAME: {
+				'0': 'DEFAULT', 
+				'1': 'PRE_MODERATION', 
+				'2': 'PRE_MODERATION_OTHER'
+			},
+
+			ALL: [0, 1, 2]
+		}
+	}, 
+	Common: {
+		PRMP_OFFER_TYPES: {
+			ANNOUNCEMENT: 'announcement',
+			CRITICAL: 'critical',
+
+
+			ALL: ['announcement', 'critical'], 
+			EXTERNAL_PLATFORMS_ALLOWED_DEFAULT: ['announcement', 'critical']
+		}, 
+		PRMP_CONTENT_TYPES: {
+			TEXT: 'text',
+			VIDEO: 'video',
+			SURVEY: 'survey',
+
+
+			ALL: ['text', 'video', 'survey'], 
+			URL_REQUIRED: ['video', 'survey']
+		}, 
+		PRMP_ACTION_BUTTON_TYPE: {
+			EXTERNAL_RESOURCE: 0,
+			INTERNAL_RESOURCE: 1,
+			CLIENT_ACTION: 2,
+			SHOW_REWARDS: 3,
+
+
+			ALL: [0, 1, 2, 3], 
+
+            NAMES : {
+                EXTERNAL_RESOURCE: 'external_resource', 
+                INTERNAL_RESOURCE: 'internal_resource', 
+                CLIENT_ACTION: 'client_action', 
+                SHOW_REWARDS: 'show_rewards'
+            }
+		}, 
+		WGNC_NOTIFICATION_STATE: {
+			READ: 0,
+			UNREAD: 1,
+
+
+			ALL: [0, 1], 
+
+            NAMES : {
+                READ: 'read', 
+                UNREAD: 'unread'
+            }
+		}, 
+		ABUSE_STATUS: {
+			NORMAL: 0,
+			SUSPECT: 1,
+			CONFIRMED: 2,
+
+
+			ALL: [0, 1, 2], 
+			NEGATIVE: [0, 2], 
+
+            NAMES : {
+                NORMAL: 'NORMAL', 
+                SUSPECT: 'SUSPECT', 
+                CONFIRMED: 'CONFIRMED'
+            }
+		}, 
+		RESAON_COMMUNICATION_RESTRICTION: {
+			MINOR: 1,
+			WATCHER: 2,
+
+
+			ALL: [1, 2]
+		}, 
+		PLAYTIME_RESTRICTION_TYPE: {
+			PARENTAL_CONTROL: 1,
+			GOVERNMENT_CONTROL: 2,
+
+
+			ALL: [1, 2]
+		}, 
+		PARENTAL_CONTROL_STATUS: {
+			BLOCK_IMMINENT: 1,
+			BLOCK_APPLIED: 2,
+			SESSION_END_IMMINENT: 3,
+
+
+			ALL: [1, 2, 3]
+		}, 
+		PREMIUM_TYPE: {
+			NONE: 0,
+			COMMON: 1,
+			WOWS: 2,
+
+
+			ALL: [0, 1, 2], 
+			RANGE: [1, 2]
+		}, 
+		LEVELING_STEP_TYPES: {
+			NONE: 0,
+			FUNCTIONAL: 1,
+			FUNCTIONAL_PROMO: 2,
+			REWARD: 3,
+			REWARD_PROMO: 4,
+
+
+			ALL: [0, 1, 2, 3, 4]
+		}, 
+		CONTENT_CATEGORY: {
+			NEWS: 0,
+			DOGTAGS: 1,
+			SYMBOL: 2,
+			PATCH: 3,
+			EMBLEM: 4,
+			BG_SHAPE: 5,
+			BG_COLOR: 6,
+			BG_BORDER_COLOR: 7,
+			BG_MATERIAL: 8,
+			ALBUMS: 9,
+			SUBALBUMS: 10,
+			CARDS: 11,
+			CAMPAIGNS: 12,
+			LOOTBOX: 13,
+			PORTS: 14,
+			SHIPS: 15,
+			SSETAGS: 16,
+			BATTLE_TYPES: 17,
+			SHIP_ACES: 18,
+			SNOWFLAKE_SEASON: 19,
+			NEWBIE_QUEST: 20,
+			OPEN_ENDED_SSE: 21,
+			SYS_MSGS_BATTLE_RESULTS: 22,
+			SYS_MSGS_STORAGE_CHANGES: 23,
+			SYS_MSGS_INFO: 24,
+			SYS_MSGS_VERSION_UPDATERS: 25,
+			STRATEGIC_ACTIONS_EVENT: 26,
+			PORT_BUFF: 27,
+			BATTLE_CARD: 28,
+			EVENT_HUB_PROGRESS: 29,
+			EVENT_HUB_BRIEFING: 30,
+			EVENT_HUB_BANNER: 31,
+
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+		}, 
+		UBSCOPE_EVENT_DIRECTIONS: {
+			UP: 0,
+			DOWN: 1,
+			NONE: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		EASING_FUNCTIONS: {
+			LINEAR: 0,
+			OUT_QUAD: 1,
+			IN_QUAD: 2,
+			ON_OUT_QUAD: 3,
+
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		REFERRAL_TYPE: {
+			RECRUIT: 0,
+			VETERAN: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		HAS_RECRUITS_STATUS: {
+			UNKNOWN: 0,
+			YES: 1,
+			NO: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		PARAGON_DENY_REASONS: {
+			IS_IN_BATTLE: 1,
+			IS_IN_DIVISION: 2,
+			IS_NEED_SERVICE: 3,
+
+
+			ALL: [1, 2, 3]
+		}, 
+		ENSIGN_TYPE: {
+			REWARD: 1,
+			HISTORICAL: 2,
+			SPECIAL: 3,
+
+			VALUE_TO_NAME: {
+				'1': 'REWARD', 
+				'2': 'HISTORICAL', 
+				'3': 'SPECIAL'
+			},
+
+			ALL: [1, 2, 3]
+		}, 
+		SKILL_GROUP: {
+			ATTACK: 0,
+			DEFENCE: 1,
+			SUPPORT: 2,
+			ACUMEN: 3,
+
+			VALUE_TO_NAME: {
+				'0': 'ATTACK', 
+				'1': 'DEFENCE', 
+				'2': 'SUPPORT', 
+				'3': 'ACUMEN'
+			},
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		UNIQUE_SKILLS: {
+			ADDITIONAL_CONSUMABLES: 0,
+			REGEN: 1,
+			MAIN_BATTERY_RELOAD_BOOSTER: 2,
+			VISIBILITY_BOOSTER: 3,
+			ADDITIONAL_COOL_CONSUMABLE: 4,
+			CRASH_CREW: 5,
+			SHOOT_SHIFT: 6,
+			BURN_PROBABILITY: 7,
+			SHIP_SPEED_BOOSTER: 8,
+			MAX_DIST_GM: 9,
+			CONSUMABLE_WORK_TIME_COEFF: 10,
+			TORPEDO_RELOAD_BOOSTER: 11,
+			AIRPLANE_RELOAD_BOOSTER: 12,
+			ARTILLERY_RELOAD_BOOSTER: 13,
+			ATBA_RELOAD_BOOSTER: 14,
+			SQUADRON_SPEED_BOOSTER: 15,
+			AA_NEAR_DAMAGE_COEFF: 16,
+			CONSUMABLE_RELOAD_TIME_COEFF: 17,
+			TORPEDO_SPEED_BOOSTER: 18,
+			TORPEDO_RELOADER_BOOSTER: 19,
+			RAGE_MODE_BOOSTER: 20,
+
+			VALUE_TO_NAME: {
+				'0': 'ADDITIONAL_CONSUMABLES', 
+				'1': 'REGEN', 
+				'2': 'MAIN_BATTERY_RELOAD_BOOSTER', 
+				'3': 'VISIBILITY_BOOSTER', 
+				'4': 'ADDITIONAL_COOL_CONSUMABLE', 
+				'5': 'CRASH_CREW', 
+				'6': 'SHOOT_SHIFT', 
+				'7': 'BURN_PROBABILITY', 
+				'8': 'SHIP_SPEED_BOOSTER', 
+				'9': 'MAX_DIST_GM', 
+				'10': 'CONSUMABLE_WORK_TIME_COEFF', 
+				'11': 'TORPEDO_RELOAD_BOOSTER', 
+				'12': 'AIRPLANE_RELOAD_BOOSTER', 
+				'13': 'ARTILLERY_RELOAD_BOOSTER', 
+				'14': 'ATBA_RELOAD_BOOSTER', 
+				'15': 'SQUADRON_SPEED_BOOSTER', 
+				'16': 'AA_NEAR_DAMAGE_COEFF', 
+				'17': 'CONSUMABLE_RELOAD_TIME_COEFF', 
+				'18': 'TORPEDO_SPEED_BOOSTER', 
+				'19': 'TORPEDO_RELOADER_BOOSTER', 
+				'20': 'RAGE_MODE_BOOSTER'
+			},
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+		}, 
+		CREW_TRAINING_TYPE: {
+			BaseTraining: 0,
+			MoneyTraining: 1,
+			GoldTraining: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		CREW_RESET_SKILL_TYPE: {
+			GoldReset: 0,
+			XPReset: 1,
+
+
+			ALL: [0, 1], 
+			RESET_SKILL_OPTIONS: [0, 1]
+		}, 
+		CREW_RETRAINING_TYPE: {
+			NoRetraining: 0,
+			FreeRetraining: 1,
+			GoldRetraining: 2,
+			XPRetraining: 3,
+
+
+			ALL: [0, 1, 2, 3], 
+			RETRAINING_OPTIONS: [2, 3, 1], 
+			INSTANT_RETRAINING_OPTIONS: [2, 3]
+		}, 
+		CREW_FIRING_TYPE: {
+			TO_OPS: 0,
+			BASE: 1,
+			MONEY: 2,
+			GOLD: 3,
+
+
+			ALL: [0, 1, 2, 3], 
+			FIRING_OPTIONS: [3, 2, 1]
+		}, 
+		CREW_SKILL_TRIGGERS: {
+			ENTITY_IS_VISIBLE: 'entityIsVisibleTrigger',
+			ENTITY_IS_INVISIBLE: 'entityIsInvisibleTrigger',
+			NO_ENEMIES_WITHIN_VISIBILITY: 'noEnemiesWithinVisibilityTrigger',
+			ENEMY_WITHIN_VISIBILITY: 'enemyWithinVisibilityTrigger',
+			VISIBLE_ENEMY_WITHIN_GS: 'visibleEnemyWithinGsTrigger',
+			VISIBLE_ENEMY_WITHIN_GM: 'VisibleEnemyWithinGmTrigger',
+			ENEMIES_NOT_LESS_THAN_ALLIES_WITHIN_GM: 'EnemiesNotLessThanAlliesWithinGMTrigger',
+			ACTIVATION_ON_DETECT: 'activationOnDetectTrigger',
+			ACTIVATION_ON_BATTERY: 'activationOnBattery',
+			ACTIVATION_ON_CONSUMABLE: 'activationOnConsumable',
+			ACTIVE_AIR_DEFENSE: 'activeAirDefense',
+			POTENTIAL_DAMAGE_RATIO: 'potentialDamageRatio',
+			ACTIVATION_ON_BURN_FLOOD: 'activationOnBurnFlood',
+			ATBA_HEAT: 'atbaHeat',
+
+
+			ALL: ['entityIsVisibleTrigger', 'entityIsInvisibleTrigger', 'noEnemiesWithinVisibilityTrigger', 'enemyWithinVisibilityTrigger', 'visibleEnemyWithinGsTrigger', 'VisibleEnemyWithinGmTrigger', 'EnemiesNotLessThanAlliesWithinGMTrigger', 'activationOnDetectTrigger', 'activationOnBattery', 'activationOnConsumable', 'activeAirDefense', 'potentialDamageRatio', 'activationOnBurnFlood', 'atbaHeat']
+		}, 
+		UNIQUE_SKILLS_TRIGGERS: {
+			CONSUMABLE: 'consumable',
+			HEALTH: 'health',
+			RIBBONS: 'ribbons',
+			DAMAGE: 'damage',
+			ACHIEVEMENT: 'achievement',
+			RAGE_MODE: 'rageMode',
+
+
+			ALL: ['consumable', 'health', 'ribbons', 'damage', 'achievement', 'rageMode']
+		}, 
+		BATTLE_TYPES: {
+			STANDART_BATTLE: 'StandartBattle',
+			SINGLE_BATTLE: 'SingleBattle',
+			STUDY_BATTLE: 'Study',
+			RANDOM_BATTLE: 'RandomBattle',
+			TRAINING_BATTLE: 'TrainingBattle',
+			COOPERATIVE_BATTLE: 'CooperativeBattle',
+			RANKED_BATTLE: 'RankedBattle',
+			OLD_RANKED_BATTLE: 'OldRankedBattle',
+			INTRO_MISSION: 'TutorialBattle',
+			CLUB_BATTLE: 'ClubBattle',
+			PVE_BATTLE: 'PVEBattle',
+			CLAN_BATTLE: 'ClanBattle',
+			EVENT_BATTLE: 'EventBattle',
+			BRAWL_BATTLE: 'BrawlBattle',
+
+
+			ALL: ['StandartBattle', 'SingleBattle', 'Study', 'RandomBattle', 'TrainingBattle', 'CooperativeBattle', 'RankedBattle', 'OldRankedBattle', 'TutorialBattle', 'ClubBattle', 'PVEBattle', 'ClanBattle', 'EventBattle', 'BrawlBattle'], 
+			MAP_TEAMBUILDTYPE_TO_BATTLETYPE: ['RandomBattle', 'TrainingBattle', 'CooperativeBattle', 'TutorialBattle', 'RankedBattle', 'ClubBattle', 'PVEBattle', 'PVEBattle', 'ClanBattle', 'EventBattle', 'BrawlBattle'], 
+			BATTLE_TYPES_WITH_HARD_FILTER: ['PVEBattle', 'EventBattle', 'RankedBattle', 'ClanBattle', 'BrawlBattle'], 
+			CHAT_AVAILABLE: ['RandomBattle', 'CooperativeBattle', 'PVEBattle'], 
+			DYNAMIC_DIVISION_AVAILABLE: ['CooperativeBattle', 'RandomBattle', 'EventBattle', 'BrawlBattle'], 
+			BATTLE_TYPES_WITH_BATTLECARD: ['PVEBattle', 'EventBattle']
+		}, 
+		NATION: {
+			RUSSIA: 'Russia',
+			JAPAN: 'Japan',
+			USA: 'USA',
+			UK: 'United_Kingdom',
+			GERMANY: 'Germany',
+			FRANCE: 'France',
+			ITALY: 'Italy',
+			EUROPE: 'Europe',
+			PANASIA: 'Pan_Asia',
+			COMMONWEALTH: 'Commonwealth',
+			EVENTS: 'Events',
+			PANAMERICA: 'Pan_America',
+			NETHERLANDS: 'Netherlands',
+			SPAIN: 'Spain',
+
+
+			ALL: ['Russia', 'Japan', 'USA', 'United_Kingdom', 'Germany', 'France', 'Italy', 'Europe', 'Pan_Asia', 'Commonwealth', 'Events', 'Pan_America', 'Netherlands', 'Spain'], 
+			SORT_ORDER: ['Japan', 'USA', 'Russia', 'Germany', 'United_Kingdom', 'France', 'Italy', 'Pan_Asia', 'Europe', 'Netherlands', 'Commonwealth', 'Pan_America', 'Spain', 'Events'], 
+			RESEARCH_TREE_ORDER: ['Japan', 'USA', 'Russia', 'Germany', 'United_Kingdom', 'France', 'Italy', 'Pan_Asia', 'Europe', 'Netherlands', 'Commonwealth', 'Pan_America', 'Spain'], 
+			SHIP_ACES_ORDER: ['Japan', 'USA', 'Russia', 'Germany', 'United_Kingdom', 'France', 'Italy', 'Pan_Asia', 'Europe', 'Netherlands', 'Commonwealth', 'Pan_America', 'Spain']
+		}, 
+		SHIP_TYPE: {
+			AIRCARRIER: 'AirCarrier',
+			BATTLESHIP: 'Battleship',
+			CRUISER: 'Cruiser',
+			DESTROYER: 'Destroyer',
+			AUXILIARY: 'Auxiliary',
+			SUBMARINE: 'Submarine',
+
+
+			ALL: ['AirCarrier', 'Battleship', 'Cruiser', 'Destroyer', 'Auxiliary', 'Submarine'], 
+			SORT_ORDER: ['Auxiliary', 'Submarine', 'Destroyer', 'Cruiser', 'Battleship', 'AirCarrier'], 
+			PLAYABLE_SHIP_TYPES: ['Submarine', 'Destroyer', 'Cruiser', 'Battleship', 'AirCarrier'], 
+			SHIP_ACES_ORDER: ['Submarine', 'Destroyer', 'Cruiser', 'Battleship', 'AirCarrier']
+		}, 
+		LOWER_LOG_ITEM_RENDERERS: {
+			DEFAULT: 0,
+			MULTILINE: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		BIP_SESSION_TYPE: {
+			NONE: 0,
+			REGULAR: 1,
+			PREMIUM: 2,
+
+			VALUE_TO_NAME: {
+				'0': 'NONE', 
+				'1': 'REGULAR', 
+				'2': 'PREMIUM'
+			},
+
+			ALL: [0, 1, 2]
+		}, 
+		RANK_INFORMERS_TYPES: {
+			INVALID: 0,
+			PROMO: 1,
+			START_SEASON: 2,
+			ACTIVE_SEASON: 3,
+			END_SEASON: 4,
+			START_SPRINT: 5,
+			ACTIVE_SPRINT: 6,
+			END_SPRINT: 7,
+
+			VALUE_TO_NAME: {
+				'0': 'INVALID', 
+				'1': 'PROMO', 
+				'2': 'START_SEASON', 
+				'3': 'ACTIVE_SEASON', 
+				'4': 'END_SEASON', 
+				'5': 'START_SPRINT', 
+				'6': 'ACTIVE_SPRINT', 
+				'7': 'END_SPRINT'
+			},
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7], 
+			SEASON_INFORMER: [1, 2, 3, 4], 
+			SPRINT_INFORMER: [7, 6, 5]
+		}, 
+		CLAN_INFORMERS_TYPES: {
+			PRIME_TIME_SOON_START: 'soon_start',
+			PRIME_TIME_START: 'start',
+			PRIME_TIME_SOON_ENDS: 'soon_end',
+			PRIME_TIME_END: 'end',
+			PRIME_TIME_CHOSEN: 'chosen',
+			PRIME_TIME_FIXED: 'fixed',
+
+
+			ALL: ['soon_start', 'start', 'soon_end', 'end', 'chosen', 'fixed']
+		}, 
+		BRAWL_INFORMER_TYPES: {
+			PROMO: 1,
+			START: 2,
+			END: 3,
+
+
+			ALL: [1, 2, 3]
+		}, 
+		NEWBIE_QUESTS_INFORMER_TYPES: {
+			NEW: 1,
+			DONE: 2,
+
+
+			ALL: [1, 2]
+		}, 
+		DIRECTION: {
+			NONE: 0,
+			UP: 1,
+			DOWN: 2,
+			LEFT: 3,
+			RIGHT: 4,
+
+
+			ALL: [0, 1, 2, 3, 4]
+		}, 
+		BATTLE_LOADING_TAB: {
+			TASKS: 0,
+			TEAMS: 1,
+			TIPS: 2,
+			DYNAMIC_DIVISIONS: 3,
+			STRATEGIC_ACTIONS: 4,
+
+
+			ALL: [0, 1, 2, 3, 4]
+		}, 
+		USER_TASKS_FLAGS: {
+			KNOWS_ABOUT_PVP: 1,
+			KNOWS_ABOUT_EXPLORATION: 2,
+			KNOWS_ABOUT_CAPTAIN: 4,
+			KNOWS_ABOUT_MODERNIZATION: 8,
+			KNOWS_ABOUT_SIGNALS: 16,
+			KNOWS_ABOUT_CAMOUFLAGES: 32,
+			KNOWS_ABOUT_FLAGS: 64,
+			VIDEO_SEEN_SHIP_DEVELOPMENT: 128,
+			CONTROL_SEEN_PLAYTOGETHER: 256,
+			VIDEO_SEEN_COMMANDERS: 512,
+			KNOWS_ABOUT_TUTORIAL: 1024,
+			SEEN_ANIMATION_CRUISERS: 2048,
+			SEEN_ALL_ANIMATION: 4096,
+			KNOWS_ABOUT_DIVISION_IN_RANKES: 8192,
+			KNOWS_ABOUT_JUNIOR_RANKED_RULES: 16384,
+			KNOWS_ABOUT_WOWS_PREM: 32768,
+			KNOWS_ABOUT_ACCOUNT_COMPLETION_4_LEVEL: 65536,
+			KNOWS_ABOUT_ACCOUNT_COMPLETION_8_LEVEL: 131072,
+			KNOWS_ABOUT_ACCOUNT_COMPLETION_12_LEVEL: 262144,
+			KNOWS_ABOUT_PARAGONS_IN_SHIP_TREE: 524288,
+			FIRST_BATTLE_AUDIO_PROMPT_LISTENED: 1048576,
+			KNOWS_ABOUT_ECOBOOSTS: 2097152,
+			KNOWS_ABOUT_NEWS: 4194304,
+
+
+			ALL: [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304]
+		}, 
+		BRAWLS_DENY_REASONS: {
+			NO_SHIP: 1,
+			SEASON_NOT_ACTIVE: 2,
+			SEASON_NOT_STARTED: 8,
+			WRONG_SHIP_LEVEL: 16,
+			WRONG_ACCOUNT_LEVEL: 32,
+			NO_CURRENT_PRIME_TIME: 64,
+			WRONG_DIVISION_STRUCTURE: 128,
+
+
+			ALL: [1, 2, 8, 16, 32, 64, 128]
+		}, 
+		SHIP_FILTER_TYPE: {
+			SHIP_TYPE: 0,
+			SHIP_LEVEL: 1,
+			SHIP_NATION: 2,
+			SHIP_SPECIAL: 3,
+
+			VALUE_TO_NAME: {
+				'0': 'SHIP_TYPE', 
+				'1': 'SHIP_LEVEL', 
+				'2': 'SHIP_NATION', 
+				'3': 'SHIP_SPECIAL'
+			},
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		SHIP_SPECIAL_FILTER_TYPE: {
+			SELECTED_BY_USER: 'selected_by_user',
+			NOT_ELITE: 'not_elite',
+			ELITE: 'elite',
+			SPECIAL: 'special',
+			PREMIUM: 'premium',
+			RENTED: 'rented',
+			EXP_BONUS: 'exp_bonus',
+			WITH_COMMANDER: 'with_commander',
+			WITHOUT_COMMANDER: 'without_commander',
+			SNOWFLAKES: 'snowflakes',
+			PARAGON_BONUS: 'paragon_bonus',
+
+
+			ALL: ['selected_by_user', 'not_elite', 'elite', 'special', 'premium', 'rented', 'exp_bonus', 'with_commander', 'without_commander', 'snowflakes', 'paragon_bonus']
+		}, 
+		LOADING_PROCESS: {
+			NOT_LOADED: 0,
+			LOADING: 1,
+			LOADED: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		PLANE_AMMO_TYPES: {
+			NONE: -1,
+			PROJECTILE: 0,
+			BOMB_HE: 1,
+			BOMB_AP: 2,
+			SKIP_BOMB_HE: 3,
+			SKIP_BOMB_AP: 4,
+			TORPEDO: 5,
+			TORPEDO_DEEPWATER: 6,
+			PROJECTILE_AP: 7,
+			DEPTH_CHARGE: 8,
+			MINE: 9,
+			SMOKE: 10,
+
+			VALUE_TO_NAME: {
+				'-1': 'NONE', 
+				'0': 'PROJECTILE', 
+				'1': 'BOMB_HE', 
+				'2': 'BOMB_AP', 
+				'3': 'SKIP_BOMB_HE', 
+				'4': 'SKIP_BOMB_AP', 
+				'5': 'TORPEDO', 
+				'6': 'TORPEDO_DEEPWATER', 
+				'7': 'PROJECTILE_AP', 
+				'8': 'DEPTH_CHARGE', 
+				'9': 'MINE', 
+				'10': 'SMOKE'
+			},
+
+			ALL: [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 
+
+            ICON_NAMES : {
+                NONE: 'NONE', 
+                PROJECTILE: 'PROJECTILE', 
+                BOMB_HE: 'BOMB_HE', 
+                BOMB_AP: 'BOMB_AP', 
+                SKIP_BOMB_HE: 'BOMB_HE', 
+                SKIP_BOMB_AP: 'BOMB_AP', 
+                TORPEDO: 'TORPEDO', 
+                TORPEDO_DEEPWATER: 'TORPEDO_DEEPWATER', 
+                PROJECTILE_AP: 'PROJECTILE_AP', 
+                DEPTH_CHARGE: 'DEPTH_CHARGE', 
+                MINE: 'MINE', 
+                SMOKE: 'SMOKE'
+            }, 
+
+            NAMES : {
+                NONE: 'NONE', 
+                PROJECTILE: 'FIGHTER_HE', 
+                BOMB_HE: 'DIVE_HE', 
+                BOMB_AP: 'DIVE_AP', 
+                SKIP_BOMB_HE: 'SKIP_HE', 
+                SKIP_BOMB_AP: 'SKIP_AP', 
+                TORPEDO: 'BOMBER_TORPEDO', 
+                TORPEDO_DEEPWATER: 'BOMBER_TORPEDO_DEEPWATER', 
+                PROJECTILE_AP: 'FIGHTER_AP', 
+                DEPTH_CHARGE: 'DIVE_DEPTH_CHARGE', 
+                MINE: 'MINE', 
+                SMOKE: 'SMOKE'
+            }, 
+
+            SHORT_NAMES : {
+                PROJECTILE: '_he', 
+                BOMB_HE: '_he', 
+                BOMB_AP: '_ap', 
+                SKIP_BOMB_HE: '_he', 
+                SKIP_BOMB_AP: '_ap', 
+                TORPEDO: '_regular', 
+                TORPEDO_DEEPWATER: '_deepwater', 
+                PROJECTILE_AP: '_ap', 
+                DEPTH_CHARGE: '_depth_charge', 
+                MINE: '_mine', 
+                SMOKE: '_smoke'
+            }
+		}, 
+		TORPEDO_TYPE: {
+			COMMON: 0,
+			SUBMARINE: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		TORPEDOES_GROUP_TYPE: {
+			LOOK_FORWARD: 0,
+			LOOK_BACKWARD: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		HIGHLIGHT: {
+			HIDDEN: 0,
+			DEFAULT: 1,
+			HIGHLIGHTED: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		TRAINING_ROOM_TEAMS_IDS: {
+			SELF_TEAM: 0,
+			NEUTRAL_TEAM: -1,
+			OTHER_TEAM: 1,
+			OBSERVER_TEAM: 100,
+
+
+			ALL: [0, -1, 1, 100], 
+			SELF_TEAM_RANGE: [0], 
+			AVAILABLE_TEAMS: [0, 1]
+		}, 
+		SHIP_BATTLE_LOCK_REASON: {
+			NONE: 0,
+			COOLDOWN: 1,
+			TELECOM: 2,
+			PAYMENT: 3,
+
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		CURRENCIES: {
+			CREDITS: 'credits',
+			GOLD: 'gold',
+			ELITE_XP: 'eliteXP',
+			CREW_XP: 'crewXP',
+			STEEL: 'steel',
+			COAL: 'coal',
+			MOLYBDENUM: 'molybdenum',
+			BRASS: 'brass',
+			SALTPETER: 'saltpeter',
+			RECRUITMENT_POINTS: 'recruitment_points',
+			EVENTUM_1: 'eventum_1',
+			EVENTUM_2: 'eventum_2',
+			EVENTUM_3: 'eventum_3',
+			EVENTUM_4: 'eventum_4',
+			EVENTUM_5: 'eventum_5',
+			EVENTUM_6: 'eventum_6',
+			EVENTUM_7: 'eventum_7',
+			EVENTUM_8: 'eventum_8',
+			EVENTUM_9: 'eventum_9',
+			EVENTUM_10: 'eventum_10',
+			EVENTUM_CN: 'eventum_cn',
+			CLIENTUM_1: 'clientum_1',
+			CLIENTUM_2: 'clientum_2',
+			SANTIUM: 'santium',
+			DOCKYARDUM_1: 'dockyardum_1',
+			DOCKYARDUM_2: 'dockyardum_2',
+			EVENTUM_11: 'eventum_11',
+			EVENTUM_12: 'eventum_12',
+			EVENTUM_13: 'eventum_13',
+			EVENTUM_14: 'eventum_14',
+			PARAGON_XP: 'paragonXP',
+			FREE_XP: 'freeXP',
+			XP: 'exp',
+			ACCOUNT_LEVELING: 'accountLeveling',
+			CLAN_RESOURCE: 'clan_resource',
+			MONEY: 'money',
+			ACC_POINTS: 'accPoints',
+			SNOWFLAKE: 'snowflake',
+			CAMPAIGN_STAR: 'campaignStar',
+			VALUE: 'value',
+			BP_POINTS: 'bpPoints',
+			FOR_FREE: 'for_free',
+			STRATEGIC_POINTS: 'strategic_points',
+			COLLECTION_TOKEN: 'collection_token',
+
+
+			ALL: ['credits', 'gold', 'eliteXP', 'crewXP', 'steel', 'coal', 'molybdenum', 'brass', 'saltpeter', 'recruitment_points', 'eventum_1', 'eventum_2', 'eventum_3', 'eventum_4', 'eventum_5', 'eventum_6', 'eventum_7', 'eventum_8', 'eventum_9', 'eventum_10', 'eventum_cn', 'clientum_1', 'clientum_2', 'santium', 'dockyardum_1', 'dockyardum_2', 'eventum_11', 'eventum_12', 'eventum_13', 'eventum_14', 'paragonXP', 'freeXP', 'exp', 'accountLeveling', 'clan_resource', 'money', 'accPoints', 'snowflake', 'campaignStar', 'value', 'bpPoints', 'for_free', 'strategic_points', 'collection_token'], 
+			IS_EVENT_CURRENCY: ['eventum_1', 'eventum_2', 'eventum_3', 'eventum_4', 'eventum_5', 'eventum_6', 'eventum_7', 'eventum_8', 'eventum_9', 'eventum_10', 'eventum_11', 'eventum_12', 'eventum_13', 'eventum_14', 'santium']
+		}, 
+		ACCOUNT_FEATURE: {
+			BATTLE_TUTORIAL: 0,
+			BATTLE_COOP: 1,
+			BATTLE_JUNIOR: 2,
+			BATTLE_SENIOR: 3,
+			RESEARCH_USE: 4,
+			FREE_EXP_USE: 5,
+			FREE_EXP_TRANSIT: 6,
+			SKILL_TREE_USE: 7,
+			DAILYQUESTS_USE: 8,
+			SSE_USE: 9,
+			GOLD_USE: 10,
+			ECOBOOSTS: 11,
+			MODERNIZATIONS: 12,
+			CREW: 13,
+			EXT_SIGNALS: 14,
+			EXT_CAMOUFLAGE: 15,
+			RANK_BATTLES: 16,
+			NATIONS_TREE: 17,
+			SSE: 18,
+			CLUBS: 19,
+			ARMOR_IN_PORT: 20,
+			LOOTBOXES: 21,
+			CAMPAIGNS: 22,
+			WEB_STORAGE: 23,
+			PVE: 24,
+			CAMOUFLAGE_PAINT: 25,
+			FLAGS_ADDITION: 26,
+			CLAN_BATTLE: 27,
+			TRAINING_BATTLE: 28,
+			METASHOP: 29,
+			RESOURCE_LOOTBOXES: 30,
+			EVENT_BATTLES: 31,
+
+			VALUE_TO_NAME: {
+				'0': 'BATTLE_TUTORIAL', 
+				'1': 'BATTLE_COOP', 
+				'2': 'BATTLE_JUNIOR', 
+				'3': 'BATTLE_SENIOR', 
+				'4': 'RESEARCH_USE', 
+				'5': 'FREE_EXP_USE', 
+				'6': 'FREE_EXP_TRANSIT', 
+				'7': 'SKILL_TREE_USE', 
+				'8': 'DAILYQUESTS_USE', 
+				'9': 'SSE_USE', 
+				'10': 'GOLD_USE', 
+				'11': 'ECOBOOSTS', 
+				'12': 'MODERNIZATIONS', 
+				'13': 'CREW', 
+				'14': 'EXT_SIGNALS', 
+				'15': 'EXT_CAMOUFLAGE', 
+				'16': 'RANK_BATTLES', 
+				'17': 'NATIONS_TREE', 
+				'18': 'SSE', 
+				'19': 'CLUBS', 
+				'20': 'ARMOR_IN_PORT', 
+				'21': 'LOOTBOXES', 
+				'22': 'CAMPAIGNS', 
+				'23': 'WEB_STORAGE', 
+				'24': 'PVE', 
+				'25': 'CAMOUFLAGE_PAINT', 
+				'26': 'FLAGS_ADDITION', 
+				'27': 'CLAN_BATTLE', 
+				'28': 'TRAINING_BATTLE', 
+				'29': 'METASHOP', 
+				'30': 'RESOURCE_LOOTBOXES', 
+				'31': 'EVENT_BATTLES'
+			},
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], 
+
+            BIT_MASKS : {
+                BATTLE_TUTORIAL: 1, 
+                BATTLE_COOP: 2, 
+                BATTLE_JUNIOR: 4, 
+                BATTLE_SENIOR: 8, 
+                RESEARCH_USE: 16, 
+                FREE_EXP_USE: 32, 
+                FREE_EXP_TRANSIT: 64, 
+                SKILL_TREE_USE: 128, 
+                DAILYQUESTS_USE: 256, 
+                SSE_USE: 512, 
+                GOLD_USE: 1024, 
+                ECOBOOSTS: 2048, 
+                MODERNIZATIONS: 4096, 
+                CREW: 8192, 
+                EXT_SIGNALS: 16384, 
+                EXT_CAMOUFLAGE: 32768, 
+                RANK_BATTLES: 65536, 
+                NATIONS_TREE: 131072, 
+                SSE: 262144, 
+                CLUBS: 524288, 
+                ARMOR_IN_PORT: 1048576, 
+                LOOTBOXES: 2097152, 
+                CAMPAIGNS: 4194304, 
+                WEB_STORAGE: 8388608, 
+                PVE: 16777216, 
+                CAMOUFLAGE_PAINT: 33554432, 
+                FLAGS_ADDITION: 67108864, 
+                CLAN_BATTLE: 134217728, 
+                TRAINING_BATTLE: 268435456, 
+                METASHOP: 536870912, 
+                RESOURCE_LOOTBOXES: 1073741824, 
+                EVENT_BATTLES: 2147483648
+            }
+		}, 
+		ACCOUNT_FEATURE_NAME_TO_NEWBIE_QUEST_NAME: {
+			NATIONS_TREE: 'RESEARCH',
+			BATTLE_SENIOR: 'PVP',
+			EXT_CAMOUFLAGE: 'EXTERIOR',
+			EXT_SIGNALS: 'BATTLE_BONUSES',
+			FREE_EXP_USE: 'FREE_XP',
+			ECOBOOSTS: 'ECO_BONUSES',
+			LOOTBOXES: 'LOOTBOXES',
+			CREW: 'CREW',
+			SSE_USE: 'SSE',
+			MODERNIZATIONS: 'MODERNIZATION',
+			CAMPAIGNS: 'CAMPAIGN',
+			METASHOP: 'METASHOP',
+			PVE: 'PVE',
+			WEB_STORAGE: 'WEB_STORAGE',
+			RANK_BATTLES: 'RANK',
+			CLAN_BATTLE: 'CLANS',
+
+
+			ALL: ['RESEARCH', 'PVP', 'EXTERIOR', 'BATTLE_BONUSES', 'FREE_XP', 'ECO_BONUSES', 'LOOTBOXES', 'CREW', 'SSE', 'MODERNIZATION', 'CAMPAIGN', 'METASHOP', 'PVE', 'WEB_STORAGE', 'RANK', 'CLANS']
+		}, 
+		SEASON_BATTLES_STAGES: {
+			INACTIVE: 0,
+			WAITING: 1,
+			ACTIVE: 2,
+			FINISHED: 3,
+			CLOSED: 4,
+
+
+			ALL: [0, 1, 2, 3, 4]
+		}, 
+		PERFECT_LOGIN: {
+			HIDE_TIME: 1.0,
+
+
+			ALL: [1.0]
+		}, 
+		COMMANDER_CLASSIFICATIONS: {
+			COMMON: 0,
+			SPECIAL: 1,
+			ADVANCED: 2,
+			UNIQUE: 3,
+
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		RETRAINING_OPTION_BLOCK_REASON: {
+			NO_REASON: 0,
+			ALREADY_FREE_RETRAIN: 1,
+			NEED_MORE_EXP: 2,
+			NEED_MORE_GOLD: 3,
+
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		CLAN_RULES_CHANGED_TYPE: {
+			RULES_HAVE_CHANGED: 'rules_have_changed',
+			FINISH_TIME_HAVE_CHANGED: 'finish_time_have_changed',
+			PRIME_TIMES_HAVE_CHANGED: 'prime_times_have_changed',
+			RESTRICTIONS_HAVE_CHANGED: 'restrictions_have_changed',
+
+
+			ALL: ['rules_have_changed', 'finish_time_have_changed', 'prime_times_have_changed', 'restrictions_have_changed']
+		}, 
+		XP_TYPE: {
+			ELITE: 0,
+			FREE: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		SKILL_POINTS: {
+			MAX_FREE_SKILL_POINTS: 21,
+
+
+			ALL: [21]
+		}, 
+		GUI_MODE: {
+			DOCK: 0,
+			LOADING: 1,
+			BATTLE: 2,
+			SHIPYARD: 3,
+
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		ALMANAC_CONSTANTS: {
+			MAIN_STAGES_NUMBER: 24,
+			ALL_STAGES_NUMBER: 44,
+
+
+			ALL: [24, 44]
+		}, 
+		ALMANAC_STAGES_TYPE: {
+			REGULAR_REWARD: 0,
+			EXTRA_REWARD: 1,
+			NEXT_MONTH_REWARD: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		ACHIEVEMENT_TYPE: {
+			HEROIC: 'heroic',
+			HONORABLE: 'honorable',
+			COMMON: 'common',
+			SERVICE_MEDAL: 'service_medal',
+			SQUAD: 'squad',
+
+
+			ALL: ['heroic', 'honorable', 'common', 'service_medal', 'squad']
+		}, 
+		MODERNIZATION_AVAILABILITY: {
+			AVAILABLE_ON_STORAGE_OR_COMMON: 0,
+			NEED_TO_BE_PURCHASED_IN_METASHOP: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		ENTITY_AFFILIATION: {
+			PLAYER: 'player',
+			ALLY: 'ally',
+			ENEMY: 'enemy',
+			NEUTRAL: 'neutral',
+
+
+			ALL: ['player', 'ally', 'enemy', 'neutral']
+		}, 
+		UI_SCALE: {
+			UI_SCALE_STEP: 0.25,
+
+
+			ALL: [0.25]
+		}, 
+		RENT_TYPES: {
+			SHIP: 'ship',
+			CREW: 'crew',
+
+
+			ALL: ['ship', 'crew']
+		}, 
+		COMMON_LOOTBOX_TYPES: {
+			UNKNOWN: 0,
+			CREDITS: 1,
+			SIGNALS: 2,
+			RESOURCES: 3,
+			LUCKY: 4,
+
+
+			ALL: [0, 1, 2, 3, 4]
+		}, 
+		ROMAN_DIGITS: {
+			NONE: '–',
+			I: 'I',
+			II: 'II',
+			III: 'III',
+			IV: 'IV',
+			V: 'V',
+			VI: 'VI',
+			VII: 'VII',
+			VIII: 'VIII',
+			IX: 'IX',
+			X: 'X',
+			XI: 'XI',
+			XII: 'XII',
+			XIII: 'XIII',
+			SUPER_SHIP: '★',
+
+
+			ALL: ['–', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', '★'], 
+			COMMON: ['–', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII'], 
+			SHIP_LEVELS: ['–', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', '★', 'XII', 'XIII']
+		}, 
+		MIXING_PRESETS: {
+			ORIGINAL: 'ORIGINAL',
+			CINEMATIC: 'CINEMATIC',
+			SIMPLIFIED: 'SIMPLIFIED',
+			NIGHT: 'NIGHT',
+			CUSTOM: 'CUSTOM',
+
+
+			ALL: ['ORIGINAL', 'CINEMATIC', 'SIMPLIFIED', 'NIGHT', 'CUSTOM']
+		}, 
+		LOOTBOX_CONSTANTS: {
+			MAX_PER_LOOTBOX_TYPE: 100,
+			MAX_MASS_LOOTBOX_OPEN_AMOUNT: 1000,
+			MAX_REWARDS: 3,
+			MAX_SLOTS: 3,
+
+
+			ALL: [100, 1000, 3, 3]
+		}, 
+		PRICE_ACTION: {
+			RESEARCH: 0,
+			BUY: 1,
+			INFO: 2,
+			GROUP: 3,
+			UNLOCK_BATTLE: 4,
+
+
+			ALL: [0, 1, 2, 3, 4]
+		}, 
+		SPECTATOR_STATE: {
+			PRE_SPECTATOR: 1,
+			SPECTATOR: 2,
+			TRAINING_SPECTATOR: 3,
+
+
+			ALL: [1, 2, 3]
+		}, 
+		ECOBOOST_TYPES: {
+			COMMON: 0,
+			LINKABLE: 1,
+			GLOBAL: 2,
+			CLANBASE: 3,
+
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		ECOBOOST_MODIFIERS: {
+			SERVICE: 'afterBattleRepair',
+			CREDITS: 'creditsFactor',
+			EXP: 'expFactor',
+			CREW_EXP: 'crewExpFactor',
+			FREE_EXP: 'freeExpFactor',
+
+
+			ALL: ['afterBattleRepair', 'creditsFactor', 'expFactor', 'crewExpFactor', 'freeExpFactor'], 
+			CONTROLLED_BY_PLAYER: ['creditsFactor', 'expFactor', 'crewExpFactor', 'freeExpFactor']
+		}, 
+		AUTOPURCHASABLE_ITEMS: {
+			CAMOUFLAGE: 0,
+			ECOBOOST: 1,
+			SIGNAL: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		REWARD_TYPE: {
+			LOOTBOX: 'Lootbox',
+			RESOURCE: 'Resource',
+			RESOURCECOEFF: 'ResourceCoeff',
+			COLLECTION: 'Collection',
+			TOKEN: 'Token',
+			EXTERIOR: 'Exterior',
+			RANDOM_REWARD: 'RandomReward',
+			UNIVERSAL_COLLECTION_CARD: 'UniversalCollectionCard',
+
+
+			ALL: ['Lootbox', 'Resource', 'ResourceCoeff', 'Collection', 'Token', 'Exterior', 'RandomReward', 'UniversalCollectionCard']
+		}, 
+		REWARD_SUBTYPE: {
+			LOOTBOX_LUCKY: 'PCL004_Lucky',
+			LOOTBOX_SUPER: 'PCL005_Epic',
+			LOOTBOX_SIGNALS: 'PCL002_Signals',
+			LOOTBOX_RESOURCES: 'PCL034_Resourses',
+			LOOTBOX_CREDITS: 'PCL001_Credits',
+			WOWS_PREMIUM: 'wows_premium',
+			PREMIUM: 'premium',
+			CAMOUFLAGE: 'Camouflage',
+			SIGNALS: 'Signals',
+			SLOTS: 'slots',
+			CAMPAIGN: 'Campaign',
+			CREDITSCOEFF: 'creditsCoeff',
+			CREWPOINTSCOEFF: 'crewPointsCoeff',
+			FREEXPCOEFF: 'freexpCoeff',
+			MULTIBOOST: 'Multiboost',
+			CLANRESOURCE: 'clanResource',
+
+
+			ALL: ['PCL004_Lucky', 'PCL005_Epic', 'PCL002_Signals', 'PCL034_Resourses', 'PCL001_Credits', 'wows_premium', 'premium', 'Camouflage', 'Signals', 'slots', 'Campaign', 'creditsCoeff', 'crewPointsCoeff', 'freexpCoeff', 'Multiboost', 'clanResource']
+		}, 
+		FORMATTING_OPTIONS_SLIDERS: {
+			WITHOUT_FORMATTING: 0,
+			DEGREES: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		STATISTICS_EVENTS: {
+			LOG: 'statistics.log',
+			LOG_START: 'statistics.logStart',
+			LOG_END: 'statistics.logEnd',
+
+
+			ALL: ['statistics.log', 'statistics.logStart', 'statistics.logEnd']
+		}, 
+		STATISTICS_UNBOUND_COLLECTORS: {
+			BLOCK_COLLECTOR: 1,
+			ELEMENT_COLLECTOR: 2,
+			CLICK_BLOCK_COLLECTOR: 3,
+			CLICK_ELEMENT_COLLECTOR: 4,
+			OVER_BLOCK_COLLECTOR: 5,
+			OVER_ELEMENT_COLLECTOR: 6,
+			TEXT_COLLECTOR: 7,
+			IMAGE_COLLECTOR: 8,
+
+
+			ALL: [1, 2, 3, 4, 5, 6, 7, 8]
+		}, 
+		CLIENT_BATTLE_STATE: {
+			INVALID: -1,
+			STARTED: 0,
+			COUNTDOWN: 1,
+			WAITING: 2,
+			END_BATTLE_IDLING: 3,
+
+
+			ALL: [-1, 0, 1, 2, 3], 
+			IN_BATTLE: [0, 3], 
+
+            NAMES : {
+                STARTED: 'Started', 
+                COUNTDOWN: 'COUNTDOWN', 
+                WAITING: 'WAITING', 
+                END_BATTLE_IDLING: 'END_BATTLE_IDLING'
+            }
+		}, 
+		END_BATTLE_IDLING: {
+			DURATION: 8.0,
+			UI_START_HIDE_TIME: 1.5,
+			UI_HIDE_TIME: 1.0,
+
+
+			ALL: [8.0, 1.5, 1.0]
+		}, 
+		OPERATION_DIFFICULTY: {
+			NORMAL: 0,
+			HARD: 1,
+			NIGHTMARE: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		PVE_OPERATION_STATUS: {
+			INACTIVE: 0,
+			LOCKED: 1,
+			ACTIVE: 2,
+			WEEKLY: 3,
+
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		ARC_EVENT_TABS: {
+			PROGRESS: 0,
+			TASKS: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		EXCHANGE_EXP_INSET: {
+			SHIP_XP: 0,
+			ELITE_XP: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		CONTACTS_AND_CHANNELS_INSET: {
+			CONTACTS: 0,
+			CHANNELS: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		DIVISION_INFOTIP_STATE: {
+			TAB_PLAYER: 0,
+			TAB_BOT: 1,
+			SEARCH: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		CONTACTS_AND_CHANNELS_SEARCH_STATE: {
+			OFF: 0,
+			ON: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		BATTLE_PASS_TAB_INDEX: {
+			MAIN: 0,
+			TASKS: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		SHIP_FEATURES_TAB_INDEX: {
+			MAIN: 0,
+			OTHER: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		BATTLEPASS_SEASON_STATE: {
+			WAITING: 0,
+			ACTIVE: 1,
+			FINISHED: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		BATTLEPASS_SEASON_REMINDERS: {
+			DAYS_TO_SEASON_FINISH: 5,
+			REQUIRED_FINISHED_LEVELS_COUNT: 15,
+
+
+			ALL: [5, 15]
+		}, 
+		BATTLEPASS_SEASON_FLAGS: {
+			END_SEASON_OFFER_SHOWN: 1,
+			END_SEASON_REMINDER_SHOWN: 2,
+			START_SEASON_REMINDER_SHOWN: 3,
+			ONBOARDING_SHOWN: 4,
+
+
+			ALL: [1, 2, 3, 4]
+		}, 
+		BATTLEPASS_TYPES: {
+			FREE: 0,
+			PAID_REGULAR: 1,
+			PAID_ENHANCED: 2,
+
+			VALUE_TO_NAME: {
+				'0': 'FREE', 
+				'1': 'PAID_REGULAR', 
+				'2': 'PAID_ENHANCED'
+			},
+
+			ALL: [0, 1, 2], 
+			PAID: [1, 2], 
+
+            TO_PRICE : {
+                PAID_REGULAR: 'BATTLEPASS_REGULAR', 
+                PAID_ENHANCED: 'BATTLEPASS_ENHANCED'
+            }
+		}, 
+		BATTLEPASS_REWARD_TYPES: {
+			FREE: 0,
+			PAID: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		BATTLEPASS_REWARD_STATE: {
+			UNAVAILABLE: 0,
+			AVAILABLE: 1,
+			CLAIMED: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		BATTLEPASS_BONUSES: {
+			SSE_CHAIN: 'SSE_CHAIN',
+			RESOURCES: 'RESOURCES',
+			DAILY_WIN_EXP: 'DAILY_WIN_EXP',
+			CREW_RESET: 'CREW_RESET',
+			CREW_RESET_GOLD: 'CREW_RESET_GOLD',
+			CREW_RESET_ELXP: 'CREW_RESET_ELXP',
+			CREW_RETRAIN: 'CREW_RETRAIN',
+			CREW_RETRAIN_GOLD: 'CREW_RETRAIN_GOLD',
+			CREW_RETRAIN_ELXP: 'CREW_RETRAIN_ELXP',
+			MODERNIZATION_DISMOUNT: 'MODERNIZATION_DISMOUNT',
+			MODERNIZATION_FOR_CREDITS: 'MODERNIZATION_FOR_CREDITS',
+			BP_POINTS: 'BP_POINTS',
+			GOLD_CONVERT_RATE: 'GOLD_CONVERT_RATE',
+
+
+			ALL: ['SSE_CHAIN', 'RESOURCES', 'DAILY_WIN_EXP', 'CREW_RESET', 'CREW_RESET_GOLD', 'CREW_RESET_ELXP', 'CREW_RETRAIN', 'CREW_RETRAIN_GOLD', 'CREW_RETRAIN_ELXP', 'MODERNIZATION_DISMOUNT', 'MODERNIZATION_FOR_CREDITS', 'BP_POINTS', 'GOLD_CONVERT_RATE']
+		}, 
+		BANNER_ALIGNMENT: {
+			CENTER: 1,
+			LEFT: 2,
+
+
+			ALL: [1, 2]
+		}, 
+		LOBBY_CONSTANTS: {
+			MODERNIZATION_SET: 1,
+			MODERNIZATION_UNSET: 2,
+			MODERNIZATION_BUY: 4,
+			MODERNIZATION_SELL: 8,
+
+
+			ALL: [1, 2, 4, 8]
+		}, 
+		GAME_LOGIC_TRIGGER_TYPE: {
+			EVENT: 'EventTrigger',
+			SWITCH: 'SwitchTrigger',
+
+
+			ALL: ['EventTrigger', 'SwitchTrigger']
+		}, 
+		GAME_LOGIC_ACTIVATOR: {
+			ACHIEVEMENT: 'AchievementActivator',
+			RIBBON: 'RibbonActivator',
+			ADJUSTMENT_SHOT: 'AdjustmentShotActivator',
+			VISIBILITY_CHANGED: 'VisibilityChangedActivator',
+			TIMER: 'TimerActivator',
+			POTENTIAL_DAMAGE: 'PotentialDamageActivator',
+
+
+			ALL: ['AchievementActivator', 'RibbonActivator', 'AdjustmentShotActivator', 'VisibilityChangedActivator', 'TimerActivator', 'PotentialDamageActivator']
+		}, 
+		GAME_LOGIC_ACTION: {
+			RAGE_MODE_PROGRESS: 'RageModeProgressAction',
+			TOGGLE_TRIGGER: 'ToggleTriggerAction',
+			SWITCH_VEHICLE_VISUAL_STATE: 'SwitchVehicleVisualStateAction',
+
+
+			ALL: ['RageModeProgressAction', 'ToggleTriggerAction', 'SwitchVehicleVisualStateAction']
+		}, 
+		CONTINUOUS_BATTLE_ENTER_WARNING_REASON: {
+			BATTLE_TYPE: 1,
+			BATTLE_SHIP: 2,
+			BATTLE_CREW: 4,
+			FREE_SKILLS: 8,
+			EXPENDABLES: 16,
+
+
+			ALL: [1, 2, 4, 8, 16]
+		}, 
+		PREFERENCE_UTILITY_SUBMODAL_TYPE: {
+			APPLY_CHANGES: 0,
+			SET_DEFAULT_PREFS: 1,
+			APPLY_WITH_ORPHANS: 2,
+			CONFIRM_RESTART: 3,
+			APPLY_CHANGES_WITH_ORPHANS: 4,
+
+
+			ALL: [0, 1, 2, 3, 4]
+		}, 
+		DOGTAG_CATEGORIES: {
+			CONSTRUCTOR: 0,
+			PATCH: 1,
+			EMBLEM: 2,
+
+			VALUE_TO_NAME: {
+				'0': 'CONSTRUCTOR', 
+				'1': 'PATCH', 
+				'2': 'EMBLEM'
+			},
+
+			ALL: [0, 1, 2], 
+			ORDER: [0, 1, 2], 
+			ORDER_NO_PATCH: [0, 2], 
+
+            NAMES : {
+                CONSTRUCTOR: 'constructor', 
+                PATCH: 'patch', 
+                EMBLEM: 'emblem'
+            }
+		}, 
+		DOGTAG_ELEMENTS: {
+			SYMBOL: 0,
+			PATCH: 1,
+			EMBLEM: 2,
+			BG_SHAPE: 3,
+			BG_COLOR: 4,
+			BG_BORDER_COLOR: 5,
+			BG_MATERIAL: 6,
+
+			VALUE_TO_NAME: {
+				'0': 'SYMBOL', 
+				'1': 'PATCH', 
+				'2': 'EMBLEM', 
+				'3': 'BG_SHAPE', 
+				'4': 'BG_COLOR', 
+				'5': 'BG_BORDER_COLOR', 
+				'6': 'BG_MATERIAL'
+			},
+
+			ALL: [0, 1, 2, 3, 4, 5, 6], 
+			ORDER: [0, 3, 4, 5, 6], 
+
+            NAMES : {
+                SYMBOL: 'symbol', 
+                PATCH: 'patch', 
+                EMBLEM: 'emblem', 
+                BG_SHAPE: 'bgShape', 
+                BG_COLOR: 'bgColor', 
+                BG_BORDER_COLOR: 'bgBorderColor', 
+                BG_MATERIAL: 'bgMaterial'
+            }
+		}, 
+		BATTLE_TYPE_STATE: {
+			AVAILABLE: 0,
+			INACTIVE: 1,
+			INACTIVE_BY_PRIMETIME: 2,
+			DISABLED: 3,
+
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		VALIDATION_STATE: {
+			VALIDATION: 'validation',
+			VALID: 'valid',
+			INVALID: 'invalid',
+
+
+			ALL: ['validation', 'valid', 'invalid']
+		}, 
+		STRATEGIC_ACTIONS_EVENT_STATE: {
+			FINISHED: 0,
+			ACTIVE: 1,
+			COMPLETED: 2,
+
+
+			ALL: [0, 1, 2], 
+			ACTIVE_STATES: [1, 2]
+		}, 
+		STRATEGIC_ACTIONS_FLAGS: {
+			NEW_EVENT_SEEN: 1,
+			ONBOARDING_SEEN: 2,
+			FIRST_EVENT_BATTLE_DONE: 3,
+
+
+			ALL: [1, 2, 3]
+		}, 
+		STRATEGIC_ACTIONS_TERRITORY_LEVEL: {
+			EASY: 1,
+			NORMAL: 2,
+			HARD: 3,
+
+
+			ALL: [1, 2, 3]
+		}, 
+		STRATEGIC_ACTIONS_NAMES: {
+			GLOBAL_VIEW_NAME: 'global',
+
+
+			ALL: ['global']
+		}, 
+		STRATEGIC_ACTIONS_TERRITORY_STATUS: {
+			LOCKED: 0,
+			AVAILABLE: 1,
+			SELECTED: 2,
+			REWARDS_CLAIM: 3,
+			COMPLETED: 4,
+
+			VALUE_TO_NAME: {
+				'0': 'LOCKED', 
+				'1': 'AVAILABLE', 
+				'2': 'SELECTED', 
+				'3': 'REWARDS_CLAIM', 
+				'4': 'COMPLETED'
+			},
+
+			ALL: [0, 1, 2, 3, 4], 
+			DONE: [3, 4], 
+			IMPLIES_MESSAGE: [1, 2, 3, 4], 
+			UNLOCKED: [1, 2]
+		}, 
+		STRATEGIC_ACTIONS_MESSAGE_TYPES: {
+			START: 0,
+			END: 1,
+
+			VALUE_TO_NAME: {
+				'0': 'START', 
+				'1': 'END'
+			},
+
+			ALL: [0, 1]
+		}, 
+		CONDITION_TYPES: {
+			SINGLE: 0,
+			OR: 1,
+			AND: 2,
+			THRESHOLD: 3,
+
+
+			ALL: [0, 1, 2, 3], 
+			SINGLE_SET: [0, 3]
+		}, 
+		STRATEGIC_ACTIONS_STATISTICS: {
+			LORE_MESSAGES_BUTTON_CLICKED: 'ub2:lore_messages_clicked',
+			TERRITORY_CHOOSE_BUTTON_CLICKED: 'ub2:territory_choose_button_clicked',
+			TERRITORY_INFO_CARD_CLICKED: 'ub2:territory_info_card_clicked',
+
+
+			ALL: ['ub2:lore_messages_clicked', 'ub2:territory_choose_button_clicked', 'ub2:territory_info_card_clicked']
+		}, 
+		POST_BATTLE_SCREEN_TAB: {
+			PERSONAL_REPORT: 0,
+			TEAM_REPORT: 1,
+			DETAILED_REPORT: 2,
+			CREDITS_AND_EXP: 3,
+
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		UNLOCK_TYPES: {
+			SECOND_COLOR_CAMOUFLAGE: 0,
+			SECOND_ENSIGN: 1,
+			PORT: 2,
+			SPECIAL_ABILITY: 3,
+
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		SHIPINFO_STATISTICS: {
+			TOOLTIP_ALLY: 'ub2:ship_info_tooltip_ally',
+			TOOLTIP_ENEMY: 'ub2:ship_info_tooltip_enemy',
+			INFOTIP_ALLY: 'ub2:ship_info_infotip_ally',
+			INFOTIP_ENEMY: 'ub2:ship_info_infotip_enemy',
+			INTEGRALS_OPEN: 'ub2:ship_info_integrals_open',
+			PARAMS_OPEN: 'ub2:ship_info_params_open',
+			ARMAMENT_OPEN: 'ub2:ship_info_armament_open',
+			CONSUMABLE_OPEN: 'ub2:ship_info_consumable_open',
+			SQUADRON_OPEN: 'ub2:ship_info_squadron_open',
+			SQUADRON_SWITCH: 'ub2:ship_info_squadron_switch',
+			SQUADRON_ARMAMENT: 'ub2:ship_info_squadron_armament',
+			SQUADRON_CONSUMABLE: 'ub2:ship_info_squadron_consumable',
+
+
+			ALL: ['ub2:ship_info_tooltip_ally', 'ub2:ship_info_tooltip_enemy', 'ub2:ship_info_infotip_ally', 'ub2:ship_info_infotip_enemy', 'ub2:ship_info_integrals_open', 'ub2:ship_info_params_open', 'ub2:ship_info_armament_open', 'ub2:ship_info_consumable_open', 'ub2:ship_info_squadron_open', 'ub2:ship_info_squadron_switch', 'ub2:ship_info_squadron_armament', 'ub2:ship_info_squadron_consumable']
+		}, 
+		EVENT_HUB_FLAGS: {
+			ONBOARDING_SHOWN: 0,
+			PROGRESS_TAB_SEEN: 1,
+			BRIEFING_TAB_SEEN: 2,
+			BANNER_SEEN: 3,
+
+
+			ALL: [0, 1, 2, 3], 
+			NEW_MARKER: [1, 2, 3]
+		}, 
+		UB2_COMMON_STATISTICS: {
+			INFORMER_CLOSED_CROSS: 'ub2:informer_closed_cross',
+
+
+			ALL: ['ub2:informer_closed_cross']
+		}, 
+		UB2_TIPS_STATISTICS: {
+			TIP_SHOWN: 'ub2:guiding_tip_shown',
+			TIP_CLOSED_CROSS: 'ub2:guiding_tip_closed_cross',
+
+
+			ALL: ['ub2:guiding_tip_shown', 'ub2:guiding_tip_closed_cross']
+		}, 
+		EVENT_HUB_STATISTICS: {
+			BRIEFING_DESCRIPTION_TIP_SHOWN: 'ub2:briefing_description_tip_shown',
+			BRIEFING_DESCRIPTION_BUTTON_NEXT: 'ub2:briefing_description_button_next',
+			PROGRESS_REWARDS_TIP_SHOWN: 'ub2:progress_rewards_tip_shown',
+			PROGRESS_REWARDS_BUTTON_NEXT: 'ub2:progress_rewards_button_next',
+			CARD_INSTALLATION_TIP_SHOWN: 'ub2:card_installation_tip_shown',
+			CARD_FINAL_TIP_SHOWN: 'ub2:card_final_tip_shown',
+			CARD_FINAL_BUTTON_FINISH: 'ub2:card_final_button_finish',
+			EVENT_HUB_INFORMER_BUTTON: 'ub2:event_hub_informer_button',
+			EVENT_HUB_RENDERER_CLICKED: 'ub1:event_hub_renderer_clicked',
+			EVENT_HUB_BANNER_ENTER: 'ub2:event_hub_banner_enter',
+			EVENT_HUB_BANNER_LEAVE: 'ub2:event_hub_banner_leave',
+
+
+			ALL: ['ub2:briefing_description_tip_shown', 'ub2:briefing_description_button_next', 'ub2:progress_rewards_tip_shown', 'ub2:progress_rewards_button_next', 'ub2:card_installation_tip_shown', 'ub2:card_final_tip_shown', 'ub2:card_final_button_finish', 'ub2:event_hub_informer_button', 'ub1:event_hub_renderer_clicked', 'ub2:event_hub_banner_enter', 'ub2:event_hub_banner_leave']
+		}, 
+		MINORS_COMMUNICATION: {
+			ENABLED: 'enabled',
+			DISABLED: 'disabled',
+
+
+			ALL: ['enabled', 'disabled']
+		}, 
+		EXTERNAL_IMAGE_CONSTANT_URLS: {
+			BATTLE_PASS_CDN: 'https://wows-common-media.wgcdn.co/client/battlepass/',
+
+
+			ALL: ['https://wows-common-media.wgcdn.co/client/battlepass/']
+		}, 
+		BATTLE_PASS_BANNERS: {
+			BANNER_0: 'battlePassSpecialReward_0.png',
+			BANNER_1: 'battlePassSpecialReward_1.png',
+			BANNER_2: 'battlePassSpecialReward_2.png',
+
+
+			ALL: ['battlePassSpecialReward_0.png', 'battlePassSpecialReward_1.png', 'battlePassSpecialReward_2.png'], 
+			NAMES: ['battlePassSpecialReward_0.png', 'battlePassSpecialReward_1.png', 'battlePassSpecialReward_2.png']
+		}
+	}, 
+	Context_guiding_tip: {
+		TIP_CHAIN_ID: {
+			NONE: 0,
+			NQ_INTRO: 1,
+			RESEARCH: 2,
+			PVP: 3,
+			EXTERIOR: 4,
+			BATTLE_BONUSES: 5,
+			FREE_XP: 6,
+			ECO_BONUSES: 7,
+			LOOTBOXES: 8,
+			CREW: 9,
+			SSE: 10,
+			MODERNIZATION: 11,
+			CAMPAIGN: 12,
+			METASHOP: 13,
+			PVE: 14,
+			WEB_STORAGE: 15,
+			RANK: 16,
+			CLANS: 17,
+			RESEARCH_REPEAT: 18,
+			PVP_REPEAT: 19,
+			EXTERIOR_REPEAT: 20,
+			BATTLE_BONUSES_REPEAT: 21,
+			FREE_XP_REPEAT: 22,
+			ECO_BONUSES_REPEAT: 23,
+			LOOTBOXES_REPEAT: 24,
+			CREW_REPEAT: 25,
+			SSE_REPEAT: 26,
+			MODERNIZATION_REPEAT: 27,
+			CAMPAIGN_REPEAT: 28,
+			METASHOP_REPEAT: 29,
+			PVE_REPEAT: 30,
+			WEB_STORAGE_REPEAT: 31,
+			RANK_REPEAT: 32,
+			CLANS_REPEAT: 33,
+			SHIP_ACES: 34,
+			KEYBATTLE_SQUADS: 35,
+			SUPERSHIPS: 36,
+			INVITE_FRIEND: 37,
+			SUBS_IN_METASHOP: 38,
+			PROSPECTIVE_EVENT: 39,
+			RVR_AVAILABLE: 40,
+			RVR_NEW_STAGE: 41,
+			PARAGONS: 43,
+			SHIPYARD: 44,
+			PREMSHOP_SPECIAL: 45,
+			METASHOP_SPECIAL: 46,
+			SNOWFLAKES_EVENT_START: 47,
+			SNOWFLAKES_EVENT_FINISH: 48,
+			INGAME_NEWS: 49,
+			BATTLEPASS_EVENT: 50,
+			BATTLEPASS_SEASON_FINISH_FREE: 51,
+			BATTLEPASS_SEASON_FINISH_PAID: 52,
+			MERGED_SHOPS: 53,
+			CONTINUOUS_BATTLE_ENTER: 54,
+			STRATEGIC_ACTIONS_EVENT: 55,
+			STRATEGIC_ACTIONS_TASK_CHANGED: 56,
+			STRATEGIC_ACTIONS_TERRITORY_COMPLETED: 57,
+			PORT_BUFF_FOR_HALLOWEEN: 58,
+			TACTICAL_CONSUMABLES: 59,
+			EVENT_HUB: 60,
+			BATTLEPASS_TASK_BONUS: 61,
+
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61], 
+			REPEAT: [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33], 
+			COMMON_CHAINS: [34, 35, 36, 37, 38, 39, 40, 41, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61]
+		}, 
+		TIP_TYPE: {
+			NONE: 0,
+			NEWBIE_QUESTS_INTRO: 1,
+			NEWBIE_QUESTS_FINAL: 2,
+			RESEARCH_INTRO: 3,
+			RESEARCH_SHIP: 4,
+			RESEARCH_CREDITS: 5,
+			RESEARCH_EXP: 6,
+			RESEARCH_FREEEXP: 7,
+			RESEARCH_FINAL: 8,
+			RESEARCH_FINAL_BUY_RESEARCH: 9,
+			PVP_INTRO: 10,
+			PVP_FINAL: 11,
+			EXTERIOR_PORT: 13,
+			EXTERIOR_PERMO_CAMO: 14,
+			EXTERIOR_INSTALL: 15,
+			EXTERIOR_TAB_FLAGS: 16,
+			EXTERIOR_TAB_CONSUMABLE_CAMO: 17,
+			BATTLE_BONUS_INTRO: 20,
+			BATTLE_BONUS_FINAL: 21,
+			FREE_XP_INTRO: 22,
+			FREE_XP_MODULE_TAB: 23,
+			FREE_XP_MODULE_SUFF: 24,
+			FREE_XP_MODULE_INSUFF: 25,
+			FREE_XP_MODULE_SHIP: 26,
+			FREE_XP_SHIP_SUFF: 27,
+			FREE_XP_SHIP_INSUFF: 28,
+			ECO_BONUS_INTRO: 29,
+			ECO_BONUS_FINAL: 30,
+			LOOTBOXES_INTRO: 31,
+			LOOTBOXES_DAILY: 32,
+			LOOTBOXES_ARMORY: 33,
+			LOOTBOXES_OPEN: 34,
+			LOOTBOXES_MODAL: 35,
+			CREW_HAS_CREW: 36,
+			CREW_NO_CREW: 37,
+			CREW_SKILL_POINT: 38,
+			CREW_SELECT_SKILL: 39,
+			CREW_LEARN_SKILL: 40,
+			SSE_INTRO: 41,
+			SSE_BATTLE: 42,
+			SSE_FINAL: 43,
+			MODERNIZATION_INTRO: 45,
+			MODERNIZATION_FINAL: 46,
+			CAMPAIGN_INTRO: 47,
+			CAMPAIGN_SELECT: 48,
+			CAMPAIGN_MISSION: 49,
+			CAMPAIGN_TASK: 50,
+			CAMPAIGN_FINAL: 51,
+			METASHOP_INTRO: 52,
+			PVE_INTRO: 53,
+			PVE_CHOOSE: 54,
+			PVE_FINAL: 55,
+			WEB_STORAGE_INTRO: 56,
+			WEB_STORAGE_FINAL: 57,
+			RANK_INTRO: 58,
+			RANK_FINAL: 59,
+			CLANS_INTRO: 60,
+			EXTERIOR_CANT_INSTALL_CAMO: 61,
+			RESEARCH_INTRO_REPEAT: 70,
+			RESEARCH_SHIP_REPEAT: 71,
+			RESEARCH_CREDITS_REPEAT: 72,
+			RESEARCH_EXP_REPEAT: 73,
+			RESEARCH_FREEEXP_REPEAT: 74,
+			RESEARCH_FINAL_REPEAT: 75,
+			PVP_INTRO_REPEAT: 76,
+			PVP_FINAL_REPEAT: 77,
+			EXTERIOR_PORT_REPEAT: 79,
+			EXTERIOR_PERMO_CAMO_REPEAT: 80,
+			EXTERIOR_TAB_FLAGS_REPEAT: 81,
+			EXTERIOR_TAB_CONSUMABLE_CAMO_REPEAT: 82,
+			BATTLE_BONUS_INTRO_REPEAT: 85,
+			BATTLE_BONUS_FINAL_REPEAT: 86,
+			FREE_XP_INTRO_REPEAT: 87,
+			FREE_XP_MODULE_TAB_REPEAT: 88,
+			FREE_XP_MODULE_SUFF_REPEAT: 89,
+			FREE_XP_MODULE_INSUFF_REPEAT: 90,
+			FREE_XP_MODULE_SHIP_REPEAT: 91,
+			FREE_XP_SHIP_SUFF_REPEAT: 92,
+			FREE_XP_SHIP_INSUFF_REPEAT: 93,
+			ECO_BONUS_INTRO_REPEAT: 94,
+			ECO_BONUS_FINAL_REPEAT: 95,
+			LOOTBOXES_INTRO_REPEAT: 96,
+			LOOTBOXES_DAILY_REPEAT: 97,
+			LOOTBOXES_ARMORY_REPEAT: 98,
+			LOOTBOXES_OPEN_REPEAT: 99,
+			LOOTBOXES_MODAL_REPEAT: 100,
+			CREW_HAS_CREW_REPEAT: 101,
+			CREW_NO_CREW_REPEAT: 102,
+			CREW_SKILL_POINT_REPEAT: 103,
+			CREW_SELECT_SKILL_REPEAT: 104,
+			CREW_LEARN_SKILL_REPEAT: 105,
+			SSE_INTRO_REPEAT: 106,
+			SSE_BATTLE_REPEAT: 107,
+			SSE_FINAL_REPEAT: 108,
+			MODERNIZATION_INTRO_REPEAT: 110,
+			MODERNIZATION_FINAL_REPEAT: 111,
+			CAMPAIGN_INTRO_REPEAT: 112,
+			CAMPAIGN_SELECT_REPEAT: 113,
+			CAMPAIGN_MISSION_REPEAT: 114,
+			CAMPAIGN_TASK_REPEAT: 115,
+			CAMPAIGN_FINAL_REPEAT: 116,
+			METASHOP_INTRO_REPEAT: 117,
+			PVE_INTRO_REPEAT: 118,
+			PVE_CHOOSE_REPEAT: 119,
+			PVE_FINAL_REPEAT: 120,
+			WEB_STORAGE_INTRO_REPEAT: 121,
+			WEB_STORAGE_FINAL_REPEAT: 122,
+			RANK_INTRO_REPEAT: 123,
+			RANK_FINAL_REPEAT: 124,
+			CLANS_INTRO_REPEAT: 125,
+			BATTLE_TYPE_BLOCKED_DIVISION: 130,
+			EXTERIOR_BLOCKED_DIV_READY: 132,
+			EXTERIOR_BLOCKED_BATTLE: 133,
+			EXTERIOR_BLOCKED_MAINTENANCE: 134,
+			BATTLE_BONUS_BLOCKED_DIV_READY: 135,
+			BATTLE_BONUS_BLOCKED_BATTLE: 136,
+			BATTLE_BONUS_BLOCKED_MAINTENANCE: 137,
+			ECO_BONUS_BLOCKED_DIV_READY: 138,
+			ECO_BONUS_BLOCKED_BATTLE: 139,
+			ECO_BONUS_BLOCKED_MAINTENANCE: 140,
+			CREW_BLOCKED_DIV_READY: 141,
+			CREW_BLOCKED_BATTLE: 142,
+			MODERNIZATION_BLOCKED_DIV_READY: 144,
+			MODERNIZATION_BLOCKED_BATTLE: 145,
+			MODERNIZATION_BLOCKED_MAINTENANCE: 146,
+			PARAGONS_INTRO: 250,
+			SHIPYARD_INTRO: 251,
+			SUPERSHIPS: 252,
+			SNOWFLAKES_EVENT_START: 253,
+			SNOWFLAKES_EVENT_FINISH: 254,
+			INVITE_DOCK_USER_MENU: 255,
+			INVITE_USER_MENU_INVITE_BTN: 256,
+			RVR_AVAILABLE: 258,
+			RVR_NEW_STAGE: 259,
+			SHIP_ACES: 260,
+			PREMSHOP: 262,
+			METASHOP: 263,
+			EXPLORE_PROSPECTIVE_EVENT: 264,
+			CHECK_PROSPECTIVE_EVENT: 265,
+			INGAME_NEWS: 266,
+			BATTLEPASS_SEASON_FINISH_FREE: 268,
+			BATTLEPASS_SEASON_FINISH_PAID: 269,
+			MERGED_SHOPS: 270,
+			CONTINUOUS_BATTLE_ENTER: 271,
+			STRATEGIC_ACTIONS_EVENT: 272,
+			STRATEGIC_ACTIONS_TASK_CHANGED: 273,
+			STRATEGIC_ACTIONS_TERRITORY_COMPLETED: 274,
+			PORT_BUFF_FOR_HALLOWEEN: 275,
+			BATTLEPASS_TASKS_CUMULATIVE_REWARD: 279,
+			BATTLEPASS_EVENT_START: 280,
+			BATTLEPASS_TASKS: 281,
+			BATTLEPASS_FREE_REWARDS: 282,
+			BATTLEPASS_PAID_REWARDS: 283,
+			TACTICAL_CONSUMABLES: 284,
+			EVENT_HUB_BRIEFING_TAB: 285,
+			EVENT_HUB_BRIEFING_DESCRIPTION: 286,
+			EVENT_HUB_PROGRESS_TAB: 287,
+			EVENT_HUB_PROGRESS_REWARDS: 288,
+			EVENT_HUB_BATTLE_CARD_TAB: 289,
+			EVENT_HUB_BATTLE_CARD_FINAL: 291,
+			EVENT_HUB_BATTLE_CARD_BLOCKED_DIV_READY: 292,
+			EVENT_HUB_BATTLE_CARD_BLOCKED_WRONG_SHIP: 293,
+			EVENT_HUB_BATTLE_CARD_BLOCKED_MAINTENANCE: 294,
+
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 70, 71, 72, 73, 74, 75, 76, 77, 79, 80, 81, 82, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 130, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 144, 145, 146, 250, 251, 252, 253, 254, 255, 256, 258, 259, 260, 262, 263, 264, 265, 266, 268, 269, 270, 271, 272, 273, 274, 275, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 291, 292, 293, 294]
+		}
+	}, 
+	Dogtags_classifications: {
+		SYMBOL_GROUPS: {
+			UNITS_AND_ATTRIBUTES: 1,
+			SHIPS_AND_BATTLES: 2,
+			ACHIEVEMENTS: 3,
+			GAME_EVENTS: 4,
+			COLLABS: 5,
+			COUNTRIES_AND_DATES: 6,
+			SPORT: 7,
+			MISC: 8,
+
+			VALUE_TO_NAME: {
+				'1': 'UNITS_AND_ATTRIBUTES', 
+				'2': 'SHIPS_AND_BATTLES', 
+				'3': 'ACHIEVEMENTS', 
+				'4': 'GAME_EVENTS', 
+				'5': 'COLLABS', 
+				'6': 'COUNTRIES_AND_DATES', 
+				'7': 'SPORT', 
+				'8': 'MISC'
+			},
+
+			ALL: [1, 2, 3, 4, 5, 6, 7, 8], 
+			SORT_ORDER: [1, 2, 3, 4, 5, 6, 7, 8]
+		}, 
+		BG_SHAPE_GROUPS: {
+			BASIC_COLORIZABLE: 1,
+			UNIQUE: 2,
+
+			VALUE_TO_NAME: {
+				'1': 'BASIC_COLORIZABLE', 
+				'2': 'UNIQUE'
+			},
+
+			ALL: [1, 2], 
+			SORT_ORDER: [1, 2]
+		}, 
+		BG_COLOR_GROUPS: {
+			BASIC: 1,
+
+			VALUE_TO_NAME: {
+				'1': 'BASIC'
+			},
+
+			ALL: [1], 
+			SORT_ORDER: [1]
+		}, 
+		BG_BORDER_COLOR_GROUPS: {
+			BASIC: 1,
+
+			VALUE_TO_NAME: {
+				'1': 'BASIC'
+			},
+
+			ALL: [1], 
+			SORT_ORDER: [1]
+		}, 
+		BG_MATERIAL_GROUPS: {
+			BASIC: 1,
+
+			VALUE_TO_NAME: {
+				'1': 'BASIC'
+			},
+
+			ALL: [1], 
+			SORT_ORDER: [1]
+		}, 
+		PATCH_GROUPS: {
+			SHIPS_AND_BATTLES: 1,
+			ACHIEVEMENTS: 2,
+			EVENTS: 3,
+			COLLAB: 4,
+			COUNTRIES_AND_DATES: 5,
+			SPORT: 6,
+			MISC: 7,
+
+			VALUE_TO_NAME: {
+				'1': 'SHIPS_AND_BATTLES', 
+				'2': 'ACHIEVEMENTS', 
+				'3': 'EVENTS', 
+				'4': 'COLLAB', 
+				'5': 'COUNTRIES_AND_DATES', 
+				'6': 'SPORT', 
+				'7': 'MISC'
+			},
+
+			ALL: [1, 2, 3, 4, 5, 6, 7], 
+			SORT_ORDER: [1, 2, 3, 4, 5, 6, 7]
+		}, 
+		EMBLEM_GROUPS: {
+			NATIONS: 1,
+			CLASSES: 2,
+			BATTLE_TYPES: 3,
+			SPECIAL: 4,
+
+			VALUE_TO_NAME: {
+				'1': 'NATIONS', 
+				'2': 'CLASSES', 
+				'3': 'BATTLE_TYPES', 
+				'4': 'SPECIAL'
+			},
+
+			ALL: [1, 2, 3, 4], 
+			SORT_ORDER: [1, 2, 3, 4]
+		}, 
+		NATIONS_EMBLEM: {
+			JAPAN: 1,
+			USA: 2,
+			RUSSIA: 3,
+			GERMANY: 4,
+			UK: 5,
+			FRANCE: 6,
+			ITALY: 7,
+			PANASIA: 8,
+			EUROPE: 9,
+			NETHERLANDS: 10,
+			SPAIN: 11,
+			PANAMERICA: 12,
+			COMMONWEALTH: 13,
+
+			VALUE_TO_NAME: {
+				'1': 'JAPAN', 
+				'2': 'USA', 
+				'3': 'RUSSIA', 
+				'4': 'GERMANY', 
+				'5': 'UK', 
+				'6': 'FRANCE', 
+				'7': 'ITALY', 
+				'8': 'PANASIA', 
+				'9': 'EUROPE', 
+				'10': 'NETHERLANDS', 
+				'11': 'SPAIN', 
+				'12': 'PANAMERICA', 
+				'13': 'COMMONWEALTH'
+			},
+
+			ALL: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 
+			SORT_ORDER: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+		}, 
+		CLASSES_EMBLEM: {
+			SUBMARINE: 1,
+			DESTROYER: 2,
+			CRUISER: 3,
+			BATTLESHIP: 4,
+			AIRCARRIER: 5,
+
+			VALUE_TO_NAME: {
+				'1': 'SUBMARINE', 
+				'2': 'DESTROYER', 
+				'3': 'CRUISER', 
+				'4': 'BATTLESHIP', 
+				'5': 'AIRCARRIER'
+			},
+
+			ALL: [1, 2, 3, 4, 5], 
+			SORT_ORDER: [1, 2, 3, 4, 5]
+		}, 
+		BATTLE_TYPES_EMBLEM: {
+			RANKED_BATTLES: 1,
+			CLAN_BATTLES: 2,
+			TOURNAMENTS: 3,
+
+			VALUE_TO_NAME: {
+				'1': 'RANKED_BATTLES', 
+				'2': 'CLAN_BATTLES', 
+				'3': 'TOURNAMENTS'
+			},
+
+			ALL: [1, 2, 3], 
+			SORT_ORDER: [1, 2, 3]
+		}, 
+		SPECIAL_EMBLEM: {
+			MODMAKER: 1,
+			PRIVATEER: 2,
+			CONTRIBUTOR: 3,
+			ST: 4,
+			CST: 5,
+			PT: 6,
+			COLLECTIONER: 7,
+
+			VALUE_TO_NAME: {
+				'1': 'MODMAKER', 
+				'2': 'PRIVATEER', 
+				'3': 'CONTRIBUTOR', 
+				'4': 'ST', 
+				'5': 'CST', 
+				'6': 'PT', 
+				'7': 'COLLECTIONER'
+			},
+
+			ALL: [1, 2, 3, 4, 5, 6, 7], 
+			SORT_ORDER: [1, 2, 3, 4, 5, 6, 7]
+		}
+	}, 
+	Exteriors: {
+		EXTERIOR_TYPE: {
+			CAMOUFLAGE: 0,
+			PERMOFLAGE: 1,
+			SKIN: 2,
+			MSKIN: 3,
+			SIGNAL: 4,
+
+			VALUE_TO_NAME: {
+				'0': 'CAMOUFLAGE', 
+				'1': 'PERMOFLAGE', 
+				'2': 'SKIN', 
+				'3': 'MSKIN', 
+				'4': 'SIGNAL'
+			},
+
+			ALL: [0, 1, 2, 3, 4]
+		}, 
+		EXTERIOR_NAMES: {
+			CAMOUFLAGE: 'camouflage',
+			PERMOFLAGE: 'permoflage',
+			SKIN: 'skin',
+			MSKIN: 'mskin',
+			SIGNAL: 'flags',
+
+
+			ALL: ['camouflage', 'permoflage', 'skin', 'mskin', 'flags']
+		}, 
+		CAMO_TYPE: {
+			PERMANENT: 'permanent',
+			EXPENDABLE: 'expendable',
+
+
+			ALL: ['permanent', 'expendable']
+		}, 
+		PERMANENT_CAMO_TYPE: {
+			UNIQUE: 'unique',
+			TILEFLAGE: 'tileflage',
+
+
+			ALL: ['unique', 'tileflage']
+		}, 
+		CAMO_PRICE_GROUP: {
+			CAMOUFLAGE: 'CAMOUFLAGE_GROUP',
+			TILEFLAGE: 'TILEFLAGE_GROUP',
+
+
+			ALL: ['CAMOUFLAGE_GROUP', 'TILEFLAGE_GROUP']
+		}
+	}, 
+	Http_status: {
+		INFORMATIONAL: {
+			CONTINUE: 100,
+
+
+			ALL: [100]
+		}, 
+		SUCCESS: {
+			OK: 200,
+
+
+			ALL: [200]
+		}, 
+		REDIRECTION: {
+			FOUND: 302,
+
+
+			ALL: [302]
+		}, 
+		CLIENT_ERROR: {
+			BAD_REQUEST: 400,
+			FORBIDDEN: 403,
+
+
+			ALL: [400, 403]
+		}, 
+		SERVER_ERROR: {
+			BAD_GATEWAY: 502,
+
+
+			ALL: [502]
+		}
+	}, 
+	Ingame_bonus_selector: {
+		ANIMATION_TIMEOUTS: {
+			HIDE_BACK_PANEL_TIME: 0.5,
+			HIDE_BACK_PANEL_DELAY: 1.0,
+			SELECTED_ITEM_HIDE_DELAY_TIME: 0.5,
+			ITEM_ANIMATION_TIME: 0.15,
+			ITEM_HIDE_TIME_DELAY: 0.15,
+
+
+			ALL: [0.5, 1.0, 0.5, 0.15, 0.15]
+		}, 
+		BONUS_TYPE: {
+			MODIFIER: 1,
+			CONSUMABLE: 2,
+
+
+			ALL: [1, 2]
+		}
+	}, 
+	Key_targets: {
+		KEY_TARGET_TYPES: {
+			PIRATE: 1,
+
+
+			ALL: [1]
+		}
+	}, 
+	Pre_battle: {
+		PRE_BATTLE_INVITE_TYPE: {
+			COMMON: 1,
+			SEEKER_ONLY: 2,
+			DYNAMIC: 5,
+
+
+			ALL: [1, 2, 5]
+		}
+	}, 
+	Ranked: {
+		DENY_REASONS_RANKED: {
+			SEASON_NOT_STARTED: 2,
+			WRONG_SHIP_LEVEL: 4,
+			WRONG_ACCOUNT_LEVEL: 8,
+			DIVISION_NOT_ALLOWED: 16,
+			FIRST_RANK: 32,
+			FULL_STARS: 64,
+			ONLY_PVP_PVE_SHIP: 128,
+			NO_SHIP: 256,
+			DIFFERENT_LEAGUES: 512,
+			NO_CURRENT_PRIME_TIME: 1024,
+			NO_CURRENT_SPRINT: 2048,
+			FIRST_RANK_LAST_SPRINT: 4096,
+			FULL_STARS_LAST_SPRINT: 8192,
+			WRONG_SHIP_CLASS: 16384,
+
+
+			ALL: [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384], 
+			WRONG_LEVEL: [4, 8], 
+			WRONG_SHIP: [4, 128, 16384]
+		}, 
+		RANK_CONSTANTS: {
+			TOP_RANK: 1,
+			TOP_LEAGUE: 1,
+			NO_SPRINT: -1,
+
+
+			ALL: [1, 1, -1]
+		}, 
+		RANK_VICTORIES_REWARDS_PROGRESS: {
+			NONE: 0,
+			BEFORE_FIRST: 1,
+			AFTER_FIRST: 2,
+			BEFORE_LAST: 3,
+			LAST: 4,
+
+
+			ALL: [0, 1, 2, 3, 4]
+		}, 
+		RANK_RESTRICTIONS_DEFAULT_SETTINGS: {
+			MIN_SHIP_LEVEL: 1,
+			MAX_SHIP_LEVEL: 10,
+			MIN_PLAYERS: 5,
+			MAX_PLAYERS: 12,
+			MIN_CARRIERS: 0,
+			MAX_CARRIERS: 1,
+			MIN_BATTLESHIPS: 0,
+			MAX_BATTLESHIPS: 1,
+			MIN_CRUISERS: 0,
+			MAX_CRUISERS: 1,
+			MIN_DESTROYERS: 0,
+			MAX_DESTROYERS: 1,
+			MIN_SUBMARINES: 0,
+			MAX_SUBMARINES: 1,
+
+
+			ALL: [1, 10, 5, 12, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+		}
+	}, 
+	Result_screen: {
+		TOOLTIP_TYPES: {
+			SIMPLE: 'simple',
+			ENSIGNS: 'ensigns',
+			ECOBOOSTS: 'ecoboosts',
+			FREE_XP: 'freeXP',
+			REAMMUNITION: 'reammunition',
+			RECAMO: 'recamo',
+			RESIGNAL: 'resignal',
+			REBOOST: 'reboost',
+			REEQUIP: 'reequip',
+			SSE: 'sse',
+			TEAM_KILLER: 'team_killer',
+			TAKEN_ARTILLERY: 'taken_artillery',
+			TAKEN_TORPEDOES: 'taken_torpedoes',
+			TAKEN_BOMBS: 'taken_bombs',
+			TAKEN_SKIP_BOMBS: 'taken_skip_bombs',
+			TAKEN_ROCKETS: 'taken_rockets',
+			TAKEN_NAVAL_MINES: 'taken_naval_mines',
+			TAKEN_DEPTH_CHARGES: 'taken_depth_charges',
+			TAKEN_AIRSUPPORT: 'taken_airsupport',
+			TAKEN_OTHER: 'taken_other',
+			SCOUTING_DAMAGE: 'scouting_damage',
+
+
+			ALL: ['simple', 'ensigns', 'ecoboosts', 'freeXP', 'reammunition', 'recamo', 'resignal', 'reboost', 'reequip', 'sse', 'team_killer', 'taken_artillery', 'taken_torpedoes', 'taken_bombs', 'taken_skip_bombs', 'taken_rockets', 'taken_naval_mines', 'taken_depth_charges', 'taken_airsupport', 'taken_other', 'scouting_damage']
+		}, 
+		COLORS: {
+			ALPHABLACK: 'alphablack',
+			ALPHARED: 'alphared',
+			ALPHAPINK: 'alphapink',
+			GREY: 'grey',
+			PINK: 'pink',
+			RED: 'red',
+
+
+			ALL: ['alphablack', 'alphared', 'alphapink', 'grey', 'pink', 'red']
+		}, 
+		BLOCKS: {
+			CREWEXP: 'crew_exp',
+			ACCOUNTEXP: 'account_exp',
+			CREDITS: 'credits',
+
+
+			ALL: ['crew_exp', 'account_exp', 'credits']
+		}, 
+		FORMAT: {
+			GOLD: 'gold',
+			FREE_XP_RIGHT: 'freexp_right',
+			GOLD_APPLIED: 'gold_applied',
+			NO_VALUE: 'no_value',
+			EXP: 'exp',
+			BOLD: 'bold',
+			TOOLTIP_PERCENTS: 'tooltip_percents',
+			SKILL_POINTS: 'skill_points',
+			NEW_LEVEL: 'new_level',
+			CREDITS_APPLIED_SHOW_ZERO: 'credits_applied_show_zero',
+			GOLD_RIGHT: 'gold_right',
+			SUBTITLE: 'subtitle',
+			STRING: 'string',
+			FREE_XP: 'freeXP',
+			CREW_XP: 'crewXP',
+			PERIOD: 'period',
+			WARNING_ICON: 'warning_icon',
+			ELITE_XP: 'elite_xp',
+			DISTANCE: 'distance',
+			CREDITS_ZERO_HIDE: 'credits_zero_hide',
+			AOGAS: 'aogas',
+			CREDITS: 'credits',
+			TIME: 'time',
+			PERCENTS: 'percents',
+			CREDITS_APPLIED: 'credits_applied',
+			FLOAT: 'float',
+			INTEGER: 'integer',
+
+
+			ALL: ['gold', 'freexp_right', 'gold_applied', 'no_value', 'exp', 'bold', 'tooltip_percents', 'skill_points', 'new_level', 'credits_applied_show_zero', 'gold_right', 'subtitle', 'string', 'freeXP', 'crewXP', 'period', 'warning_icon', 'elite_xp', 'distance', 'credits_zero_hide', 'aogas', 'credits', 'time', 'percents', 'credits_applied', 'float', 'integer']
+		}, 
+		TYPES: {
+			HEADER: 0,
+			SUBHEADER: 1,
+			LINE: 2,
+			SUBLINE: 3,
+			LIST: 4,
+			TOTAL: 5,
+			PLANE: 6,
+			MODULE_CRIT: 7,
+			MODULE_KILL: 8,
+			CAROUSEL_ITEM: 9,
+			TOOLTIP_HEADER: 10,
+			EXP_WITH_PROGRESS: 11,
+			EMPTY_LINE: 12,
+			TOOLTIP_LINE: 13,
+			BUILDING_TOOLTIP_HEADER: 14,
+			PLAYER: 15,
+			WARNING_LINE: 16,
+			PLAIN_LINE: 17,
+
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+		}
+	}, 
+	Ships: {
+		SHIP_GROUPS: {
+			START: 'start',
+			UPGRADEABLE: 'upgradeable',
+			UPGRADEABLE_EXCL: 'upgradeableExclusive',
+			PREMIUM: 'premium',
+			SPECIAL: 'special',
+			SPECIAL_UNSELLABLE: 'specialUnsellable',
+			DEMO_WITHOUT_STATS: 'demoWithoutStats',
+			DEMO_WITHOUT_STATS_PREM: 'demoWithoutStatsPrem',
+			EVENT: 'event',
+			UNAVAILABLE: 'unavailable',
+			PRESERVED: 'preserved',
+			DISABLED: 'disabled',
+			PECULIAR: 'peculiar',
+			CLAN: 'clan',
+			ULTIMATE: 'ultimate',
+			EARLY_ACCESS: 'earlyAccess',
+			UPGRADEABLE_ULT: 'upgradeableUltimate',
+			SUPER_SHIP: 'superShip',
+			DEMO_WITH_STATS: 'demoWithStats',
+			COOP_ONLY: 'coopOnly',
+			NOT_FOR_BATTLE: 'notForBattle',
+
+
+			ALL: ['start', 'upgradeable', 'upgradeableExclusive', 'premium', 'special', 'specialUnsellable', 'demoWithoutStats', 'demoWithoutStatsPrem', 'event', 'unavailable', 'preserved', 'disabled', 'peculiar', 'clan', 'ultimate', 'earlyAccess', 'upgradeableUltimate', 'superShip', 'demoWithStats', 'coopOnly', 'notForBattle']
+		}, 
+		BRANCH: {
+			US_CV: 1,
+			US_CV_USSUS: 2,
+			US_CV2: 3,
+			US_BB: 4,
+			US_BB_MAINE: 5,
+			US_BB_TOP: 6,
+			US_BB_NEW: 7,
+			US_HYB: 8,
+			US_CA_EARLY: 9,
+			US_CA_LIGHT: 10,
+			US_CA_JACKSONVILLE: 11,
+			US_CA_HEAVY: 12,
+			US_CA_ANNAPOLIS: 13,
+			US_DD_ARTILLERY: 14,
+			US_DD_TORPEDO: 15,
+			US_DD_HUMPHREYS: 16,
+			US_SC: 17,
+			JP_CV: 18,
+			JP_CV_SEKIRYU: 19,
+			JP_BB: 20,
+			JP_BB_SATSUMA: 21,
+			JP_BB_LIGHT: 22,
+			JP_CA: 23,
+			JP_CL: 24,
+			JP_DD_MAIN: 25,
+			JP_DD_ART: 26,
+			JP_DD_TORP: 27,
+			JP_DD_YAMAGIRI: 28,
+			UK_CV: 29,
+			UK_CV_EAGLE: 30,
+			UK_BB: 31,
+			UK_BB_DEVASTATION: 32,
+			UK_BB_2: 33,
+			UK_CA_LIGHT: 34,
+			UK_CA_HEAVY: 35,
+			UK_CA_EDGAR: 36,
+			UK_DD: 37,
+			UK_SC: 38,
+			ASIA_DD: 39,
+			ASIA_DD_KUNMING: 40,
+			ASIA_CA: 41,
+			GER_BB: 42,
+			GER_BB_2: 43,
+			GER_BB_HANNOVER: 44,
+			GER_CA: 45,
+			GER_CA_CLAUSEWITZ: 46,
+			GER_DD_1: 47,
+			GER_DD_2: 48,
+			GER_DD_150: 49,
+			GER_CV: 50,
+			GER_SC: 51,
+			ITA_CA: 52,
+			ITA_CA_PIEMONTE: 53,
+			ITA_BB: 54,
+			ITA_DD: 55,
+			RU_CA: 56,
+			RU_CA_HEAVY: 57,
+			RU_CA_NOVOSIBIRSK: 58,
+			RU_BB: 59,
+			RU_BB_USHAKOV: 60,
+			RU_DD_1: 61,
+			RU_DD_ART: 62,
+			RU_DD_SUPPORT: 63,
+			RU_DD_ZORKY: 64,
+			RU_CV: 65,
+			FR_BB: 66,
+			FR_BB_PATRIE: 67,
+			FR_CA: 68,
+			FR_CA2: 69,
+			FR_CA_CONDE: 70,
+			FR_DD_1: 71,
+			FR_DD_2: 72,
+			FR_DD_TORP: 73,
+			EU_DD: 74,
+			EU_DD_DALARNA: 75,
+			EU_DD_GUN: 76,
+			NED_CL: 77,
+			NED_CA: 78,
+			PAM_BB: 79,
+			PAM_CL_LOW: 80,
+			PAM_CL_HIGH: 81,
+			BATTLESHIPS: 82,
+			CRUISERS: 83,
+			DESTROYERS: 84,
+			AIR_CARRIERS: 85,
+			SUBMARINES: 86,
+			PREMIUM_SHIP: 87,
+			ESP_CA_1: 88,
+			ESP_CA_2: 89,
+			CW_CA: 90,
+
+			VALUE_TO_NAME: {
+				'1': 'US_CV', 
+				'2': 'US_CV_USSUS', 
+				'3': 'US_CV2', 
+				'4': 'US_BB', 
+				'5': 'US_BB_MAINE', 
+				'6': 'US_BB_TOP', 
+				'7': 'US_BB_NEW', 
+				'8': 'US_HYB', 
+				'9': 'US_CA_EARLY', 
+				'10': 'US_CA_LIGHT', 
+				'11': 'US_CA_JACKSONVILLE', 
+				'12': 'US_CA_HEAVY', 
+				'13': 'US_CA_ANNAPOLIS', 
+				'14': 'US_DD_ARTILLERY', 
+				'15': 'US_DD_TORPEDO', 
+				'16': 'US_DD_HUMPHREYS', 
+				'17': 'US_SC', 
+				'18': 'JP_CV', 
+				'19': 'JP_CV_SEKIRYU', 
+				'20': 'JP_BB', 
+				'21': 'JP_BB_SATSUMA', 
+				'22': 'JP_BB_LIGHT', 
+				'23': 'JP_CA', 
+				'24': 'JP_CL', 
+				'25': 'JP_DD_MAIN', 
+				'26': 'JP_DD_ART', 
+				'27': 'JP_DD_TORP', 
+				'28': 'JP_DD_YAMAGIRI', 
+				'29': 'UK_CV', 
+				'30': 'UK_CV_EAGLE', 
+				'31': 'UK_BB', 
+				'32': 'UK_BB_DEVASTATION', 
+				'33': 'UK_BB_2', 
+				'34': 'UK_CA_LIGHT', 
+				'35': 'UK_CA_HEAVY', 
+				'36': 'UK_CA_EDGAR', 
+				'37': 'UK_DD', 
+				'38': 'UK_SC', 
+				'39': 'ASIA_DD', 
+				'40': 'ASIA_DD_KUNMING', 
+				'41': 'ASIA_CA', 
+				'42': 'GER_BB', 
+				'43': 'GER_BB_2', 
+				'44': 'GER_BB_HANNOVER', 
+				'45': 'GER_CA', 
+				'46': 'GER_CA_CLAUSEWITZ', 
+				'47': 'GER_DD_1', 
+				'48': 'GER_DD_2', 
+				'49': 'GER_DD_150', 
+				'50': 'GER_CV', 
+				'51': 'GER_SC', 
+				'52': 'ITA_CA', 
+				'53': 'ITA_CA_PIEMONTE', 
+				'54': 'ITA_BB', 
+				'55': 'ITA_DD', 
+				'56': 'RU_CA', 
+				'57': 'RU_CA_HEAVY', 
+				'58': 'RU_CA_NOVOSIBIRSK', 
+				'59': 'RU_BB', 
+				'60': 'RU_BB_USHAKOV', 
+				'61': 'RU_DD_1', 
+				'62': 'RU_DD_ART', 
+				'63': 'RU_DD_SUPPORT', 
+				'64': 'RU_DD_ZORKY', 
+				'65': 'RU_CV', 
+				'66': 'FR_BB', 
+				'67': 'FR_BB_PATRIE', 
+				'68': 'FR_CA', 
+				'69': 'FR_CA2', 
+				'70': 'FR_CA_CONDE', 
+				'71': 'FR_DD_1', 
+				'72': 'FR_DD_2', 
+				'73': 'FR_DD_TORP', 
+				'74': 'EU_DD', 
+				'75': 'EU_DD_DALARNA', 
+				'76': 'EU_DD_GUN', 
+				'77': 'NED_CL', 
+				'78': 'NED_CA', 
+				'79': 'PAM_BB', 
+				'80': 'PAM_CL_LOW', 
+				'81': 'PAM_CL_HIGH', 
+				'82': 'BATTLESHIPS', 
+				'83': 'CRUISERS', 
+				'84': 'DESTROYERS', 
+				'85': 'AIR_CARRIERS', 
+				'86': 'SUBMARINES', 
+				'87': 'PREMIUM_SHIP', 
+				'88': 'ESP_CA_1', 
+				'89': 'ESP_CA_2', 
+				'90': 'CW_CA'
+			},
+
+			ALL: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90]
+		}, 
+		QUALITY: {
+			GOOD: 1,
+			BAD: 2,
+			NEUTRAL: 3,
+
+
+			ALL: [1, 2, 3]
+		}, 
+		FEAT_CATEGORY: {
+			BOMBERS: 'bombers',
+			VISION: 'vision',
+			MAIN_CALIBER: 'main_caliber',
+			MOVEMENT: 'movement',
+			DURABILITY: 'durability',
+			AIRDEFENSE: 'airdefense',
+			SECONDARY_CALIBER: 'secondary_caliber',
+			CONSUMABLES: 'consumables',
+			T_BOMBERS: 't_bombers',
+			SKIP_BOMBERS: 'skip_bombers',
+			TORPEDOES: 'torpedoes',
+			ATTACK_AIRCRAFT: 'attack_aircraft',
+			AIR_SUPPORT: 'air_support',
+			BATTERY: 'battery',
+			PINGER: 'pinger',
+			BURSTFIRE: 'burstfire',
+			RAGEMODE: 'ragemode',
+			ATTACK_AIRCRAFT_ALT: 'attack_aircraft_alt',
+			T_BOMBERS_ALT: 't_bombers_alt',
+			BOMBERS_ALT: 'bombers_alt',
+			SKIP_BOMBERS_ALT: 'skip_bombers_alt',
+
+
+			ALL: ['bombers', 'vision', 'main_caliber', 'movement', 'durability', 'airdefense', 'secondary_caliber', 'consumables', 't_bombers', 'skip_bombers', 'torpedoes', 'attack_aircraft', 'air_support', 'battery', 'pinger', 'burstfire', 'ragemode', 'attack_aircraft_alt', 't_bombers_alt', 'bombers_alt', 'skip_bombers_alt']
+		}, 
+		SHIP_WEAPON_TYPES: {
+			NONE: -1,
+			ARTILLERY: 0,
+			ATBA: 1,
+			TORPEDO: 2,
+			AIRPLANES: 3,
+			AIRDEFENCE: 4,
+			DEPTH_CHARGES: 5,
+			PINGER: 6,
+			CHARGE_LASER: 7,
+			IMPULSE_LASER: 8,
+			AXIS_LASER: 9,
+			WAVES: 10,
+			AIR_SUPPORT: 11,
+			SQUADRON: 100,
+
+
+			ALL: [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 100], 
+			SHOW_SHIP_DOLL: [0, 2, 7, 8, 10], 
+			HIDE_RELOAD_BARS: [5], 
+			PARAMS_BY_AMMO_TYPE: [0, 2, 11, 100], 
+			PARAMS_BY_SQUADRON_TYPE: [3]
+		}, 
+		SHIP_MODULE_TYPES: {
+			ARTILLERY: 0,
+			HULL: 1,
+			TORPEDOES: 2,
+			SUO: 3,
+			ENGINE: 4,
+			TORPEDO_BOMBER: 5,
+			DIVE_BOMBER: 6,
+			FIGHTER: 7,
+			FLIGHT_CONTROLL: 8,
+			HYDROPHONE: 9,
+			SKIP_BOMBER: 10,
+			PRIMARY_WEAPONS: 11,
+			SECONDARY_WEAPONS: 12,
+			ABILITIES: 13,
+
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+		}, 
+		SHIP_MODULE_STR_TYPES: {
+			ARTILLERY: '_Artillery',
+			HULL: '_Hull',
+			TORPEDOES: '_Torpedoes',
+			SUO: '_Suo',
+			ENGINE: '_Engine',
+			TORPEDO_BOMBER: '_TorpedoBomber',
+			DIVE_BOMBER: '_DiveBomber',
+			SKIP_BOMBER: '_SkipBomber',
+			FIGHTER: '_Fighter',
+			FLIGHT_CONTROLL: '_FlightControl',
+			HYDROPHONE: '_Hydrophone',
+			PRIMARY_WEAPONS: '_PrimaryWeapons',
+			SECONDARY_WEAPONS: '_SecondaryWeapons',
+			ABILITIES: '_Abilities',
+			SONAR: '_Sonar',
+
+
+			ALL: ['_Artillery', '_Hull', '_Torpedoes', '_Suo', '_Engine', '_TorpedoBomber', '_DiveBomber', '_SkipBomber', '_Fighter', '_FlightControl', '_Hydrophone', '_PrimaryWeapons', '_SecondaryWeapons', '_Abilities', '_Sonar'], 
+			UI_RANGE: ['_Artillery', '_PrimaryWeapons', '_Hull', '_Sonar', '_SecondaryWeapons', '_Torpedoes', '_Suo', '_Fighter', '_TorpedoBomber', '_DiveBomber', '_SkipBomber', '_Engine', '_Abilities'], 
+			PLANES_COMPONENTS: ['_Fighter', '_TorpedoBomber', '_DiveBomber', '_SkipBomber'], 
+			WITH_COMBINED_NAMES: ['_Torpedoes', '_Fighter', '_TorpedoBomber', '_DiveBomber', '_SkipBomber']
+		}, 
+		SHIP_SLOT_TYPES: {
+			ABILITY: 0,
+			MODERNIZATION: 1,
+			AMMO: 2,
+			MODULE: 3,
+			SQUADRON_ABILITY: 4,
+			CREDITS: 6,
+			EXP: 7,
+			CREW_EXP: 8,
+			FREE_EXP: 9,
+			PERMANENT: 10,
+
+			VALUE_TO_NAME: {
+				'0': 'ABILITY', 
+				'1': 'MODERNIZATION', 
+				'2': 'AMMO', 
+				'3': 'MODULE', 
+				'4': 'SQUADRON_ABILITY', 
+				'6': 'CREDITS', 
+				'7': 'EXP', 
+				'8': 'CREW_EXP', 
+				'9': 'FREE_EXP', 
+				'10': 'PERMANENT'
+			},
+
+			ALL: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10], 
+			ECOBOOSTS: [6, 7, 8, 9], 
+
+            TO_CURRENCY : {
+                CREDITS: 'CREDITS', 
+                EXP: 'XP', 
+                CREW_EXP: 'CREW_XP', 
+                FREE_EXP: 'FREE_XP'
+            }
+		}, 
+		PLANE_SORTING_WEIGHT: {
+			REGULAR: 0,
+			ALTERNATIVE: 10,
+
+
+			ALL: [0, 10]
+		}, 
+		SQUAD_TYPES: {
+			FIGHTER: 'Fighter',
+			BOMBER: 'Bomber',
+			DIVE: 'Dive',
+			SKIP: 'Skip',
+			FIGHTER_ALTERNATIVE: 'Fighter_alt',
+			BOMBER_ALTERNATIVE: 'Bomber_alt',
+			DIVE_ALTERNATIVE: 'Dive_alt',
+			SKIP_ALTERNATIVE: 'Skip_alt',
+
+
+			ALL: ['Fighter', 'Bomber', 'Dive', 'Skip', 'Fighter_alt', 'Bomber_alt', 'Dive_alt', 'Skip_alt']
+		}, 
+		SHIP_TAG: {
+			HIDE_ARMOR: 1,
+			HIDE_EXTERIORS: 2,
+			EXCURSION_OFF: 3,
+			HIDE_MODULES: 4,
+
+
+			ALL: [1, 2, 3, 4]
+		}, 
+		PECULIARITY: {
+			DEFAULT: 'default',
+			HALLOWEEN_16: 'halloween_16',
+			FIRST_APRIL_2023: 'first_april_2023',
+
+
+			ALL: ['default', 'halloween_16', 'first_april_2023'], 
+			GENUINE_EXTERIOR: ['default', 'halloween_16', 'first_april_2023']
+		}, 
+		SHIP_MODERNIZATION_TYPES: {
+			COMMON: 0,
+			RARE: 1,
+			LEGENDARY: 3,
+
+
+			ALL: [0, 1, 3]
+		}, 
+		SHIP_LEVELS: {
+			SUPER_SHIP: 11,
+
+
+			ALL: [11]
+		}, 
+		SHIP_UNIQUE_FEATURES: {
+			EARLY_ACCESS_SHIP: 1,
+			EVENT_SHIP: 2,
+			CLAN_SHIP: 3,
+			TEST_SHIP: 4,
+			RENT_SHIP: 5,
+			SHOW_SHIP: 6,
+			UNBUYABLE_MODULES: 7,
+			MORE_CREDIT: 8,
+			LOWER_MAINTENANCE_COST: 9,
+			NO_CREW_RETRAINING: 10,
+			FREE_ECO_BUST: 11,
+			FREE_PERMOFLAGE: 12,
+			ACHIEVEMENTS_DISABLED: 13,
+			STATISTICS_DISABLED: 14,
+
+			VALUE_TO_NAME: {
+				'1': 'EARLY_ACCESS_SHIP', 
+				'2': 'EVENT_SHIP', 
+				'3': 'CLAN_SHIP', 
+				'4': 'TEST_SHIP', 
+				'5': 'RENT_SHIP', 
+				'6': 'SHOW_SHIP', 
+				'7': 'UNBUYABLE_MODULES', 
+				'8': 'MORE_CREDIT', 
+				'9': 'LOWER_MAINTENANCE_COST', 
+				'10': 'NO_CREW_RETRAINING', 
+				'11': 'FREE_ECO_BUST', 
+				'12': 'FREE_PERMOFLAGE', 
+				'13': 'ACHIEVEMENTS_DISABLED', 
+				'14': 'STATISTICS_DISABLED'
+			},
+
+			ALL: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], 
+			SHOW_AVAILABLE_BATTLES: [1, 2], 
+			SHOW_EXP_CONVERSION: [1, 2], 
+			SPECIAL_FEATURES: [1, 2, 3, 4, 5, 6], 
+			DISADVANTAGE: [1, 2, 3], 
+			ADVANTAGE: [1, 2, 3, 4, 5]
+		}
+	}, 
+	Sse: {
+		SSE_STATE: {
+			LOCKED: 0,
+			ACTIVE: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		PREDEFINED_SSE_TAGS: {
+			BATTLEPASS: 'battlepass',
+			COMMON: 'common',
+
+
+			ALL: ['battlepass', 'common']
+		}, 
+		SSE_REWARD_CATEGORY: {
+			NONE: 'none',
+			SHIP: 'ship',
+			CREW: 'crew',
+			PREMIUM: 'premium',
+			XP: 'exp',
+			FREE_XP: 'free_exp',
+			CREDITS: 'credits',
+			GOLD: 'gold',
+			COAL: 'coal',
+			STEEL: 'steel',
+			META_CURRENCY: 'metacurrencies',
+			LOOTBOX: 'containers',
+			LOOTBOX_CREDITS: 'containers_credits',
+			LOOTBOX_RESOURCES: 'containers_resources',
+			LOOTBOX_SIGNALS: 'containers_signals',
+			LOOTBOX_SUPER: 'containers_super',
+			LOOTBOX_UNLUCKY: 'containers_unlucky',
+			DOGTAG: 'dogtags',
+			CAMO: 'camos',
+			SIGNAL: 'signals',
+			ENSIGN: 'ensigns',
+			MODERNIZATION: 'modernizations',
+			PARAGON_XP: 'paragonexp',
+			UNIT: 'module',
+			ECOBOOST: 'eco',
+			BRASS: 'brass',
+			MOLYBDENUM: 'molybdenum',
+			DOCKYARD: 'dockyard',
+			COMMUNITY_TOKEN: 'community_tokens',
+			BP_POINTS: 'bp_points',
+			PORTAL_REWARD: 'portal_reward',
+			MYSTERY_REWARD: 'mystery_reward',
+			ABILITY_UNLOCK: 'ability_unlock',
+			UNIVERSAL_COLLECTION_CARD: 'universal_collection_card',
+			OTHER: 'other',
+
+
+			ALL: ['none', 'ship', 'crew', 'premium', 'exp', 'free_exp', 'credits', 'gold', 'coal', 'steel', 'metacurrencies', 'containers', 'containers_credits', 'containers_resources', 'containers_signals', 'containers_super', 'containers_unlucky', 'dogtags', 'camos', 'signals', 'ensigns', 'modernizations', 'paragonexp', 'module', 'eco', 'brass', 'molybdenum', 'dockyard', 'community_tokens', 'bp_points', 'portal_reward', 'mystery_reward', 'ability_unlock', 'universal_collection_card', 'other']
+		}, 
+		SSE_CONDITION_CATEGORY: {
+			NONE: 'none',
+			SCOUTING_DAMAGE: 'scouting_damage',
+			START_FIRE: 'start_fire',
+			DAMAGE: 'damage',
+			DAMAGE_MAIN: 'damage_main',
+			DAMAGE_ATBA: 'damage_atba',
+			DAMAGE_FIRE: 'damage_fire',
+			DAMAGE_FLOOD: 'damage_flood',
+			DAMAGE_FIRE_FLOOD: 'damage_fire_flood',
+			DAMAGE_TORPS: 'damage_torps',
+			DAMAGE_TBOMBER: 'damage_tbomber',
+			DAMAGE_TORPS_TBOMBER: 'damage_torps_tbomber',
+			DAMAGE_BOMBER: 'damage_bomber',
+			DAMAGE_SKIPBOMBER: 'damage_skipbomber',
+			DAMAGE_DEPTHCHARGE: 'damage_depthcharge',
+			DAMAGE_ROCKET: 'damage_rocket',
+			DAMAGE_RAM: 'damage_ram',
+			HIT: 'hit',
+			SPOT: 'spot',
+			TOP: 'top',
+			RIBBONS: 'ribbons',
+			CONTROL_POINTS: 'control_points',
+			GAIN_EXP: 'gain_exp',
+			GAIN_CREDITS: 'gain_credits',
+			GAIN_STARS: 'gain_stars',
+			KILL_PLANE: 'kill_plane',
+			KILL_SHIP: 'kill_ship',
+			POTENTIAL_DAMAGE: 'potential_damage',
+			GAIN_ACHIEVEMENT: 'gain_achievement',
+			COMPLETE_TASK: 'complete_task',
+			BATTLE_COUNT: 'battle_count',
+			BATTLE_RESULT_COUNT: 'battle_result_count',
+			ALIVE_COUNT: 'alive_count',
+			BATTLE_PRECONDITION: 'battle_precondition',
+
+			VALUE_TO_NAME: {
+				'none': 'NONE', 
+				'scouting_damage': 'SCOUTING_DAMAGE', 
+				'start_fire': 'START_FIRE', 
+				'damage': 'DAMAGE', 
+				'damage_main': 'DAMAGE_MAIN', 
+				'damage_atba': 'DAMAGE_ATBA', 
+				'damage_fire': 'DAMAGE_FIRE', 
+				'damage_flood': 'DAMAGE_FLOOD', 
+				'damage_fire_flood': 'DAMAGE_FIRE_FLOOD', 
+				'damage_torps': 'DAMAGE_TORPS', 
+				'damage_tbomber': 'DAMAGE_TBOMBER', 
+				'damage_torps_tbomber': 'DAMAGE_TORPS_TBOMBER', 
+				'damage_bomber': 'DAMAGE_BOMBER', 
+				'damage_skipbomber': 'DAMAGE_SKIPBOMBER', 
+				'damage_depthcharge': 'DAMAGE_DEPTHCHARGE', 
+				'damage_rocket': 'DAMAGE_ROCKET', 
+				'damage_ram': 'DAMAGE_RAM', 
+				'hit': 'HIT', 
+				'spot': 'SPOT', 
+				'top': 'TOP', 
+				'ribbons': 'RIBBONS', 
+				'control_points': 'CONTROL_POINTS', 
+				'gain_exp': 'GAIN_EXP', 
+				'gain_credits': 'GAIN_CREDITS', 
+				'gain_stars': 'GAIN_STARS', 
+				'kill_plane': 'KILL_PLANE', 
+				'kill_ship': 'KILL_SHIP', 
+				'potential_damage': 'POTENTIAL_DAMAGE', 
+				'gain_achievement': 'GAIN_ACHIEVEMENT', 
+				'complete_task': 'COMPLETE_TASK', 
+				'battle_count': 'BATTLE_COUNT', 
+				'battle_result_count': 'BATTLE_RESULT_COUNT', 
+				'alive_count': 'ALIVE_COUNT', 
+				'battle_precondition': 'BATTLE_PRECONDITION'
+			},
+
+			ALL: ['none', 'scouting_damage', 'start_fire', 'damage', 'damage_main', 'damage_atba', 'damage_fire', 'damage_flood', 'damage_fire_flood', 'damage_torps', 'damage_tbomber', 'damage_torps_tbomber', 'damage_bomber', 'damage_skipbomber', 'damage_depthcharge', 'damage_rocket', 'damage_ram', 'hit', 'spot', 'top', 'ribbons', 'control_points', 'gain_exp', 'gain_credits', 'gain_stars', 'kill_plane', 'kill_ship', 'potential_damage', 'gain_achievement', 'complete_task', 'battle_count', 'battle_result_count', 'alive_count', 'battle_precondition'], 
+			PRICE_CATEGORIES: ['gain_exp', 'gain_credits']
+		}, 
+		RVR_TASK_STATE: {
+			LOCKED: 0,
+			ACTIVE: 1,
+			FINISHED: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		RVR_EVENT_STATE: {
+			EVENT_ACTIVE: 1,
+			PRIME_ACTIVE: 2,
+			EVENT_FINISHED: 4,
+			PARTICIPATING: 8,
+			SIDE_CHOSEN: 16,
+
+
+			ALL: [1, 2, 4, 8, 16]
+		}, 
+		SSE_WEEK_UPDATE_TYPE: {
+			NONE: 0,
+			MONDAY: 1,
+			WEEK: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		BONUS_TAG_TYPE: {
+			SNOWFLAKE: 'snowflake',
+			FIRST_BATTLE: 'disabled',
+
+
+			ALL: ['snowflake', 'disabled']
+		}
+	}, 
+	System_messages: {
+		SYS_MESSAGE_TYPE_UI: {
+			CLAN_BATTLE_PRIMETIME_CHANGED: 118,
+			PREMUIM_DAY_LEFT: 125,
+			CLAN_RULES_HAVE_CHANGED: 134,
+			RANK_BATTLE_STATE_CHANGED: 135,
+			BRAWL_BATTLES_STATE_CHANGED: 136,
+			MISSING_EXPENDABLE_ITEMS_IN_SHIP_BUILD: 142,
+			NEWBIE_QUEST_INFORMER: 146,
+			BATTLEPASS_REFRESH: 1,
+			EVENT_HUB_NEW_PHASE: 168,
+
+
+			ALL: [118, 125, 134, 135, 136, 142, 146, 1, 168]
+		}, 
+		SYS_MESSAGE_OPERATION: {
+			BOUGHT: 'bought',
+			RECEIVED: 'received',
+			SOLD: 'sold',
+			WRITTEN_OFF: 'written_off',
+			RENTED: 'rented',
+			BET_MADE: 'bet_made',
+			BET_RETURNED: 'bet_returned',
+			BET_WON: 'bet_won',
+			BET_CANCELED: 'bet_canceled',
+			REWARDED: 'rewarded',
+			NEWBIE_QUEST_REWARDED: 'newbie_quest_rewarded',
+			SUBALBUM_REWARDED: 'subalbum_rewarded',
+			ALBUM_REWARDED: 'album_rewarded',
+			INVITATION_SENT: 'invitation_sent',
+			INVITATION_NOT_SENT: 'invitation_not_sent',
+			INVITATION_ACCEPTED: 'invitation_accepted',
+			SHIPYARD_LEVEL_REWARDED: 'shipyard_level_rewarded',
+			PLAYER_LEFT_GROUP: 'player_left_group',
+			CASHBACK_RECEIVED: 'cashback_received',
+			STORAGE_CHANGED: 'storage_changed',
+			CLAN_CREATED: 'clan_created',
+			CLAN_CHANGED: 'clan_changed',
+			CLAN_TREASURY_REWARDED: 'clan_treasury_rewarded',
+			CLAN_TREASURY_DISTRIBUTED: 'clan_treasury_distributed',
+			BATTLE_REWARDS: 'battle_rewards',
+			VERSION_UPDATERS: 'version_updaters',
+			CUSTOM: 'custom',
+			COMPENSATION_RECEIVED: 'compensation_received',
+			BATTLEPASS_REWARD_CLAIM: 'battlepass_reward_claim',
+			SSE_REWARD_CLAIM: 'sse_reward_claim',
+			TRADED: 'traded',
+
+
+			ALL: ['bought', 'received', 'sold', 'written_off', 'rented', 'bet_made', 'bet_returned', 'bet_won', 'bet_canceled', 'rewarded', 'newbie_quest_rewarded', 'subalbum_rewarded', 'album_rewarded', 'invitation_sent', 'invitation_not_sent', 'invitation_accepted', 'shipyard_level_rewarded', 'player_left_group', 'cashback_received', 'storage_changed', 'clan_created', 'clan_changed', 'clan_treasury_rewarded', 'clan_treasury_distributed', 'battle_rewards', 'version_updaters', 'custom', 'compensation_received', 'battlepass_reward_claim', 'sse_reward_claim', 'traded']
+		}, 
+		SYS_MESSAGE_SOURCE: {
+			GAME_SERVER: 'game_server',
+			METASHOP: 'metashop',
+			SHIPYARD: 'shipyard',
+			CLANS: 'clans',
+			AUCTIONS: 'auctions',
+			WAREHOUSE: 'warehouse',
+			REFERRAL: 'referral',
+			SEABATTLE: 'seabattle',
+			PREMSHOP: 'premiumshop',
+			WGNC: 'wgnc',
+			CLANSTARS: 'clanstars',
+
+
+			ALL: ['game_server', 'metashop', 'shipyard', 'clans', 'auctions', 'warehouse', 'referral', 'seabattle', 'premiumshop', 'wgnc', 'clanstars']
+		}, 
+		SYS_MESSAGE_BEHAVIOUR: {
+			NONE: 0,
+			COMBINE: 1,
+			OVERWRITE: 2,
+			ONLY_INDEXING: 3,
+			SINGLETON: 4,
+
+
+			ALL: [0, 1, 2, 3, 4]
+		}
+	}, 
+	Ui_common: {
+		HINT_TYPE: {
+			OLD_STYLE: 0,
+			WASD: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		HINT_PROGRESS: {
+			NONE: 0,
+			SHOWN: 1,
+			HIDDEN: 2,
+			CLOSED: 3,
+			NO_SAVING: 1000,
+
+
+			ALL: [0, 1, 2, 3, 1000]
+		}, 
+		USER_PREF_KEY: {
+			HINTS_SEEN: 'seenTutorialHints',
+			HINTS_REPEAT_COUNT: 'tutorialHintsRepeatCount',
+			TAB_STATS_INDEX: 'tabStatsTabIndex',
+
+
+			ALL: ['seenTutorialHints', 'tutorialHintsRepeatCount', 'tabStatsTabIndex']
+		}, 
+		EVENTS: {
+			DEFAULT: 'EventBattle',
+			NAVAL_BATTLE: 'NavalBattle',
+			PORTAL: 'Portal',
+			PORTAL_HARD: 'Portal_Hard',
+			PORTAL_ULTRAHARD: 'Portal_Ultrahard',
+			PORTAL_NIGHTMARE: 'Portal_Nightmare',
+			TEAM_BATTLE_ROYALE_2021: 'TeamBattleRoyale2021',
+			LEGENDARY_BATTLE: 'Legendary_Battle',
+			ESCORT: 'PCVE024',
+			DDAY_OPERATION_1: 'PCVE033',
+			DDAY_OPERATION_2: 'PCVE030',
+			DDAY_OPERATION_3: 'PCVE032',
+
+
+			ALL: ['EventBattle', 'NavalBattle', 'Portal', 'Portal_Hard', 'Portal_Ultrahard', 'Portal_Nightmare', 'TeamBattleRoyale2021', 'Legendary_Battle', 'PCVE024', 'PCVE033', 'PCVE030', 'PCVE032'], 
+			EVENT_HUB_OPERATIONS: ['PCVE033', 'PCVE030', 'PCVE032']
+		}, 
+		CONFIRMATION_WINDOW_TYPE: {
+			CONVERT: 'convert',
+			EXCHANGE: 'exchange',
+
+
+			ALL: ['convert', 'exchange']
+		}, 
+		SPLASH_SCREEN_TYPE: {
+			RVR: 'rvr',
+			SHIPACES: 'shipaces',
+			EVENT: 'event',
+			OPERATION: 'operation',
+			BATTLEPASS: 'battlepass',
+			DAILY_REWARDS: 'dailyrewards',
+
+
+			ALL: ['rvr', 'shipaces', 'event', 'operation', 'battlepass', 'dailyrewards']
+		}, 
+		SNOWFLAKES_BANNER_STATE: {
+			DISABLED: 0,
+			ACTIVE: 1,
+			INACTIVE: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		SHIP_PARAM_VALUE_MOCKUP: {
+			DEFAULT: 0,
+			LIST_AMMO: 1,
+			DIFF_COLOR: 2,
+			PLANES: 3,
+			GUNS_AND_TUBES: 4,
+			RANGE: 5,
+			LIST_VALUES: 6,
+			GUN_INFO: 7,
+			BIG_RANGE: 8,
+			SHIP_TYPE: 9,
+
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+		}, 
+		SHIP_PARAM_TITLE_MOCKUP: {
+			DEFAULT: 0,
+			VERTICAL: 1,
+			SUBTITLE: 2,
+			NAME_IDS: 3,
+
+
+			ALL: [0, 1, 2, 3], 
+			NEED_EXTRA_SPACE: [2, 3]
+		}, 
+		UB_FOCUS: {
+			FOCUS_SCOPE_FIELD_KEY: '$isFocused',
+
+
+			ALL: ['$isFocused']
+		}, 
+		CREW_FILTERING_NATION_TYPE: {
+			CURRENT: 0,
+			ALL_NATION: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		CREW_SORTING_ALL_NATION_TYPE: {
+			NATION: 0,
+			LEVEL: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		SHIP_FILTER_TYPE_POSTFIX: {
+			IDS: '_IDS',
+			TYPE: '_TYPES',
+			NATION: '_NATIONS',
+
+
+			ALL: ['_IDS', '_TYPES', '_NATIONS']
+		}, 
+		ECOBOOST_RARITY: {
+			STANDART: 'standard',
+			SPECIAL: 'special',
+			RARE: 'rare',
+			UNIQUE: 'unique',
+
+
+			ALL: ['standard', 'special', 'rare', 'unique']
+		}, 
+		AL_MENU_FEATURES_VISIBILITY: {
+			REFERRAL: 3,
+			BUY_PREMIUM: 5,
+
+
+			ALL: [3, 5]
+		}, 
+		SYSTEM_MESSAGE_GROUP: {
+			BATTLE_RESULTS: 0,
+			STORAGE_CHANGES: 1,
+			INFO: 2,
+			VERSION_UPDATERS: 3,
+			INFORMER: 4,
+			WGNC: 5,
+
+
+			ALL: [0, 1, 2, 3, 4, 5]
+		}, 
+		SYSTEM_MESSAGES_SHOW_CONFIG: {
+			LIFE_TIME_AFTER_HIDING: 0.2,
+			HEIGHT_FOR_SIZE_RENDER_QUEUE: 1080.0,
+			MIN_RENDERING_TIME_AFTER_HIDING: 3.0,
+
+
+			ALL: [0.2, 1080.0, 3.0]
+		}, 
+		SCENARIO_TAGS_MASK: {
+			HIDE_EXTERIORS: 1,
+
+
+			ALL: [1]
+		}, 
+		EXTERIOR_ACTIONS: {
+			UNINSTALL: 'uninstallExterior',
+			INSTALL: 'installExterior',
+			CHANGE_COLOR: 'changeCamouflageColor',
+			PREVIEW: 'previewExterior',
+			DISABLE_PREVIEW: 'disableExteriorPreview',
+			INSTALL_SIGNALS_BY_GROUP: 'installFlagsByGroup',
+			UNINSTALL_SIGNALS_BY_GROUP: 'uninstallFlagsByGroup',
+			CHANGE_NAVAL_FLAG: 'DockProxy.changeNavalFlag',
+
+
+			ALL: ['uninstallExterior', 'installExterior', 'changeCamouflageColor', 'previewExterior', 'disableExteriorPreview', 'installFlagsByGroup', 'uninstallFlagsByGroup', 'DockProxy.changeNavalFlag']
+		}, 
+		ENSIGN_ACTIONS: {
+			INSTALL: 'installEnsign',
+			UNINSTALL: 'uninstallEnsign',
+			PREVIEW: 'previewEnsign',
+			DISABLE_PREVIEW: 'disableEnsignPreview',
+
+
+			ALL: ['installEnsign', 'uninstallEnsign', 'previewEnsign', 'disableEnsignPreview']
+		}, 
+		SIGNAL_ACTIONS: {
+			PREVIEW: 'previewSignal',
+			DISABLE_PREVIEW: 'disableSignalPreview',
+			INSTALL: 'installSignal',
+			UNINSTALL: 'uninstallSignal',
+			INSTALL_BY_GROUP: 'installSignalsByGroup',
+			UNINSTALL_BY_GROUP: 'uninstallSignalsByGroup',
+
+
+			ALL: ['previewSignal', 'disableSignalPreview', 'installSignal', 'uninstallSignal', 'installSignalsByGroup', 'uninstallSignalsByGroup']
+		}, 
+		CAMOUFLAGE_ACTIONS: {
+			INSTALL: 'installCamouflage',
+			BUY_AND_INSTALL: 'buyAndInstallCamouflage',
+			UNINSTALL: 'uninstallCamouflage',
+			OPEN_MODAL_BUY_AND_INSTALL: 'buyAndInstallCamouflageModal',
+
+
+			ALL: ['installCamouflage', 'buyAndInstallCamouflage', 'uninstallCamouflage', 'buyAndInstallCamouflageModal']
+		}, 
+		ECOBOOST_ACTIONS: {
+			INSTALL: 'installEcoBoost',
+			UNINSTALL: 'uninstallEcoBoost',
+			UNINSTALL_ALL: 'uninstallAllEcoBoosts',
+			INSTALL_BEST: 'installBestEcoBoosts',
+			BUY_AND_INSTALL: 'buyAndInstallEcoBoost',
+			OPEN_MODAL_BUY_AND_INSTALL: 'buyAndInstallEcoBoostModal',
+
+
+			ALL: ['installEcoBoost', 'uninstallEcoBoost', 'uninstallAllEcoBoosts', 'installBestEcoBoosts', 'buyAndInstallEcoBoost', 'buyAndInstallEcoBoostModal']
+		}, 
+		MULTIBOOST_ACTIONS: {
+			BUY_AND_INSTALL: 'buyMultiboost',
+			LINK: 'linkMultiboost',
+
+
+			ALL: ['buyMultiboost', 'linkMultiboost']
+		}, 
+		CAMPAIGN_TYPE: {
+			CAMPAIGN: 0,
+			MISSION: 1,
+			TASK: 2,
+
+
+			ALL: [0, 1, 2]
+		}, 
+		CAMPAIGN_STATE: {
+			LOCKED: 0,
+			OPENED: 1,
+			ACTIVATED: 2,
+			DONE: 3,
+			OPENED_BOSS: 4,
+			COMPLETED: 5,
+			PROLONGATED: 6,
+			REDUCED: 7,
+			TERMINATED: 8,
+			PROLONGATED_NEW: 9,
+
+
+			ALL: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+		}, 
+		CAMPAIGN_TASK_STATE: {
+			LOCKED: 0,
+			OPENED: 1,
+			ACTIVATED: 2,
+			DONE: 3,
+			COMPLETED: 4,
+
+
+			ALL: [0, 1, 2, 3, 4]
+		}, 
+		CAMPAIGN_INSET: {
+			CAMPAIGNS: 'campaigns',
+			MISSIONS: 'missions',
+			TASKS: 'tasks',
+
+
+			ALL: ['campaigns', 'missions', 'tasks']
+		}, 
+		REWARD_EXTERIOR_TYPE: {
+			FLAGS: 'Flags',
+			CAMOUFLAGE: 'Camouflage',
+			PERMOFLAGE: 'Permoflage',
+			SKIN: 'Skin',
+			MSKIN: 'MSkin',
+			ENSIGN: 'Ensign',
+			CAMOBOOST: 'Camoboost',
+			MULTIBOOST: 'Multiboost',
+			GLOBALBOOST: 'Globalboost',
+			ECOBOOST: 'Ecoboost',
+
+
+			ALL: ['Flags', 'Camouflage', 'Permoflage', 'Skin', 'MSkin', 'Ensign', 'Camoboost', 'Multiboost', 'Globalboost', 'Ecoboost']
+		}, 
+		CVC_PORT_BANNER_STAGE: {
+			PREPARATION: 'preparation',
+			MATCHMAKING: 'matchmaking',
+			WAR: 'war',
+			REWARDING: 'rewarding',
+
+
+			ALL: ['preparation', 'matchmaking', 'war', 'rewarding']
+		}, 
+		MODAL_RULES_TEXT_TYPE: {
+			PARAGRAPH: 0,
+			BULLET: 1,
+			BULLET_HEADER: 2,
+			RESTRICTION: 3,
+
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		CREW_SPINE_STATE: {
+			STATIC: 'static',
+			ANIMATION: 'animation',
+
+
+			ALL: ['static', 'animation']
+		}, 
+		EVENT_ENEMY_TYPE: {
+			UNDEFINED: 0,
+			PLAYERS: 1,
+			BOTS: 2,
+
+			VALUE_TO_NAME: {
+				'0': 'UNDEFINED', 
+				'1': 'PLAYERS', 
+				'2': 'BOTS'
+			},
+
+			ALL: [0, 1, 2]
+		}
+	}, 
+	Ui_prefs: {
+		VSYNC: {
+			DISABLED: 0,
+			ENABLED: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		GRAPHICS_PRESET: {
+			MAXIMUM: 0,
+			VERYHIGH: 1,
+			HIGH: 2,
+			MEDIUM: 3,
+			LOW: 4,
+			MINIMUM: 5,
+			USER: 6,
+
+
+			ALL: [0, 1, 2, 3, 4, 5, 6]
+		}, 
+		SOUND_MIXING_PRESET: {
+			ORIGINAL: 0,
+			CINEMATIC: 1,
+			SIMPLIFIED: 2,
+			NIGHT: 3,
+			CUSTOM: 4,
+
+
+			ALL: [0, 1, 2, 3, 4]
+		}, 
+		VOICE_CHAT: {
+			DISABLED: 0,
+			ENABLED: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		COLORBLIND_MODE: {
+			OFF: 0,
+			DEUTERANOPIA: 1,
+			PROTANOPIA: 2,
+			TRITANOPIA: 3,
+
+
+			ALL: [0, 1, 2, 3]
+		}, 
+		PERF_IMPACT: {
+			LOW: 0,
+			MEDIUM: 1,
+			HIGH: 2,
+			VERYHIGH: 3,
+
+			VALUE_TO_NAME: {
+				'0': 'LOW', 
+				'1': 'MEDIUM', 
+				'2': 'HIGH', 
+				'3': 'VERYHIGH'
+			},
+
+			ALL: [0, 1, 2, 3]
+		}
+	}, 
+	Ui_styles: {
+		SERVICE_COLORS: {
+			YELLOW: 0xFFFFCC66,
+			DARK_BLUE: 0xFF051523,
+			LIGHT_BLUE: 0xFF98DEDE,
+			ORANGE: 0xFFFF9933,
+			DARK_RED: 0xFFFF3300,
+			RED: 0xFFFF6600,
+			WHITE: 0xFFFFFFFF,
+			GREEN: 0xFF4CE8AA,
+			LIGHT_GREEN: 0xFFCCFF99,
+			PINK: 0xFFFF96CA,
+			PAPER: 0xFFDED1BE,
+			INNER_PANEL: 0x30000000,
+			MATTE_BLACK: 0xFF111111,
+
+
+			ALL: [0xFFFFCC66, 0xFF051523, 0xFF98DEDE, 0xFFFF9933, 0xFFFF3300, 0xFFFF6600, 0xFFFFFFFF, 0xFF4CE8AA, 0xFFCCFF99, 0xFFFF96CA, 0xFFDED1BE, 0x30000000, 0xFF111111]
+		}, 
+		UNIFIED_STATUS: {
+			DEFAULT: 'default',
+			CHECK: 'check',
+			DATE: 'date',
+			DATE_ATTENTION: 'date_attention',
+			ATTENTION: 'attention',
+			NEGATIVE: 'negative',
+			WARNING: 'warning',
+			LOCK: 'lock',
+			MOUSE_LEFT: 'mouse_left_click',
+			MOUSE_DOUBLE_LEFT: 'mouse_left_double_click',
+			MOUSE_RIGHT: 'mouse_right_click',
+			MOUSE_SCROLL: 'mouse_scroll',
+			HIDDEN: 'hidden',
+			REWARD_AVAILABLE: 'reward_available',
+			REWARD_DEFAULT: 'reward_default',
+			CAMPAIGN_REWARD: 'campaign_reward',
+			CONTAINER_REWARD: 'container_reward',
+			BROTHERHOOD_REWARD: 'brotherhood_reward',
+			SALE_AVAILABLE: 'sale',
+			INFO: 'info',
+			LINKED: 'linked',
+			REPAINTED: 'repainted',
+			UPDATE: 'update',
+			EPIC_SKILL: 'epic_skill',
+			UNIQUE_CREW: 'unique_crew',
+			ADVANCED_CREW: 'advanced_crew',
+			IN_BATTLE: 'in_battle',
+			RECOMMENDED: 'recommended',
+			RETRAINING: 'retraining',
+			EARLY_ACCESS: 'early_access',
+			OUT_BATTLE: 'out_battle',
+			TO_ARMORY: 'to_armory',
+			INFINITE: 'infinite',
+			PERMOBOOST_ACTIVE: 'permoboost_active',
+			ABUSE: 'abuse',
+			ABUSE_NORMAL: 'abuse_normal',
+			ABUSE_SUSPECT: 'abuse_suspect',
+			ABUSE_CONFIRMED: 'abuse_confirmed',
+			KEY_TARGET: 'key_target',
+			BATTLEPASS: 'battlepass',
+			CALENDAR: 'calendar',
+			CALENDAR_ATTENTION: 'calendar_attention',
+			BURST_FIRE: 'burst_fire',
+			NO_ICON: 'no_icon',
+			PVE_MODIFIER: 'pve_modifier',
+			NOTIFICATION: 'notification',
+			AUTOPICK: 'autopick',
+			VICTORY: 'victory',
+			DEFEAT: 'defeat',
+
+
+			ALL: ['default', 'check', 'date', 'date_attention', 'attention', 'negative', 'warning', 'lock', 'mouse_left_click', 'mouse_left_double_click', 'mouse_right_click', 'mouse_scroll', 'hidden', 'reward_available', 'reward_default', 'campaign_reward', 'container_reward', 'brotherhood_reward', 'sale', 'info', 'linked', 'repainted', 'update', 'epic_skill', 'unique_crew', 'advanced_crew', 'in_battle', 'recommended', 'retraining', 'early_access', 'out_battle', 'to_armory', 'infinite', 'permoboost_active', 'abuse', 'abuse_normal', 'abuse_suspect', 'abuse_confirmed', 'key_target', 'battlepass', 'calendar', 'calendar_attention', 'burst_fire', 'no_icon', 'pve_modifier', 'notification', 'autopick', 'victory', 'defeat']
+		}, 
+		BUTTON_TYPE: {
+			DEFAULT: 'default',
+			ACCENT: 'accent',
+			SECONDARY: 'secondary',
+			ICON: 'icon',
+
+
+			ALL: ['default', 'accent', 'secondary', 'icon']
+		}, 
+		BUTTON_ICON: {
+			ADD: 'add',
+			INFO: 'info',
+			CHAT: 'chat',
+			NOTIFICATION: 'notification',
+			REMOVE: 'remove',
+			GENERAL_VIEW: 'general_view',
+
+
+			ALL: ['add', 'info', 'chat', 'notification', 'remove', 'general_view']
+		}, 
+		TOOLTIP_SYSTEM_HEADER_ICON_TYPE: {
+			SIMPLE: 0.0,
+			WITH_AMOUNT: 1.0,
+			CAMO_REPAINT: 2.0,
+			RIBBON: 3.0,
+			CREW: 4.0,
+			ECO_BOOST: 5.0,
+			CAMPAIGN: 6.0,
+
+
+			ALL: [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+		}, 
+		TOOLTIP_SYSTEM_LIST_ITEM_TYPE: {
+			ACHIEVEMENT: 0.0,
+			BRANCH_FEATURE: 1.0,
+			SUBRIBBON: 2.0,
+
+
+			ALL: [0.0, 1.0, 2.0]
+		}, 
+		SSE_TYPES: {
+			TASK: 'task',
+			CHALLENGE: 'challenge',
+			EVENT: 'event',
+
+
+			ALL: ['task', 'challenge', 'event']
+		}, 
+		TOOLTIP_SYSTEM_BORDER_STATUS: {
+			DEFAULT: 'default',
+			ATTENTION: 'attention',
+
+
+			ALL: ['default', 'attention']
+		}, 
+		TOOLTIP_SYSTEM_PARAMS_MODIFIERS_STATUS: {
+			POSITIVE: 'positive',
+			NEUTRAL: 'neutral',
+			NEGATIVE: 'negative',
+
+
+			ALL: ['positive', 'neutral', 'negative']
+		}, 
+		TOOLTIP_SYSTEM_STRING_PARAMS_TYPE: {
+			POSITIVE: 2.0,
+			NEUTRAL: 1.0,
+			NEGATIVE: 0.0,
+
+
+			ALL: [2.0, 1.0, 0.0]
+		}, 
+		BUTTON_STATE: {
+			DISABLED: 0.0,
+			SELECTED: 1.0,
+			DOWN: 2.0,
+			OVER: 3.0,
+			UP: 4.0,
+
+
+			ALL: [0.0, 1.0, 2.0, 3.0, 4.0]
+		}
+	}, 
+	Ui_windows: {
+		WINDOWS: {
+			LOGIN: 'Login',
+			DOCK: 'Dock',
+			FAKE_DOCK: 'FakeDock',
+			BATTLE_LOADING: 'LoadingBattle',
+			FAKE_BATTLE_LOADING: 'FakeLoadingBattle',
+			OPTIONS: 'Options',
+
+
+			ALL: ['Login', 'Dock', 'FakeDock', 'LoadingBattle', 'FakeLoadingBattle', 'Options']
+		}, 
+		MODAL: {
+			LOBBY: 'LobbyMenu',
+			GAME_MENU: 'GameMenu',
+			WAITING: 'Waiting',
+			HELP: 'Help',
+			LOGIN_QUEUE: 'LoginQueue',
+			CAMPAIGNS: 'ModalWindowCampaigns',
+			CONVERT_EXP: 'ModalWindowConvertExp',
+			CREW_FILE: 'CrewFile',
+			CREW_HIRE: 'ModalWindowHireCrew',
+			CREW_ASSIGN: 'ModalWindowAssignCrew',
+			CREW_RETRAIN: 'ModalWindowRetrainCrew',
+			CREW_MANAGEMENT: 'ModalWindowCrewManagement',
+			CREW_FAST_RETRAIN: 'ModalWindowCrewFastTraining',
+			CREW_PENALTY_COMPENSATION: 'ModalWindowCrewPenaltyCompensation',
+			TUTORIAL: 'ModalWindowTutorial',
+			EXTERIOR_PURCHASE: 'ModalWindowBuyExterior',
+			EXTERIOR_UNINSTALL: 'ModalWindowUninstallExterior',
+			ECONOMICS_MANAGEMENT: 'ModalWindowEconomicsManagement',
+			BATTLE_TYPE_CHOOSER: 'ModalWindowBattleTypeChooser',
+			PVE_OPERATION_CHOOSER: 'ModalWindowPVEOperationChooser',
+			RESULT_SCREEN: 'ResultsScreen',
+			RESULT_SCREEN_PORT: 'ExtendedSystemLogWindow',
+			RESULT_SCREEN_PORT_UNAVAILABLE: 'UnavailableExtendedSystemLogWindow',
+			DOGTAGS: 'ModalWindowDogTag',
+			COMPLETE_ACCOUNT: 'ModalWindowCompleteAccount',
+			COACH_COMPLETE_ACCOUNT: 'ModalCoachWindowCompleteAccount',
+			LOOTBOX_TYPES: 'ModalWindowLootboxTypes',
+			TRAINING_ROOMS_LIST: 'ModalWindowTrainingRoomsList',
+			BATTLE_PASS_MAIN: 'ModalWindowBattlePassMain',
+			BATTLE_PASS_PURCHASE: 'ModalWindowBattlePassPurchase',
+			PREFERENCES: 'ModalWindowPreferences',
+
+
+			ALL: ['LobbyMenu', 'GameMenu', 'Waiting', 'Help', 'LoginQueue', 'ModalWindowCampaigns', 'ModalWindowConvertExp', 'CrewFile', 'ModalWindowHireCrew', 'ModalWindowAssignCrew', 'ModalWindowRetrainCrew', 'ModalWindowCrewManagement', 'ModalWindowCrewFastTraining', 'ModalWindowCrewPenaltyCompensation', 'ModalWindowTutorial', 'ModalWindowBuyExterior', 'ModalWindowUninstallExterior', 'ModalWindowEconomicsManagement', 'ModalWindowBattleTypeChooser', 'ModalWindowPVEOperationChooser', 'ResultsScreen', 'ExtendedSystemLogWindow', 'UnavailableExtendedSystemLogWindow', 'ModalWindowDogTag', 'ModalWindowCompleteAccount', 'ModalCoachWindowCompleteAccount', 'ModalWindowLootboxTypes', 'ModalWindowTrainingRoomsList', 'ModalWindowBattlePassMain', 'ModalWindowBattlePassPurchase', 'ModalWindowPreferences']
+		}, 
+		PANEL: {
+			SHIP_CAROUSEL: 'ShipsCarouselPanel',
+			CHAT_NOTIFICATION: 'ChatNotificationsPanel',
+			SHIP_TTH_DOCK: 'ShipTTXPanelDock',
+
+
+			ALL: ['ShipsCarouselPanel', 'ChatNotificationsPanel', 'ShipTTXPanelDock']
+		}, 
+		BROWSER: {
+			GUIDE_WINDOW: 'GuideBrowserWindow',
+
+
+			ALL: ['GuideBrowserWindow']
+		}, 
+		ROUTE: {
+			PORT: 'port',
+			BARGE: 'barge',
+			SHIPYARD: 'shipyard',
+			BALANCER: 'balancer',
+			SHIP_PREVIEW: 'ship_preview',
+			NEWBIE_GIFTS: 'newbie_gifts',
+			MAIN: 'main',
+			MANAGEMENT: 'management',
+			EXTERIOR: 'exterior',
+			RESEARCH: 'research',
+			PROFILE: 'profile',
+			CLANS: 'clans',
+			EVENT_HUB_BRIEFING: 'event_hub_briefing',
+			EVENT_HUB_PROGRESS: 'event_hub_progress',
+			BATTLE_CARDS_MANAGER: 'battle_cards_manager',
+			PERMOFLAGE: 'permoflage',
+			CAMOUFLAGE: 'camouflage',
+			SIGNALS: 'signals',
+			ENSIGN: 'ensign',
+			NAVAL_FLAG: 'naval_flag',
+			LEVELING: 'leveling',
+			ACHIEVEMENTS: 'achievements',
+			RANKS: 'ranks',
+			RANKS_CAROUSEL: 'ranks_carousel',
+			RANKS_REWARDS: 'ranks_rewards',
+			COLLECTIONS: 'collections',
+			SUMMARY: 'summary',
+			BATTLE_TYPE_CHOOSER_SHOW: 'battle_type_chooser_show',
+			BATTLE_TYPE_CHOOSER_HIDE: 'battle_type_chooser_hide',
+			CONSTRUCTOR: 'constructor',
+			PATCH: 'patch',
+			EMBLEM: 'emblem',
+			SYMBOL: 'symbol',
+			BG_SHAPE: 'bgShape',
+			BG_COLOR: 'bgColor',
+			BG_BORDER_COLOR: 'bgBorderColor',
+			BG_MATERIAL: 'bgMaterial',
+			MONITOR: 'monitor',
+			GRAPHICS: 'graphics',
+			SOUND: 'sound',
+			BATTLE: 'battle',
+			CAMERA: 'camera',
+			MOUSE: 'mouse',
+			CONTROLS: 'controls',
+			OTHER: 'other',
+			CONTROLS_SHIPS: 'controls_ships',
+			CONTROLS_AVIATION: 'controls_aviation',
+			CONTROLS_CHAT: 'controls_chat',
+			CONTROLS_SPECTATOR: 'controls_spectator',
+			PORTAL: 'portal',
+			SSE: 'sse',
+			SSE_ALL: 'sse_all',
+			SSE_SHIP_ACES: 'sse_ship_aces',
+			SSE_OPEN_ENDED: 'sse_open_ended',
+			SSE_NEWBIE_QUESTS: 'sse_newbie_quests',
+			CAMPAIGNS: 'campaigns',
+			CAMPAIGNS_CHOOSE_CAMPAIGN: 'campaigns_choose_campaign',
+			CAMPAIGNS_CHOOSE_MISSION: 'campaigns_choose_mission',
+			CAMPAIGNS_CHOOSE_TASK: 'campaigns_choose_task',
+			STRATEGIC_ACTIONS: 'strategic_actions',
+
+			VALUE_TO_NAME: {
+				'port': 'PORT', 
+				'barge': 'BARGE', 
+				'shipyard': 'SHIPYARD', 
+				'balancer': 'BALANCER', 
+				'ship_preview': 'SHIP_PREVIEW', 
+				'newbie_gifts': 'NEWBIE_GIFTS', 
+				'main': 'MAIN', 
+				'management': 'MANAGEMENT', 
+				'exterior': 'EXTERIOR', 
+				'research': 'RESEARCH', 
+				'profile': 'PROFILE', 
+				'clans': 'CLANS', 
+				'event_hub_briefing': 'EVENT_HUB_BRIEFING', 
+				'event_hub_progress': 'EVENT_HUB_PROGRESS', 
+				'battle_cards_manager': 'BATTLE_CARDS_MANAGER', 
+				'permoflage': 'PERMOFLAGE', 
+				'camouflage': 'CAMOUFLAGE', 
+				'signals': 'SIGNALS', 
+				'ensign': 'ENSIGN', 
+				'naval_flag': 'NAVAL_FLAG', 
+				'leveling': 'LEVELING', 
+				'achievements': 'ACHIEVEMENTS', 
+				'ranks': 'RANKS', 
+				'ranks_carousel': 'RANKS_CAROUSEL', 
+				'ranks_rewards': 'RANKS_REWARDS', 
+				'collections': 'COLLECTIONS', 
+				'summary': 'SUMMARY', 
+				'battle_type_chooser_show': 'BATTLE_TYPE_CHOOSER_SHOW', 
+				'battle_type_chooser_hide': 'BATTLE_TYPE_CHOOSER_HIDE', 
+				'constructor': 'CONSTRUCTOR', 
+				'patch': 'PATCH', 
+				'emblem': 'EMBLEM', 
+				'symbol': 'SYMBOL', 
+				'bgShape': 'BG_SHAPE', 
+				'bgColor': 'BG_COLOR', 
+				'bgBorderColor': 'BG_BORDER_COLOR', 
+				'bgMaterial': 'BG_MATERIAL', 
+				'monitor': 'MONITOR', 
+				'graphics': 'GRAPHICS', 
+				'sound': 'SOUND', 
+				'battle': 'BATTLE', 
+				'camera': 'CAMERA', 
+				'mouse': 'MOUSE', 
+				'controls': 'CONTROLS', 
+				'other': 'OTHER', 
+				'controls_ships': 'CONTROLS_SHIPS', 
+				'controls_aviation': 'CONTROLS_AVIATION', 
+				'controls_chat': 'CONTROLS_CHAT', 
+				'controls_spectator': 'CONTROLS_SPECTATOR', 
+				'portal': 'PORTAL', 
+				'sse': 'SSE', 
+				'sse_all': 'SSE_ALL', 
+				'sse_ship_aces': 'SSE_SHIP_ACES', 
+				'sse_open_ended': 'SSE_OPEN_ENDED', 
+				'sse_newbie_quests': 'SSE_NEWBIE_QUESTS', 
+				'campaigns': 'CAMPAIGNS', 
+				'campaigns_choose_campaign': 'CAMPAIGNS_CHOOSE_CAMPAIGN', 
+				'campaigns_choose_mission': 'CAMPAIGNS_CHOOSE_MISSION', 
+				'campaigns_choose_task': 'CAMPAIGNS_CHOOSE_TASK', 
+				'strategic_actions': 'STRATEGIC_ACTIONS'
+			},
+
+			ALL: ['port', 'barge', 'shipyard', 'balancer', 'ship_preview', 'newbie_gifts', 'main', 'management', 'exterior', 'research', 'profile', 'clans', 'event_hub_briefing', 'event_hub_progress', 'battle_cards_manager', 'permoflage', 'camouflage', 'signals', 'ensign', 'naval_flag', 'leveling', 'achievements', 'ranks', 'ranks_carousel', 'ranks_rewards', 'collections', 'summary', 'battle_type_chooser_show', 'battle_type_chooser_hide', 'constructor', 'patch', 'emblem', 'symbol', 'bgShape', 'bgColor', 'bgBorderColor', 'bgMaterial', 'monitor', 'graphics', 'sound', 'battle', 'camera', 'mouse', 'controls', 'other', 'controls_ships', 'controls_aviation', 'controls_chat', 'controls_spectator', 'portal', 'sse', 'sse_all', 'sse_ship_aces', 'sse_open_ended', 'sse_newbie_quests', 'campaigns', 'campaigns_choose_campaign', 'campaigns_choose_mission', 'campaigns_choose_task', 'strategic_actions'], 
+			CAROUSEL_VISIBLE: ['main', 'management', 'exterior', 'battle_cards_manager'], 
+			TTX_VISIBLE: ['main', 'management', 'exterior', 'research'], 
+			NOT_AVAILABLE_FROM_WEB: ['balancer', 'patch', 'emblem', 'symbol', 'constructor', 'bgShape', 'bgColor', 'bgBorderColor', 'bgMaterial', 'monitor', 'graphics', 'sound', 'controls', 'battle', 'camera', 'mouse', 'other', 'portal', 'controls_ships', 'controls_aviation', 'controls_chat', 'controls_spectator'], 
+			OPTIONS_PAGES: ['monitor', 'graphics', 'sound', 'battle', 'camera', 'mouse', 'controls', 'other']
+		}, 
+		GUI_URL: {
+			REPORT_ERROR: 'reportError',
+			FORUM: 'forum',
+			PERSONAL_ACCOUNT: 'personal',
+			REGISTER: 'register',
+			PASSWORD_RECOVERY: 'passwordRecovery',
+			WARGAMING_NET: 'wargamingNet',
+			WOWS_WEBSITE: 'wowsWebsite',
+			EULA: 'eula',
+			SUPPORT: 'support',
+			BUY_GOLD: 'buyGold',
+			BUY_PREM: 'buyPrem',
+			KONGZHONG: 'kongzhong',
+			CLAN_INVITES: 'clanInvites',
+			CLANS_IN_GAME: 'clansInGame',
+			CLAN_WARS_IN_GAME: 'clanWarsInGame',
+			RULES_ABOUT_CLAN_SEASON: 'rulesAboutClanSeasonInGame',
+			EXTRA_LICENCES: 'extraLicences',
+			GUIDES_IN_GAME: 'guidesInGame',
+			WAREHOUSE_IN_GAME: 'warehouseInGame',
+			SHOP_IN_GAME: 'shopInGame',
+			METASHOP: 'metaShop',
+			BUY_GOLD_IN_GAME: 'buyGoldInGame',
+			NEWS_IN_GAME: 'newsInGame',
+			NEWS_ALL_IN_GAME: 'newsAllInGame',
+			NEWS_VERSION_IN_GAME: 'newsVersionInGame',
+			BUY_TOTAL_PREMIUM_IN_GAME: 'buyTotalPremiumInGame',
+			PLAYTOGETHER_IN_GAME: 'playTogetherInGame',
+			BUY_GOLD_AND_PREMIUM_IN_GAME: 'buyGoldAndPremiumInGame',
+			CATALOGUE_IN_GAME: 'catalogueInGame',
+			PREMSHOP_IN_METASHOP_IN_GAME: 'premshopInMetashopInGame',
+			BUY_GOLD_IN_METASHOP_IN_GAME: 'buyGoldInMetashopInGame',
+			BUY_GOLD_AND_PREMIUM_EGS_IN_GAME: 'buyGoldAndPremiumEgsInGame',
+			BUY_TOTAL_PREMIUM_EGS_IN_GAME: 'buyTotalPremiumEgsInGame',
+			METASHOP_RVR: 'metaShopRvr',
+			SHIPYARD_IN_GAME: 'shipyardInGame',
+			SHIPYARD_SERVICE_URL: 'shipyardServiceURL',
+			PLAYER_STATS: 'playerStats',
+			LOOTBOX_CONTENTS: 'lootboxContents',
+			BATTLEPASS_SHOP_IN_GAME: 'battlePassShopInGame',
+			METASHOP_COLLECTIONS: 'metaShopCollections',
+			UNLOCK_PINATA_ABILS: 'unlockPinataAbils',
+			ACCOUNT_TRANSFER_START_TRANSFER_MICROSOFT: 'account_transfer_StartTransfer_Miscrosoft',
+			ACCOUNT_TRANSFER_START_TRANSFER_STEAM: 'account_transfer_StartTransfer_Steam',
+			ACCOUNT_TRANSFER_START_TRANSFER_EGS: 'account_transfer_StartTransfer_EGS',
+			ACCOUNT_TRANSFER_START_TRANSFER: 'account_transfer_StartTransfer',
+
+
+			ALL: ['reportError', 'forum', 'personal', 'register', 'passwordRecovery', 'wargamingNet', 'wowsWebsite', 'eula', 'support', 'buyGold', 'buyPrem', 'kongzhong', 'clanInvites', 'clansInGame', 'clanWarsInGame', 'rulesAboutClanSeasonInGame', 'extraLicences', 'guidesInGame', 'warehouseInGame', 'shopInGame', 'metaShop', 'buyGoldInGame', 'newsInGame', 'newsAllInGame', 'newsVersionInGame', 'buyTotalPremiumInGame', 'playTogetherInGame', 'buyGoldAndPremiumInGame', 'catalogueInGame', 'premshopInMetashopInGame', 'buyGoldInMetashopInGame', 'buyGoldAndPremiumEgsInGame', 'buyTotalPremiumEgsInGame', 'metaShopRvr', 'shipyardInGame', 'shipyardServiceURL', 'playerStats', 'lootboxContents', 'battlePassShopInGame', 'metaShopCollections', 'unlockPinataAbils', 'account_transfer_StartTransfer_Miscrosoft', 'account_transfer_StartTransfer_Steam', 'account_transfer_StartTransfer_EGS', 'account_transfer_StartTransfer'], 
+			CLANS_PROJECTS: ['clanInvites', 'clansInGame', 'clanWarsInGame', 'rulesAboutClanSeasonInGame']
+		}, 
+		WINDOW_STATE: {
+			INIT: 1,
+			SHOW: 2,
+			HIDE: 3,
+
+
+			ALL: [1, 2, 3]
+		}
+	}, 
+	Weapons: {
+		GUN_STATE: {
+			READY: 1,
+			WORK: 2,
+			RELOAD: 3,
+			SWITCHING_AMMO: 4,
+			RELOAD_STOPPED: 5,
+			CHARGE: 6,
+			CRITICAL: 7,
+			DESTROYED: 8,
+			SWITCHING_CRITICAL: 9,
+			DISABLED: 10,
+
+
+			ALL: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 
+			WITH_PROGRESS: [2, 3, 6, 4, 9]
+		}, 
+		BARREL_FIRE_MODE: {
+			SINGLE: 1,
+			SALVO: 2,
+
+
+			ALL: [1, 2]
+		}, 
+		GUN_MARKER_TYPE: {
+			CIRCLE: 0,
+			RECT: 1,
+
+
+			ALL: [0, 1]
+		}, 
+		AMMO_UNIQUE_FEATURES: {
+			TORPEDO_DAMAGE_BY_DIST_INCREASE: 0,
+			TORPEDO_DAMAGE_BY_DIST_DECREASE: 1,
+			SKIP_BOMB: 3,
+
+			VALUE_TO_NAME: {
+				'0': 'TORPEDO_DAMAGE_BY_DIST_INCREASE', 
+				'1': 'TORPEDO_DAMAGE_BY_DIST_DECREASE', 
+				'3': 'SKIP_BOMB'
+			},
+
+			ALL: [0, 1, 3]
+		}
+	}
+})
