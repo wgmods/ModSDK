@@ -1,0 +1,22 @@
+
+(def element GamefaceWidget(_gfName:str, _gfPath:str)  layout=true
+	(class $Fullsize)
+	(scope
+		
+		(var gamefaceViewWatcher:gfx = "$datahub.getPrimWatcher(CC.gamefaceView, _gfName)")
+		(var gamefaceViewEntity:gfx = "gamefaceViewWatcher.entity" (event "gamefaceViewWatcher.event"))
+		(var gamefaceNameDH:str = "gamefaceViewEntity ? gamefaceViewEntity.gamefaceView.name : '' " (event "gamefaceViewEntity.gamefaceView.evChanged"))
+		(var gamefaceViewId:number = "gamefaceViewEntity ? gamefaceViewEntity.gamefaceView.gfId : -1 " (event "gamefaceViewEntity.gamefaceView.evChanged"))
+	)
+	
+	(gblock layout=true
+		(class $Fullsize)
+		(bind gamefaceViewId "gamefaceViewId" watch=true)
+		(bind gamefacePath "_gfPath" watch=true)
+		(bind gamefaceName "_gfName" watch=true)
+		(style
+			
+			(bind backgroundImage  "gamefaceNameDH ? 'img://embedded:' + gamefaceNameDH : ''" (event "gamefaceViewEntity.gamefaceView.evChanged") )		
+		)
+	)
+)
