@@ -1,0 +1,615 @@
+(def constant ST_MODULE_DESCRIPTOR_TO_RENDERER {
+	'ap'						: 'ModuleArtilleryParametersST',
+	'ap_burn_prob'				: 'ModuleArtilleryParametersST',
+	'cs_st2024'					: 'ModuleArtilleryParametersST',
+	'phaserlaser'				: 'ModulePhaserParametersST',
+	'torpedo'					: 'ModulePulseLaserParametersST',
+	'torpedo_pulse_phaser'		: 'ModulePulseLaserParametersST',
+	'_Shield'					: 'ModuleShieldParametersST',
+	'_Hull'						: 'ModuleHullParametersST',
+	'torpedo_photon'			: 'ModuleTorpedoPhotonParametersST',
+	'torpedo_photon_splash'		: 'ModuleTorpedoPhotonParametersST',
+	'fighter_he_st2024'			: 'ModuleFightersParametersST',
+	'bomber_torpedo_st2024_alt'	: 'ModuleTorpedoBombersParametersST',
+	'dive_ap_st2024'			: 'ModuleDiveBombersParametersST'
+})
+
+(def element ModuleSTTooltip (_moduleSTid:number) layout=true
+	(scope
+		(var moduleComponent:gfx = "$datahub.getPrimaryComponent(CC.moduleST, _moduleSTid)")
+		(var isPurchased:bool = "moduleComponent.isPurchased" (event "moduleComponent.evUpdated"))
+		(var isInstalled:bool = "moduleComponent.isInstalled" (event "moduleComponent.evUpdated"))
+		(var purchaseState:number = "moduleComponent.purchaseState" (event "moduleComponent.evUpdated"))
+		(var price:number = "moduleComponent.price" (event "moduleComponent.evUpdated"))
+		(var priceDeficit:number = "moduleComponent.priceDeficit" (event "moduleComponent.evUpdated"))
+
+		(var statusIDS:str = "	isInstalled															?	'IDS_STEQ_MODULE_INSTALLED' :
+								purchaseState == SC.Common.ST_PURCHASE_STATE.BUY_PREV				?	'IDS_STEQ_BUY_PREV_MODULE' :
+								purchaseState == SC.Common.ST_PURCHASE_STATE.NOT_AVAILABLE			? 	'IDS_STEQ_MODULE_NOT_AVAILABLE' :
+								purchaseState == SC.Common.ST_PURCHASE_STATE.BLOCKED_IN_EVENT_PASS	?	'IDS_STEQ_MODULE_UNLOCKED_IN_EVENTPASS'
+								: ''")
+
+		(var canBePurchased:bool = "!isPurchased && statusIDS == ''")
+		(var canBeSelected:bool = "isPurchased && !isInstalled")
+		(var isMouseInstruction:bool = "canBePurchased || canBeSelected")
+	)
+
+	(style
+		(hitTest = "false")
+		(width = "340")
+	)
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(bindcall externalCall 'direct.action' "['makeSTModuleParams', { moduleId: _moduleSTid }]" init=false watch=false (event "evStartShow"))
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+
+		(element TooltipSystemFullsizeImage
+			_imageUrl = "'url:../event_hub/equipment/modules/' + moduleComponent.name + '.jpg'"
+			_height = 100
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		
+		(element TooltipSystemHeaderSubheaderText
+			_unifiedStatus =	"isInstalled ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			_headerText =		"'IDS_' + moduleComponent.name"
+			_subheaderText =	"'IDS_STEQ_MODULE_TYPE' + toUpper(moduleComponent.type)"
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "statusIDS != ''")
+		)
+
+		(controller $Instance renderer='TooltipSystemStatusLine'
+			(bind enabled "statusIDS != ''")
+			(args
+				_unifiedStatus = "isInstalled ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.LOCK"
+				_text = "statusIDS"
+			)
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "canBePurchased")
+		)
+
+		(controller $Instance renderer='TooltipSystemDescriptionText'
+			(bind enabled "canBePurchased")
+			(args
+				_descriptionText = "'IDS_STEQ_MODULE_ADDITIONAL_PURCHASE'"
+			)
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "canBePurchased")
+		)
+
+		(controller $Instance renderer='TooltipSystemPriceTagLine'
+			(bind enabled "canBePurchased")
+			(args
+				_title = 'IDS_STEQ_MODULE_PRICE'
+				_priceInfo	= "{currency: SC.Common.CURRENCIES.EVENTUM_6, basePrice: price, finalPrice: price, discountPercent: 0}"
+			)
+		)
+
+		(controller $Instance renderer='TooltipSystemPriceDeficitLine'
+			(bind enabled "canBePurchased && priceDeficit != -1")
+			(args
+				_title = ''
+				_priceInfo	= "{currency: SC.Common.CURRENCIES.EVENTUM_6, basePrice: price, finalPrice: price, discountPercent: 0}"
+				_deficit = "priceDeficit"
+			)
+			(exprs
+				(style
+					(marginTop = "M")
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "'IDS_' + moduleComponent.name + '_DESCRIPTION'"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element ModuleParametersAdapterST
+			_ttxDescriptor = "moduleComponent.subtype"
+		)
+
+		(controller $Instance 
+			(bind enabled "moduleComponent ? moduleComponent.armaments.length > 0 : false")
+			(bind renderer "'ModuleComponentsST'")
+			(args 
+				_icons = "moduleComponent.armaments"
+				_title = 'IDS_STEQ_MODULE_AMMO'
+			)
+		)
+
+		(controller $Instance 
+			(bind enabled "moduleComponent ? moduleComponent.consumables.length > 0 : false")
+			(bind renderer "'ModuleComponentsST'")
+			(args 
+				_icons = "moduleComponent.consumables"
+				_title = 'IDS_STEQ_MODULE_CONSUMABLES'
+			)
+		)
+
+		(controller $Instance 
+			(bind enabled "moduleComponent ? moduleComponent.secondaries.length > 0 : false")
+			(bind renderer "'ModuleComponentsST'")
+			(args 
+				_icons = "moduleComponent.secondaries"
+				_title = 'IDS_STEQ_MODULE_SECONDARIES'
+			)
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "isMouseInstruction")
+		)
+
+		(controller $Instance renderer='TooltipSystemStatusLine'
+			(bind enabled "isMouseInstruction")
+			(args
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+				_text = "canBePurchased ? 'IDS_STEQ_BUY_MODULE' : 'IDS_STEQ_INSTALL_MODULE'"
+			)
+		)
+
+	)
+)
+
+(def element ModuleComponentsST (_icons:array, _title:str)
+	(style
+		(width = 100%)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(element TooltipSystemSecondaryHeaderText
+		_headerText = "_title"
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(htile
+		(style
+			(width = 100%)
+			(gap = 20)
+		)
+		(controller $Repeat 
+			(bind renderer "'SimpleIcon'")
+			(bind count "_icons.length")
+			(args
+				_path = "_icons[$index]"
+			)
+		)
+	)
+)
+
+(def element SimpleIcon(_path:str)
+	(style
+		(width = "ST_HD_GRID_ITEM_SIZE")
+		(height = "ST_HD_GRID_ITEM_SIZE")
+		(bind backgroundImage "'url:' + _path")
+		(backgroundSize = "fill")
+	)
+)
+
+(def layout ModuleParametersAdapterST (_ttxDescriptor:str) dispatch_size_change=true
+	(scope
+		(var rendererName:str = "_ttxDescriptor in ST_MODULE_DESCRIPTOR_TO_RENDERER	?	ST_MODULE_DESCRIPTOR_TO_RENDERER[_ttxDescriptor]
+																					:	'DefaultParametersForTooltip'")
+
+		(macro PULL_SHIP_ID)
+		(var shipST:gfx = "$datahub.getPrimaryEntity(CC.ship, shipIdForModuleInset).shipST")
+		(var tooltipTTX:gfx = "shipST ? shipST.tooltipTTX : null" (event "shipST.evTooltipTTXChanged"))
+	)
+	(bind visible "tooltipTTX != null")
+	(style (width = 340) (paddingLeft = "-M") (paddingRight = "M"))
+	(block
+		(class $TooltipModuleParamsContainer)
+		(controller $Instance
+			(bind enabled "tooltipTTX != null")
+			(bind renderer "rendererName")
+			(args 
+				shipTTX = "tooltipTTX"
+			)
+		)
+	)
+)
+
+(def layout ModuleHullParametersST (shipTTX:gfx)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_HEALTH'
+											_value = "shipTTX.durability.health"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ATBA_GUNS_COUNT_ST'
+											_value = "shipTTX.hull.atbaGunsCount"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAXSPEED'
+											_value = "shipTTX.mobility.speed"
+											_valueConfig = "VALUE_CONFIG.KNOT_FLOAT"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_RUDDER_TIME'
+											_value = "shipTTX.mobility.rudderTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_SHIP'
+											_value = "shipTTX.visibility.visibilityByShip.normal"
+											_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+			)
+		)
+	)
+)
+
+(def layout ModuleShieldParametersST (shipTTX:gfx)
+	(scope
+		(var shieldTTX:gfx = "shipTTX.shield")
+	)
+
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(controller $Instance
+				(bind enabled "shieldTTX")
+				(bind renderer "'ShipParameter_Number'")
+				(args
+					_title = 'IDS_SHIP_PARAM_SHIELD_DURABILITY'
+					_value = "shieldTTX.maxHp"
+					_zeroValueHidden = "true"
+				)
+			)
+			(controller $Instance
+				(bind enabled "shieldTTX")
+				(bind renderer "'ShipParameter_Number'")
+				(args
+					_title = 'IDS_SHIP_PARAM_SHIELD_REGEN_DELAY'
+					_value = "shieldTTX.regenerationDelay"
+					_valueConfig = "VALUE_CONFIG.SECONDS"
+					_zeroValueHidden = "true"
+				)
+			)
+			(controller $Instance
+				(bind enabled "shieldTTX")
+				(bind renderer "'ShipParameter_Percent'")
+				(args
+					_title = 'IDS_SHIP_PARAM_SHIELD_REGEN_COEFF'
+					_value = "shieldTTX.regenCoeff"
+					_valueConfig = "VALUE_CONFIG.PERCENT_SECOND"
+					_zeroValueHidden = "true"
+				)
+			)
+		)
+	)
+)
+
+(def layout ModuleFightersParametersST (shipTTX:gfx)
+	(scope
+		(var fighterTTX:gfx = "shipTTX && shipTTX.squadrons && shipTTX.squadrons.fighter ? shipTTX.squadrons.fighter : null")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro TTX_INSTANCE 'FightersTTXInst' "fighterTTX")
+		)
+	)
+)
+
+(def layout FightersTTXInst(shipTTX:gfx, fighterTTX:gfx)
+	(scope
+		(var bombTTX:gfx = "fighterTTX.rocketHE ? fighterTTX.rocketHE : fighterTTX.rocketAP")
+	)
+	(class $ParametersPanel)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANE_VITALITY'
+									_value = "shipTTX.squadrons.fighter.health"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED'
+									_value = "shipTTX.squadrons.fighter.speed"
+									_valueConfig = "VALUE_CONFIG.KNOT"
+									_zeroValueHidden = "true"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+									_value = "shipTTX.squadrons.fighter.numAttackers"
+									_zeroValueHidden = "true"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_PLANES'
+									_value = "shipTTX.squadrons.fighter.numPlanes"
+									_zeroValueHidden = "true"
+	)
+	(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+									_values = "[shipTTX.squadrons.fighter.restorePlanes, shipTTX.squadrons.fighter.restoreTime]"
+									_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_FIGHTER_ST2024'
+									_value = "bombTTX.numBombs"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ROCKET_DAMAGE_ST2024'
+									_value = "bombTTX.damage"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+									_value = "bombTTX.damageToShield"
+	)
+	(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_SQUADRON_BURN_PROB_HE'
+						_value = "bombTTX.burnChance"
+						_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+	)
+)
+
+(def layout ModuleDiveBombersParametersST (shipTTX:gfx)
+	(scope
+		(var bomberTTX:gfx = "shipTTX && shipTTX.squadrons && shipTTX.squadrons.diveBomber ? shipTTX.squadrons.diveBomber : null")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro TTX_INSTANCE 'BombersTTXInst' "bomberTTX")
+		)
+	)
+)
+
+(def layout BombersTTXInst(shipTTX:gfx, bomberTTX:gfx)
+	(scope
+		(var bombTTX:gfx = "bomberTTX.bombHE ? bomberTTX.bombHE :
+							bomberTTX.bombAP ? bomberTTX.bombAP :
+							bomberTTX.bombDW ? bomberTTX.bombDW :
+							null")
+	)
+	(class $ParametersPanel)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANE_VITALITY'
+									_value = "shipTTX.squadrons.diveBomber.health"
+	)
+		(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED'
+									_value = "shipTTX.squadrons.diveBomber.speed"
+									_valueConfig = "VALUE_CONFIG.KNOT"
+									_zeroValueHidden = "true"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+									_value = "shipTTX.squadrons.diveBomber.numAttackers"
+									_zeroValueHidden = "true"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_PLANES'
+									_value = "shipTTX.squadrons.diveBomber.numPlanes"
+									_zeroValueHidden = "true"
+	)
+	(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+									_values = "[shipTTX.squadrons.diveBomber.restorePlanes, shipTTX.squadrons.diveBomber.restoreTime]"
+									_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_DIVE'
+									_value = "bombTTX.numBombs"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_DAMAGE'
+									_value = "bombTTX.damage"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+									_value = "bombTTX.damageToShield"
+	)
+	(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_SQUADRON_BURN_PROB_HE'
+						_value = "bombTTX.burnChance"
+						_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+	)
+)
+
+(def layout ModuleTorpedoBombersParametersST (shipTTX:gfx)
+	(scope
+		(var torpedoBomberTTX:gfx = "shipTTX && shipTTX.squadrons ?	shipTTX.squadrons.torpedoBomber		? shipTTX.squadrons.torpedoBomber :
+															shipTTX.squadrons.torpedoBomberAlt	? shipTTX.squadrons.torpedoBomberAlt :
+															null : null")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro TTX_INSTANCE 'TorpedoBombersTTXInst' "torpedoBomberTTX")
+		)
+	)
+)
+
+(def layout TorpedoBombersTTXInst(shipTTX:gfx, torpedoBomberTTX:gfx)
+	(scope
+		(var bombTTX:gfx = "torpedoBomberTTX.torpedo")
+	)
+	(class $ParametersPanel)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANE_VITALITY'
+									_value = "torpedoBomberTTX.health"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED'
+									_value = "torpedoBomberTTX.speed"
+									_valueConfig = "VALUE_CONFIG.KNOT"
+									_zeroValueHidden = "true"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+									_value = "torpedoBomberTTX.numAttackers"
+									_zeroValueHidden = "true"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_PLANES'
+									_value = "torpedoBomberTTX.numPlanes"
+									_zeroValueHidden = "true"
+	)
+	(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+									_values = "[torpedoBomberTTX.restorePlanes, torpedoBomberTTX.restoreTime]"
+									_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_TORPEDO_ST2024'
+									_value = "bombTTX.numBombs"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_TORPEDO_DAMAGE_ST2024'
+									_value = "bombTTX.damage"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+									_value = "bombTTX.damageToShield"
+	)
+)
+
+(def layout ModuleArtilleryParametersST (shipTTX:gfx)
+	(scope
+		(var gunTTX:gfx = "shipTTX && shipTTX.artillery ? shipTTX.artillery.mainGun[0] : null")
+		(var ammoTTX:gfx = "shipTTX && shipTTX.artillery ? shipTTX.artillery.ammoAP ? shipTTX.artillery.ammoAP : shipTTX.artillery.ammoCS : null")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro TTX_INSTANCE 'ArtilleryTTXInst' "gunTTX")
+			(macro TTX_INSTANCE 'AmmoTTXInstance' "ammoTTX")
+		)
+	)
+)
+
+(def layout ArtilleryTTXInst (shipTTX:gfx, gunTTX:gfx)
+	(class $ParametersPanel)
+	(element ShipParameter_GunConfigurationSimple 'IDS_MAIN_CALIBER' "gunTTX" _externalDiff="false")
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+									_value = "shipTTX.artillery.mgReloadTime"
+									_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAX_DIST'
+									_value = "shipTTX.artillery.mgMaxDist"
+									_valueConfig = "VALUE_CONFIG.KILOMETER"
+	)
+)
+
+(def layout AmmoTTXInstance (shipTTX:gfx, ammoTTX:gfx)
+	(class $ParametersPanel)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+									_value = "ammoTTX.damage"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+									_value = "ammoTTX.damageToShield"
+									_zeroValueHidden = true
+	)
+	(controller $Instance
+		(bind enabled "ammoTTX.burnChance")
+		(bind renderer "'ShipParameter_Percent'")
+		(args
+			_title = 'IDS_SHIP_PARAM_ARTILLERY_BURN_PROB'
+			_value = "ammoTTX.burnChance"
+			_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+			_zeroValueHidden = true
+		)
+	)
+)
+
+(def layout ModulePhaserParametersST (shipTTX:gfx)
+	(scope
+		(var gunTTX:gfx = "shipTTX && shipTTX.phaserLasers ? shipTTX.phaserLasers.guns[0] : null")
+		(var ammoTTX:gfx = "shipTTX && shipTTX.phaserLasers ? shipTTX.phaserLasers.ammo : null")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro TTX_INSTANCE 'PhaserTTXInstance' "gunTTX")
+			(macro TTX_INSTANCE 'AmmoTTXInstance' "ammoTTX")
+		)
+	)
+)
+
+(def layout PhaserTTXInstance (shipTTX:gfx, gunTTX:gfx)
+	(class $ParametersPanel)
+	(element ShipParameter_SalvoConfiguration 'IDS_SHIP_PARAM_MOUNT_CONFIGURATION'
+									_salvoConfigurationTTX = "shipTTX.phaserLasers.salvoConfiguration"
+									_externalDiff = false
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+									_value = "shipTTX.phaserLasers.reloadTime"
+									_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAX_DIST'
+									_value = "shipTTX.phaserLasers.maxDist"
+									_valueConfig = "VALUE_CONFIG.KILOMETER"
+	)
+)
+
+
+(def layout ModulePulseLaserParametersST (shipTTX:gfx)
+	(scope
+		(var launchers:array = "shipTTX && shipTTX.torpedoes ? shipTTX.torpedoes.launchers : null")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro TTX_INSTANCE 'LauncherTTXInstance' "launchers")
+		)
+	)
+)
+
+(def layout LauncherTTXInstance (shipTTX:gfx, launchers:gfx)
+	(scope
+		(var torpedo:gfx = "shipTTX && shipTTX.torpedoes ? shipTTX.torpedoes.torpedo : null")
+	)
+	
+	(class $ParametersPanel)
+	(element ShipParameter_GunConfigurationSimple 'IDS_SHIP_PARAM_MOUNT_CONFIGURATION' "launchers[0]")
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+									_value = "shipTTX.torpedoes.reloadTime"
+									_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PROJECTILE_MAX_DIST'
+									_value = "torpedo.maxDist"
+									_valueConfig = "VALUE_CONFIG.KILOMETER"
+	)
+	(element ShipParameter_Number		_title = 'IDS_SHIP_PARAM_TORPEDO_DAMAGE'
+										_value = "torpedo.damage"
+	)
+	(element ShipParameter_Number		_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+										_value = "torpedo.damageToShield"
+										_zeroValueHidden = true
+	)
+	(element ShipParameter_Number		_title = 'IDS_SHIP_PARAM_PROJECTILE_SPEED'
+										_value = "torpedo.speed"
+										_valueConfig = "VALUE_CONFIG.KNOT"
+	)
+)
+
+(def layout ModuleTorpedoPhotonParametersST (shipTTX:gfx)
+	(scope
+		(var ammoTTX:gfx = "shipTTX && shipTTX.torpedoesPhoton ? shipTTX.torpedoesPhoton.torpedoPhoton : null")
+	)
+	
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro TTX_INSTANCE 'TorpedoPhotonTTXInstance' "ammoTTX")
+		)
+	)
+)
+
+(def layout TorpedoPhotonTTXInstance (shipTTX:gfx, ammoTTX:gfx)
+	(scope
+		(var radarPulseTTX:gfx = "shipTTX.torpedoesPhoton.radarPulse")
+		(var salvoConfigurationTTX:gfx = "shipTTX.torpedoesPhoton.salvoConfiguration")
+	)
+
+	(class $ParametersPanel)
+
+	(element ShipParameter_SalvoConfiguration 'IDS_SHIP_PARAM_TORPEDO_PHOTON_MOUNT_CONFIGURATION'
+									_salvoConfigurationTTX = "salvoConfigurationTTX"
+									_externalDiff = false
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_PULSE_RELOAD_TIME'
+									_value = "radarPulseTTX.reloadTime"
+									_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+									_value = "shipTTX.torpedoesPhoton.reloadTime"
+									_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_MAX_DIST'
+									_value = "radarPulseTTX.maxDist"
+									_valueConfig = "VALUE_CONFIG.KILOMETER"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_MAX_DAMAGE'
+									_value = "ammoTTX.damage"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+									_value = "ammoTTX.damageToShield"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_SPEED'
+									_value = "ammoTTX.speed"
+									_valueConfig = "VALUE_CONFIG.METER_SECOND"
+	)
+)

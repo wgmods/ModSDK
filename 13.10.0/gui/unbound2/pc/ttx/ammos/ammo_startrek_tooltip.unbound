@@ -1,0 +1,442 @@
+(def layout PhaserLaser_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str, _isSecondaryActive:bool) dispatch_size_change=true
+	(scope
+		(var ammoTTX:gfx = "_shipTTX.phaserLasers.ammo")
+		(var gunTTX:gfx = "_shipTTX.phaserLasers.guns[0]")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_SalvoConfiguration 'IDS_SHIP_PARAM_MOUNT_CONFIGURATION'
+											_salvoConfigurationTTX = "_shipTTX.phaserLasers.salvoConfiguration"
+											_externalDiff = false
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+											_value = "_shipTTX.phaserLasers.reloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ROTATION_TIME'
+											_value = "gunTTX.rotationTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_TOOLTIP_ARTILLERY_SHOOT_DIST'
+											_value="_shipTTX.phaserLasers.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PHASER_LASERS_MAX_DAMAGE'
+											_value = "ammoTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + toString(SC.Battle.PARAMETER.phaser_laserDamage)"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PHASER_LASERS_SHIELD_DAMAGE'
+											_value = "ammoTTX.damageToShield"
+											_alternativeValueKey = "_ownerEntityId + '_' + toString(SC.Battle.PARAMETER.phaser_laserShieldDamage)"
+			)
+			(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_PHASER_LASERS_BURN_PROB'
+											_value = "ammoTTX.burnChance"
+											_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+											_zeroValueHidden = true
+			)
+		)
+	)
+)
+
+(def layout PhaserLaser_ParametersForDock (_shipTTX:gfx, _isSecondaryActive:bool) dispatch_size_change=true
+	(scope
+		(var ammoTTX:gfx = "_shipTTX.phaserLasers.ammo")
+		(var gunTTX:gfx = "_shipTTX.phaserLasers.guns[0]")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_SalvoConfiguration 'IDS_SHIP_PARAM_MOUNT_CONFIGURATION'
+											_salvoConfigurationTTX = "_shipTTX.phaserLasers.salvoConfiguration"
+											_externalDiff = false
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+											_value = "_shipTTX.phaserLasers.reloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ROTATION_TIME'
+											_value = "gunTTX.rotationTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_TOOLTIP_ARTILLERY_SHOOT_DIST'
+											_value="_shipTTX.phaserLasers.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PHASER_LASERS_MAX_DAMAGE'
+											_value = "ammoTTX.damage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PHASER_LASERS_SHIELD_DAMAGE'
+											_value = "ammoTTX.damageToShield"
+			)
+			(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_PHASER_LASERS_BURN_PROB'
+											_value = "ammoTTX.burnChance"
+											_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+											_zeroValueHidden = true
+			)
+		)
+	)
+)
+
+(def layout TorpedoPhoton_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str, _isSecondaryActive:bool) dispatch_size_change=true
+	(scope
+		(var ammoTTX:gfx = "_shipTTX.torpedoesPhoton.torpedoPhoton")
+		(var radarPulseTTX:gfx = "_shipTTX.torpedoesPhoton.radarPulse")
+		(var gunTTX:gfx = "_shipTTX.torpedoesPhoton.launchers[0]")
+		(var salvoConfigurationTTX:gfx = "_shipTTX.torpedoesPhoton.salvoConfiguration")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_SalvoConfiguration 'IDS_SHIP_PARAM_TORPEDO_PHOTON_MOUNT_CONFIGURATION'
+											_salvoConfigurationTTX = "salvoConfigurationTTX"
+											_externalDiff = false
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_PULSE_RELOAD_TIME'
+											_value = "radarPulseTTX.reloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_RELOAD_TIME'
+											_value = "_shipTTX.torpedoesPhoton.reloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ROTATION_TIME'
+											_value = "gunTTX.rotationTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_MAX_DIST'
+											_value = "radarPulseTTX.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_MAX_DAMAGE'
+											_value = "ammoTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + toString(SC.Battle.PARAMETER.torpedoPhotonDamage)"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_SHIELD_DAMAGE'
+											_value = "ammoTTX.damageToShield"
+											_alternativeValueKey = "_ownerEntityId + '_' + toString(SC.Battle.PARAMETER.torpedoPhotonShieldDamage)"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_BLAST_RADIUS'
+											_value = "ammoTTX.blastRadius"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_PULSE_SPEED'
+											_value = "radarPulseTTX.speed"
+											_valueConfig = "VALUE_CONFIG.METER_SECOND"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_SPEED'
+											_value = "ammoTTX.speed"
+											_valueConfig = "VALUE_CONFIG.METER_SECOND"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_PULSE_WIDTH'
+											_value = "radarPulseTTX.width"
+											_valueConfig = "VALUE_CONFIG.METER"
+			)
+		)
+	)
+)
+
+(def layout TorpedoPhoton_ParametersForDock (_shipTTX:gfx, _isSecondaryActive:bool) dispatch_size_change=true
+	(scope
+		(var ammoTTX:gfx = "_shipTTX.torpedoesPhoton.torpedoPhoton")
+		(var radarPulseTTX:gfx = "_shipTTX.torpedoesPhoton.radarPulse")
+		(var gunTTX:gfx = "_shipTTX.torpedoesPhoton.launchers[0]")
+		(var salvoConfigurationTTX:gfx = "_shipTTX.torpedoesPhoton.salvoConfiguration")
+	)
+	(class $ParametersPanel)
+
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_SalvoConfiguration 'IDS_SHIP_PARAM_TORPEDO_PHOTON_MOUNT_CONFIGURATION'
+											_salvoConfigurationTTX = "salvoConfigurationTTX"
+											_externalDiff = false
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_PULSE_RELOAD_TIME'
+											_value = "radarPulseTTX.reloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_RELOAD_TIME'
+											_value = "_shipTTX.torpedoesPhoton.reloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ROTATION_TIME'
+											_value = "gunTTX.rotationTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_MAX_DIST'
+											_value = "radarPulseTTX.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_MAX_DAMAGE'
+											_value = "ammoTTX.damage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_SHIELD_DAMAGE'
+											_value = "ammoTTX.damageToShield"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_BLAST_RADIUS'
+											_value = "ammoTTX.blastRadius"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_PULSE_SPEED'
+											_value = "radarPulseTTX.speed"
+											_valueConfig = "VALUE_CONFIG.METER_SECOND"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_SPEED'
+											_value = "ammoTTX.speed"
+											_valueConfig = "VALUE_CONFIG.METER_SECOND"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_PULSE_WIDTH'
+											_value = "radarPulseTTX.width"
+											_valueConfig = "VALUE_CONFIG.METER"
+			)
+		)
+	)
+)
+
+(def layout SquadronST_Fighter_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.fighter")
+		(var bombTTX:gfx = "squadronTTX.rocketHE")
+	)
+	(class $ParametersPanel)
+	(macro TTX_SQUADRON_PARAMS_TOOLTIP)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_SQUADRON_AMMO_ROCKET_HE'" "bombTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_FIGHTER_ST2024'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ROCKET_DAMAGE_ST2024'
+											_value = "bombTTX.damage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+											_value = "bombTTX.damageToShield"
+											_zeroValueHidden = true
+			)
+		)
+	)
+)
+(def layout SquadronST_Fighter_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.fighter")
+		(var bombTTX:gfx = "squadronTTX.rocketHE")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED'
+											_value = "squadronTTX.speed"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.cruiseSpeed"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ROCKET_DAMAGE_ST2024'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.fighterDamage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+											_value = "bombTTX.damageToShield"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_FIGHTER_ST2024'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+											_value = "squadronTTX.numAttackers"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANE_VITALITY'
+											_value = "squadronTTX.health"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.vitality"
+			)
+			(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+											_values = "[squadronTTX.restorePlanes, squadronTTX.restoreTime]"
+											_alternativeValueKeys = "['', _ownerEntityId + '_' + SC.Battle.PARAMETER.planeRespawnTime]"
+											_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+			)
+		)
+	)
+)
+
+(def layout WeaponST_Fighter_ParametersForDock (shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "shipTTX.squadrons.fighter")
+		(var bombTTX:gfx = "squadronTTX.rocketHE")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_FIGHTER_ST2024'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ROCKET_DAMAGE_ST2024'
+											_value = "bombTTX.damage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+											_value = "bombTTX.damageToShield"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ALPHA_PIERCING_HE'
+											_value = "bombTTX.piercing"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_SQUADRON_BURN_PROB_HE'
+											_value = "bombTTX.burnChance"
+											_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+			)
+		)
+	)
+)
+
+(def layout WeaponST_Fighter_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.fighter")
+		(var bombTTX:gfx = "	squadronTTX.rocketAP	? squadronTTX.rocketAP :
+								squadronTTX.rocketHE	? squadronTTX.rocketHE :
+														null")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ROCKET_DAMAGE_ST2024'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.fighterDamage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+											_value = "bombTTX.damageToShield"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_FIGHTER_ST2024'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ALPHA_PIERCING_HE'
+											_value = "bombTTX.piercing"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_SQUADRON_BURN_PROB_HE'
+											_value = "bombTTX.burnChance"
+											_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+											_zeroValueHidden = true
+			)
+		)
+	)
+)
+
+
+(def layout SquadronST_TorpedoBomberAlt_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.torpedoBomberAlt")
+		(var bombTTX:gfx = "squadronTTX.torpedo")
+	)
+	(class $ParametersPanel)
+	(macro TTX_SQUADRON_PARAMS_TOOLTIP)
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_SQUADRON_AMMO_TORPEDO'" "bombTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_TORPEDO_ST2024'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_TORPEDO_DAMAGE_ST2024'
+											_value = "bombTTX.damage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+											_value = "bombTTX.damageToShield"
+											_zeroValueHidden = true
+			)
+		)
+	)
+)
+
+
+(def layout SquadronST_TorpedoBomberAlt_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.torpedoBomberAlt")
+		(var bombTTX:gfx = "squadronTTX.torpedo")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED'
+											_value = "squadronTTX.speed"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.cruiseSpeedAlt"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_TORPEDO_DAMAGE_ST2024'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.tBomberDamageAlt"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+											_value = "bombTTX.damageToShield"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_TORPEDO_ST2024'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+											_value = "squadronTTX.numAttackers"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANE_VITALITY'
+											_value = "squadronTTX.health"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.vitalityAlt"
+			)
+			(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+											_values = "[squadronTTX.restorePlanes, squadronTTX.restoreTime]"
+											_alternativeValueKeys = "['', _ownerEntityId + '_' + SC.Battle.PARAMETER.planeRespawnTimeAlt]"
+											_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+			)
+		)
+	)
+)
+
+(def layout WeaponST_TorpedoBomberAlt_ParametersForDock (shipTTX:gfx) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "shipTTX.squadrons.torpedoBomberAlt")
+		(var bombTTX:gfx = "squadronTTX.torpedo")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_TORPEDO_ST2024'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_TORPEDO_DAMAGE_ST2024'
+											_value = "bombTTX.damage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+											_value = "bombTTX.damageToShield"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDOES_MAX_DIST_ST2024'
+											_value = "bombTTX.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+		)
+	)
+)
+
+(def layout WeaponST_TorpedoBomberAlt_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(scope
+		(var squadronTTX:gfx = "_shipTTX.squadrons.torpedoBomberAlt")
+		(var bombTTX:gfx = "squadronTTX.torpedo")
+	)
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_TORPEDO_DAMAGE_ST2024'
+											_value = "bombTTX.damage"
+											_alternativeValueKey = "_ownerEntityId + '_' + SC.Battle.PARAMETER.tBomberDamageAlt"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+											_value = "bombTTX.damageToShield"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_TORPEDO_ST2024'
+											_value = "bombTTX.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDOES_MAX_DIST_ST2024'
+											_value = "bombTTX.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+		)
+	)
+)

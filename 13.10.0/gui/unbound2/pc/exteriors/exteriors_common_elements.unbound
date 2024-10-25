@@ -1,0 +1,79 @@
+(def element EntityRestrictionBlock (_restrictionsEntityId:number, _restrictionsIDS:str, _excludedIDS:str="''")
+	(style (width = 100%))
+
+	(tf
+		(class $TextDefaultNM)
+		(style (width = 100%) (alpha = "TA"))
+		(bind text "_restrictionsIDS")
+	)
+
+	(block
+		(style (marginTop = "S"))
+		(element ShipRestrictions
+			_restrictionsEntityId = "_restrictionsEntityId"
+		)
+	)
+	(tf
+		(bind visible "_excludedIDS")
+		(class $TextDefaultNM)
+		(style (width = 100%) (alpha = "TA") (marginTop = "XXS"))
+		(bind text "_excludedIDS")
+	)
+)
+
+(def element LinkableItemIcon () layout=true
+	(style (width = 19px) (height = 19px) (padding = 1px))
+	(block
+		(class $Fullsize)
+		(style (backgroundImage = "'url:../service_kit/icons/icon_linked.png'"))
+	)
+)
+
+(def element InfinityCounterIcon () layout=true
+	(style (width = 19px) (height = 19px) (padding = 1px))
+	(block
+		(class $Fullsize)
+		(style (backgroundImage = "'url:../service_kit/icons/infinite_large.png'"))
+	)
+)
+
+(def element ExteriorLinkButton (_exteriorId:number, _rollOver:bool)
+	(style (alpha = 0))
+	(controller $Animation
+		(bindcall play
+			from =	"{alpha: 0, top: -10}"
+			to =	"{alpha: 1, top: 0}"
+			reverse = "!_rollOver"
+			duration="0.1"
+			easing="Easing.quad_out"
+			(bind trigger "_rollOver")
+		)
+	)
+
+	(element DefaultButton
+		_width = 78
+		_size = "SIZE.SMALL"
+		_isTransactionBtn = "true"
+		_label = 'IDS_LINK_EXTERIOR_UPPER_CASE'
+		_methods = "[	{	type: 'inputMapping.onRequest',
+							name: SC.Ui_common.EXTERIOR_ACTIONS.OPEN_MODAL_BUY_AND_INSTALL,
+							args: { exteriorId: _exteriorId }
+						}]"
+	)
+)
+
+(def element ItemSaleIcon () layout=true
+	(style (width = 19px) (height = 19px) (padding = 1px))
+	(block
+		(class $Fullsize)
+		(style (backgroundImage = "'url:../service_kit/unified_status_icons/icon_' + SC.Ui_styles.UNIFIED_STATUS.SALE_AVAILABLE + '.png'"))
+	)
+)
+
+(def element PeculiarityDisabledIcon (_exteriorId:number) layout=true
+	(style (width = 19px) (height = 19px) (padding = 1px))
+	(block
+		(class $Fullsize)
+		(style (backgroundImage = "'url:../service_kit/icons/icon_hidden.png'"))
+	)
+)

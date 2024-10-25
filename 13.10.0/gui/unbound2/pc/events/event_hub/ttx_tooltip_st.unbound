@@ -1,0 +1,952 @@
+(def constant TTX_ST_PARAM_DESCRIPTORS {
+	'DURABILITY_ST' : 'TTXDurabilityParamsST',
+	'PLANE_FIGHTER_ST' : 'TTXFighterParamsST',
+	'PLANE_DIVE_ST' : 'TTXBomberParamsST',
+	'PLANE_BOMBER_ST' : 'TTXTorpedoBomberParamsST',
+	'WEAPONRY_ST' : 'TTXArtilleryParamsST',
+	'PHASER_LASERS' : 'TTXPhaserLaserParamsST',
+	'TORPEDOES_PHOTON' : 'TTXTorpedoesPhotonParamsST',
+	'PULSE_PHASERS' : 'TTXPulsePhaserParamsST',
+	'ARTILLERY_ATBA' : 'TTXArtilleryAtbaParamsST',
+	'IMPULSE_ATBA' : 'TTXImpulseAtbaParamsST',
+	'MOBILITY_ST' : 'TTXMobilityParamsST',
+	'VISIBILITY_ST' : 'TTXVisibilityParamsST'
+})
+
+(def element TTXTooltipST (_paramName:str, _shipTTX:gfx)
+	(scope
+		(var paramsRenderer:str = "TTX_ST_PARAM_DESCRIPTORS[_paramName]")
+	)
+	
+	(style (width = 340) (hitTest = false))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(controller $Instance
+			(bind enabled "paramsRenderer")
+			(bind renderer "paramsRenderer")
+			(args
+				shipTTX = "_shipTTX"
+			)
+			(exprs
+				(style
+					(width = 100%)
+				)
+			)
+		)
+	)
+)
+
+(def element TTXDurabilityParamsST (shipTTX:gfx)
+	(scope
+		(var shieldTTX:gfx = "shipTTX.shield")
+	)
+	
+	(block
+		(style (width = 100%))
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_SHIP_PARAM_DURABILITY_ST_DESC'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_HEALTH'
+												_value = "shipTTX.durability.health"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PTZDAMAGEPROB'
+												_value = "shipTTX.durability.ptz"
+												_valueConfig = "VALUE_CONFIG.PERCENT"
+												_zeroValueHidden = "true"
+				)
+				(element ShipParameter_Range	_title = 'IDS_SHIP_PARAM_ARMOR'
+													_valueMin = "shipTTX.armor.min"
+													_valueMax = "shipTTX.armor.max"
+													_valueConfig = "VALUE_CONFIG.MILLIMETER"
+				)
+				(controller $Instance
+					(bind enabled "shieldTTX")
+					(bind renderer "'ShipParameter_Number'")
+					(args
+						_title = 'IDS_SHIP_PARAM_SHIELD_DURABILITY'
+						_value = "shieldTTX.maxHp"
+						_zeroValueHidden = "true"
+					)
+				)
+				(controller $Instance
+					(bind enabled "shieldTTX")
+					(bind renderer "'ShipParameter_Number'")
+					(args
+						_title = 'IDS_SHIP_PARAM_SHIELD_REGEN_DELAY'
+						_value = "shieldTTX.regenerationDelay"
+						_valueConfig = "VALUE_CONFIG.SECONDS"
+						_zeroValueHidden = "true"
+					)
+				)
+				(controller $Instance
+					(bind enabled "shieldTTX")
+					(bind renderer "'ShipParameter_Percent'")
+					(args
+						_title = 'IDS_SHIP_PARAM_SHIELD_REGEN_COEFF'
+						_value = "shieldTTX.regenCoeff"
+						_valueConfig = "VALUE_CONFIG.PERCENT_SECOND"
+						_zeroValueHidden = "true"
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element TTXFighterParamsST (shipTTX:gfx)
+	(scope
+		(var fighterTTX:gfx = "shipTTX && shipTTX.squadrons && shipTTX.squadrons.fighter ? shipTTX.squadrons.fighter : null")
+		(var bombTTX:gfx = "fighterTTX.rocketHE ? fighterTTX.rocketHE : fighterTTX.rocketAP")
+	)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_SHIP_PARAM_PLANE_NAME_FIGHTER_DESC'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_SHIP_PARAM_PLANE_FIGHTER_ST'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANE_VITALITY'
+												_value = "shipTTX.squadrons.fighter.health"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED'
+												_value = "shipTTX.squadrons.fighter.speed"
+												_valueConfig = "VALUE_CONFIG.KNOT"
+												_zeroValueHidden = "true"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+												_value = "shipTTX.squadrons.fighter.numAttackers"
+												_zeroValueHidden = "true"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_PLANES'
+												_value = "shipTTX.squadrons.fighter.numPlanes"
+												_zeroValueHidden = "true"
+				)
+				(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+												_values = "[shipTTX.squadrons.fighter.restorePlanes, shipTTX.squadrons.fighter.restoreTime]"
+												_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQ_VISIBILITY_DIST_BY_SHIP'
+												_value = "shipTTX.squadrons.fighter.visibility"
+												_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+				)
+			)
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_DOCK_SQUADRON_AMMO_TITLE_PROJECTILE_ST2024'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_FIGHTER_ST2024'
+												_value = "bombTTX.numBombs"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ROCKET_DAMAGE_ST2024'
+												_value = "bombTTX.damage"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+												_value = "bombTTX.damageToShield"
+				)
+				(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_SQUADRON_BURN_PROB_HE'
+												_value = "bombTTX.burnChance"
+												_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+				)
+			)
+		)
+	)
+)
+
+(def element TTXBomberParamsST (shipTTX:gfx)
+	(scope
+		(var bomberTTX:gfx = "shipTTX && shipTTX.squadrons && shipTTX.squadrons.diveBomber ? shipTTX.squadrons.diveBomber : null")
+		(var bombTTX:gfx = "bomberTTX.bombHE ? bomberTTX.bombHE :
+							bomberTTX.bombAP ? bomberTTX.bombAP :
+							bomberTTX.bombDW ? bomberTTX.bombDW :
+							null")
+	)
+	
+	(block
+		(style (width = 100%))
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_SHIP_PARAM_PLANE_NAME_DIVE_DESC'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_SHIP_PARAM_PLANE_DIVE_ST'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANE_VITALITY'
+												_value = "shipTTX.squadrons.diveBomber.health"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED'
+												_value = "shipTTX.squadrons.diveBomber.speed"
+												_valueConfig = "VALUE_CONFIG.KNOT"
+												_zeroValueHidden = "true"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+												_value = "shipTTX.squadrons.diveBomber.numAttackers"
+												_zeroValueHidden = "true"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_PLANES'
+												_value = "shipTTX.squadrons.diveBomber.numPlanes"
+												_zeroValueHidden = "true"
+				)
+				(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+												_values = "[shipTTX.squadrons.diveBomber.restorePlanes, shipTTX.squadrons.diveBomber.restoreTime]"
+												_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQ_VISIBILITY_DIST_BY_SHIP'
+												_value = "shipTTX.squadrons.diveBomber.visibility"
+												_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+				)
+			)
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_DOCK_SQUADRON_AMMO_TITLE_BOMB_AP_ST2024'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_DIVE'
+												_value = "bombTTX.numBombs"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_DAMAGE'
+												_value = "bombTTX.damage"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+												_value = "bombTTX.damageToShield"
+				)
+				(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_SQUADRON_BURN_PROB_HE'
+												_value = "bombTTX.burnChance"
+												_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+				)
+			)
+		)
+	)
+)
+
+(def element TTXTorpedoBomberParamsST (shipTTX:gfx)
+	(scope
+		(var torpedoBomberTTX:gfx = "shipTTX && shipTTX.squadrons ?	shipTTX.squadrons.torpedoBomber		? shipTTX.squadrons.torpedoBomber :
+																	shipTTX.squadrons.torpedoBomberAlt	? shipTTX.squadrons.torpedoBomberAlt :
+																	null : null")
+		(var bombTTX:gfx = "torpedoBomberTTX.torpedo")
+	)
+	
+	(block
+		(style (width = 100%))
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_SHIP_PARAM_PLANE_NAME_BOMBER_DESC'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_SHIP_PARAM_PLANE_BOMBER_ST'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANE_VITALITY'
+												_value = "torpedoBomberTTX.health"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_SPEED'
+												_value = "torpedoBomberTTX.speed"
+												_valueConfig = "VALUE_CONFIG.KNOT"
+												_zeroValueHidden = "true"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+												_value = "torpedoBomberTTX.numAttackers"
+												_zeroValueHidden = "true"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_PLANES'
+												_value = "torpedoBomberTTX.numPlanes"
+												_zeroValueHidden = "true"
+				)
+				(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+												_values = "[torpedoBomberTTX.restorePlanes, torpedoBomberTTX.restoreTime]"
+												_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQ_VISIBILITY_DIST_BY_SHIP'
+												_value = "torpedoBomberTTX.visibility"
+												_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+				)
+			)
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_DOCK_SQUADRON_AMMO_TITLE_TORPEDO_ST2024'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_AMMO_COUNT_TORPEDO_ST2024'
+												_value = "bombTTX.numBombs"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_TORPEDO_DAMAGE_ST2024'
+												_value = "bombTTX.damage"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+												_value = "bombTTX.damageToShield"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDOES_MAX_DIST_ST2024'
+												_value = "bombTTX.maxDist"
+												_valueConfig = "VALUE_CONFIG.KILOMETER"
+				)
+			)
+		)
+	)
+)
+
+(def element TTXArtilleryParamsST (shipTTX:gfx)
+	(scope
+		(var gunTTX:gfx = "shipTTX.artillery.mainGun[0]")
+		(var ammoTTX:gfx = "shipTTX.artillery.ammoAP ? shipTTX.artillery.ammoAP : shipTTX.artillery.ammoCS")
+	)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_SHIP_PARAM_WEAPONRY_ST_HEADER'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_SHIP_PARAM_WEAPONRY_ST'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_GunConfigurationSimple 'IDS_SHIP_PARAM_MOUNT_CONFIGURATION' "gunTTX" _externalDiff="false")
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+												_value = "shipTTX.artillery.mgReloadTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ROTATION_TIME'
+												_value = "gunTTX.rotationTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAX_DIST'
+												_value = "shipTTX.artillery.mgMaxDist"
+												_valueConfig = "VALUE_CONFIG.KILOMETER"
+				)
+			)
+		)
+	)
+	(block
+		(class $ParametersPanel)
+		(controller $Instance renderer='TTXArtilleryAmmoST'
+			(bind enabled "shipTTX.artillery.ammoCS")
+			(args "shipTTX.artillery.ammoCS" 'IDS_SHIP_PARAM_CS_DESC')
+		)
+	)
+	(block
+		(class $ParametersPanel)
+		(controller $Instance renderer='TTXArtilleryAmmoST'
+			(bind enabled "shipTTX.artillery.ammoAP")
+			(args "shipTTX.artillery.ammoAP" 'IDS_SHIP_PARAM_APHE_DESC')
+		)
+	)
+
+)
+
+(def element TTXArtilleryAmmoST (_ammoTTX:gfx, _ammoTitle:str)
+	(class $ParametersPanel)
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = "_ammoTitle"
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+												_value = "_ammoTTX.damage"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+												_value = "_ammoTTX.damageToShield"
+												_zeroValueHidden = true
+				)
+				(controller $Instance
+					(bind enabled "_ammoTTX.burnChance")
+					(bind renderer "'ShipParameter_Percent'")
+					(args
+						_title = 'IDS_SHIP_PARAM_ARTILLERY_BURN_PROB'
+						_value = "_ammoTTX.burnChance"
+						_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+						_zeroValueHidden = true
+					)
+				)
+			)
+		)
+	)
+)
+
+
+(def element TTXPhaserLaserParamsST (shipTTX:gfx)
+	(scope
+		(var gunTTX:gfx = "shipTTX.phaserLasers.guns[0]")
+		(var ammoTTX:gfx = "shipTTX.phaserLasers.ammo")
+	)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_SHIP_PARAM_PHASER_LASERS_HEADER'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_SHIP_PARAM_WEAPONRY_ST'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_SalvoConfiguration 'IDS_SHIP_PARAM_MOUNT_CONFIGURATION'
+												_salvoConfigurationTTX = "shipTTX.phaserLasers.salvoConfiguration"
+												_externalDiff = false
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+												_value = "shipTTX.phaserLasers.reloadTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ROTATION_TIME'
+												_value = "gunTTX.rotationTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAX_DIST'
+												_value = "shipTTX.phaserLasers.maxDist"
+												_valueConfig = "VALUE_CONFIG.KILOMETER"
+				)
+			)
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_SHIP_PARAM_PHASER_LASER_DESC'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PHASER_LASERS_MAX_DAMAGE'
+												_value = "ammoTTX.damage"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+												_value = "ammoTTX.damageToShield"
+												_zeroValueHidden = true
+				)
+				(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_PHASER_LASERS_BURN_PROB'
+												_value = "ammoTTX.burnChance"
+												_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+												_zeroValueHidden = true
+				)
+			)
+		)
+	)
+)
+
+(def element TTXTorpedoesPhotonParamsST (shipTTX:gfx)
+	(scope
+		(var ammoTTX:gfx = "shipTTX.torpedoesPhoton.torpedoPhoton")
+		(var radarPulseTTX:gfx = "shipTTX.torpedoesPhoton.radarPulse")
+		(var salvoConfigurationTTX:gfx = "shipTTX.torpedoesPhoton.salvoConfiguration")
+	)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_SHIP_PARAM_TORPEDOES_PHOTON_HEADER'
+		) 
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_SHIP_PARAM_SECONDARY_DESC'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_SalvoConfiguration 'IDS_SHIP_PARAM_TORPEDO_PHOTON_MOUNT_CONFIGURATION'
+												_salvoConfigurationTTX = "salvoConfigurationTTX"
+												_externalDiff = false
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_PULSE_RELOAD_TIME'
+												_value = "radarPulseTTX.reloadTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+												_value = "shipTTX.torpedoesPhoton.reloadTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_MAX_DIST'
+												_value = "radarPulseTTX.maxDist"
+												_valueConfig = "VALUE_CONFIG.KILOMETER"
+				)
+			)
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_SHIP_PARAM_PHOTON_PINGER_DESC'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_PULSE_SPEED'
+												_value = "radarPulseTTX.speed"
+												_valueConfig = "VALUE_CONFIG.METER_SECOND"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_PULSE_WIDTH'
+												_value = "radarPulseTTX.width"
+												_valueConfig = "VALUE_CONFIG.METER"
+				)
+			)
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_SHIP_PARAM_TORPEDOES_PHOTON_DESC'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_MAX_DAMAGE'
+												_value = "ammoTTX.damage"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+												_value = "ammoTTX.damageToShield"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_BLAST_RADIUS'
+												_value = "ammoTTX.blastRadius"
+												_valueConfig = "VALUE_CONFIG.KILOMETER"
+												_zeroValueHidden = true
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_PHOTON_SPEED'
+												_value = "ammoTTX.speed"
+												_valueConfig = "VALUE_CONFIG.METER_SECOND"
+				)
+			)
+		)
+	)
+)
+
+(def element TTXPulsePhaserParamsST (shipTTX:gfx)
+	(scope
+		(var launchers:array = "shipTTX.torpedoes ? shipTTX.torpedoes.launchers : null")
+		(var torpedo:gfx = "shipTTX.torpedoes ? shipTTX.torpedoes.torpedo : null")
+	)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_SHIP_PARAM_PULSE_PHASERS_HEADER'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_SHIP_PARAM_SECONDARY_DESC'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_GunConfigurationSimple 'IDS_SHIP_PARAM_MOUNT_CONFIGURATION' "launchers[0]")
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+												_value = "shipTTX.torpedoes.reloadTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ROTATION_TIME'
+												_value = "launchers[0].rotationTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PROJECTILE_MAX_DIST'
+												_value = "torpedo.maxDist"
+												_valueConfig = "VALUE_CONFIG.KILOMETER"
+				)
+			)
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_SHIP_PARAM_PULSE_PHASERS_DESC'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number		_title = 'IDS_SHIP_PARAM_TORPEDO_DAMAGE'
+													_value = "torpedo.damage"
+				)
+				(element ShipParameter_Number		_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+													_value = "torpedo.damageToShield"
+													_zeroValueHidden = true
+				)
+				(element ShipParameter_Number		_title = 'IDS_SHIP_PARAM_PROJECTILE_SPEED'
+													_value = "torpedo.speed"
+													_valueConfig = "VALUE_CONFIG.KNOT"
+				)
+			)
+		)
+	)
+)
+
+(def element TTXArtilleryAtbaParamsST (shipTTX:gfx)
+	(scope
+		(var gunTTX:gfx = "shipTTX.artillery.atba[0]")
+		(var ammoTTX:gfx = "gunTTX.ammoHE ? gunTTX.ammoHE : gunTTX.ammoAP")
+	)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_SHIP_PARAM_ARTILLERY_ATBA_HEADER'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+	
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_SHIP_PARAM_ATBA_DESC'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_GunConfigurationSimple 'IDS_SHIP_PARAM_MOUNT_CONFIGURATION' "gunTTX" _externalDiff="false")
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+												_value = "gunTTX.reloadTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+												_value = "ammoTTX.damage"
+				)
+			)
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_SHIP_PARAM_APHE_DESC'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+												_value = "ammoTTX.damageToShield"
+												_zeroValueHidden = true
+				)
+				(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_ARTILLERY_BURN_PROB'
+												_value = "ammoTTX.burnChance"
+												_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+												_zeroValueHidden = true
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAX_DIST'
+												_value = "shipTTX.artillery.atbaMaxDist"
+												_valueConfig = "VALUE_CONFIG.KILOMETER"
+				)
+			)
+		)
+	)
+)
+
+(def element TTXImpulseAtbaParamsST (shipTTX:gfx)
+	(scope
+		(var gunTTX:gfx = "shipTTX.artillery.atba[0]")
+		(var ammoTTX:gfx = "gunTTX.ammoHE ? gunTTX.ammoHE : gunTTX.ammoAP")
+	)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_SHIP_PARAM_IMPULSE_ATBA_HEADER'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+	
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_SHIP_PARAM_ATBA_DESC'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_GunConfigurationSimple 'IDS_SHIP_PARAM_MOUNT_CONFIGURATION' "gunTTX" _externalDiff="false")
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+												_value = "gunTTX.reloadTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+												_value = "ammoTTX.damage"
+				)
+			)
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(style (width = 100%))
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_SHIP_PARAM_PULSE_PHASERS_DESC'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+												_value = "ammoTTX.damageToShield"
+												_zeroValueHidden = true
+				)
+				(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_ARTILLERY_BURN_PROB'
+												_value = "ammoTTX.burnChance"
+												_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+												_zeroValueHidden = true
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAX_DIST'
+												_value = "shipTTX.artillery.atbaMaxDist"
+												_valueConfig = "VALUE_CONFIG.KILOMETER"
+				)
+			)
+		)
+	)
+)
+
+(def element TTXMobilityParamsST (shipTTX:gfx)
+	(block
+		(style (width = 100%))
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_SHIP_PARAM_MOBILITY'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAXSPEED'
+												_value = "shipTTX.mobility.speed"
+												_valueConfig = "VALUE_CONFIG.KNOT_FLOAT"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TURNINGRADIUS'
+												_value = "shipTTX.mobility.turningRadius"
+												_valueConfig = "VALUE_CONFIG.METER_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_RUDDER_TIME'
+												_value = "shipTTX.mobility.rudderTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+			)
+		)
+	)
+)
+
+(def element TTXVisibilityParamsST (shipTTX:gfx)
+	(block
+		(style (width = 100%))
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_SHIP_PARAM_VISIBILITY'
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(block
+		(class $ParametersPanel)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_SHIP'
+												_value = "shipTTX.visibility.visibilityByShip.normal"
+												_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_FIRE'
+												_value = "shipTTX.visibility.visibilityByShip.fire"
+												_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_GUARANTEED_VISIBILITY'
+												_value = "GUARANTEED_UNDERWATER_VISIBILITY"
+												_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+				)
+			)
+		)
+	)
+)

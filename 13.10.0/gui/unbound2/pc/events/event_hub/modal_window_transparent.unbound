@@ -1,0 +1,65 @@
+(def element ModalSubrouteWindow() layout=true dispatch_size_change=true 
+	(macro MODAL_WINDOW_INIT)
+
+	(scope
+		(var dockDataEntity:gfx = "$datahub.getSingleEntity(CC.dockData)")
+		(var dockData:gfx = "dockDataEntity ? dockDataEntity.dockData : null")
+		(var isDockInputLocked:bool = "dockData ? dockData.isDockInputLocked : false" (event "dockData.evIsDockInputLockedChanged"))
+
+		(var routeEntity:gfx = "$datahub.getPrimaryEntity(CC.route, SC.Ui_windows.ROUTE.TRANSPARENT_WINDOW)")
+		(var routeComponent:gfx = "routeEntity ? routeEntity.route : null")
+		(var dataComponent:gfx = "routeEntity ? routeEntity.dataComponent : null")
+		(var routeData:gfx = "dataComponent ? dataComponent.data : null" (event "dataComponent.evDataChanged"))
+		(var windowName:str = "routeData ? routeData.window_name : 'default'" (event "dataComponent.evDataChanged"))
+
+		(var modalWindowHeader:str = "toUpper(tr('IDS_DOCK_SUBSPACE_WINDOW_HEADER_' + windowName))" (event "dataComponent.evDataChanged"))
+	)
+
+	(name = "'window_ModalWindowTransparent'")
+
+	(class $FullsizeAbsolute)
+	(style
+		(align = "center")
+		(bind hitTest "!isDockInputLocked")
+	)
+
+	(controller $Animation
+		(bindcall play
+			from =		"{alpha: 1}"
+			to =		"{alpha: 0}"
+			easing =	"Easing.quad_in"
+			delay =		"!isDockInputLocked ? 0.15 : 0"
+			duration =	"isDockInputLocked ? 0.01 : 0.25"
+			reverse =	"!isDockInputLocked"
+			action =	"killAll"
+			(bind trigger "isDockInputLocked")
+		)
+	)
+
+	
+	(block
+		(class $Fullsize)
+		(style (align = "center"))
+
+		
+		(block
+			(style (width = 100%) (align = "center"))
+
+			
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+				(style (width = 100%))
+
+				(controller $Instance renderer='ModalWindowHeaderFullSize'
+					(args
+						_windowName = "modalWindowHeader"
+						_paddingRight = "M"
+						_paddingLeft = "M"
+						_paddingTop = "MS"
+						_isDynamicallyChangedHeader = true
+					)
+				)
+			)
+		)
+	)
+)

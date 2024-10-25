@@ -1,0 +1,289 @@
+(def element TTXPanelST (_shipId:number, _isHD:bool = false)
+	(scope
+		(var shipEntity:gfx = "$datahub.getPrimaryEntity(CC.ship, _shipId)")
+		(var shipSTComponent:gfx = "shipEntity ? shipEntity.shipST : null" (event "shipEntity.evAdded") (event "shipEntity.evRemoved"))
+	)
+	
+	(style
+		(width = 240)
+		(bind marginLeft "!_isHD ? 168 : 80")
+	)
+
+	(element TTXCrewST
+		_shipEntity = "shipEntity"
+	)
+
+	(element TTXSimpleST
+		_shipSTComponent = "shipSTComponent"
+	)
+)
+
+(def element TTXCrewST (_shipEntity:gfx)
+	(scope
+		(var shipComponent:gfx = "_shipEntity ? _shipEntity.ship : null")
+		(var shortName:str = "shipComponent ? shipComponent.shortName : ''")
+		(var shipName:str = "shipComponent ? toUpper(tr(shipComponent.nameIDS)) : ''" (event "shipComponent.evUpdate"))
+	)
+	
+	(style
+		(width = 100%)
+		(height = 206)
+		(marginBottom = 30)
+	)
+
+	(block
+		(class $Fullsize)
+		(block
+			(style
+				(width = 100%)
+				(height = 30)
+			)
+
+			(tf
+				(class $TextDefaultBoldST)
+				(style
+					(marginLeft = "M")
+					(textColor = "ST_COLORS['system_block']")
+				)
+				(bind text "'IDS_' + shortName + '_CAPTAIN'")
+			)
+		)
+
+		(block
+			(style
+				(width = 100%)
+				(height = 146)
+				(bind backgroundImage "'url:../event_hub/ships/' + shortName + '_CAPTAIN_SMALL.jpg'")
+				(backgroundSize = "fill")
+			)
+
+			(controller $Tooltip
+				(bind renderer "'TTXCrewTooltipST'")
+				(args
+					_shortName = "shortName"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+				(offset = {	x: 20, y: -20 })
+				(screenBoundsOffset = 10)
+			)
+		)
+
+		(hblock
+			(style
+				(width = 100%)
+				(height = 30)
+			)
+
+			(block
+				(style
+					(width = 8)
+					(height = 10)
+					(marginTop = 20)
+					(backgroundColor = "ST_COLORS['system_block_secondary']")
+				)
+			)
+
+			(tf
+				(class $TextDefaultBoldST)
+				(style
+					(width = 169)
+					(height = 100%)
+					(marginLeft = "S")
+					(marginTop = 19)
+					(textColor = "ST_COLORS['system_block']")
+				)
+				(bind text "shipName")
+			)
+
+			(block
+				(style
+					(width = 8)
+					(height = 10)
+					(marginTop = 20)
+					(backgroundColor = "ST_COLORS['system_block_secondary']")
+				)
+			)
+
+			(block
+				(style
+					(width = 17)
+					(height = 10)
+					(marginTop = 20)
+					(marginLeft = "XS")
+					(backgroundColor = "ST_COLORS['system_block_secondary']")
+				)
+			)
+			(block
+				(style
+					(width = 28)
+					(height = 10)
+					(marginTop = 20)
+					(marginLeft = "XS")
+					(backgroundColor = "ST_COLORS['system_block_secondary']")
+				)
+			)
+		)
+	)
+
+	(element CrewDecorST "true"
+		(style
+			(scaleX = -1)
+			(right = -36)
+			
+		)
+	)
+
+	(element CrewDecorST 
+		(style
+			(left = -20)
+		)
+	)
+)
+
+(def element CrewDecorST (_isRightMargin:bool = false)
+	(style
+		(position = "absolute")
+		(height = 100%)
+		(width = 16)
+	)
+
+	(block
+		(style
+			(width = 16)
+			(height = 81)
+			(backgroundImage = 'url:../event_hub/equipment/border_cap.png')
+			(scale9grid = [13,13,1,1])
+		)
+		(bind colorTransform "ST_COLOR_TRANSFORM['decor_base']")
+
+	)
+
+	(block
+		(style
+			(width = 7)
+			(height = 32)
+			(marginTop = 6)
+			(marginBottom = 6)
+			(marginLeft = "_isRightMargin ? 0 : XS")
+			(backgroundColor = "ST_COLORS['system_block']")
+		)
+	)
+
+	(block
+		(style
+			(width = 16)
+			(height = 81)
+			(scaleY = -1)
+			(marginRight = "XXS")
+			(marginTop = 81)
+			(backgroundImage = 'url:../event_hub/equipment/border_cap.png')
+			(scale9grid = [13,13,1,1])
+		)
+		(bind colorTransform "ST_COLOR_TRANSFORM['decor_base']")
+	)
+)
+
+(def element TTXCrewTooltipST (_shortName:str)
+	
+	(style (width = 340) (hitTest = false))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemFullsizeImage
+			_height = 207
+			_imageUrl = "'url:../event_hub/ships/' + _shortName + '_CAPTAIN.jpg'"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "'IDS_' + _shortName + '_CAPTAIN'"
+			_subheaderText = "'IDS_' + _shortName + '_CAPTAIN_SUBHEADER'"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "'IDS_' + _shortName + '_CAPTAIN_DESCRIPTION'"
+		)
+	)
+)
+
+(def element TTXSimpleST (_shipSTComponent:gfx)
+	(class $Fullsize)
+	(scope
+		(var shipTTX:gfx = "_shipSTComponent ? _shipSTComponent.shipTTX : null" (event "_shipSTComponent.evUpdated"))
+		(var secondaries:gfx = "_shipSTComponent ? _shipSTComponent.secondaries : null" (event "_shipSTComponent.evUpdated"))
+		(var atbaStruct:gfx = "secondaries && secondaries.length > 0 ? secondaries[0] : null")
+		(var isPulseAtba:bool = "atbaStruct && atbaStruct.abilityType == SC.Common.ST_SECONDARY_TYPE.ATBA_PULSE ? true : false")
+		(var atbaTTX:gfx = "isPulseAtba ? null : shipTTX && shipTTX.artillery ? shipTTX.artillery.atba[0] : null")
+		(var pulseAtbaTTX:gfx = "!isPulseAtba ? null : shipTTX && shipTTX.artillery ? shipTTX.artillery.atba[0] : null")
+		(var mainGunTTX:gfx = "shipTTX && shipTTX.artillery && shipTTX.artillery.mainGun.length > 0 ? shipTTX.artillery.mainGun[0] : null")
+		(var fighterTTX:gfx = "shipTTX && shipTTX.squadrons && shipTTX.squadrons.fighter ? shipTTX.squadrons.fighter : null")
+		(var bomberTTX:gfx = "shipTTX && shipTTX.squadrons && shipTTX.squadrons.diveBomber ? shipTTX.squadrons.diveBomber : null")
+		(var torpedoBomberTTX:gfx = "shipTTX && shipTTX.squadrons ?	shipTTX.squadrons.torpedoBomber		? shipTTX.squadrons.torpedoBomber :
+																	shipTTX.squadrons.torpedoBomberAlt	? shipTTX.squadrons.torpedoBomberAlt :
+																	null : null")
+		(var pulsePhasersTTX:gfx = "shipTTX && shipTTX.torpedoes && shipTTX.torpedoes.isPulsePhasers ? shipTTX.torpedoes : null")
+	)
+
+	(macro TTXRowSimpleInstanceST _shipTTX="shipTTX" _paramName='DURABILITY_ST'			_module="shipTTX.durability")
+	(macro TTXRowSimpleInstanceST _shipTTX="shipTTX" _paramName='PLANE_FIGHTER_ST'		_module="fighterTTX")
+	(macro TTXRowSimpleInstanceST _shipTTX="shipTTX" _paramName='PLANE_DIVE_ST'			_module="bomberTTX")
+	(macro TTXRowSimpleInstanceST _shipTTX="shipTTX" _paramName='PLANE_BOMBER_ST'		_module="torpedoBomberTTX")
+	(macro TTXRowSimpleInstanceST _shipTTX="shipTTX" _paramName='WEAPONRY_ST'			_module="mainGunTTX")
+	(macro TTXRowSimpleInstanceST _shipTTX="shipTTX" _paramName='PHASER_LASERS'			_module="shipTTX.phaserLasers")
+	(macro TTXRowSimpleInstanceST _shipTTX="shipTTX" _paramName='TORPEDOES_PHOTON'		_module="shipTTX.torpedoesPhoton")
+	(macro TTXRowSimpleInstanceST _shipTTX="shipTTX" _paramName='PULSE_PHASERS'			_module="pulsePhasersTTX")
+	(macro TTXRowSimpleInstanceST _shipTTX="shipTTX" _paramName='ARTILLERY_ATBA'		_module="atbaTTX")
+	(macro TTXRowSimpleInstanceST _shipTTX="shipTTX" _paramName='IMPULSE_ATBA'			_module="pulseAtbaTTX")
+	(macro TTXRowSimpleInstanceST _shipTTX="shipTTX" _paramName='MOBILITY_ST'			_module="shipTTX.mobility")
+	(macro TTXRowSimpleInstanceST _shipTTX="shipTTX" _paramName='VISIBILITY_ST'			_module="shipTTX.visibility")
+
+)
+
+(def macro TTXRowSimpleInstanceST (_shipTTX:expression, _paramName:str, _module:expression)
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='TTXSimpleRowST'
+			(bind enabled "_module != null")
+			(args _shipTTX="_shipTTX" _paramName="_paramName" _module="_module")
+		)
+	)
+)
+
+(def element TTXSimpleRowST (_shipTTX:gfx, _paramName:str, _module:gfx)
+	(scope
+		(var paramIDS:str = "'IDS_SHIP_PARAM_' + _paramName")
+	)
+	
+	(style
+		(width = 100%)
+		(height = 24)
+		(marginBottom = "XS")
+		(bind backgroundColor "_paramName == 'DURABILITY_ST' || _paramName == 'MOBILITY_ST' ? ST_COLORS['system_block_secondary'] : ST_COLORS['system_block']")
+	)
+
+	(tf
+		(class $TextDefaultBoldST)
+		(style
+			(marginLeft = "M")
+			(marginTop = 6)
+			(hitTest = false)
+		)
+
+		(bind text "toUpper(tr(paramIDS))")
+	)
+
+	(controller $Tooltip
+		(bind renderer "'TTXTooltipST'")
+		(args
+			_paramName = "_paramName"
+			_shipTTX = "_shipTTX"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(offset = {	x: 20, y: -20 })
+		(screenBoundsOffset = 10)
+	)
+)

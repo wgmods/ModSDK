@@ -1,0 +1,345 @@
+(def constant ST_SELECTOR_ANIM_DELAY 1.5)
+(def constant ST_SELECTOR_SHORT_DELAY 0.25)
+
+(def css $TextSTShipBlack ()
+	(extends $TextDefaultBoldNM)
+	(filters)
+	(marginTop = "6")
+)
+
+(def element StShipSelector ()
+	(scope
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+	)
+
+	(style
+		(bind height "stageHeight")
+		(bind width "stageWidth")
+	)
+
+	(element StShipsList)
+)
+
+(def element StShipsList()
+	(scope
+		(macro PULL_SHIP_ID)
+		(var isEventShipSelected:bool = "isIn(shipId, SC.Ships.EVENT_SHIPS_ST.SELECTABLE)")
+
+		(macro PULL_ACTIVE_CHILD_ROUTE
+			_nodeId = "SC.Ui_windows.ROUTE.EVENT_HUB"
+			_fieldActiveChild = "'currentControlRoute'"
+		)
+		(var isCameraMoving:bool = "currentControlRoute == SC.Ui_windows.ROUTE.EVENT_HUB_COLLECTION")
+		(var isOnScreen:bool = "isIn(currentControlRoute, SC.Ui_windows.ROUTE.EVENT_HUB_SCREEN_ROUTES)")
+	)
+
+	(bindcall externalCall "currentControlRoute == SC.Ui_windows.ROUTE.EVENT_HUB_EQUIPMENT && !isEventShipSelected ? 'inputMapping.onAction' : ''" "['selectShip', { shipId: SC.Ships.EVENT_SHIPS_ST.DEFAULT }]" init=false watch=false (bind trigger "currentControlRoute"))
+
+	(style
+		(position = "absolute")
+		(left = 40)
+		(bottom = 40)
+
+		(height = 35)
+		(width = 100%)
+	)
+
+	(hblock
+		(class $Fullsize)
+
+		(controller $Repeat
+			(bind renderer "'StShipItem'")
+			(bind count "SC.Ships.EVENT_SHIPS_ST.SELECTABLE.length")
+			(args
+				_shipId = "SC.Ships.EVENT_SHIPS_ST.SELECTABLE[$index]"
+				_currentSelectionId = "shipId"
+				_isOnScreen = "isOnScreen"
+				_isCameraMoving = "isCameraMoving"
+			)
+		)
+	)
+)
+
+(def element StShipItem (_shipId:number, _currentSelectionId:number, _isOnScreen:bool, _isCameraMoving:bool)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'StShipItem_'")
+		(macro HIGH_CONTRAST_DATA_SCOPE)
+
+		(var isSelected:bool = "_shipId == _currentSelectionId")
+		(var shipEntity:gfx = "$datahub.getPrimaryEntity(CC.ship, _shipId)")
+		(var shipComponent:gfx = "shipEntity.ship" (event "shipEntity.ship.evUpdate") (event "shipEntity.ship.evCurrentSkinChanged") (event "shipEntity.ship.evFlagNameWithCrewChanged"))
+		(var shipName:str = "shipComponent ? toUpper(tr(shipComponent.nameIDS)) : ''" (event "shipComponent.evUpdate"))
+		(var isOwned:bool = "shipEntity.ownShip ? true : false" (event "shipEntity.evAdded") (event "shipEntity.evRemoved"))
+
+		(var isThumbSelectedUp:bool = "isSelected && !StShipItem_mouseDown")
+		(var isThumbDown:bool = "isOwned && StShipItem_mouseDown")
+		(var isThumbOver:bool = "isOwned && !isSelected && !isThumbDown && StShipItem_rollOver")
+
+		(var isSwitchedToBlack:bool = "false")
+	)
+
+	(style 
+		(width = 180) 
+		(height = 35) 
+		(align = "center|middle")
+		(backgroundColor = 0x01000000)
+		(marginRight = "M")
+	)
+
+	(macro MOUSE_LMB_EXTERNAL_CALL 'inputMapping.onAction' "['selectShip', { shipId: _shipId }]" "isOwned")
+
+	(macro SOUND_HANDLER
+		_soundSet = "'button_Strk_Ship'"
+		_prefix = "'StShipItem_'"
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER
+		_prefix = "'StShipItem_'"
+	)
+
+	(block
+		(class $Fullsize)
+		(bind alpha "isOwned ? 1 : 0.3")
+		(style (align = "center|middle") (backgroundColor = 0x01000000))
+
+		(block
+			(visible = "!_isOnScreen")
+			(class $FullsizeAbsolute)
+
+			(controller $Animation
+				(bindcall play
+					duration=0.25
+					delay="0.15 * $index"
+					from={alpha:1, visible:true}
+					to={alpha: 0, visible:false}
+					init=false watch=false
+					action="killAll"
+					(bind enabled "_isOnScreen")
+				)
+				(bindcall play
+					duration=0.25
+					delay="_isCameraMoving ? ST_SELECTOR_ANIM_DELAY + 0.15 * $index : ST_SELECTOR_SHORT_DELAY + 0.15 * $index"
+					from={alpha:0, visible:false}
+					to={alpha: 1, visible: true}
+					init=false watch=false
+					action="killAll"
+					(bind enabled "!_isOnScreen")
+				)
+			)
+
+			(macro CAROUSEL_SLOT_BACKGROUND)
+
+			(block
+				(style
+					(width = 184)
+					(height = 39)
+					(position = "absolute")
+					(top = -2)
+					(left = -2)
+					(backgroundImage = 'url:../event_hub/ships/selector_blur.png')
+					(backgroundSize = "fill")
+				)
+
+				(macro CAROUSEL_SLOT_THUMB_ANIMATION_STATE
+					_path = "'url:../service_kit/buttons/thumb/thumb_down.png'"
+					_isActive = "isOwned && isThumbDown"
+				)
+				(macro CAROUSEL_SLOT_THUMB_ANIMATION_STATE
+					_path = "'url:../event_hub/ships/selector_blur_over.png'"
+					_isActive = "isOwned && isThumbOver"
+				)
+				(macro CAROUSEL_SLOT_THUMB_ANIMATION_STATE
+					_path = "'url:../event_hub/ships/selector_blur_selected.png'"
+					_isActive = "isThumbSelectedUp"
+					_isAnimSkipped = false
+				)
+			)
+		)
+
+		(block
+			(visible = "_isOnScreen")
+			(class $FullsizeAbsolute)
+
+			(style
+				(backgroundImage = 'url:../event_hub/ships/SelectorItem.png')
+			)
+
+			(bind colorTransform "		isThumbSelectedUp	? {redOffset: -5, greenOffset: -60, blueOffset: -156} :
+										isThumbOver			? {redOffset: -71, greenOffset: -97, blueOffset: -58} :
+										{redOffset: -89, greenOffset: -121, blueOffset: -73}")
+
+			(controller $Animation
+				(bindcall play
+					duration=0.25
+					delay="0.15 * $index"
+					
+					to={alpha: 0, visible:false}
+					init=false watch=false
+					action="killAll"
+					(bind enabled "!_isOnScreen")
+				)
+				(bindcall play
+					duration=0.25
+					delay="_isCameraMoving ? ST_SELECTOR_ANIM_DELAY + 0.15 * $index : ST_SELECTOR_SHORT_DELAY + 0.15 * $index"
+					
+					to={alpha: 1, visible: true}
+					init=false watch=false
+					action="killAll"
+					(bind enabled "_isOnScreen")
+				)
+			)
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style (backgroundColor = 0x01000000))
+
+			
+			(controller $Tooltip
+				(renderer = 'ShipTooltipST')
+				(args
+					_shipId = "_shipId"
+					_isOwned = "isOwned"
+					_isSelected = "isSelected"
+				)
+				(macro SHIP_TREE_TOOLTIP_BEHAVIOUR "_shipId" "0")
+			)
+		)
+
+		(hblock
+			(class $FullsizeAbsolute)
+			(style (hitTest = false))
+			(block
+				(style
+					(width = 60)
+					(height = 35)
+					(marginLeft = "S")
+					(bind backgroundImage "'url:../event_hub/ships/' + shipComponent.shortName + '_icon.png'")
+				)
+				(controller $Animation
+					(bindcall play
+						duration=0.25
+						delay="_isCameraMoving ? ST_SELECTOR_ANIM_DELAY + 0.15 * $index : ST_SELECTOR_SHORT_DELAY + 0.15 * $index"
+						to="{colorTransform:{redOffset: -255, greenOffset: -255, blueOffset: -255}}"
+						init=false watch=false
+						action="killAll"
+						(bind enabled "_isOnScreen")
+					)
+					(bindcall play
+						duration=0.25
+						delay="_isCameraMoving ? ST_SELECTOR_ANIM_DELAY + 0.15 * $index : ST_SELECTOR_SHORT_DELAY + 0.15 * $index"
+						from="{colorTransform:{redOffset: -255, greenOffset: -255, blueOffset: -255}}"
+						to="{colorTransform:{redOffset: 0, greenOffset: 0, blueOffset: 0}}"
+						init=false watch=false
+						action="killAll"
+						(bind enabled "!_isOnScreen")
+					)
+
+					(bindcall play
+						duration=0.1
+						delay=0
+						to="{colorTransform:{redOffset: -10, greenOffset: -7, blueOffset: 0}}"
+						action="kill"
+						init=true watch=false
+						(bind enabled "!isSwitchedToBlack && isThumbOver")
+					)
+					(bindcall play
+						duration=0.1
+						delay=0
+						to="{colorTransform:{redOffset: -72, greenOffset: -72, blueOffset: 0}}"
+						action="kill"
+						init=true watch=false
+						(bind enabled "!isSwitchedToBlack && !_isOnScreen && isThumbSelectedUp")
+					)
+					(bindcall play
+						duration=0.1
+						delay=0
+						to="{colorTransform:{redOffset: -56, greenOffset: -56, blueOffset: -56}}"
+						action="kill"
+						init=true watch=false
+						(bind enabled "!isSwitchedToBlack && !isThumbSelectedUp && !isThumbOver")
+					)
+
+
+					(bindcall play
+						duration=0.25
+						delay="0.15 * $index"
+						
+						to={alpha: 0}
+						init=false watch=false
+						(bind trigger "_isOnScreen")
+					)
+					(bindcall play
+						duration=0.25
+						delay="_isCameraMoving ? ST_SELECTOR_ANIM_DELAY + 0.15 * $index : ST_SELECTOR_SHORT_DELAY + 0.15 * $index"
+						
+						to={alpha: 1}
+						init=false watch=false
+						(bind trigger "_isOnScreen")
+					)
+				)
+			)
+
+			(block
+				(class $Fullsize)
+				(style (marginLeft = "XS") (marginTop = 6))
+				(tf
+					(bind class "isSwitchedToBlack ? '$TextSTShipBlack' : '$TextDefaultBold'")
+					(style
+						(width = "100%")
+						(letterSpacing = "0")
+						(elideMode = true)
+						(bind textColor "	isSwitchedToBlack	? SC.Ui_styles.SERVICE_COLORS.WHITE	:
+											isThumbSelectedUp	? 0xffb7b7ff						:
+											isThumbOver			? 0xFFf5f8ff						
+																: 0xffc7c7c7")
+					)
+					(controller $Animation
+						(bindcall play
+							duration=0.25
+							delay="_isCameraMoving ? ST_SELECTOR_ANIM_DELAY + 0.15 * $index : ST_SELECTOR_SHORT_DELAY + 0.15 * $index"
+							to="{colorTransform:{redOffset: -255, greenOffset: -255, blueOffset: -255}}"
+							init=false watch=false
+							action="killAll"
+							(bind enabled "_isOnScreen")
+						)
+						(bindcall play
+							duration=0.25
+							delay="_isCameraMoving ? ST_SELECTOR_ANIM_DELAY + 0.15 * $index : ST_SELECTOR_SHORT_DELAY + 0.15 * $index"
+							to="{colorTransform:{redOffset: 0, greenOffset: 0, blueOffset: 0}}"
+							init=false watch=false
+							action="killAll"
+							(bind enabled "!_isOnScreen")
+						)
+					)
+					(controller $Animation
+						(bindcall
+							play duration=0.25
+							delay="0.15 * $index"
+							keyframes="[
+							{
+								percent: 10,
+								from: {alpha: 1},
+								to: {alpha: 1}
+							},
+							{
+								percent: 50,
+								to: {alpha: 0}
+							},
+							{
+								percent: 90,
+								to: {alpha: 1}
+							}]"
+							init=false watch=false
+							(bind trigger "_isOnScreen")
+						)
+						(bind isSwitchedToBlack "_isOnScreen" init=false watch=false on='evAnimEnded')
+					)
+					(bind text "shipName")
+				)
+			)
+		)
+	)
+)

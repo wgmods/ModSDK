@@ -1,0 +1,65 @@
+
+
+(def constant AIRCRAFT_PANEL_INSTRUCTION_MESSAGE
+[
+	'IDS_AIRCRAFT_CARRIER_LOGMESSAGE_FIGHTER',
+	'IDS_AIRCRAFT_CARRIER_LOGMESSAGE_BOMBER',
+	'IDS_AIRCRAFT_CARRIER_LOGMESSAGE_BOMBER_AP',
+	'IDS_AIRCRAFT_CARRIER_LOGMESSAGE_SKIP_BOMBER',
+	'IDS_AIRCRAFT_CARRIER_LOGMESSAGE_SKIP_BOMBER_AP',
+	'IDS_AIRCRAFT_CARRIER_LOGMESSAGE_TORPEDO',
+	'IDS_AIRCRAFT_CARRIER_LOGMESSAGE_TORPEDO_DEEPWATER',
+	'IDS_AIRCRAFT_CARRIER_LOGMESSAGE_FIGHTER_AP'
+])
+
+(def element AircraftCarrierPanelReturnInstruction () layout=true
+	(tf
+		(style (maxWidth = 590) (textAlign = "center") (leading = -6))
+		(class $TextDefaultBold21NM)
+		(bindcall substitute imageOffset="8" sourceText="tr('IDS_CLICK_TO_RETURN_TO_AIRCARRIER_INFO')" postfix='_bg' init=true)
+	)
+)
+
+(def element AircraftCarrierPanelSkipAttackCameraInstruction () layout=true
+	(tf
+		(style (maxWidth = 590) (textAlign = "center") (leading = -6))
+		(class $TextDefaultBold19NM)
+		(bindcall substitute imageOffset="6" sourceText="tr('IDS_CLICK_TO_SKIP_ATTACK_CAMERA_INFO')" init=true)
+	)
+)
+
+(def element AircraftCarrierPanelInstruction (_selectedSquadron:number) layout=true dispatch_size_change=true
+	(scope
+		(var selectedSquadron:number = "_selectedSquadron")
+		(var isOnSquadronAndAlive:bool = false)
+		(var hasSelectedSquadron:bool = "selectedSquadron != ActiveSquadron.NONE")
+
+		(var selectedSquadronEntity:gfx = "$datahub.getPrimaryEntity(CC.ownSquadron, selectedSquadron)")
+		(var numPlanes:number = "selectedSquadronEntity ? selectedSquadronEntity.health.value : 0" (event "selectedSquadronEntity.health.evValueChanged"))
+		(var flightState:number = "selectedSquadronEntity ? selectedSquadronEntity.ownSquadron.state : 0" (event "selectedSquadronEntity.ownSquadron.evStateChanged"))
+		(var ammoType:number = "selectedSquadronEntity ? selectedSquadronEntity.plane.ammoType : 0")
+		(var customUIPostfix:str = "selectedSquadronEntity ? selectedSquadronEntity.plane.customUIPostfix : ''")
+		(var commandId:number = "selectedSquadronEntity ? selectedSquadronEntity.ownSquadron.commandId : 0")
+
+		(var cmdEntity:gfx = "$datahub.getPrimaryEntity(CC.commandMappingCommand, commandId)")
+		(var commandName:str = "commandId ? cmdEntity.commandMappingCommandName.commandName : ''" (event "cmdEntity.commandMappingCommandName.evChanged"))
+
+		(var isNotEnoughMessage:bool = "numPlanes == 0")
+		(var message:str = "isNotEnoughMessage ?
+								tr(AIRCRAFT_PANEL_INSTRUCTION_MESSAGE[ammoType] + toUpper(customUIPostfix) + '_NOT_ENOUGH') :
+								subst(tr(AIRCRAFT_PANEL_INSTRUCTION_MESSAGE[ammoType] + toUpper(customUIPostfix)), [], {_cmd: '[' + commandName + ']'})")
+		(var resultMessage:str = "hasSelectedSquadron ? message : ''")
+		(var showMessage:bool = "flightState == AIRPLANE_FLIGHT_STATE_INACTIVE && isOnSquadronAndAlive")
+	)
+
+	(controller $Animation
+		(bindcall play duration=0.15 from={alpha:0, y:10} to={alpha:1, y:0} easing="Easing.quad_in" action="killAll" (bind enabled "showMessage"))
+		(bindcall play duration=0.15 from={alpha:1, y:0} to={alpha:0, y:10} easing="Easing.quad_in" action="killAll" (bind enabled "!showMessage"))
+	)
+
+	(tf
+		(style (maxWidth = 590) (textAlign = "center") (leading = -6))
+		(class $TextDefaultBold21NM)
+		(bindcall substitute imageOffset="8" sourceText="resultMessage" postfix='_bg' init=true)
+	)
+)

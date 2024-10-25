@@ -1,0 +1,47 @@
+<GGT3072_127mm50_Type_B_StarTrek_lod1.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	HP_gunFire1	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.0000 1.0000 0.0000	</row1>
+					<row2>	0.0000 -1.0000 0.0000 0.0000	</row2>
+					<row3>	-0.0006 0.1381 0.0732 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret	</node>
+		<geometry>
+			<vertices>	Turret_lod1Shape.vertices	</vertices>
+			<primitive>	Turret_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_EMISSIVE_PBS_Gun	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSD027_Akatsuki_Romulans/gun/GGT3072_127mm50_Type_B_StarTrek.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1810 0.0000 -0.1646	</min>
+		<max>	0.1810 0.1617 0.1992	</max>
+	</boundingBox>
+</GGT3072_127mm50_Type_B_StarTrek_lod1.visual>

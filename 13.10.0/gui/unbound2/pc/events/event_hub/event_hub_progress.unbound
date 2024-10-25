@@ -1,0 +1,1234 @@
+
+(def constant MIN_LEVEL_WIDTH "142")
+(def constant LEVEL_HEIGHT "190")
+(def constant REWARD_WIDTH "128")
+(def constant REWARD_HEIGHT "142")
+(def constant REWARD_CONTAINER_WIDTH "1100")
+
+(def constant LOW_RESOLUTION_HEIGHT "800")
+
+
+(def constant EH_COLOR_ORCHID_LEI "0xFF9D4878")
+(def constant EH_COLOR_MAUVE_ORCHID "0xFFB0768E")
+(def constant EH_COLOR_ROSE_WINE "0xFFA1597A")
+(def constant EH_COLOR_PURPLE "0xFFA686B6")
+(def constant EH_COLOR_IRIDESCENT_PURPLE "0xFF9478D2")
+(def constant EH_CT_MAUVE_ORCHID "{redMultiplier:0.69, greenMultiplier:0.46, blueMultiplier:0.56}")
+(def constant EH_CT_ORCHID_LEI "{redMultiplier:0.61, greenMultiplier:0.28, blueMultiplier:0.47}")
+(def constant EH_CT_ROSE_WINE "{redMultiplier:0.63, greenMultiplier:0.35, blueMultiplier:0.48}")
+
+
+(def constant EH_ARROW_BUTTON_COLOR "0xFFFF9E1A")
+(def constant EH_ARROW_BUTTON_OVER_COLOR "0xFFFFB148")
+
+
+(def constant EH_VERTICAL_BACKGROUND_ELEMENT_WIDTH "48")
+(def constant EH_HORIZONTAL_BACKGROUND_ELEMENT_HEIGHT "7")
+(def constant EH_BG_CURVED_ELEMENT_WIDTH "92")
+(def constant EH_BG_CURVED_ELEMENT_HEIGHT "71")
+(def constant EH_BG_CURVED_ELEMENT_BIG_WIDTH "92")
+(def constant EH_BG_CURVED_ELEMENT_BIG_HEIGHT "112")
+
+(def constant TOP_BAR_HEIGHT "60")
+(def constant CONTENT_TOP_OFFSET "120")
+
+(def constant DELAY_FOR_LEVEL_ANIMATION "2")
+
+(def macro EVENT_HUB_SEASON_ENTITY_SCOPE (_entityName:expression)
+	(var eventHubSeasonsCollection:gfx = "$datahub.getCollection(CC.eventHubSeason)")
+	(var name="_entityName" type=gfx value="eventHubSeasonsCollection ? eventHubSeasonsCollection.items[0] : null"	(event "eventHubSeasonsCollection.evAdded")
+																													(event "eventHubSeasonsCollection.evRemoved"))
+)
+
+(def element EventHubProgressInset () layout=true dispatch_size_change=true
+	(scope
+		(macro STAGE_SIZE)
+		(event evChangedSelectedLevel)
+		(event evStartShow)
+		(event evStartHide)
+
+		(var currentLevelCollection:gfx = "$datahub.getCollection(CC.eventHubCurrentLevel)")
+		(var currentLevelEntity:gfx = "currentLevelCollection ? currentLevelCollection.items[0] : null" (event "currentLevelCollection.evAdded")
+																										(event "currentLevelCollection.evRemoved"))
+		(var selectedLevelId:number = "currentLevelEntity ? currentLevelEntity.id : null")
+		(bind selectedLevelId "$event.selectedLevelId" init=false (event "evChangedSelectedLevel"))
+		
+		(bind selectedLevelId "currentLevelEntity ? currentLevelEntity.id : null" init=false (event "evStartShow"))
+
+		(var selectedLevelEntity:gfx = "selectedLevelId ? $datahub.getEntity(selectedLevelId) : null")
+		(var eventHubLevel:gfx = "selectedLevelEntity ? selectedLevelEntity.eventHubLevel : null")
+		(var eventHubPhase:gfx = "eventHubLevel ? $datahub.getPrimaryEntity(CC.eventHubPhase, eventHubLevel.phaseIndex).eventHubPhase : null" (event "eventHubLevel.evUpdated"))
+		(var progressionLevel:gfx = "selectedLevelEntity ? selectedLevelEntity.progressionLevel : null")
+		(var level:number = "progressionLevel ? progressionLevel.level : 0" (event "progressionLevel.evChanged"))
+		(var maxPoints:number = "progressionLevel ? progressionLevel.points : 0" (event "progressionLevel.evChanged"))
+		(var progressionLevelProgress:gfx = "selectedLevelEntity ? selectedLevelEntity.progressionLevelProgress : null")
+		(var currentPoints:number = "progressionLevelProgress ? progressionLevelProgress.currentPoints : 0" (event "progressionLevelProgress.evChanged"))
+		(var isPostProgressionLevel:bool = "selectedLevelEntity ? selectedLevelEntity.hasComponent(CC.postProgressionLevel) : false")
+		(var isLevelCompleted:bool = "currentPoints == maxPoints")
+
+		(macro SERVER_TIME_SCOPE)
+		(var phaseStartTime:number = "eventHubPhase ? eventHubPhase.startTime : 0")
+		(var phaseStartsIn:number = "phaseStartTime - serverTime")
+		(var formattedPhaseStartTime:str = "formatTime(phaseStartsIn, 'HIGHESTDAYS', '', true)")
+		(var isPhaseStarted:bool = "serverTime >= phaseStartTime")
+		(var phaseLabel:str = "isPhaseStarted	? 'IDS_EVENT_HUB_PROGRESS_ACTIVE_PHASE'
+												: subst('IDS_SUBST_EVENT_HUB_PROGRESS_NEXT_PHASE_IN', [], {_timeLeft: formattedPhaseStartTime})")
+
+		(macro EVENT_HUB_SEASON_ENTITY_SCOPE "'eventHubSeasonEntity'")
+		(var eventHubSeason:gfx = "eventHubSeasonEntity ? eventHubSeasonEntity.eventHubSeason : null")
+
+		(var newContentEntity:gfx = "$datahub.getPrimaryEntity(CC.newContent, SC.Common.CONTENT_CATEGORY.EVENT_HUB_PROGRESS)")
+		(var newContentCounter:gfx = "newContentEntity ? newContentEntity.newContent.count : 0" (event "newContentEntity.newContent.evCountChanged"))
+		(var isNew:bool = "newContentCounter > 0")
+
+		(var eventHubFinishTime:number = "eventHubSeason ? eventHubSeason.finishTime : null")
+		(macro COUNTDOWN_SCOPE "'eventHubTimeLeft'" "eventHubFinishTime" "'HIGHEST,WITH_DAYS'")
+	)
+
+	(bindcall externalCall 'sound.playSetSoundDirect' "['dock_inset', 'eventhub_progress']" init=false watch=false on='addedToStage')
+	(bindcall externalCall "isNew ? 'inputMapping.onAction' : ''" "['setEventHubFlag', {flag: SC.Common.EVENT_HUB_FLAGS.PROGRESS_TAB_SEEN}]" init=false watch=false on='addedToStage')
+
+	(dispatch evStartShow on='addedToStage')
+	(dispatch evStartHide on='removedFromStage')
+
+	(controller $Animation
+		(bindcall play duration=0.25 delay=0.2 from="{alpha: 0}" to="{alpha: 1}" action="killAll" (event "evStartShow"))
+		(bindcall play duration=0.35 from="{alpha: 1}" to="{alpha: 0}" action="killAll" (event "evStartHide"))
+	)
+
+	(style
+		(bind width "stageWidth") (bind height "stageHeight")
+		(align = "center|middle") (alpha = 0)
+		(bind alpha "0" (event "evStartShow"))
+	)
+
+	(bind name "'EventHubProgressInset'")
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundImage = 'url:../event_hub/progress/background/main.jpg')
+			(backgroundSize = "cover")
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundImage = 'url:../event_hub/progress/background/main_over.png')
+			(backgroundSize = "cover")
+		)
+	)
+
+	
+	(block
+		(style
+			(width = 1200px) (height = 640px) (marginTop = "{720: 0, 1080: -CONTENT_TOP_OFFSET}")
+		)
+
+		
+		(block
+			(style
+				(width = 100%)
+			)
+
+			
+			(hblock
+				(style (height = 58px) (align = "middle"))
+
+				(block
+					(style (height = 100%) (width = "EH_VERTICAL_BACKGROUND_ELEMENT_WIDTH"))
+
+					(block
+						(class $Fullsize)
+						(element EventHubBackgroundElementItem
+							_color = "EH_COLOR_MAUVE_ORCHID"
+						)
+					)
+
+					(block
+						(style
+							(width = 29px) (height = 11px)
+							(position = "absolute") (right = 3px) (bottom = 3px)
+							(backgroundImage = 'url:../event_hub/progress/background/8081.png')
+						)
+					)
+				)
+
+				(tf
+					(class $TextDefault17NM)
+					(style (alpha = "TC") (marginLeft = "XL") (maxWidth = 515px))
+
+					(text = "'IDS_EVENT_HUB_PROGRESS_RULES'")
+				)
+			)
+
+			
+			(hblock
+				(style
+					(width = 100%)
+					(height = "EH_BG_CURVED_ELEMENT_HEIGHT")
+					(marginTop = "XXS")
+				)
+
+				(block
+					(style
+						(height = 100%) (width = "EH_BG_CURVED_ELEMENT_WIDTH")
+						(backgroundImage = 'url:../event_hub/progress/background/curved_element.png')
+					)
+
+					(bind colorTransform "EH_CT_ORCHID_LEI")
+				)
+
+				(block
+					(style (width = 100%) (height = 100%) (align = "bottom"))
+
+					(block
+						(style (width = 100%) (marginLeft = "M") (marginBottom = "SXS"))
+
+						(tf
+							(class $TextDefaultBold30NM)
+							(style
+								(alpha = "TA")
+							)
+
+							(bind text "toUpper(tr(phaseLabel))")
+						)
+					)
+
+					(hblock
+						(style
+							(height = 7px) (width = 100%)
+						)
+
+						(element EventHubBackgroundElementItem
+							_height = "100%"
+							_width = "448px"
+							_marginLeft = "XXS"
+							_color = "EH_COLOR_PURPLE"
+						)
+
+						(element EventHubBackgroundElementItem
+							_height = "100%"
+							_width = "62px"
+							_marginLeft = "XXS"
+							_color = "EH_COLOR_IRIDESCENT_PURPLE"
+						)
+
+						(element EventHubBackgroundElementItem
+							_height = "100%"
+							_width = "498px"
+							_marginLeft = "XXS"
+							_color = "EH_COLOR_ORCHID_LEI"
+						)
+					)
+				)
+			)
+		)
+
+		
+		(hblock
+			(style
+				(width = 100%) (marginTop = "XXS")
+			)
+
+			(block
+				(style
+					(height = "EH_BG_CURVED_ELEMENT_BIG_HEIGHT")
+					(width = "EH_BG_CURVED_ELEMENT_BIG_WIDTH")
+					(backgroundImage = 'url:../event_hub/progress/background/curved_element_big.png')
+				)
+
+				(bind colorTransform "EH_CT_ROSE_WINE")
+			)
+
+			(block
+				(style (width = 100%))
+
+				(hblock
+					(style
+						(height = 7px) (width = 100%)
+					)
+
+					(element EventHubBackgroundElementItem
+						_height = "100%"
+						_width = "448px"
+						_marginLeft = "XXS"
+						_color = "EH_COLOR_ORCHID_LEI"
+					)
+
+					(element EventHubBackgroundElementItem
+						_height = "100%"
+						_width = "62px"
+						_marginLeft = "XXS"
+						_color = "EH_COLOR_PURPLE"
+					)
+
+					(element EventHubBackgroundElementItem
+						_height = "100%"
+						_width = "498px"
+						_marginLeft = "XXS"
+						_color = "EH_COLOR_ROSE_WINE"
+					)
+				)
+
+				(hblock
+					(style (width = 100%) (marginTop = "M") (align = "middle") (minHeight = 24px))
+					
+					(block
+						(style (marginLeft = "M") (minWidth = "110px"))
+
+						(tf
+							(bind visible "!isPostProgressionLevel")
+
+							(class $TextDefaultBold21NM)
+							(style (alpha = "TA"))
+
+							(bind text "isLevelCompleted ?	'IDS_SUBST_EVENT_HUB_LEVEL_COMPLETED' :
+															subst('IDS_SUBST_EVENT_HUB_PROGRESS_LEVEL', [], {_level: level})")
+						)
+
+						(tf
+							(bind visible "isPostProgressionLevel")
+
+							(class $TextDefaultBold21NM)
+							(style (alpha = "TA"))
+
+							(text = "'IDS_EVENT_HUB_POST_PROGRESS_LEVEL'")
+						)
+					)
+
+					
+					(block
+						(bind visible "!isLevelCompleted")
+						(style (marginLeft = "M"))
+
+						(hblock
+							(style (align = "middle"))
+
+							(controller $Instance renderer='DefaultDividedCounter'
+								(args
+									_curValueTextClass = '$TextDefaultBold21NM'
+									_curValue = "currentPoints"
+									_maxValue = "maxPoints"
+									_doNotAlphaOnZeroCurValue = true
+								)
+							)
+
+							(block
+								(style	
+									(width = 24px) (height = 24px) (marginLeft = "XXS")
+									(backgroundImage = 'url:../service_kit/icons/star_24.png')
+								)
+							)
+						)
+					)
+				)
+			)
+
+			(block
+				(style
+					(height = "EH_BG_CURVED_ELEMENT_BIG_HEIGHT")
+					(width = "EH_BG_CURVED_ELEMENT_BIG_WIDTH")
+				)
+
+				(block
+					(style
+						(scaleX = -1) (position = "absolute") (right = 0)
+						(backgroundImage = 'url:../event_hub/progress/background/curved_element_big.png')
+					)
+
+					(bind colorTransform "EH_CT_ROSE_WINE")
+				)
+			)
+		)
+
+		
+		(block
+			(style
+				(width = 100%) (marginTop = "XXS")
+			)
+
+			(element EventHubProgressContainer
+				_selectedLevelId = "selectedLevelId"
+			)
+		)
+
+		(block
+			(style
+				(width = 100%)
+			)
+
+			(block
+				(style
+					(width = "EH_VERTICAL_BACKGROUND_ELEMENT_WIDTH")
+					(height = "{720: 30, 1080: 108}") (marginTop = "XXS")
+				)
+
+				(element EventHubBackgroundElementItem
+					_color = "EH_COLOR_MAUVE_ORCHID"
+				)
+
+				(block
+					(style
+						(width = 38px) (height = 11px)
+						(position = "absolute") (right = 3px) (bottom = 3px)
+						(backgroundImage = 'url:../event_hub/progress/background/92089.png')
+					)
+				)
+			)
+
+			(block
+				(bind visible "stageHeight > LOW_RESOLUTION_HEIGHT")
+
+				(element EventHubBackgroundElementItem
+					_height = "25px"
+					_width = "EH_VERTICAL_BACKGROUND_ELEMENT_WIDTH"
+					_marginTop = "XXS"
+					_color = "EH_COLOR_MAUVE_ORCHID"
+				)
+			)
+
+			(hblock
+				(style
+					(width = 100%) (align = "bottom") (marginTop = "XXS")
+					(height = "EH_BG_CURVED_ELEMENT_HEIGHT")
+				)
+
+				(block
+					(style
+						(height = 100%) (width = "EH_BG_CURVED_ELEMENT_WIDTH")
+						(backgroundImage = 'url:../event_hub/progress/background/curved_element.png')
+					)
+
+					(bind colorTransform "EH_CT_MAUVE_ORCHID")
+				)
+
+				(hblock
+					(style (width = 100%) (align = "bottom"))
+
+					(element EventHubBackgroundElementItem
+						_height = "EH_HORIZONTAL_BACKGROUND_ELEMENT_HEIGHT"
+						_width = "100%"
+						_marginLeft = "XXS"
+						_color = "EH_COLOR_MAUVE_ORCHID"
+					)
+
+					(block
+						(style (marginLeft = "S") (marginRight = "XLM"))
+
+						(element StatusLine
+							_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DATE"
+							_text = "subst('IDS_SUBST_EVENT_HUB_ENDS_IN', [], {_timeLeft: eventHubTimeLeft})"
+							_textClass = '$TextDefaultNM'
+							_width = 'auto'
+						)
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element EventHubProgressContainer (_selectedLevelId:number) layout=true
+	(scope
+		(event evAddedToStage)
+		(event evScrollToIndex)
+		(event evStartAnimationSequence)
+		(event evAnimatedLevelsChanged)
+
+		(macro PULL_ACTIVE_CHILD_ROUTE
+			_nodeId = "SC.Ui_windows.ROUTE.EVENT_HUB"
+			_fieldActiveChild = "'currentRoute'"
+		)
+
+		(var isInEventHubProgress:bool = "currentRoute == SC.Ui_windows.ROUTE.EVENT_HUB_PROGRESS")
+
+		(macro EVENT_HUB_SEASON_ENTITY_SCOPE "'eventHubEntity'")
+
+		(var currentLevelEntity:gfx = "$datahub.getEntity(_selectedLevelId)")
+		(var progressionLevel:gfx = "currentLevelEntity ? currentLevelEntity.progressionLevel : null")
+		(var progressionLevelProgress:gfx = "currentLevelEntity ? currentLevelEntity.progressionLevelProgress : null")
+		(var currentLevel:number = "progressionLevel ? progressionLevel.level : 0" (event "progressionLevel.evChanged"))
+
+		(var carouselColumnsOnScreen:number = "7")
+		(var halfTheColumns:number = "round(carouselColumnsOnScreen / 2)")
+		(var carouselScrollIndex:number = "currentLevel < halfTheColumns ? 0 : (currentLevel + 1 - halfTheColumns)")
+
+		(var progressionAnimations:gfx = "eventHubEntity ? eventHubEntity.progressionAnimations : null" (event "eventHubEntity.evAdded"))
+		(var animatedLevels:array = "progressionAnimations ? progressionAnimations.animatedLevels : []" (event "progressionAnimations.evChanged"))
+
+		(var needToShowAnimation:bool = "animatedLevels.length > 0")
+		(var isAnimEnb:bool = "needToShowAnimation && isInEventHubProgress" init=false watch=false (event "evAddedToStage") (event "evAnimatedLevelsChanged"))
+	)
+
+	(dispatch evStartAnimationSequence
+		delay=0.01 dir="EventDirection.DOWN"
+		(bind enabled "isAnimEnb")
+	)
+
+	(dispatch evAddedToStage delay=0.1 on='addedToStage')
+	(dispatch evAnimatedLevelsChanged delay=0.01 (bind trigger "animatedLevels"))
+
+	(dispatch evScrollToIndex args="{index: carouselScrollIndex}" delay=0.1 dir="EventDirection.DOWN" (event "evAddedToStage") (event "evStartAnimationSequence"))
+
+	(style (width = 100%))
+
+	
+	(block
+		(style (width = 100%))
+
+		(element EventHubProgressScrollContainer
+			_selectedLevelId = "_selectedLevelId"
+		)
+	)
+)
+
+(def element EventHubProgressScrollContainer (_selectedLevelId:number)
+	(scope
+		(event CarouselCanScrollChanged)
+		(event evScrollPrev)
+		(event evScrollNext)
+		(event evScrollToIndex)
+
+		(var canScrollLeft:bool =	"$event ? $event.down	: false"			(event "CarouselCanScrollChanged"))
+		(var canScrollRight:bool =	"$event ? $event.up		: false"			(event "CarouselCanScrollChanged"))
+		(var isScrollEnabled:bool =	"$event ? $event.down || $event.up : true"	(event "CarouselCanScrollChanged"))
+
+		(var levelsCollection:gfx = "$datahub.getCollection(CC.progressionLevel).getChildByPath('eventHub.sorted')")
+		(var levelsArray:array = "levelsCollection ? levelsCollection.items : []"	(event "levelsCollection.evAdded")
+																					(event "levelsCollection.evRemoved"))
+	)
+
+	(style
+		(width = 100%) (flow = "horizontal")
+	)
+
+	
+	(block
+		(style (width = "EH_VERTICAL_BACKGROUND_ELEMENT_WIDTH"))
+
+		(element EventHubBackgroundElementItem
+			_height = "7px"
+			_color = "EH_COLOR_ORCHID_LEI"
+		)
+
+		(element EventHubLeftCarouselArrow
+			_isScrollEnabled = "isScrollEnabled"
+			_canScroll = "canScrollLeft"
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "center") (top = -25px))
+
+		(scrollArea
+			(style
+				(height = "LEVEL_HEIGHT") (width = "REWARD_CONTAINER_WIDTH")
+				(backgroundColor = "0x01000000")
+			)
+
+			(horizontalSlider = 'EventHubCarouselScroll')
+			(hscrollPolicy = 'auto')
+			(vscrollPolicy = 'off')
+			(drag = true)
+
+			(repeatController = 'phaseCarouselContainer')
+
+			(content
+				(style
+					(width = 100%) (height = 100%)
+					(backgroundColor = "0x21ffffff") (flow = "horizontal")
+				)
+
+				(controller $Repeat renderer='EventHubLevelContainerWrapper'
+					(bind count "levelsArray.length")
+
+					(args
+						_entityId = "levelsArray[$index].id"
+						_selectedLevelId = "_selectedLevelId"
+					)
+				)
+			)
+
+			(bindcall scrollLeft	(event "evScrollPrev"))
+			(bindcall scrollRight	(event "evScrollNext"))
+			(bindcall scrollTo	index="$event.index" maxAnimatedDistance=350 (event "evScrollToIndex"))
+		)
+	)
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "right"))
+
+		(block
+			(element EventHubBackgroundElementItem
+				_height = "7px"
+				_color = "EH_COLOR_ROSE_WINE"
+			)
+
+			(element EventHubRightCarouselArrow
+				_isScrollEnabled = "isScrollEnabled"
+				_canScroll = "canScrollRight"
+			)
+		)
+	)
+)
+
+(def element EventHubCarouselScroll() layout=true
+	(scope
+		(event CarouselScrollValueChanged)
+		(event CarouselCanScrollChanged)
+		(event CarouselScrollVisibleChanged)
+	)
+
+	(bind visible "$event" (event "CarouselScrollVisibleChanged"))
+
+	(scroll_bar
+		(orientation="horizontal")
+		(track = 'CarouselScrollTrack')
+		(thumb = 'CarouselScrollThumb')
+		(value = 0)
+		(singleStep="MIN_LEVEL_WIDTH")
+		(scrollDuration=700)
+		(dispatch 'CarouselScrollValueChanged' dir="EventDirection.UP" args="$event" on='valueChanged')
+		(dispatch 'CarouselCanScrollChanged' dir="EventDirection.UP" args="$event" on='canScrollChanged')
+	)
+)
+
+(def element EventHubLevelContainerWrapper (_entityId:gfx, _selectedLevelId:number) layout=true
+	(scope
+		(var levelEntity:gfx = "$datahub.getEntity(_entityId)")
+		(var isPostProgressionLevel:bool = "levelEntity ? levelEntity.hasComponent(CC.postProgressionLevel) : false")
+		(var eventHubLevel:gfx = "levelEntity ? levelEntity.eventHubLevel : null")
+
+		(var eventHubPhasesCollection:gfx = "$datahub.getCollection(CC.eventHubPhase)")
+		(var eventHubPhases:array = "eventHubPhasesCollection ? eventHubPhasesCollection.items : []"	(event "eventHubPhasesCollection.evAdded")
+																										(event "eventHubPhasesCollection.evRemoved"))
+		(var eventHubPhase:gfx = "$datahub.getPrimaryEntity(CC.eventHubPhase, eventHubLevel.phaseIndex).eventHubPhase" (event "eventHubLevel.evUpdated"))
+
+		(var levelsCollection:gfx = "$datahub.getCollection(CC.progressionLevel)")
+		(var levelsCollectionByPhase:gfx = "$datahub.getCollection(CC.progressionLevel).getChildByPath('eventHub.byPhase.' + eventHubLevel.phaseIndex)"
+																														(event "levelsCollection.evChildAdded")
+																														(event "levelsCollection.evChildRemoved")
+																														(event "levelsCollection.evUpdated"))
+
+		(macro SERVER_TIME_SCOPE)
+		(var phaseStartTime:number = "eventHubPhase.startTime")
+		(var phaseStartsIn:number = "phaseStartTime - serverTime")
+		(var formattedPhaseStartTime:str = "formatTime(phaseStartsIn, 'HIGHESTDAYS', '', true)")
+		(var isPhaseStarted:bool = "serverTime >= phaseStartTime")
+
+		(var activePhase:number = "(TOTAL_NUMBER_OF_PHASES - eventHubPhases.length) + 1") 
+		(var activePhaseTitle:str = "'IDS_EVENT_HUB_PHASE_' + activePhase + '_TITLE'")
+
+		(var phaseStartLabel:str = "isPhaseStarted	? activePhaseTitle
+													: subst('IDS_SUBST_EVENT_HUB_PHASE_WILL_OPEN_IN', [], {_startTime: formattedPhaseStartTime})")
+
+		(var isInLastPhase:bool = "eventHubPhase.index == eventHubPhases.length - 1" (event "levelsCollectionByPhase.evUpdated"))
+	)
+
+	(style
+		(minWidth = "MIN_LEVEL_WIDTH") (flow = "horizontal")
+		(bind marginLeft "isPostProgressionLevel ? MS : 0")
+	)
+
+	(block
+		(controller $Instance renderer='EventHubLevelContainer'
+			(args
+				_entityId = "_entityId"
+				_isSelected = "_entityId == _selectedLevelId"
+			)
+		)
+	)
+
+	
+	(controller $Instance renderer='EventHubLevelSeparator'
+		(bind enabled "isPostProgressionLevel && !isInLastPhase")
+	)
+)
+
+(def element EventHubLevelContainer (_entityId:gfx, _isSelected:bool=false) layout=true
+	(scope
+		(event evProgressRise)
+		(event evStartAnimationSequence)
+		(event evHighlightReward)
+		(event evReceivedReward)
+		(event evCleanUpAnimationSequence)
+
+		(macro MOUSE_HANDLER_SCOPE
+			_prefix = "'eventHubLevel_'"
+		)
+		(macro SERVER_TIME_SCOPE)
+
+		(var levelEntity:gfx = "$datahub.getEntity(_entityId)")
+		(var progressionLevel:gfx = "levelEntity ? levelEntity.progressionLevel : null")
+		(var progressionLevelProgress:gfx = "levelEntity ? levelEntity.progressionLevelProgress : null")
+
+		(var eventHubLevel:gfx = "levelEntity ? levelEntity.eventHubLevel : null")
+		(var eventHubPhase:gfx = "$datahub.getPrimaryEntity(CC.eventHubPhase, eventHubLevel.phaseIndex).eventHubPhase")
+		(var isLevelInActivePhase:bool = "serverTime >= eventHubPhase.startTime")
+
+		(var level:number = "progressionLevel.level" (event "progressionLevel.evChanged"))
+		(var maxPoints:number = "progressionLevel.points" (event "progressionLevel.evChanged"))
+		(var currentPoints:number = "progressionLevelProgress.currentPoints" (event "progressionLevelProgress.evChanged"))
+		(var previousPoints:number = "progressionLevelProgress.previousPoints" (event "progressionLevelProgress.evChanged"))
+
+		(var rewardsStack:gfx = "levelEntity ? levelEntity.rewardsStack : null" (event "levelEntity.evAdded"))
+		(var rewards:array = "rewardsStack ? rewardsStack.rewards : []")
+
+		(var isHighlightedLevel:bool = "levelEntity ? levelEntity.hasComponent(CC.eventHubSpotlightLevel) : false")
+		(var isPostProgressionLevel:bool = "levelEntity ? levelEntity.hasComponent(CC.postProgressionLevel) : false")
+		(var isLevelCompleted:bool = "currentPoints == maxPoints")
+
+		(macro EVENT_HUB_SEASON_ENTITY_SCOPE "'eventHubEntity'")
+		(var progressionAnimations:gfx = "eventHubEntity ? eventHubEntity.progressionAnimations : null")
+		(var animatedLevels:array = "progressionAnimations ? progressionAnimations.animatedLevels : []" (event "progressionAnimations.evChanged"))
+
+		(var isLevelNeedToBeAnimated:bool = "level in animatedLevels")
+		(var indexInAnimationsArray:number = "indexOf(level, animatedLevels)")
+		(var isLastAnimatedLevel:bool = "indexInAnimationsArray != -1 ? indexInAnimationsArray == (animatedLevels.length - 1) : false")
+		
+		(var dynamicProgress:number = "(isLevelCompleted ? 1 : currentPoints/maxPoints)")
+		(var previousProgress:number = "100% * (previousPoints/maxPoints)")
+
+		(var progressRiseDelay:number = "(indexInAnimationsArray + 1) * DELAY_FOR_LEVEL_ANIMATION")
+
+		(var rewardUnlockAfterAnimation:bool = "false")
+		(bind rewardUnlockAfterAnimation "isLevelCompleted" watch=false init=false (event "evReceivedReward"))
+
+		(var isRewardReceived:bool = "	!isLevelCompleted || isPostProgressionLevel	? false :
+										isLevelNeedToBeAnimated						? rewardUnlockAfterAnimation
+																					: isLevelCompleted")
+		(var highlightRewardEnabled:bool = "isLevelInActivePhase && isLevelCompleted && isLevelNeedToBeAnimated" init=false watch=false (event "evStartAnimationSequence"))
+		(var clearAnimationSequenceEnabled:bool = "isLevelInActivePhase && isLevelNeedToBeAnimated && isLastAnimatedLevel" init=false watch=false (event "evStartAnimationSequence"))
+		(bind highlightRewardEnabled "false" (event "evReceivedReward"))
+		(bind clearAnimationSequenceEnabled "false" (event "evCleanUpAnimationSequence"))
+	)
+
+	
+	(dispatch evHighlightReward delay=0.1 (bind enabled "highlightRewardEnabled"))
+	(dispatch evReceivedReward delay=0.45 (event "evHighlightReward"))
+	(dispatch evCleanUpAnimationSequence delay=0.15 (bind enabled "clearAnimationSequenceEnabled"))
+
+	
+	(bindcall externalCall 'sound.playSetSoundDirect' "['battlepass_reward', 'start']" init=false watch=false (event "evHighlightReward"))
+	(bindcall externalCall
+		"'inputMapping.onAction'" "['cleanupEventHubAnimationSequence', {}]"
+		init=false watch=false
+		(event "evCleanUpAnimationSequence")
+	)
+
+	(dispatch evChangedSelectedLevel args="{selectedLevelId: _entityId}" dir="EventDirection.UP" (event "eventHubLevel_evClicked"))
+	(macro MOUSE_EVENTS_DISPATCHER
+		_prefix = "'eventHubLevel_'"
+	)
+	(macro SOUND_HANDLER
+		_prefix = "'eventHubLevel_'"
+		_soundSet = "'button_strk_progression'"
+	)
+
+	(style
+		(minWidth = "MIN_LEVEL_WIDTH") (align = "center")
+		(backgroundColor = "0x01000000")
+	)
+
+	
+	(block
+		(style (width = 100%))
+
+		
+		(block
+			(bind alpha "	_isSelected				? TA :
+							eventHubLevel_rollOver	? TC
+													: 0.5")
+			(style (width = 100%) (minHeight = 19px) (align = "center|middle"))
+
+			(tf
+				(bind visible "!isPostProgressionLevel")
+
+				(class $TextDefaultBoldNM)
+				(style
+					(bind textColor "isLevelCompleted	? SC.Ui_styles.SERVICE_COLORS.YELLOW
+														: SC.Ui_styles.SERVICE_COLORS.WHITE")
+				)
+
+				(bind text "progressionLevel.level")
+			)
+
+			(block
+				(bind visible "isPostProgressionLevel")
+
+				(style
+					(width = 19px) (height = 19px)
+					(backgroundImage = "'url:../service_kit/unified_status_icons/icon_infinite.png'")
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%) (marginTop = "XS"))
+
+			
+			
+			
+			
+			
+			
+			
+
+			(element DefaultProgressBar
+				_progress = "dynamicProgress"
+				_width = 100%
+				_height = 12
+			)
+		)
+	)
+
+	
+	(block
+		(style (marginTop = "SXS"))
+
+		(hblock
+			(controller $Instance renderer='EventHubRewardContainer'
+				(args
+					_rewards = "rewards"
+					_isReceived = "isRewardReceived"
+					_isLevelAvailable = "isLevelInActivePhase"
+					_isSelected = "_isSelected"
+					_rollOver = "eventHubLevel_rollOver"
+				)
+			)
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(alpha = 0) (hitTest = false)
+				(backgroundColor = "SC.Ui_styles.SERVICE_COLORS.WHITE")
+			)
+
+			(controller $Animation
+				(bindcall play
+					keyframes="[
+						{	
+							time:0,
+							to:{alpha: 0}
+						},
+						{	
+							time:0.2,
+							to:{alpha: 0.2}
+						},
+						{
+							time:0.4,
+							to:{alpha: 0}
+						}
+					]"
+					action="killAll"
+					(event "evHighlightReward")
+				)
+			)
+		)
+	)
+)
+
+(def element EventHubRewardContainer (	_rewards:gfx, _isReceived:bool=false, _isLevelAvailable:bool=false,
+										_isSelected:bool=false, _rollOver:bool=false) layout=true
+	(scope
+		(var hasSeveralRewards:bool = "_rewards.length > 1")
+	)
+	
+	(bindcall externalCall "'direct.action'" "[SC.Common.STATISTICS_EVENTS.LOG, [SC.Common.EVENT_HUB_STATISTICS.EVENT_HUB_PROGRESSION_REWARD_CLICKED]]" init=false watch=false on='click')
+
+	(style
+		(width = "REWARD_WIDTH") (height = "REWARD_HEIGHT")
+		(align = "center|middle")
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "center|middle"))
+
+		(block
+			(style
+				(width = 134px) (height = 134px)
+				(bind backgroundColor "	_isSelected ? '0x10FFFFFF' :
+										_rollOver	? '0x05FFFFFF'
+													: '0x00FFFFFF'")
+			)
+		)
+	)
+
+	(block
+		(bind visible "_isSelected")
+		(class $FullsizeAbsolute)
+
+		(style
+			(backgroundSize = "cover")
+			(bind backgroundImage "'url:../event_hub/progress/level/selected.png'")
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(bind alpha "	_rollOver	? 0.85
+									: 1")
+		(style
+			(backgroundSize = "cover")
+			(bind backgroundImage "_isSelected	? 'url:../event_hub/progress/level/frame/selected.png'
+												: 'url:../event_hub/progress/level/frame/default.png'")
+		)
+	)
+
+	(block
+		(controller $Instance renderer='EventHubReward'
+			(bind enabled "!hasSeveralRewards")
+			(args
+				_rewardEntityId = "_rewards[0]"
+				_isReceived = "_isReceived"
+				_rollOver = "_rollOver"
+				_isLevelAvailable = "_isLevelAvailable"
+			)
+		)
+
+		(controller $Instance renderer='EventHubMultiRewardItem'
+			(bind enabled "hasSeveralRewards")
+			(args
+				_rewards = "_rewards"
+				_isReceived = "_isReceived"
+				_rollOver = "_rollOver"
+				_isLevelAvailable = "_isLevelAvailable"
+			)
+		)
+	)
+)
+
+(def element EventHubReward (_rewardEntityId:gfx, _isReceived:bool=false, _rollOver:bool=false, _isLevelAvailable:bool=false) layout=true
+	(scope
+		(var rewardEntity:gfx = "$datahub.getEntity(_rewardEntityId)")
+		(var rewardComponent:gfx = "rewardEntity.rewardComponent")
+		(var rewardItemId:gfx = "rewardEntity ? rewardEntity.rewardComponent.name : null" (event "rewardComponent.evUpdate"))
+
+		(var rewardItem:dict = "{	id:			rewardEntity ? rewardComponent.id : null,
+									amount:		rewardEntity ? rewardComponent.amount : null,
+									name:		rewardEntity ? rewardComponent.name : null,
+									type:		rewardEntity ? rewardComponent.type : null,
+									subtype:	rewardEntity ? rewardComponent.subtype : null,
+									params:		rewardEntity ? rewardComponent.params : null,
+									reasons:	rewardEntity ? rewardComponent.reasons : null,
+									isPRMP:		rewardEntity ? rewardComponent.isPRMP : null}" (event "rewardComponent.evUpdate"))
+
+		(macro PULL_SHIP "rewardItemId")
+		(macro PULL_EXTERIOR "rewardItemId")
+
+		
+		(var shipPreviewData:array = "[		{	type: 'inputMapping.onAction',
+												name: 'selectShipForPreview',
+												args: {
+													shipId: shipComponent.id
+												}},
+											{	type: 'inputMapping.onAction',
+												name: 'navigateTo',
+												args: {
+													route: SC.Ui_windows.ROUTE.SHIP_PREVIEW,
+													data: {	isRewardShipPreview: true}
+												}}]")
+		(var exteriorPreviewData:array = "rewardEntity	?	[	{	type: 'inputMapping.onAction',
+																	name: 'selectExteriorForPreview',
+																	args: {
+																		exteriorId:	exteriorConfig.id,
+																		shipId:		rewardEntity.rewardComponent.params.shipId
+																	}},
+																{	type: 'inputMapping.onAction',
+																	name: 'navigateTo',
+																	args: {
+																		route: SC.Ui_windows.ROUTE.SHIP_PREVIEW,
+																		data: {	hideTTXPanel:	true,
+																				exteriorId:		exteriorConfig.id,
+																				rewardEntityId:	rewardEntity.id}
+																	}}]
+														: null" (event "rewardComponent.evUpdate"))
+		(var previewButtonMethods:array = "	shipEntity		? shipPreviewData :
+											exteriorEntity	? exteriorPreviewData
+															: null")
+	)
+
+	(block
+		(controller $Instance renderer='RewardItem'
+			(args
+				_reward="rewardItem"
+				_isReceived="_isReceived"
+				_isBattlePassSmallShipView="true"
+				_isClickDisabled="true"
+			)
+		)
+
+		
+		(block
+			(bind visible "!_isLevelAvailable")
+			(class $FullsizeAbsolute)
+
+			(element EventHubRewardLockedState)
+		)
+
+		(block
+			(style (width = 100%) (bottom = -10px))
+
+			(controller $Instance renderer='EventHubPreviewButtonContainer'
+				(bind enabled "previewButtonMethods")
+
+				(args
+					_rollOver = "_rollOver"
+					_methods = "previewButtonMethods"
+				)
+			)
+		)
+	)
+)
+
+(def element EventHubPreviewButtonContainer (_rollOver:bool, _methods:array=[]) layout=true
+	(class $FullsizeAbsolute)
+	(style (align = "center|middle") (alpha = 0))
+
+	(controller $Animation
+		(bindcall play
+			from =	"{alpha: 0, top: -10}"
+			to =	"{alpha: 1, top: 0}"
+			reverse = "!_rollOver"
+			duration="0.07"
+			(bind trigger "_rollOver")
+		)
+	)
+
+	(element DefaultButton
+		_label = 'IDS_PREVIEW_BUTTON_UPPER_CASE'
+		_size = "SIZE.SMALL"
+		_width = "100px"
+		_methods = "_methods"
+	)
+)
+
+(def element EventHubLevelSeparator () layout=true
+	(style
+		(alpha = "TC") (width = 50px) (height = 100%)
+		(align = "center|bottom")
+	)
+
+	(element VerticalDivider)
+)
+
+(def element EventHubMultiRewardItem (_rewards:array, _isReceived:bool=false, _rollOver:bool=false, _isLevelAvailable:bool=false) layout=true
+	(block
+		(bind alpha "_isReceived ? 0.5 : 1")
+
+		(element IconWithAmount
+			_iconPath = "'url:../reward_icons/module_package.png'"
+			_width = 80
+			_height = 80
+		)
+	)
+
+	
+	(block
+		(bind visible "!_isLevelAvailable")
+		(class $FullsizeAbsolute)
+
+		(element EventHubRewardLockedState)
+	)
+
+	(block
+		(bind visible "_isReceived")
+		(class $MiddleAlignedAbsolutely)
+		(style
+			(width = 48px) (height = 48px) (top = 16px) (hitTest = false)
+			(backgroundImage = "'url:../reward_categories/icon_check.png'")
+		)
+	)
+
+	(controller $Tooltip
+		(renderer='EventHubMultirewardTooltip')
+		(args
+			_rewards = "_rewards"
+		)
+		(cache = false)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+	)
+)
+
+(def element EventHubMultirewardTooltip (_rewards:array) layout=true
+	(style (hitTest = false) (width = 340px))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "'IDS_REWARD_MODULE_PACKAGE_TITLE'"
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider')
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(args
+					_text = "'IDS_EVENT_HUB_MODULE_PACKAGE_TOOLTIP_DESCRIPTION'"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider')
+		)
+
+		(controller $Repeat renderer='EventHubMultirewardTooltipItem'
+			(bind count "_rewards.length")
+
+			(args
+				_rewardEntityId = "_rewards[$index]"
+			)
+		)
+	)
+)
+
+(def element EventHubMultirewardTooltipItem (_rewardEntityId:gfx) layout=true
+	(scope
+		(var rewardEntity:gfx = "$datahub.getEntity(_rewardEntityId)")
+		(var rewardComponent:gfx = "rewardEntity.rewardComponent")
+		(var rewardItemId:gfx = "rewardEntity ? rewardEntity.rewardComponent.name : null")
+
+		(var rewardItem:dict = "{	id:			rewardEntity ? rewardComponent.id : null,
+									amount:		rewardEntity ? rewardComponent.amount : null,
+									name:		rewardEntity ? rewardComponent.name : null,
+									type:		rewardEntity ? rewardComponent.type : null,
+									subtype:	rewardEntity ? rewardComponent.subtype : null,
+									params:		rewardEntity ? rewardComponent.params : null,
+									reasons:	rewardEntity ? rewardComponent.reasons : null,
+									isPRMP:		rewardEntity ? rewardComponent.isPRMP : null}")
+	)
+
+	(style (width = "100%") (marginBottom = "S") (marginTop = "S"))
+
+	(element RewardUnitTooltipItem
+		_rewardItem = "rewardItem"
+	)
+)
+
+(def element EventHubRewardLockedState () layout=true
+	
+	(class $FullsizeAbsolute)
+	(style (align = "center|middle"))
+
+	(block
+		(style
+			(width = "REWARD_WIDTH") (height = "REWARD_HEIGHT")
+			(hitTest = "false") (backgroundSize = "cover")
+			(backgroundImage = "'url:../event_hub/progress/level/locked.png'")
+		)
+	)
+)
+
+(def element EventHubBackgroundElementItem (_height:number,
+											_width:number,
+											_marginLeft:number,
+											_marginTop:number,
+											_color:str) layout=true
+	(style
+		(bind height "_height ? _height : 100%")
+		(bind width "_width ? _width : 100%")
+		(bind marginLeft "_marginLeft ? _marginLeft : 0")
+		(bind marginTop "_marginTop ? _marginTop : 0")
+		(bind backgroundColor "_color ? _color : ''")
+	)
+)
+
+(def element EventHubCarouselArrowBase(_isRollOver:bool, _canScroll:bool)
+	(style
+		(height = 163px)
+		(width = "EH_VERTICAL_BACKGROUND_ELEMENT_WIDTH")
+		(marginTop = "XXS")
+		(bind alpha "_canScroll ? 1 : 0.5")
+	)
+
+	(element EventHubBackgroundElementItem
+		_color = "_isRollOver ? EH_ARROW_BUTTON_OVER_COLOR : EH_ARROW_BUTTON_COLOR"
+	)
+)
+
+(def element EventHubLeftCarouselArrow(_isScrollEnabled:bool, _canScroll:bool)
+	(scope
+		(event evScrollPrev)
+		(macro MOUSE_HANDLER_SCOPE
+			_prefix = "'carouselLeftArrow_'"
+		)
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER
+		_prefix = "'carouselLeftArrow_'"
+	)
+	(dispatch evScrollPrev dir="EventDirection.UP" (event "carouselLeftArrow_evClicked") (bind enabled "_canScroll"))
+
+	(bind name "'eventHubCarouselLeft'")
+
+	(element EventHubCarouselArrowBase
+		_isRollOver = "_canScroll && carouselLeftArrow_rollOver && !carouselLeftArrow_mouseDown"
+		_canScroll = "_canScroll"
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "center|middle"))
+
+		(block
+			(style
+				(width = 10px) (height = 16px)
+				(backgroundImage = "'url:../service_kit/buttons/arrow.png'")
+			)
+		)
+	)
+)
+
+(def element EventHubRightCarouselArrow(_isScrollEnabled:bool, _canScroll:bool)
+	(scope
+		(event evScrollNext)
+		(macro MOUSE_HANDLER_SCOPE
+			_prefix = "'carouselRightArrow_'"
+		)
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER
+		_prefix = "'carouselRightArrow_'"
+	)
+	(dispatch evScrollNext dir="EventDirection.UP" (event "carouselRightArrow_evClicked") (bind enabled "_canScroll"))
+
+	(bind name "'eventHubCarouselRight'")
+
+	(element EventHubCarouselArrowBase
+		_isRollOver = "_canScroll && carouselRightArrow_rollOver && !carouselRightArrow_mouseDown"
+		_canScroll = "_canScroll"
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "center|middle"))
+
+		(block
+			(style
+				(width = 10px) (height = 16px)
+			)
+
+			(block
+				(style
+					(scaleX = -1) (position = "absolute") (right = 0)
+					(backgroundImage = "'url:../service_kit/buttons/arrow.png'")
+				)
+			)
+		)
+	)
+)

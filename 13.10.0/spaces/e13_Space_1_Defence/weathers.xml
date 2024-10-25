@@ -1,0 +1,22 @@
+<weathers.xml>
+	<!-- Погода по-дефолту -->
+	<scheme>
+		<startWeight> 100 </startWeight>
+		<step>
+			<param>PCOW005_Evening</param>
+			<duration>
+				<min> 120 </min>
+				<max> 120 </max>
+			</duration>
+			<transition> 120 </transition>
+		</step>
+		<step>
+			<param>PCOW003_Cloudy</param>
+			<duration>
+				<min> 9999 </min>
+				<max> 9999 </max>
+			</duration>
+			<transition> 9999 </transition>
+		</step>
+	</scheme>
+</weathers.xml>

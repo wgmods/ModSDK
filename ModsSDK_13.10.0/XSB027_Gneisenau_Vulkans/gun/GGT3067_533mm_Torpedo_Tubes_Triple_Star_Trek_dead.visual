@@ -1,0 +1,38 @@
+<GGT3067_533mm_Torpedo_Tubes_Triple_Star_Trek_dead.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Torpedo_dead	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Torpedo_dead	</node>
+		<geometry>
+			<vertices>	Torpedo_deadShape.vertices	</vertices>
+			<primitive>	Torpedo_deadShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSB027_Gneisenau_Vulkans/gun/GGT3067_533mm_Torpedo_Tubes_Triple_Star_Trek_dead.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1490 0.0000 -0.2052	</min>
+		<max>	0.1490 0.1372 0.2092	</max>
+	</boundingBox>
+</GGT3067_533mm_Torpedo_Tubes_Triple_Star_Trek_dead.visual>

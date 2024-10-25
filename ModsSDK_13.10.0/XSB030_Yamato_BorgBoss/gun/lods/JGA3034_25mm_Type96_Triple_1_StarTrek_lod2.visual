@@ -1,0 +1,65 @@
+<JGA3034_25mm_Type96_Triple_1_StarTrek_lod2.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Turret	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	HP_gunFire1	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.8660 -0.5000 0.0000	</row1>
+					<row2>	0.0000 0.5000 0.8660 0.0000	</row2>
+					<row3>	0.0190 0.1144 0.1084 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	HP_gunFire2	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.8660 -0.5000 0.0000	</row1>
+					<row2>	0.0000 0.5000 0.8660 0.0000	</row2>
+					<row3>	0.0000 0.1144 0.1084 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	HP_gunFire3	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.8660 -0.5000 0.0000	</row1>
+					<row2>	0.0000 0.5000 0.8660 0.0000	</row2>
+					<row3>	-0.0190 0.1144 0.1084 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Turret	</node>
+		<geometry>
+			<vertices>	Turret_lod2Shape.vertices	</vertices>
+			<primitive>	Turret_lod2Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_EMISSIVE_PBS_Gun	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSB030_Yamato_BorgBoss/gun/JGM3030_460mm45_Type96_StarTrek_emissive.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1196 -0.0240 -0.1196	</min>
+		<max>	0.1196 0.1263 0.1196	</max>
+	</boundingBox>
+</JGA3034_25mm_Type96_Triple_1_StarTrek_lod2.visual>

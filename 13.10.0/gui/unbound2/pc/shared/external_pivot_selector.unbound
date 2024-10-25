@@ -1,0 +1,246 @@
+(def constant SELECTOR_ITEM_HEIGHT 24)
+(def constant SELECTOR_ITEM_WIDTH 240)
+(def constant VERTICAL_BAR_WIDTH 20)
+(def constant VERTICAL_MARGIN 4)
+
+
+(def constant PIVOT_ANGLE_TYPE [
+	['url:../event_hub/equipment/link_main.png', 160, 144, [1,30,95,1]],
+	['url:../event_hub/equipment/link_sub.png', 60, 60, [1,30,43,1]],
+	['url:../event_hub/equipment/link_sub.png', 68, 56, [1,30,43,1]]
+])
+
+(def element ExternalPivotSelector(_pivotPoint:dict = {x:0,y:0}, _selectorPosition:dict = {x:350, y:350}, _selectorItems:array = [], _selectorRenderer:str = 'SelectorItem',
+_currentSelection:number = 0, _angleType:number = 0, _selectorType:number = -1) layout=true
+	(scope
+		(event evPreviewChanged)
+		(event evisOverChanged)
+
+		(var currentSelection:number = "_currentSelection")
+		(var previewSelection:number = -1)
+		(bind previewSelection "$event.value ? $event.selection : -1" init=false (event "evPreviewChanged"))
+		(bind currentSelection "previewSelection != -1 ? previewSelection : _currentSelection")
+
+		(var isRightSidePivot:bool = "_pivotPoint.x > _selectorPosition.x")
+		(var isPivotOnTop:bool = "_pivotPoint.y > _selectorPosition.y")
+
+		(var pivotWidth:number = "abs(_pivotPoint.x - _selectorPosition.x)")
+		(var pivotHeight:number = "abs(_pivotPoint.y - _selectorPosition.y)")
+		(var itemsLength:number = "_selectorItems ? _selectorItems.length : 0")
+		(var selectedHeight:number = "!isPivotOnTop ? pivotHeight + 12 - (itemsLength - currentSelection) * (SELECTOR_ITEM_HEIGHT + VERTICAL_MARGIN) : pivotHeight - SELECTOR_ITEM_HEIGHT - currentSelection * (SELECTOR_ITEM_HEIGHT + VERTICAL_MARGIN)")
+
+		(var overIndex:number = -1)
+		(bind overIndex "$event.value ? $event.selection : -1" init=false (event "evisOverChanged"))
+		(var isOver:bool = false)
+		(bind isOver "overIndex == currentSelection")
+
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+		(var isHD:bool = "stageHeight < ST_EQUIPMENT_HD_CUTOFF")
+		(var widthIndex:number = "isHD ? 2 : 1")
+	)
+
+	(style
+		(position = "absolute")
+		(bind left "isRightSidePivot ? _selectorPosition.x : _selectorPosition.x - pivotWidth")
+		(bind top "isPivotOnTop ? _selectorPosition.y : _pivotPoint.y")
+		(flow = "Flow.HORIZONTAL")
+		(bind align "!isPivotOnTop ? bottom|left : top|left")
+	)
+
+	(element LeftSidePivot
+		_width = "pivotWidth"
+		_height = "pivotHeight"
+		_vbHeight = "selectedHeight"
+		_isVertTop = "isPivotOnTop"
+		_angleType = "_angleType"
+		_inPreview = "previewSelection != -1"
+		_selectorType = "_selectorType"
+		_isOver = "isOver"
+		_widthIndex = "widthIndex"
+		_visible = "!isRightSidePivot"
+	)
+
+	(block
+		(controller $Repeat
+			(bind count "itemsLength")
+			(bind renderer "_selectorRenderer")
+			(args
+				_selectedItem = "currentSelection"
+				_totalCount = "itemsLength"
+				_itemData = "_selectorItems[$index]"
+				_isLeftPivot = "!isRightSidePivot"
+			)
+		)
+	)
+
+	(element RightSidePivot
+		_width = "pivotWidth"
+		_height = "pivotHeight"
+		_vbHeight = "selectedHeight"
+		_isVertTop = "isPivotOnTop"
+		_angleType = "_angleType"
+		_inPreview = "previewSelection != -1"
+		_selectorType = "_selectorType"
+		_isOver = "isOver"
+		_widthIndex = "widthIndex"
+		_visible = "isRightSidePivot"
+	)
+)
+
+(def element LeftSidePivot(_width:number, _height:number, _vbHeight:number, _isVertTop:bool = false, _angleType:number = 0, _inPreview:bool = false, _selectorType:number = -1, _isOver:bool=false, _widthIndex:number = 1, _visible:bool = true)
+	(style
+		(bind align "_isVertTop ? bottom|left : top|left")
+		(bind width "_width")
+		(bind height "_height")
+	)
+
+	(bind visible "_visible")
+
+	(element VerticalSelectorBar
+		_height = "_vbHeight"
+		_angleType = "_angleType"
+		_isLeftside = true
+		_isVertTop = "_isVertTop"
+		_widthIndex = "_widthIndex"
+		_visible = "!_isVertTop"
+	)
+
+	(element HorizontalSelectorBar
+		_width = "_width"
+		_isVertTop = "_isVertTop"
+		_angleType = "_angleType"
+		_isLeftside = false
+		_inPreview = "_inPreview"
+		_selectorType = "_selectorType"
+		_isOver = "_isOver"
+		_widthIndex = "_widthIndex"
+	)
+
+	(element VerticalSelectorBar
+		_height = "_vbHeight"
+		_angleType ="_angleType"
+		_isLeftside = true
+		_isVertTop ="_isVertTop"
+		_widthIndex ="_widthIndex"
+		_visible = "_isVertTop"
+	)
+)
+
+(def element RightSidePivot(_width:number, _height:number, _vbHeight:number, _isVertTop:bool = false, _angleType:number = 0, _inPreview:bool = false, _selectorType:number = -1, _isOver:bool=false, _widthIndex:number = 1, _visible:bool = true)
+	(bind visible "_visible")
+
+	(style
+		(bind align "!_isVertTop ? top|right : bottom|right")
+		(bind width "_width")
+		(bind height "_height")
+	)
+
+	(element VerticalSelectorBar
+		_height = "_vbHeight"
+		_angleType ="_angleType"
+		_isLeftside = false
+		_isVertTop ="_isVertTop"
+		_widthIndex ="_widthIndex"
+		_visible = "!_isVertTop"
+	)
+
+	(element HorizontalSelectorBar
+		_width = "_width"
+		_isVertTop = "_isVertTop"
+		_angleType = "_angleType"
+		_isLeftside = true
+		_inPreview = "_inPreview"
+		_selectorType = "_selectorType"
+		_isOver = "_isOver"
+		_widthIndex = "_widthIndex"
+	)
+
+	(element VerticalSelectorBar
+		_height = "_vbHeight"
+		_angleType = "_angleType"
+		_isLeftside = false
+		_isVertTop = "_isVertTop"
+		_widthIndex = "_widthIndex"
+		_visible = "_isVertTop"
+	)
+)
+
+(def element VerticalSelectorBar(_startPos:gfx, _height:number, _selection:number, _angleType:number = 0, _isLeftside:bool = false, _isVertTop:bool = false, _widthIndex:number = 1, _visible:bool = true)
+	(bind visible "_visible")
+
+	(style
+		(bind height "_height")
+		(bind width "PIVOT_ANGLE_TYPE[_angleType][_widthIndex]")
+	)
+
+	(block
+		(style 
+			(position = "absolute")
+			(bind backgroundImage "PIVOT_ANGLE_TYPE[_angleType][0]")
+			(bind width "PIVOT_ANGLE_TYPE[_angleType][_widthIndex]")
+			(bind height "_height + SELECTOR_ITEM_HEIGHT")
+			(bind scaleX "_isLeftside ? -1 : 1")
+			(bind right "_isLeftside ? -PIVOT_ANGLE_TYPE[_angleType][_widthIndex] : 0")
+			(bind scaleY "_isVertTop ? 1 : -1")
+			(bind bottom "_isVertTop ? 0 : -_height - SELECTOR_ITEM_HEIGHT - 16")
+			(bottom = 0)
+			(bind scale9grid "PIVOT_ANGLE_TYPE[_angleType][3]")
+		)
+
+		(bind colorTransform "ST_COLOR_TRANSFORM['connection_main']")
+	)
+)
+
+(def element HorizontalSelectorBar(_width:number, _angleType:number, _selection:number = 0, _isVertTop:bool = false, _isLeftside:bool = false, _inPreview:bool = false, _selectorType:number = -1, _isOver:bool = false, _widthIndex:number = 1)
+	(scope
+		(var colorKey:str = "_inPreview ? 'not_available' : 'installed'")
+		(var textIDS:str = "	_selectorType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.PRIMARY_WEAPON	? 'IDS_STEQ_PRIMARY_WEAPONS' :
+								_selectorType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.SECONDARY_WEAPON	? 'IDS_STEQ_SECONDARY_WEAPONS' :
+								_selectorType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.HULL				? 'IDS_STEQ_HULL' :
+								_selectorType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.SHIELD			? 'IDS_STEQ_SHIELD' :
+								_selectorType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.TORPEDO_BOMBERS	? 'IDS_STEQ_HEAVY_BOMBERS' :
+								_selectorType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.FIGHTERS			? 'IDS_STEQ_FIGHTERS' :
+								_selectorType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.DIVE_BOMBERS		? 'IDS_STEQ_BOMBERS' : ''")
+	)
+	
+	(style
+		(height = "16")
+		(bind width "_width")
+		(bind marginTop "_selection * (SELECTOR_ITEM_HEIGHT + VERTICAL_MARGIN)")
+		(bind marginBottom "_isVertTop ? S : -S")
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(height = 100%)
+			(bind backgroundColor "_isOver ? ST_COLORS[colorKey+'_over'] : ST_COLORS[colorKey]")
+			(bind width "_width - PIVOT_ANGLE_TYPE[_angleType][_widthIndex] - XXS")
+			(bind right "_isLeftside ? PIVOT_ANGLE_TYPE[_angleType][_widthIndex] + XXS : 0")
+		)
+
+		(controller $Tooltip
+			(renderer='HeaderDescriptionInstructionTooltip')
+			(args
+				_headerText = "textIDS + '_FULL'"
+				_descriptionText = "textIDS + '_DESCRIPTION'"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+
+		(tf
+			(bind visible "_widthIndex != 2")
+			(class $TextST7NM)
+			(style
+				(width = 100%)
+				(height = 15)
+				(position = "absolute")
+				(bottom = 0)
+				(margin = 2)
+				(bind textAlign "_isLeftside ? right : left")
+			)
+			(bind text "textIDS + '_SHORT'")
+		)
+	)
+)
