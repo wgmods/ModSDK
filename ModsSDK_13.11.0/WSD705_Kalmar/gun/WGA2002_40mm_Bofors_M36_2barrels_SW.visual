@@ -1,0 +1,56 @@
+<WGA2002_40mm_Bofors_M36_2barrels_SW.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	WGA5000_40mm_Bofors_M36_2barrels_SW	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	HP_gunFire1	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.8660 -0.5000 0.0000	</row1>
+					<row2>	0.0000 0.5000 0.8660 0.0000	</row2>
+					<row3>	0.0085 0.1838 0.1397 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	HP_gunFire2	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 0.8660 -0.5000 0.0000	</row1>
+					<row2>	0.0000 0.5000 0.8660 0.0000	</row2>
+					<row3>	-0.0085 0.1838 0.1397 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	WGA5000_40mm_Bofors_M36_2barrels_SW	</node>
+		<geometry>
+			<vertices>	WGA5000_40mm_Bofors_M36_2barrels_SWShape.vertices	</vertices>
+			<primitive>	WGA5000_40mm_Bofors_M36_2barrels_SWShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/WSD705_Kalmar/gun/WGA2002_40mm_Bofors_M36_2barrels_SW.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.1081 -0.0008 -0.0986	</min>
+		<max>	0.1075 0.2748 0.2308	</max>
+	</boundingBox>
+</WGA2002_40mm_Bofors_M36_2barrels_SW.visual>

@@ -1,0 +1,176 @@
+<ASC405_Salem_StarTrek_Stern_lod1.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Stern	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Stern_DeckHouse	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	Stern_alpha	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	Stern_crack_MidBack	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Stern_crack_MidBack_in	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+			<node>
+				<identifier>	Stern_crack_MidBack_DeckHouse	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Stern_crack_MidBack_DeckHouse_in	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Stern_DeckHouse	</node>
+		<geometry>
+			<vertices>	Stern_DeckHouse_lod1Shape.vertices	</vertices>
+			<primitive>	Stern_DeckHouse_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_EMISSIVE_PBS_DeckHouse	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSC123_Salem_Startrek/ship/ASC405_Salem_StarTrek_DeckHouse.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Stern_alpha	</node>
+		<geometry>
+			<vertices>	Stern_alpha_lod1Shape.vertices	</vertices>
+			<primitive>	Stern_alpha_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Alpha	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSC123_Salem_Startrek/ship/ASC405_Salem_StarTrek_decal_alpha.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Stern_crack_MidBack_DeckHouse_in	</node>
+		<geometry>
+			<vertices>	Stern_crack_MidBack_DeckHouse_in_lod1Shape.vertices	</vertices>
+			<primitive>	Stern_crack_MidBack_DeckHouse_in_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_Crack	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSC123_Salem_Startrek/ship/C002_Razlom.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Stern_crack_MidBack_DeckHouse	</node>
+		<geometry>
+			<vertices>	Stern_crack_MidBack_DeckHouse_lod1Shape.vertices	</vertices>
+			<primitive>	Stern_crack_MidBack_DeckHouse_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_EMISSIVE_PBS_DeckHouse	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSC123_Salem_Startrek/ship/ASC405_Salem_StarTrek_DeckHouse.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Stern_crack_MidBack_in	</node>
+		<geometry>
+			<vertices>	Stern_crack_MidBack_in_lod1Shape.vertices	</vertices>
+			<primitive>	Stern_crack_MidBack_in_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_Crack	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSC123_Salem_Startrek/ship/C002_Razlom.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Stern_crack_MidBack	</node>
+		<geometry>
+			<vertices>	Stern_crack_MidBack_lod1Shape.vertices	</vertices>
+			<primitive>	Stern_crack_MidBack_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_EMISSIVE_PBS_Hull	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSC123_Salem_Startrek/ship/ASC405_Salem_StarTrek_Hull.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Stern	</node>
+		<geometry>
+			<vertices>	Stern_lod1Shape.vertices	</vertices>
+			<primitive>	Stern_lod1Shape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_EMISSIVE_PBS_Hull	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSC123_Salem_Startrek/ship/ASC405_Salem_StarTrek_Hull.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.9066 -0.4925 -7.2827	</min>
+		<max>	0.9066 0.5689 -2.9817	</max>
+	</boundingBox>
+</ASC405_Salem_StarTrek_Stern_lod1.visual>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+this file definitions works as global css font-face rules and expected to be used intead of font-face rules
+
+possible value for:
+- style: normal italic oblique
+- weight: thin extralight light normal medium semibold bold extrabold black
+        : 100 200 300 400 500 600 700 800 900
+all other values will be treated as error
+-->
+
+<fontconfig>
+    <fallback family="$WWSDefaultFont" />
+    <fonts>
+        <font family="$WWSDefaultFont" style="normal" weight="medium" >
+            <src realm="ASIA" path="gui/fonts/Source_Han_Sans_JP_Medium_WH.ttf" />
+            <src realm="CN" path="gui/fonts/Source_Han_Sans_CN_Medium_WH.ttf" />
+            <src realm="EU" path="gui/fonts/Warhelios_Regular.ttf" />
+            <src realm="KO" path="gui/fonts/WarheliosKO_Medium.ttf" />
+            <src realm="RU" path="gui/fonts/Warhelios_Regular.ttf" />
+            <src realm="TH" path="gui/fonts/Warhelios_Regular.ttf" />
+        </font>
+        <font family="$WWSDefaultFontBold" style="normal" weight="bold" >
+            <src realm="ASIA" path="gui/fonts/Source_Han_Sans_JP_Bold_WH.ttf" />
+            <src realm="CN" path="gui/fonts/Source_Han_Sans_CN_Bold_WH.ttf" />
+            <src realm="EU" path="gui/fonts/Warhelios_Bold.ttf" />
+            <src realm="KO" path="gui/fonts/WarheliosKO_Bold.ttf" />
+            <src realm="RU" path="gui/fonts/Warhelios_Bold.ttf" />
+            <src realm="TH" path="gui/fonts/Warhelios_Bold.ttf" />
+        </font>
+        <font family="$IMELanguageBar" style="normal" weight="medium" >
+            <src realm="ASIA" path="gui/fonts/Source_Han_Sans_JP_Medium_WH.ttf" />
+            <src realm="CN" path="gui/fonts/Source_Han_Sans_CN_Medium_WH.ttf" />
+            <src realm="EU" path="gui/fonts/Warhelios_Regular.ttf" />
+            <src realm="KO" path="gui/fonts/WarheliosKO_Medium.ttf" />
+            <src realm="RU" path="gui/fonts/Warhelios_Regular.ttf" />
+            <src realm="TH" path="gui/fonts/Warhelios_Regular.ttf" />
+        </font>
+        <font family="$IMECandidateListFont" style="normal" weight="medium" >
+            <src realm="ASIA" path="gui/fonts/Source_Han_Sans_JP_Medium_WH.ttf" />
+            <src realm="CN" path="gui/fonts/Source_Han_Sans_CN_Medium_WH.ttf" />
+            <src realm="EU" path="gui/fonts/Warhelios_Regular.ttf" />
+            <src realm="KO" path="gui/fonts/WarheliosKO_Medium.ttf" />
+            <src realm="RU" path="gui/fonts/Warhelios_Regular.ttf" />
+            <src realm="TH" path="gui/fonts/Warhelios_Regular.ttf" />
+        </font>
+    </fonts>
+</fontconfig>

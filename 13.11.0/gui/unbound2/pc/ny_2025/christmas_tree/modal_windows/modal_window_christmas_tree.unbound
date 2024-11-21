@@ -1,0 +1,333 @@
+(def constant HEADER_WINDOW_HEIGHT 55)
+(def constant DAILY_PROGRESS_PREVIEW_WIDTH 240)
+(def constant BOTTOM_CONTAINER_HEIGHT 88)
+
+(def constant DAILY_REWARD_CARD_ANIMATION 0.07)
+(def constant DAILY_REWARD_CARD_BG_DEFAULT 0x10000000)
+(def constant DAILY_REWARD_CARD_BG_HOVERED 0x10FFFFFF)
+
+(def macro PULL_CHRISTMAS_TREE_DAILY_PROGRESSION ()
+	(var progressBattlesEntity:gfx = "$datahub.getSingleEntity(CC.newYearProgressBattles)")
+	(var progressBattlesComponent:gfx = "progressBattlesEntity ? progressBattlesEntity.newYearProgressBattles : null" (event "progressBattlesEntity.evUpdated"))
+
+	
+	(var currentActiveStage:number =	"progressBattlesComponent ? progressBattlesComponent.battlesComplete : -1"	(event "progressBattlesComponent.evChanged"))
+	(var currentActiveGoal:number =		"progressBattlesComponent ? progressBattlesComponent.stageBattles : -1"		(event "progressBattlesComponent.evChanged"))
+
+	
+	(var progress:number =	"currentActiveStage / currentActiveGoal")
+	(var isDailyProgressCompleted:bool = "currentActiveGoal == -1 || currentActiveStage == -1")
+)
+
+(def element ModalWindowChristmasTree () layout=true
+	(macro MODAL_WINDOW_INIT)
+
+	(scope
+		(macro PULL_EVENT_ACTIVITY_ENTITY "SC.Common.NY_EVENT_TYPE.CHRISTMAS_TREE") 
+		(macro PULL_EVENT_STATE "state") 
+
+		(var rewardEntity:gfx = "$datahub.getSingleEntity(CC.newYearDecorationReward)")
+
+		
+		(var rewardInfoComponent:gfx = "rewardEntity ? rewardEntity.newYearDecorationReward : null" (event "rewardEntity.evUpdated"))
+
+		(var rewardProgress:number = 	"rewardInfoComponent.progress"	(event "rewardInfoComponent.evChanged"))
+		(var rewardGoal:number = 		"rewardInfoComponent.goal"		(event "rewardInfoComponent.evChanged"))
+
+		
+		(var isEventCompleted:bool = "rewardProgress >=rewardGoal && (isRewardAvailableAndCompleted || isCompleted)")
+	)
+
+	(class $Fullsize)
+	(style (align = "center"))
+
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(style (width = 100%) (align = "center"))
+
+		
+		(block
+			(style (width = 100%) (marginBottom = "M"))
+
+			(element ModalWindowHeaderFullSize
+				_windowName = 'IDS_CHRISTMAS_TREE_WINDOW_TITLE'
+				_backButtonText = 'IDS_RETURN_TO_DOCK'
+				_paddingRight = "M"
+				_paddingLeft = "M"
+				_paddingTop = "MS"
+			)
+		)
+
+		(controller $Instance renderer='ChristmasTreeTimeLeft'
+			(bind enabled "!isEventCompleted")
+		)
+
+		(tf
+			(bind visible "isEventCompleted")
+
+			(class $TextDefaultNM)
+			(style (alpha = "TC"))
+
+			(text = "'IDS_CHRISTMAS_TREE_WINDOW_ALL_DECORATIONS_EARNED'")
+		)
+	)
+
+
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+
+		(class $FullsizeAbsolute)
+		(style
+			(align = "bottom")
+
+			(paddingBottom = "LM")
+			(paddingRight = "{ 1280: M, 1920: LM }")
+			(paddingLeft = "{ 1280: M, 1920: LM }")
+		)
+
+		(block
+			(style
+				(width = 100%)
+				(height = "BOTTOM_CONTAINER_HEIGHT")
+			)
+
+			
+			(block
+				(style
+					(position = "absolute")
+					(left = "{1280: !isEventCompleted ? 0% : 50%, 1920: 50%}") (marginLeft = "{1280: !isEventCompleted ? 0% : -50%, 1920: -50%}")
+				)
+				(element DecorationSlotsContainer)
+			)
+
+			
+			(block
+				(bind visible "!isEventCompleted")
+
+				(class $FullsizeAbsolute)
+				(style (align = "bottom|right"))
+
+				(element DailyProgressPreview)
+			)
+		)
+	)
+)
+
+(def element ChristmasTreeTimeLeft () layotu=true
+	(scope
+		(macro SERVER_TIME_SCOPE)
+
+		(var christmasTreeInfoEntity:gfx = "$datahub.getPrimaryEntity(CC.newYearEvent, SC.Common.NY_EVENT_TYPE.CHRISTMAS_TREE)")
+		(var activePeriodComponent:gfx = "christmasTreeInfoEntity ? christmasTreeInfoEntity.newYearEventActivePeriod : null" (event "christmasTreeInfoEntity.evUpdated"))
+
+		(var eventFinishTime:number = "activePeriodComponent ? activePeriodComponent.endTime : null" (event "activePeriodComponent.evChanged"))
+
+		(macro COUNTDOWN_SCOPE "'timeLeft'" "eventFinishTime" "'HIGHEST,WITH_DAYS'")
+	)
+
+
+	(controller $Instance renderer='StatusLine'
+		(bind enabled "eventFinishTime != null")
+
+		(args
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DATE"
+			_text = "subst('IDS_SUBST_NY_EVENT_ENDS_IN_TIME', [], {_timeLeft: timeLeft})"
+			_textClass = '$TextDefaultNM'
+			_width = 'auto'
+		)
+	)
+)
+
+
+
+
+(def element DailyProgressPreview () layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'DailyProgressPreview_'")
+		(macro PULL_CHRISTMAS_TREE_DAILY_PROGRESSION) 
+
+		(macro PULL_EVENT_ACTIVITY_ENTITY "SC.Common.NY_EVENT_TYPE.CHRISTMAS_TREE") 
+		(macro PULL_EVENT_STATE "state") 
+
+		(var isEventCompleted:bool = "isRewardAvailableAndCompleted || isCompleted")
+	)
+
+	(macro MOUSE_HANDLER
+		_prefix = "'DailyProgressPreview_'"
+	)
+
+
+	
+	(bindcall externalCall "'inputMapping.onRequest'" "['openChristmasTreeSSEAndRewardsModal', {}]"	init=false
+																									watch=false
+																									on='click')
+	(bindcall externalCall "'direct.action'"	"[SC.Common.STATISTICS_EVENTS.LOG, ['ub2:ny25_tree_daily_clicked']]" 
+																									init=false
+																									watch=false
+																									on='click')
+
+	(element BlurPanelContainer _alpha = 0.24
+		(style (backgroundColor = 0x10000000))
+
+		(controller $Animation
+			(bindcall play  duration="DAILY_REWARD_CARD_ANIMATION"
+							action="kill"
+							from = "{backgroundColor: DAILY_REWARD_CARD_BG_DEFAULT}"
+							to = "{backgroundColor: DAILY_REWARD_CARD_BG_HOVERED}"
+							watch=false
+							reverse="!DailyProgressPreview_rollOver"
+							(bind trigger "DailyProgressPreview_rollOver")
+			)
+		)
+
+		
+		(block
+			(bind visible "!isEventCompleted && !isDailyProgressCompleted")
+
+			(style
+				(width = "DAILY_PROGRESS_PREVIEW_WIDTH")
+				(height = "BOTTOM_CONTAINER_HEIGHT")
+				(flow = "vertical") (padding = "SXS")
+			)
+
+			(block
+				(class $Fullsize)
+
+				(tf
+					(style (width = 100%) (alpha = "TA"))
+					(class $TextDefaultBoldNM)
+					(text = "'IDS_CHRISTMAS_TREE_DAILY_REWARDS_BUTTON_TITLE'")
+				)
+			)
+
+			
+			(element ChristmasTreeDailyProgressBar)
+		)
+
+		
+		(block
+			(bind visible "!isEventCompleted && isDailyProgressCompleted")
+
+			(style
+				(width = "DAILY_PROGRESS_PREVIEW_WIDTH")
+				(flow = "vertical") (padding = "SXS")
+			)
+
+			(tf
+				(style (width = 100%) (alpha = "TC"))
+				(class $TextDefault13NM)
+				(text = "'IDS_CHRISTMAS_TREE_WINDOW_ALL_DECORATIONS_FOR_TODAY_EARNED'")
+			)
+		)
+
+		
+		(block
+			(bind visible "isEventCompleted")
+
+			(style
+				(width = "DAILY_PROGRESS_PREVIEW_WIDTH")
+				(flow = "vertical") (padding = "SXS")
+			)
+
+			(tf
+				(style (width = 100%) (alpha = "TC"))
+				(class $TextDefault13NM)
+				(text = "'IDS_CHRISTMAS_TREE_WINDOW_ALL_DECORATIONS_EARNED'")
+			)
+		)
+	)
+
+	
+	(controller $Tooltip
+		(bind renderer "'DailyProgressPreviewTooltip'")
+
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(align = "top|center")
+	)
+)
+
+(def element ChristmasTreeDailyProgressBar (_isHideIfCompleted:bool = false) layout=true
+	(scope
+		(macro PULL_CHRISTMAS_TREE_DAILY_PROGRESSION) 
+	)
+
+	(style (width = 100%))
+
+	(block
+		(bind visible "!isDailyProgressCompleted")
+
+		(style
+			(width = 100%)
+			(gap = "S")
+		)
+
+		(block
+			(style
+				(width = 100%)
+				(flow = "horizontal") (gap = "S")
+			)
+
+			(tf
+				(style (width = 100%) (alpha = "TC"))
+				(class $TextDefaultNM)
+				(text = "'IDS_CHRISTMAS_TREE_DAILY_REWARDS_BUTTON_PROGRESS'")
+			)
+
+			(block
+				(element DefaultDividedCounter
+					_curValueTextClass = "'$TextDefaultNM'"
+					_doNotHideOnZeroMaxValue = "true"
+					_curValue = "currentActiveStage"
+					_maxValue = "currentActiveGoal"
+				)
+			)
+		)
+
+		(element DefaultProgressBar
+			_progress = "progress"
+			(style (width = 100%) (marginRight = -1px) (marginLeft = -1px))
+		)
+	)
+
+	(controller $Instance renderer='StatusLine'
+		(bind enabled "isDailyProgressCompleted && !_isHideIfCompleted")
+		(args
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+			_text = 'IDS_CHRISTMAS_TREE_DAILY_REWARDS_BUTTON_CHECKED'
+			_textClass = '$TextDefaultNM'
+			_width = 'auto'
+		)
+		(exprs
+			(style (marginBottom = "XS"))
+		)
+	)
+)
+
+(def element DailyProgressPreviewTooltip ()
+	(style (hitTest = false))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER _width = "340px"
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "'IDS_CHRISTMAS_TREE_HOW_TO_EARN_DECORATIONS_TOOLTIP_TITLE'"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(tf
+			(class $TextDefaultNM)
+			(style (alpha = "TC") (width = 100%))
+			(text = 'IDS_CHRISTMAS_TREE_HOW_TO_EARN_DECORATIONS_TOOLTIP_DESCRIPTION')
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+			_text = 'IDS_CHRISTMAS_TREE_HOW_TO_EARN_DECORATIONS_TOOLTIP_INSTRUCTION'
+		)
+	)
+)

@@ -1,0 +1,51 @@
+(def constant PATROL_PLACEHOLDER_IMG {
+	SMALL: 	'url:../patrols/user_patrol/icon_small.png',
+	LARGE: 	'url:../patrols/user_patrol/icon_large.png'
+})
+
+(def element IconClanPatrol (_patrolName:str, _isSmallSize:bool = false)
+	(scope
+		(var patrolEntity:gfx = "$datahub.getPrimaryEntity(CC.patrol, _patrolName)")
+		(var patrolComponent:gfx = "patrolEntity ? patrolEntity.patrol : null")
+		(var patrolIconSmall:str = "patrolComponent ? patrolComponent.iconSmall : ''" (event "patrolComponent.evChanged"))
+		(var patrolIconLarge:str = "patrolComponent ? patrolComponent.iconLarge : ''" (event "patrolComponent.evChanged"))
+		(var byteArrayCollection:gfx = "$datahub.getCollection(CC.byteArrayData)")
+
+		(var imageURL:str = "patrolComponent ? (_isSmallSize ? patrolIconSmall : patrolIconLarge) : null")
+
+		(var byteArrayEntity:gfx = "$datahub.getPrimaryEntity(CC.byteArrayData, imageURL)"	(event "byteArrayCollection.evAdded") 
+																							(event "byteArrayCollection.evUpdated")
+																							(event "patrolComponent.evChanged"))
+		(var byteArrayComponent:gfx = "byteArrayEntity ? byteArrayEntity.byteArrayData : null" (event "byteArrayEntity.evUpdate"))
+		(var byteArrayData:gfx = "byteArrayComponent ? byteArrayComponent.data : null" (event "byteArrayComponent.evUpdate"))
+
+		(var placeholderIconPath:str = "_isSmallSize ? PATROL_PLACEHOLDER_IMG.SMALL : PATROL_PLACEHOLDER_IMG.LARGE")
+	)
+
+	(block
+		(style
+			(bind width "_isSmallSize 	? 19px : 24px")
+			(bind height "_isSmallSize 	? 19px : 24px")
+
+			(hitTest = false)
+		)
+
+		(block
+			(bind visible "byteArrayData")
+			(class $Fullsize)
+			(style
+				(backgroundSize = "fill")
+				(bind backgroundImage "byteArrayData")
+			)
+		)
+
+		(block
+			(bind visible "!byteArrayData")
+			(class $Fullsize)
+			(style
+				(backgroundSize = "fill")
+				(bind backgroundImage "placeholderIconPath")
+			)
+		)
+	)
+)

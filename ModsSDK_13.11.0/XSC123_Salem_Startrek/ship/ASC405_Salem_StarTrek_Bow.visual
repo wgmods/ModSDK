@@ -1,0 +1,245 @@
+<ASC405_Salem_StarTrek_Bow.visual>
+	<node>
+		<identifier>	Scene Root	</identifier>
+		<transform>
+			<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+			<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+			<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+			<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+		</transform>
+		<node>
+			<identifier>	Bow	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Bow_DeckHouse	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	Bow_crack_MidFront	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Bow_crack_MidFront_in	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+			<node>
+				<identifier>	Bow_crack_MidFront_DeckHouse	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Bow_crack_MidFront_DeckHouse_in	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+			<node>
+				<identifier>	Bow_patch_MidFront	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Bow_patch_MidFront_DeckHouse	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+			<node>
+				<identifier>	bow_alpha	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	bow_windows	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</node>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Bow	</node>
+		<geometry>
+			<vertices>	BowShape.vertices	</vertices>
+			<primitive>	BowShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_EMISSIVE_PBS_Hull	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSC123_Salem_Startrek/ship/ASC405_Salem_StarTrek_Hull.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Bow_DeckHouse	</node>
+		<geometry>
+			<vertices>	Bow_DeckHouseShape.vertices	</vertices>
+			<primitive>	Bow_DeckHouseShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_EMISSIVE_PBS_DeckHouse	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSC123_Salem_Startrek/ship/ASC405_Salem_StarTrek_DeckHouse.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Bow_crack_MidFront	</node>
+		<geometry>
+			<vertices>	Bow_crack_MidFrontShape.vertices	</vertices>
+			<primitive>	Bow_crack_MidFrontShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_EMISSIVE_PBS_Hull	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSC123_Salem_Startrek/ship/ASC405_Salem_StarTrek_Hull.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Bow_crack_MidFront_DeckHouse	</node>
+		<geometry>
+			<vertices>	Bow_crack_MidFront_DeckHouseShape.vertices	</vertices>
+			<primitive>	Bow_crack_MidFront_DeckHouseShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_EMISSIVE_PBS_DeckHouse	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSC123_Salem_Startrek/ship/ASC405_Salem_StarTrek_DeckHouse.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Bow_crack_MidFront_DeckHouse_in	</node>
+		<geometry>
+			<vertices>	Bow_crack_MidFront_DeckHouse_inShape.vertices	</vertices>
+			<primitive>	Bow_crack_MidFront_DeckHouse_inShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_Crack	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSC123_Salem_Startrek/ship/C002_Razlom.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Bow_crack_MidFront_in	</node>
+		<geometry>
+			<vertices>	Bow_crack_MidFront_inShape.vertices	</vertices>
+			<primitive>	Bow_crack_MidFront_inShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	SHIPMAT_PBS_Crack	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSC123_Salem_Startrek/ship/C002_Razlom.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Bow_patch_MidFront	</node>
+		<geometry>
+			<vertices>	Bow_patch_MidFrontShape.vertices	</vertices>
+			<primitive>	Bow_patch_MidFrontShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_EMISSIVE_PBS_Hull	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSC123_Salem_Startrek/ship/ASC405_Salem_StarTrek_Hull.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	Bow_patch_MidFront_DeckHouse	</node>
+		<geometry>
+			<vertices>	Bow_patch_MidFront_DeckHouseShape.vertices	</vertices>
+			<primitive>	Bow_patch_MidFront_DeckHouseShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_EMISSIVE_PBS_DeckHouse	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSC123_Salem_Startrek/ship/ASC405_Salem_StarTrek_DeckHouse.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	bow_alpha	</node>
+		<geometry>
+			<vertices>	bow_alphaShape.vertices	</vertices>
+			<primitive>	bow_alphaShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_PBS_Alpha	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSC123_Salem_Startrek/ship/ASC405_Salem_StarTrek_decal_alpha.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<renderSet>
+		<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+		<node>	bow_windows	</node>
+		<geometry>
+			<vertices>	bow_windowsShape.vertices	</vertices>
+			<primitive>	bow_windowsShape.indices	</primitive>
+			<primitiveGroup>	0
+				<material>
+					<identifier>	TL2_SHIPMAT_EMISSIVE_PBS_Alpha	</identifier>
+					<mfm>	PnFMods/ModsSDK.zip/XSC123_Salem_Startrek/ship/ASC405_Salem_StarTrek_window_alpha.mfm	</mfm>
+				</material>
+			</primitiveGroup>
+		</geometry>
+	</renderSet>
+	<boundingBox>
+		<min>	-0.9170 -0.5128 0.5401	</min>
+		<max>	0.9170 0.5689 7.2718	</max>
+	</boundingBox>
+</ASC405_Salem_StarTrek_Bow.visual>

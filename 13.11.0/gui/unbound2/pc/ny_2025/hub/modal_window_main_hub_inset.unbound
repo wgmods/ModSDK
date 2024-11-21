@@ -1,0 +1,438 @@
+(def constant NEW_YEAR_CARD_HEIGHT_HORIZONTAL 158)
+(def constant NEW_YEAR_CARD_WIDTH_HORIZONTAL 396)
+
+(def constant NEW_YEAR_CARD_HEIGHT_VERTICAL 356)
+(def constant NEW_YEAR_CARD_WIDTH_VERTICAL 256)
+
+(def constant NEW_YEAR_CARD_DESCRIPTION_WIDTH 208)
+
+(def constant NEW_YEAR_CARD_ANIMATION_DURATION 0.15)
+(def constant NEW_YEAR_CARD_OPACITY_DEFAULT 0)
+(def constant NEW_YEAR_CARD_OPACITY_HOVER 0.1)
+(def constant NEW_YEAR_CARD_BG_HOVER 0xFFFFFFFF)
+
+
+(def macro PULL_EVENT_ACTIVITY_ENTITY (_type:expression)
+	(var eventEntity:gfx = "$datahub.getPrimaryEntity(CC.newYearEvent, _type)")
+
+	
+	(var eventComponent:gfx = "eventEntity ? eventEntity.newYearEvent : null" (event "eventEntity.evUpdated"))
+	(var type:str =		"eventComponent ? eventComponent.type : null"								(event "eventComponent.evChanged"))
+	(var state:number =	"eventComponent ? eventComponent.state : SC.Common.NY_MARKER_STATE.LOCKED"	(event "eventComponent.evChanged"))
+)
+
+(def element ModalWindowMainNewYearHub () layout=true
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(scope
+		(var newYearPortCollection:gfx = "$datahub.getCollection(CC.port).getChildByPath('visible.newYearPort')")
+		(var newYearPortEntity:gfx = "newYearPortCollection ? newYearPortCollection.items[0] : null"	(event "newYearPortCollection.evAdded")
+																										(event "newYearPortCollection.evRemoved"))
+
+		(var portComponent:gfx = "newYearPortEntity ? newYearPortEntity.port : null" (event "newYearPortEntity.evUpdated"))
+		(var portId:str = "portComponent ? portComponent.id : null" (event "portComponent.evChanged"))
+
+		(var goToNewYearPortButtonMethods:array = "[{	type: 'inputMapping.onAction',
+														name: 'cnxt.startDockReloading',
+														args: {}
+													},
+													{	type: 'inputMapping.onAction',
+														name: 'setPortPreset',
+														args: { portId: portId }
+													}]")
+	)
+
+	(class $Fullsize)
+	(style (align = "center"))
+
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(style (width = 100%) (align = "center") (marginBottom = "{ 720: L, 1080: XL }"))
+
+		
+		(block
+			(style (width = 100%))
+
+			(element ModalWindowHeaderFullSize
+				_windowName = 'IDS_NY_HUB_WINDOW_TITLE'
+				_hideBackButton = "true"
+				_paddingRight = "M"
+				_paddingLeft = "M"
+				_paddingTop = "MS"
+			)
+		)
+	)
+
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 3)
+		(style (align = "center"))
+
+		
+		(block
+			(style (marginBottom = "MS") (gap = "MS"))
+
+			(hblock
+				(style (gap = "MS"))
+
+				(element NewYearEventCardWrapper
+					_type = "SC.Common.NY_EVENT_TYPE.ADVENT_CALENDAR"
+					_statusRenderer = "'AdventCalendarCardStatus'"
+				)
+
+				(element NewYearEventCardWrapper
+					_type = "SC.Common.NY_EVENT_TYPE.CHRISTMAS_TREE"
+					_statusRenderer = "'ChristmasTreeCardStatus'"
+				)
+
+				(element NewYearEventCardWrapper
+					_type = "SC.Common.NY_EVENT_TYPE.EVENT_PASS"
+					_statusRenderer = "'EventPassCardStatus'"
+				)
+			)
+
+			(hblock
+				(style (gap = "MS"))
+
+				(element NewYearEventCardWrapper
+					_type = "SC.Common.NY_EVENT_TYPE.GIFT"
+					_statusRenderer = "'GiftCardStatus'"
+					_isHorizontal = true
+				)
+
+				(element NewYearEventCardWrapper
+					_type = "SC.Common.NY_EVENT_TYPE.DOCKYARD"
+					_statusRenderer = "'DockyardCardStatus'"
+					_isHorizontal = true
+				)
+			)
+		)
+
+		
+		(element DefaultButton
+			_label = 'IDS_NY_HUB_WINDOW_GO_TO_PORT_BUTTON_LABEL'
+			_width = "NEW_YEAR_CARD_WIDTH_VERTICAL"
+			_enabled = "portId != null"
+			_methods = "goToNewYearPortButtonMethods"
+
+		)
+	)
+)
+
+
+
+(def element NewYearEventCardWrapper(_type:str, _statusRenderer:str = null, _isHorizontal:bool = false)
+	(scope
+		(macro PULL_EVENT_ACTIVITY_ENTITY "_type") 
+		(macro PULL_EVENT_STATE "state") 
+
+		(var isLockedState:bool = "isLocked || isMissed || isLockedByAccountLevel || isLockedByConnection")
+
+		
+		(var titleText:str = "tr(toUpper('IDS_NY_HUB_WINDOW_CARD_' + _type + '_TITLE'))")
+
+		(var descriptionPostfix:str = "	isCompleted	? '_COMPLETED' :
+										isMissed	? '_MISSED'
+													: ''")
+
+		(var actionName:str = "!isLockedState	? 'navigateToEvent'
+												: ''")
+	)
+
+	
+	(controller $Tooltip
+		(bind enabled "NY_MARKER_TOOLTIPS_BY_TYPE[_type]")
+		(bind renderer "NY_MARKER_TOOLTIPS_BY_TYPE[_type]")
+
+		(args
+			_eventEntity = "eventEntity"
+			_eventState = "state"
+			_from2DHUB = true
+		)
+
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	
+	(element NewYearEventCard
+		_titleText = "titleText"
+		_state = "state"
+		_statusRenderer = "_statusRenderer"
+		_imageName = "_type"
+		_isHorizontal = "_isHorizontal"
+	)
+
+	
+	(bindcall externalCall "'inputMapping.onAction'" "[actionName, {eventType: _type}]"	init=false
+																						watch=false
+																						on='click')
+)
+
+(def element NewYearEventCard ( _titleText:str, _state:number,
+								_imageName:str, _statusRenderer:str = null, _isHorizontal:bool = false) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'NewYearEventCard_'")
+
+		(macro PULL_EVENT_STATE "_state") 
+
+		
+		(var isLockedState:bool = "isLocked || isLockedByAccountLevel || isMissed || isLockedByConnection")
+		(var isRewardAvailableState:bool = "isRewardAvailable || isRewardAvailableAndCompleted")
+
+		(var cardStatus:str = "	isLockedState			? '_locked' :
+								isRewardAvailableState	? '_active'
+														: ''")
+
+		
+		(var textUnifiedStatus:str = "isRewardAvailableState	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+																: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+
+		(var cardWidth:number = "_isHorizontal	? NEW_YEAR_CARD_WIDTH_HORIZONTAL
+												: NEW_YEAR_CARD_WIDTH_VERTICAL")
+
+		(var cardHeight:number = "_isHorizontal	? NEW_YEAR_CARD_HEIGHT_HORIZONTAL
+												: NEW_YEAR_CARD_HEIGHT_VERTICAL")
+
+		(var imagePath:str = "'url:../ny_2025/hub/banners/variants/' + _imageName + cardStatus + '.png'")
+	)
+
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "textUnifiedStatus" "'textColor'" "'textAlpha'")
+
+	(style
+		(bind width "cardWidth") (bind height "cardHeight")
+		(bind align "_isHorizontal	? left|top
+									: left|bottom")
+	)
+
+	
+	(element BlurPanelContainer
+		_alpha = 0.1
+
+		(class $FullsizeAbsolute)
+	)
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundSize = "fill")
+			(bind backgroundImage "imagePath")
+		)
+	)
+
+	
+	(block
+		(controller $Animation
+			(bindcall play  duration="NEW_YEAR_CARD_ANIMATION_DURATION"
+							action="kill"
+							from = "{alpha: NEW_YEAR_CARD_OPACITY_DEFAULT}"
+							to = "{alpha: NEW_YEAR_CARD_OPACITY_HOVER}"
+							watch=false
+							reverse="!NewYearEventCard_rollOver"
+							(bind trigger "NewYearEventCard_rollOver")
+			)
+		)
+
+		(class $FullsizeAbsolute)
+
+		(style
+			(alpha = 0)
+			(backgroundColor = "NEW_YEAR_CARD_BG_HOVER")
+		)
+	)
+
+	
+	(block
+		(style
+			(width = "NEW_YEAR_CARD_WIDTH_VERTICAL")
+			(padding = "MS")
+			(gap = "M")
+		)
+
+		(tf
+			(class $TextDefaultBold23NM)
+			(style (alpha = "TA") (width = 100%) (bind textColor "textColor"))
+			(bind text "_titleText")
+		)
+
+		(controller $Instance
+			(bind enabled "_statusRenderer != null")
+			(bind renderer "_statusRenderer")
+			(exprs (width = 100%))
+		)
+	)
+
+	(macro MOUSE_HANDLER _prefix = "'NewYearEventCard_'" _soundSet = "'button_hub_main'")
+)
+
+
+
+(def element NewYearEventCardStatus(_type:str, _isShowLeftTimeCondition:bool, _unifiedStatus:str, _statusText:str)
+	(scope
+		(macro PULL_EVENT_ACTIVITY_ENTITY "_type") 
+
+		
+		(macro SERVER_TIME_SCOPE)
+		(macro GET_EVENT_ACTIVE_PERIOD "eventEntity") 
+	)
+
+	(style (width = 100%))
+
+	(controller $Instance renderer='TooltipSystemTimeLeftStatusLine'
+		(bind enabled "_isShowLeftTimeCondition && isEntityHasActivePeriod")
+
+		(args
+			_timeLeftTimeStamp = "timeLeftTimeStamp"
+			_substTextIDS = "timeLeftSubstText"
+			_isChangeStatusWhenTimeRunningOut = "isEventStarted"
+		)
+	)
+
+	(controller $Instance renderer='StatusLine'
+		(bind enabled "!_isShowLeftTimeCondition && _unifiedStatus != null && _statusText != null")
+
+		(args
+			_unifiedStatus = "_unifiedStatus"
+			_text = "_statusText"
+			_width = "100%"
+		)
+
+		(exprs (width = 100%))
+	)
+)
+
+(def element AdventCalendarCardStatus()
+	(scope
+		(macro PULL_EVENT_ACTIVITY_ENTITY "SC.Common.NY_EVENT_TYPE.ADVENT_CALENDAR") 
+		(macro PULL_EVENT_STATE "state") 
+		(macro SERVER_TIME_SCOPE) 
+		(macro GET_EVENT_ACTIVE_PERIOD "eventEntity") 
+
+		
+		(var unifiedStatus:str = "	isRewardAvailable		? SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE :
+									isLockedByConnection	? SC.Ui_styles.UNIFIED_STATUS.WARNING :
+									isCompleted				? SC.Ui_styles.UNIFIED_STATUS.CHECK
+															: SC.Ui_styles.UNIFIED_STATUS.DATE")
+		(var statusText:str = "	isRewardAvailable		? 'IDS_NY_EVENT_ADVENT_CALENDAR_STATUS_REWARD_AVAILABLE' :
+								isLockedByConnection	? 'IDS_NY_EVENT_ADVENT_CALENDAR_STATUS_LOCK' :
+								isCompleted				? 'IDS_NY_EVENT_ADVENT_CALENDAR_STATUS_COMPLETED'
+														: timeLeftSubstText")
+	)
+
+	(style (width = 100%))
+
+	(element NewYearEventCardStatus
+		_type = "SC.Common.NY_EVENT_TYPE.ADVENT_CALENDAR"
+		_isShowLeftTimeCondition = "!isRewardAvailable && !isCompleted && !isLockedByConnection"
+		_unifiedStatus = "unifiedStatus"
+		_statusText = "statusText"
+	)
+)
+
+(def element EventPassCardStatus()
+	(scope
+		(macro PULL_EVENT_ACTIVITY_ENTITY "SC.Common.NY_EVENT_TYPE.EVENT_PASS") 
+		(macro PULL_EVENT_STATE "state") 
+
+		
+		(var unifiedStatus:str = "	isRewardAvailable		? SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE :
+									isLockedByAccountLevel	? SC.Ui_styles.UNIFIED_STATUS.LOCK
+															: null")
+
+		(var statusText:str = "	isRewardAvailable		? 'IDS_NY_EVENT_EVENT_PASS_STATUS_REWARD_AVAILABLE' :
+								isLockedByAccountLevel	? 'IDS_NY_EVENT_DOCKYARD_STATUS_LOCKED'
+														: null")
+	)
+
+	(style (width = 100%))
+
+	(element NewYearEventCardStatus
+		_type = "SC.Common.NY_EVENT_TYPE.EVENT_PASS"
+		_isShowLeftTimeCondition = "!isRewardAvailable && !isLockedByAccountLevel"
+		_unifiedStatus = "unifiedStatus"
+		_statusText = "statusText"
+	)
+)
+
+(def element ChristmasTreeCardStatus()
+	(scope
+		(macro PULL_EVENT_ACTIVITY_ENTITY "SC.Common.NY_EVENT_TYPE.CHRISTMAS_TREE") 
+		(macro PULL_EVENT_STATE "state") 
+
+		(var isRewardAvailableState:bool = "isRewardAvailable || isRewardAvailableAndCompleted")
+
+		
+		(var unifiedStatus:str = "	isLocked				? SC.Ui_styles.UNIFIED_STATUS.LOCK :
+									isRewardAvailableState	? SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE :
+									isCompleted				? SC.Ui_styles.UNIFIED_STATUS.CHECK
+															: null")
+		(var statusText:str = "	isLocked				? 'IDS_NY_EVENT_CHRISTMAS_TREE_STATUS_LOCKED' :
+								isRewardAvailableState	? 'IDS_NY_EVENT_CHRISTMAS_TREE_STATUS_REWARD_AVAILABLE' :
+								isCompleted				? 'IDS_NY_EVENT_CHRISTMAS_TREE_STATUS_COMPLETED'
+														: null")
+	)
+
+	(style (width = 100%))
+
+	(element NewYearEventCardStatus
+		_type = "SC.Common.NY_EVENT_TYPE.CHRISTMAS_TREE"
+		_isShowLeftTimeCondition = "!isLocked && !isCompleted && !isRewardAvailableState"
+		_unifiedStatus = "unifiedStatus"
+		_statusText = "statusText"
+	)
+)
+
+(def element GiftCardStatus()
+	(scope
+		(macro PULL_EVENT_ACTIVITY_ENTITY "SC.Common.NY_EVENT_TYPE.GIFT") 
+		(macro PULL_EVENT_STATE "state") 
+
+		
+		(var unifiedStatus:str = "	isLocked || isMissed || isLockedByAccountLevel	? SC.Ui_styles.UNIFIED_STATUS.LOCK :
+									isRewardAvailable								? SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE :
+									isCompleted										? SC.Ui_styles.UNIFIED_STATUS.CHECK
+																					: null")
+		(var statusText:str = "	isLocked || isLockedByAccountLevel	? 'IDS_NY_EVENT_GIFT_STATUS_LOCKED' :
+								isMissed							? 'IDS_NY_EVENT_GIFT_STATUS_MISSED' :
+								isRewardAvailable					? 'IDS_NY_EVENT_GIFT_STATUS_REWARD_AVAILABLE' :
+								isCompleted							? 'IDS_NY_EVENT_GIFT_STATUS_COMPLETED'
+																	: null")
+	)
+
+	(style (width = 100%))
+
+	(element NewYearEventCardStatus
+		_type = "SC.Common.NY_EVENT_TYPE.GIFT"
+		_isShowLeftTimeCondition = "!isCompleted && !isRewardAvailable && !isMissed && !isLockedByAccountLevel"
+		_unifiedStatus = "unifiedStatus"
+		_statusText = "statusText"
+	)
+)
+
+(def element DockyardCardStatus ()
+	(scope
+		(macro PULL_EVENT_ACTIVITY_ENTITY "SC.Common.NY_EVENT_TYPE.DOCKYARD") 
+		(macro PULL_EVENT_STATE "state") 
+
+		
+		(var unifiedStatus:str = "	isRewardAvailable		? SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE :
+									isLockedByAccountLevel	? SC.Ui_styles.UNIFIED_STATUS.LOCK :
+									isCompleted				? SC.Ui_styles.UNIFIED_STATUS.CHECK
+															: null")
+		(var statusText:str = "	isRewardAvailable		? 'IDS_NY_EVENT_DOCKYARD_STATUS_REWARD_AVAILABLE' :
+								isLockedByAccountLevel	? 'IDS_NY_EVENT_DOCKYARD_STATUS_LOCKED' :
+								isCompleted				? 'IDS_NY_EVENT_DOCKYARD_STATUS_COMPLETED'
+														: null")
+	)
+
+	(style (width = 100%))
+
+	(element NewYearEventCardStatus
+		_type = "SC.Common.NY_EVENT_TYPE.DOCKYARD"
+		_isShowLeftTimeCondition = "!isCompleted && !isRewardAvailable && !isLockedByAccountLevel"
+		_unifiedStatus = "unifiedStatus"
+		_statusText = "statusText"
+	)
+)
