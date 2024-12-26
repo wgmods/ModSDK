@@ -1,0 +1,112 @@
+(def constant SHIP_TOKEN_DESCRIPTION_WIDTH 312)
+
+(def element ModalWindowShipToken () layout=true
+	(scope
+		(var accountSelfEntity:gfx = "$datahub.getSingleEntity(CC.accountSelf)")
+		(var accountNameComponent:gfx = "accountSelfEntity ? accountSelfEntity.accountName : null" (event "accountSelfEntity.evUpdated"))
+
+		(var playerName:str = "accountNameComponent ? accountNameComponent.name : null" (event "accountNameComponent.evChanged"))
+	)
+
+	(macro MODAL_WINDOW_INIT)
+
+	(class $Fullsize)
+	(style (align = "center"))
+
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(style (width = 100%) (align = "center"))
+
+		(block
+			(style
+				(position = "absolute")
+				(right = "19px")
+				(top = "50px")
+			)
+
+			(element ModalWindowCloseIcon)
+		)
+	)
+
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+
+		(class $FullsizeAbsolute)
+
+		(style
+			(paddingTop = "XLM") (paddingBottom = "XL")
+			(align = "center")
+		)
+
+		
+		(block
+			(style
+				(width = 100%)
+				(gap = "L")
+				(align = "center")
+			)
+
+			(block
+				(style
+					(width = "100%")
+					(align = "center")
+					(paddingLeft = "L") (paddingRight = "L")
+				)
+
+				(tf
+					(class $TextDefaultBold36NM)
+					(style
+						(alpha = "TA")
+						(textAlign = "center")
+						(marginBottom = "M")
+					)
+					(text = 'IDS_SUBST_SHIP_TOKEN_WINDOW_TITLE')
+				)
+
+				(tf
+					(class $TextDefaultBold36NM)
+					(style
+						(alpha = "TA")
+						(textAlign = "center")
+					)
+					(bind text "playerName + '!'")
+				)
+			)
+
+			(tf
+				(class $TextDefaultNM)
+				(style
+					(alpha = "TC")
+					(textAlign = "center")
+					(width = "SHIP_TOKEN_DESCRIPTION_WIDTH")
+				)
+				(text = "'IDS_SHIP_TOKEN_WINDOW_DESCRIPTION'")
+			)
+		)
+
+		
+		(block
+			(style
+				(position = "absolute") (bottom = 0)
+				(width = 100%)
+				(align = "center")
+			)
+
+			(element DefaultButton
+				_label = 'IDS_SHIP_TOKEN_WINDOW_BUTTON_LABEL'
+				_size = "SIZE.LARGE"
+				_focusIndex = 1
+				_defaultFocused = true
+				_isTransactionBtn = true
+				_width = 210
+				_methods = "[{	type:	'inputMapping.onAction',
+								name:	'navigateToEvent',
+								args:	{ eventType: SC.Common.NY_EVENT_TYPE.GIFT }}]"
+			)
+		)
+
+	)
+
+)

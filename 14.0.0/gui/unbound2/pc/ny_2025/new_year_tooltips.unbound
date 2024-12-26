@@ -1,0 +1,449 @@
+(def constant NY_MARKER_TOOLTIPS_BY_TYPE "{	'christmas_tree':	'NewYearChirstmasTreeTooltip',
+											'event_pass':		'NewYearEventPassTooltip',
+											'advent_calendar':	'NewYearAdventCalendarTooltip',
+											'gift': 			'NewYearGiftTooltip',
+											'ship':				'NewYearShipTooltip',
+											'dockyard':			'NewYearDockyardTooltip' }")
+
+
+
+(def macro GET_EVENT_ACTIVE_PERIOD(_entity:expression)
+	
+
+	
+	(var activePeriodComponent:gfx = "_entity ? _entity.newYearEventActivePeriod : null" (event "_entity.evUpdated"))
+
+	
+	(var startTime:number = "activePeriodComponent ? activePeriodComponent.startTime : null" (event "activePeriodComponent.evChanged"))
+	(var finishTime:number = "activePeriodComponent ? activePeriodComponent.endTime : null" (event "activePeriodComponent.evChanged"))
+
+	
+	(var isEventStarted:bool = "serverTime > startTime")
+	(var isEntityHasActivePeriod:bool = "startTime != null || finishTime != null")
+
+	
+	(var timeLeftTimeStamp:number = "isEventStarted	? finishTime
+													: startTime")
+
+	(var timeLeftSubstText:str = "isEventStarted	? tr('IDS_SUBST_NY_EVENT_ENDS_IN_TIME')
+													: tr('IDS_SUBST_NY_EVENT_WILL_BE_AVAILABLE_IN_TIME')")
+)
+
+(def element NewYearTooltipSectionStatusLine (	_eventState:number, _lockedText:str = null, _rewardAvailableText:str = null,
+												_completedText:str = null, _missedText:str = null, _lockedByAccountLevelText:str = null,
+												_lockedByConnectionText:str = null)
+	(scope
+		(macro PULL_EVENT_STATE "_eventState") 
+
+		(var isLockedState:bool = "isLocked || isLockedByAccountLevel || isMissed")
+
+		(var statusInfoText:str = "	isLocked				? _lockedText :
+									isLockedByAccountLevel	? _lockedByAccountLevelText :
+									isLockedByConnection	? _lockedByConnectionText :
+									isMissed				? _missedText :
+									isRewardAvailable		? _rewardAvailableText :
+									isCompleted				? _completedText
+															: null")
+
+		(var statusInfoStatus:str = "	isLockedByConnection	? SC.Ui_styles.UNIFIED_STATUS.WARNING :
+										isLockedState			? SC.Ui_styles.UNIFIED_STATUS.LOCK :
+										isRewardAvailable		? SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE :
+										isCompleted				? SC.Ui_styles.UNIFIED_STATUS.CHECK
+																: null")
+	)
+
+	(bind visible "statusInfoStatus != null && statusInfoText != null")
+
+	(style (width = 100%))
+
+	(element TooltipSystemStatusLine
+		_text = "statusInfoText"
+		_unifiedStatus = "statusInfoStatus"
+	)
+
+	(element TooltipSystemHorizontalDivider)
+)
+
+(def element NewYearTooltipSectionTimeLeft(_eventEntity:gfx)
+	(scope
+		(macro SERVER_TIME_SCOPE)
+		(macro GET_EVENT_ACTIVE_PERIOD "_eventEntity") 
+	)
+
+	(bind visible "isEntityHasActivePeriod")
+
+	(style (width = 100%))
+
+	(element TooltipSystemTimeLeftStatusLine
+		_timeLeftTimeStamp = "timeLeftTimeStamp"
+		_substTextIDS = "timeLeftSubstText"
+		_isChangeStatusWhenTimeRunningOut = "isEventStarted"
+	)
+
+	(element TooltipSystemHorizontalDivider)
+)
+
+
+
+
+(def element NewYearChirstmasTreeTooltip (_eventEntity:gfx, _eventState:number = 0, _isHideDesription:bool = false) layout=true dispatch_size_change=true
+	(scope
+		(macro PULL_EVENT_STATE "_eventState") 
+	)
+
+	(style (hitTest = "false") (width = "320px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_NY_EVENT_CHRISTMAS_TREE_TITLE'
+			_unifiedStatus = "isRewardAvailable || isRewardAvailableAndCompleted	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+																					: SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		
+		(block
+			(bind visible "!isRewardAvailableAndCompleted")
+
+			(style (width = 100%))
+
+			(element NewYearTooltipSectionStatusLine
+				_eventState = "_eventState"
+				_lockedText = 'IDS_NY_EVENT_CHRISTMAS_TREE_STATUS_LOCKED'
+				_rewardAvailableText = 'IDS_NY_EVENT_CHRISTMAS_TREE_STATUS_REWARD_AVAILABLE'
+				_completedText = 'IDS_NY_EVENT_CHRISTMAS_TREE_STATUS_COMPLETED'
+			)
+		)
+
+		
+		(block
+			(bind visible "isRewardAvailableAndCompleted")
+			(style (width = 100%))
+
+			
+
+			(element TooltipSystemStatusLine
+				_text = 'IDS_NY_EVENT_CHRISTMAS_TREE_STATUS_REWARD_AVAILABLE'
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE"
+			)
+
+			(element TooltipSystemHorizontalDivider)
+
+			
+
+			(element TooltipSystemStatusLine
+				_text = 'IDS_NY_EVENT_CHRISTMAS_TREE_STATUS_COMPLETED'
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+			)
+
+			(element TooltipSystemHorizontalDivider)
+		)
+
+
+		
+		(controller $Instance renderer='NewYearTooltipSectionTimeLeft'
+			(bind enabled "!isCompleted && !isRewardAvailableAndCompleted")
+			(args _eventEntity = "_eventEntity")
+		)
+
+		
+		(tf
+			(bind visible "!_isHideDesription")
+			(class $TextDefaultNM)
+			(style (alpha = "TC") (width = 100%))
+			(bind text "isCompleted || isRewardAvailableAndCompleted	? 'IDS_NY_EVENT_CHRISTMAS_TREE_DESCRIPTION_COMPLETED'
+																		: 'IDS_NY_EVENT_CHRISTMAS_TREE_DESCRIPTION'")
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "!_isHideDesription")
+		)
+
+		
+		(block
+			(bind visible "!isCompleted && !isRewardAvailableAndCompleted")
+			(style (width = 100%))
+
+			(element ChristmasTreeDailyProgressBar)
+
+			(controller $Instance renderer='TooltipSystemHorizontalDivider'
+				(bind enabled "!isLocked")
+			)
+		)
+
+		
+		(controller $Instance renderer='TooltipSystemStatusLine'
+			(bind enabled "!isLocked")
+			(args
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+				_text = 'IDS_NY_EVENT_MOUSE_INSTRUCTION_TEXT'
+			)
+		)
+	)
+)
+
+(def element NewYearEventPassTooltip(_eventEntity:gfx, _eventState:number = 0, _isHideDesription:bool = false) layout=true dispatch_size_change=true
+	(scope
+		(macro PULL_EVENT_STATE "_eventState") 
+	)
+
+	(style (hitTest = "false") (width = "320px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_NY_EVENT_EVENT_PASS_TITLE'
+			_unifiedStatus = "	isRewardAvailable		? SC.Ui_styles.UNIFIED_STATUS.CHECK
+														: SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		
+		(element NewYearTooltipSectionStatusLine
+			_eventState = "_eventState"
+			_rewardAvailableText = 'IDS_NY_EVENT_EVENT_PASS_STATUS_REWARD_AVAILABLE'
+			_lockedByAccountLevelText = 'IDS_NY_EVENT_EVENT_PASS_STATUS_LOCKED'
+		)
+
+		
+		(controller $Instance renderer='NewYearTooltipSectionTimeLeft'
+			(bind enabled "!isCompleted")
+			(args _eventEntity = "_eventEntity")
+		)
+
+		
+		(tf
+			(bind visible "!_isHideDesription")
+			(class $TextDefaultNM)
+			(style (alpha = "TC") (width = 100%))
+			(text = 'IDS_NY_EVENT_EVENT_PASS_DESCRIPTION')
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "!isLockedByAccountLevel && !_isHideDesription")
+		)
+
+		
+		(controller $Instance renderer='TooltipSystemStatusLine'
+			(bind enabled "!isLockedByAccountLevel")
+			(args
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+				_text = 'IDS_NY_EVENT_MOUSE_INSTRUCTION_TEXT'
+			)
+		)
+	)
+)
+
+(def element NewYearAdventCalendarTooltip(_eventEntity:gfx, _eventState:number = 0, _isHideDesription:bool = false) layout=true dispatch_size_change=true
+	(scope
+		(macro PULL_EVENT_STATE "_eventState") 
+
+		(var isLockedState:bool = "isLocked || isLockedByConnection")
+	)
+
+	(style (hitTest = "false") (width = "320px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_NY_EVENT_ADVENT_CALENDAR_TITLE'
+			_unifiedStatus = "isRewardAvailable	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+												: SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		
+		(element NewYearTooltipSectionStatusLine
+			_eventState = "_eventState"
+			_lockedByConnectionText = 'IDS_NY_EVENT_ADVENT_CALENDAR_STATUS_LOCK'
+			_rewardAvailableText = 'IDS_NY_EVENT_ADVENT_CALENDAR_STATUS_REWARD_AVAILABLE'
+			_completedText = 'IDS_NY_EVENT_ADVENT_CALENDAR_STATUS_COMPLETED'
+		)
+
+		
+		(controller $Instance renderer='NewYearTooltipSectionTimeLeft'
+			(bind enabled "!isCompleted")
+			(args _eventEntity = "_eventEntity")
+		)
+
+		
+		(tf
+			(bind visible "!_isHideDesription")
+			(class $TextDefaultNM)
+			(style (alpha = "TC") (width = 100%))
+			(bind text "isCompleted	? 'IDS_NY_EVENT_ADVENT_CALENDAR_DESCRIPTION_COMPLETED'
+									: 'IDS_NY_EVENT_ADVENT_CALENDAR_DESCRIPTION'")
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "!isLockedState && !_isHideDesription")
+		)
+
+		
+		(controller $Instance renderer='TooltipSystemStatusLine'
+			(bind enabled "!isLockedState")
+			(args
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+				_text = 'IDS_NY_EVENT_MOUSE_INSTRUCTION_TEXT'
+			)
+		)
+	)
+)
+
+(def element NewYearShipTooltip(_eventEntity:gfx, _eventState:number = 0, _isHideDesription:bool = false) layout=true dispatch_size_change=true
+	(style (hitTest = "false") (width = "320px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_NY_EVENT_SHIP_TITLE'
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+
+		
+		(tf
+			(class $TextDefaultNM)
+			(style (alpha = "TC") (width = 100%))
+			(bind text "'IDS_NY_EVENT_SHIP_DESCRIPTION'")
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+			_text = 'IDS_NY_EVENT_MOUSE_INSTRUCTION_TEXT'
+		)
+	)
+)
+
+(def element NewYearGiftTooltip(_eventEntity:gfx, _eventState:number = 0, _isHideDesription:bool = false) layout=true dispatch_size_change=true
+	(scope
+		(macro PULL_EVENT_STATE "_eventState") 
+	)
+
+	(style (hitTest = "false") (width = "320px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_NY_EVENT_GIFT_TITLE'
+			_unifiedStatus = "isRewardAvailable	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+												: SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		
+		(element NewYearTooltipSectionStatusLine
+			_eventState = "_eventState"
+			_lockedByAccountLevelText = "'IDS_NY_EVENT_GIFT_STATUS_LOCKED'"
+			_missedText = "'IDS_NY_EVENT_GIFT_STATUS_MISSED'"
+			_rewardAvailableText = 'IDS_NY_EVENT_GIFT_STATUS_REWARD_AVAILABLE'
+			_completedText = 'IDS_NY_EVENT_GIFT_STATUS_COMPLETED'
+		)
+
+		
+		(controller $Instance renderer='NewYearTooltipSectionTimeLeft'
+			(bind enabled "!isCompleted && !isMissed")
+			(args _eventEntity = "_eventEntity")
+		)
+
+		
+		(tf
+			(bind visible "!_isHideDesription")
+			(class $TextDefaultNM)
+			(style (alpha = "TC") (width = 100%))
+			(bind text "isCompleted	? 'IDS_NY_EVENT_GIFT_DESCRIPTION_COMPLETED' :
+						isMissed	? 'IDS_NY_EVENT_GIFT_DESCRIPTION_MISSED'
+									: 'IDS_NY_EVENT_GIFT_DESCRIPTION'")
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "(isRewardAvailable || isCompleted) && !_isHideDesription")
+		)
+
+		
+		(controller $Instance renderer='TooltipSystemStatusLine'
+			(bind enabled "isRewardAvailable || isCompleted")
+			(args
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+				_text = 'IDS_NY_EVENT_MOUSE_INSTRUCTION_TEXT'
+			)
+		)
+	)
+)
+
+(def element NewYearDockyardTooltip(_eventEntity:gfx, _eventState:number = 0, _isHideDesription:bool = false)
+	(scope
+		(macro PULL_EVENT_STATE "_eventState") 
+	)
+
+	(style (hitTest = "false") (width = "320px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_NY_EVENT_DOCKYARD_TITLE'
+			_unifiedStatus = "isRewardAvailable	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+												: SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		
+		(element NewYearTooltipSectionStatusLine
+			_eventState = "_eventState"
+			_rewardAvailableText = 'IDS_NY_EVENT_DOCKYARD_STATUS_REWARD_AVAILABLE'
+			_completedText = 'IDS_NY_EVENT_DOCKYARD_STATUS_COMPLETED'
+			_lockedByAccountLevelText = 'IDS_NY_EVENT_DOCKYARD_STATUS_LOCKED'
+		)
+
+		
+		(controller $Instance renderer='NewYearTooltipSectionTimeLeft'
+			(bind enabled "!isCompleted")
+			(args _eventEntity = "_eventEntity")
+		)
+
+		
+		(tf
+			(bind visible "!_isHideDesription")
+			(class $TextDefaultNM)
+			(style (alpha = "TC") (width = 100%))
+			(bind text "isCompleted	? 'IDS_NY_EVENT_DOCKYARD_DESCRIPTION_COMPLETED'
+									: 'IDS_NY_EVENT_DOCKYARD_DESCRIPTION'")
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "!isLockedByAccountLevel && !_isHideDesription")
+		)
+
+		
+		(controller $Instance renderer='TooltipSystemStatusLine'
+			(bind enabled "!isLockedByAccountLevel")
+			(args
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+				_text = 'IDS_NY_EVENT_MOUSE_INSTRUCTION_TEXT'
+			)
+		)
+	)
+)
