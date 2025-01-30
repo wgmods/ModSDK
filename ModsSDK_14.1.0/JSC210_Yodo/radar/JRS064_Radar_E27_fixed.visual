@@ -1,0 +1,133 @@
+<JRS064_Radar_E27_fixed.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	E27_Antrenna	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	E27_Antrenna_net	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0007 -0.0467 -0.0467	</min>
+		<max>	0.0273 0.0467 0.0467	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	E27_AntrennaShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	E27_Antrenna	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC210_Yodo/radar/JRS064_Radar_E27_fixed.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	E27_Antrenna_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	E27_Antrenna	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC210_Yodo/radar/JRS064_Radar_E27_fixed.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	E27_Antrenna_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	E27_Antrenna	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC210_Yodo/radar/JRS064_Radar_E27_fixed.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	E27_Antrenna_netShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	E27_Antrenna_net	</node>
+			</nodes>
+			<material>
+				<identifier>	GRID_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC210_Yodo/radar/C005_Grid_2_alpha.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	E27_Antrenna_net_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	E27_Antrenna_net	</node>
+			</nodes>
+			<material>
+				<identifier>	GRID_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC210_Yodo/radar/C005_Grid_2_alpha.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	E27_Antrenna_net_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	E27_Antrenna_net	</node>
+			</nodes>
+			<material>
+				<identifier>	GRID_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC210_Yodo/radar/C005_Grid_2_alpha.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	5.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	E27_AntrennaShape	</renderSet>
+				<renderSet>	E27_Antrenna_netShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	15.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	E27_Antrenna_lod1Shape	</renderSet>
+				<renderSet>	E27_Antrenna_net_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	35.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	E27_Antrenna_lod2Shape	</renderSet>
+				<renderSet>	E27_Antrenna_net_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JRS064_Radar_E27_fixed.visual>

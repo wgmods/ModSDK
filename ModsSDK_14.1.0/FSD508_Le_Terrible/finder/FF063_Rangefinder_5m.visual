@@ -1,0 +1,163 @@
+<FF063_Rangefinder_5m.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	finder	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Rotate_Y	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1771 -0.0013 -0.0816	</min>
+		<max>	0.1771 0.2719 0.0817	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	Rotate_YShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Rotate_Y	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD508_Le_Terrible/finder/FF063_Rangefinders_5m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Rotate_Y_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Rotate_Y	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD508_Le_Terrible/finder/FF063_Rangefinders_5m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Rotate_Y_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Rotate_Y	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD508_Le_Terrible/finder/FF063_Rangefinders_5m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Rotate_Y_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Rotate_Y	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD508_Le_Terrible/finder/FF063_Rangefinders_5m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	finderShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	finder	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD508_Le_Terrible/finder/FF063_Rangefinders_5m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	finder_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	finder	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD508_Le_Terrible/finder/FF063_Rangefinders_5m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	finder_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	finder	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD508_Le_Terrible/finder/FF063_Rangefinders_5m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	finder_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	finder	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD508_Le_Terrible/finder/FF063_Rangefinders_5m.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Rotate_YShape	</renderSet>
+				<renderSet>	finderShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	12.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Rotate_Y_lod1Shape	</renderSet>
+				<renderSet>	finder_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	20.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Rotate_Y_lod2Shape	</renderSet>
+				<renderSet>	finder_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	200.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Rotate_Y_lod3Shape	</renderSet>
+				<renderSet>	finder_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</FF063_Rangefinder_5m.visual>

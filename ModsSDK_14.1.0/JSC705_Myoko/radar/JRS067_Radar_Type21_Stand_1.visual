@@ -1,0 +1,266 @@
+<JRS067_Radar_Type21_Stand_1.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	RadarStand	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Grid	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	Radar	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+			<node>
+				<identifier>	Root	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Root_BlendBone	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 -1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	Rotate_Y	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0333 0.0000 1.0000	</row3>
+					</transform>
+					<node>
+						<identifier>	Rotate_Y_BlendBone	</identifier>
+						<transform>
+							<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+							<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+							<row2>	0.0000 0.0000 -1.0000 0.0000	</row2>
+							<row3>	0.0000 -0.0333 0.0000 1.0000	</row3>
+						</transform>
+					</node>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1010 0.0000 -0.0376	</min>
+		<max>	0.1010 0.1716 0.0479	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	GridShapem	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	GRID_Misc_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC705_Myoko/radar/C010_Grid_8_alpha_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Grid_lod1Shapem	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	GRID_Misc_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC705_Myoko/radar/C010_Grid_8_alpha_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Grid_lod2Shapem	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	GRID_Misc_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC705_Myoko/radar/C010_Grid_8_alpha_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Grid_lod3Shapem	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	GRID_Misc_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC705_Myoko/radar/C010_Grid_8_alpha_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RadarShape	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Misc_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC705_Myoko/radar/JRS002_Radar_Type_21_2_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RadarStandShape	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC705_Myoko/radar/JRS067_Radar_Type21_Stand_1_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RadarStand_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC705_Myoko/radar/JRS067_Radar_Type21_Stand_1_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RadarStand_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC705_Myoko/radar/JRS067_Radar_Type21_Stand_1_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RadarStand_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC705_Myoko/radar/JRS067_Radar_Type21_Stand_1_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Radar_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Misc_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC705_Myoko/radar/JRS002_Radar_Type_21_2_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Radar_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Misc_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC705_Myoko/radar/JRS002_Radar_Type_21_2_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Radar_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Misc_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC705_Myoko/radar/JRS002_Radar_Type_21_2_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	4.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	GridShapem	</renderSet>
+				<renderSet>	RadarShape	</renderSet>
+				<renderSet>	RadarStandShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Grid_lod1Shapem	</renderSet>
+				<renderSet>	RadarStand_lod1Shape	</renderSet>
+				<renderSet>	Radar_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Grid_lod2Shapem	</renderSet>
+				<renderSet>	RadarStand_lod2Shape	</renderSet>
+				<renderSet>	Radar_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	70.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Grid_lod3Shapem	</renderSet>
+				<renderSet>	RadarStand_lod3Shape	</renderSet>
+				<renderSet>	Radar_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JRS067_Radar_Type21_Stand_1.visual>

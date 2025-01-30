@@ -1,0 +1,124 @@
+<AGA224_20mm_Oerlikon_MK4_twin.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	AGA224_20mm_Oerlikon_MK4_twin	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_gunFire1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.8660 -0.5000 0.0000	</row1>
+						<row2>	0.0000 0.5000 0.8660 0.0000	</row2>
+						<row3>	0.0061 0.1418 0.0767 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire2	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.8660 -0.5000 0.0000	</row1>
+						<row2>	0.0000 0.5000 0.8660 0.0000	</row2>
+						<row3>	-0.0066 0.1418 0.0767 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0733 0.0000 -0.0706	</min>
+		<max>	0.0728 0.2329 0.1677	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	AGA224_20mm_Oerlikon_MK4_twinShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	AGA224_20mm_Oerlikon_MK4_twin	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB527_West_Virginia_1944/gun/AGA224_20mm_Oerlikon_MK4_twin.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	AGA224_20mm_Oerlikon_MK4_twin_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	AGA224_20mm_Oerlikon_MK4_twin	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB527_West_Virginia_1944/gun/AGA224_20mm_Oerlikon_MK4_twin.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	AGA224_20mm_Oerlikon_MK4_twin_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	AGA224_20mm_Oerlikon_MK4_twin	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB527_West_Virginia_1944/gun/AGA224_20mm_Oerlikon_MK4_twin.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	AGA224_20mm_Oerlikon_MK4_twin_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	AGA224_20mm_Oerlikon_MK4_twin	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB527_West_Virginia_1944/gun/AGA224_20mm_Oerlikon_MK4_twin.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	4.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	AGA224_20mm_Oerlikon_MK4_twinShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	AGA224_20mm_Oerlikon_MK4_twin_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	30.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	AGA224_20mm_Oerlikon_MK4_twin_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	130.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	AGA224_20mm_Oerlikon_MK4_twin_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</AGA224_20mm_Oerlikon_MK4_twin.visual>

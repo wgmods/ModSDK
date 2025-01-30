@@ -1,0 +1,242 @@
+(def constant NY_MARKER_REGION_SIZE 64)
+(def constant NY_MARKER_SIZE 40)
+(def constant NY_MARKER_ICON_SIZE 24)
+
+(def constant REGION_BACKGROUND_COLOR 0xFFFFFFFF)
+
+(def constant BACKGROUND_EFFECT_COLOR_DEFAULT 0x10000000)
+(def constant BACKGROUND_EFFECT_COLOR_HOVER 0x10FFFFFF)
+
+(def macro PULL_EVENT_STATE (_markerState:expression)
+	(var isIdle:bool =							"_markerState == SC.Common.NY_MARKER_STATE.IDLE")
+	(var isLocked:bool =						"_markerState == SC.Common.NY_MARKER_STATE.LOCKED")
+	(var isMissed:bool =						"_markerState == SC.Common.NY_MARKER_STATE.MISSED")
+	(var isCompleted:bool =						"_markerState == SC.Common.NY_MARKER_STATE.COMPLETED")
+	(var isRewardAvailable:bool =				"_markerState == SC.Common.NY_MARKER_STATE.REWARD_AVAILABLE")
+	(var isLockedByAccountLevel:bool =			"_markerState == SC.Common.NY_MARKER_STATE.LOCKED_ACCOUNT_LEVEL")
+	(var isLockedByConnection:bool =			"_markerState == SC.Common.NY_MARKER_STATE.LOCKED_CONNECTION_LOST")
+	(var isRewardAvailableAndCompleted:bool =	"_markerState == SC.Common.NY_MARKER_STATE.REWARD_AVAILABLE_COMPLETED")
+)
+
+(def element NewYearPortMarkersContainer()
+	(element PortMarkersContainer
+		_interactiveComponentClass = "CC.interactiveNewYearMarker"
+		_interactiveRenderer = "'InteractiveObjectNewYearRoutePortMarker'"
+	)
+)
+
+(def element InteractiveObjectNewYearRoutePortMarker(_markerEntity:gfx, _ioState:number) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'IO_NewYearRoutePortMarker_'")
+		(macro PULL_INTERACTIVE_OBJECT_STATES "_ioState")
+
+		
+		(var newYearMarkerComponent:gfx = "_markerEntity ? _markerEntity.interactiveNewYearMarker : null" (event "_markerEntity.evUpdated"))
+		(var markerType:str = 		"newYearMarkerComponent ? newYearMarkerComponent.type : null" 	(event "newYearMarkerComponent.evChanged"))
+
+		
+		(var newYearEventEntity:gfx = "$datahub.getPrimaryEntity(CC.newYearEvent, markerType)" (event "newYearMarkerComponent.evChanged"))
+		(var newYearEventComponent:gfx = "newYearEventEntity ? newYearEventEntity.newYearEvent : null" (event "newYearEventEntity.evChanged"))
+		(var markerState:number =	"newYearEventComponent ? newYearEventComponent.state : SC.Common.NY_MARKER_STATE.IDLE" (event "newYearEventComponent.evChanged"))
+
+		(macro PULL_EVENT_STATE "markerState")
+		(var isLockedState:bool = "isLocked || isLockedByAccountLevel")
+		(var shipTokenMarkerState:str = "markerType == SC.Common.NY_EVENT_TYPE.GIFT	? (isLockedState	? '_locked'
+																										: '_unlocked')
+																					: ''")
+		(var soundSet:str = "isIn(markerType, SC.Common.NY_EVENT_TYPE.SOUND_SET_RANGE)	? SC.Common.NY_EVENT_TYPE.SOUND_SETS[SC.Common.NY_EVENT_TYPE.VALUE_TO_NAME[markerType]] + shipTokenMarkerState
+																						: 'button_default'")
+	)
+
+	(style
+		(height = "NY_MARKER_REGION_SIZE") (width = "NY_MARKER_REGION_SIZE")
+	)
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(alpha = 0.001)
+			(backgroundColor = "REGION_BACKGROUND_COLOR")
+		)
+	)
+
+	
+	(controller $Tooltip
+		(bind enabled "NY_MARKER_TOOLTIPS_BY_TYPE[markerType]")
+		(bind renderer "NY_MARKER_TOOLTIPS_BY_TYPE[markerType]")
+
+		(args
+			_eventEntity = "newYearEventEntity"
+			_eventState = "markerState"
+		)
+
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	
+	(element NewYearRoutePortMarkerView
+		_type = "markerType"
+		_markerState = "markerState"
+		_isRollOver = "isRollOver || IO_NewYearRoutePortMarker_rollOver"
+		_isMouseDown = "IO_NewYearRoutePortMarker_mouseDown"
+	)
+
+
+	(macro MOUSE_HANDLER
+		_prefix = "'IO_NewYearRoutePortMarker_'"
+		_soundSet = "soundSet"
+	)
+)
+
+(def element NewYearRoutePortMarkerView(_type:str, _markerState:number = 0,
+										_isRollOver:bool = false, _isMouseDown:bool = false) layout=true
+	(scope
+		(macro GET_PREF 'isBlurOptionEnabled' "'graphics.GUI.blur'")
+		(macro GET_PREF 'isUIContrastOptionEnabled' "'graphics.GUI.contrast'")
+
+		(var isHighContrast:bool = "isUIContrastOptionEnabled || !isBlurOptionEnabled")
+
+		(macro PULL_EVENT_STATE "_markerState") 
+
+		
+		(var isLockedState:bool = "isLocked || isLockedByAccountLevel || isLockedByConnection || isMissed")
+		(var isRewardAvailableState:bool = "isRewardAvailable || isRewardAvailableAndCompleted")
+
+		
+		(var strokeAlpha:number = "	isLockedState			? 0.24 :
+									isRewardAvailableState	? 0
+													 		: 0.48")
+
+		
+		(var iconAlpha:number = "	isLockedState	? 0.5
+													: 1")
+		(var iconImage:str = "'url:../port_markers/ny_2025/icons/' + _type + (isRewardAvailableState ? '_has_reward' : '') + '.png'")
+	)
+
+	(style
+		(width = "NY_MARKER_REGION_SIZE") (height = "NY_MARKER_REGION_SIZE")
+		(align = "center|middle")
+	)
+
+	
+	(block
+		(style
+			(width = "NY_MARKER_SIZE") (height = "NY_MARKER_SIZE")
+			(align = "middle|center")
+		)
+
+		
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(marginLeft = 50%) (marginTop = 50%)
+				(pivotX = 50%) (pivotY = 50%)
+				(rotation = -45)
+			)
+
+			(controller $Animation
+				(bindcall play  duration="PORT_MARKER_ANIMATION_DURATION"
+								action="kill"
+								from = "{rotation: -45}"
+								to = "{rotation: 0}"
+								watch=false
+								reverse="!_isRollOver"
+								(bind trigger "_isRollOver")
+				)
+			)
+
+			
+			(block
+				(class $FullsizeAbsolute)
+
+				(element DeclareBlurLayer)
+				(element BlurMap)
+
+				(block
+					(class $FullsizeAbsolute)
+					(bind visible "!isHighContrast")
+
+					(controller $Animation
+						(bindcall play  duration="PORT_MARKER_ANIMATION_DURATION"
+										action="kill"
+										from = "{backgroundColor: BACKGROUND_EFFECT_COLOR_DEFAULT}"
+										to = "{backgroundColor: BACKGROUND_EFFECT_COLOR_HOVER}"
+										watch=false
+										reverse="!_isRollOver"
+										(bind trigger "_isRollOver")
+						)
+					)
+
+					(block
+						(bind visible "!isRewardAvailableState")
+						(class $FullsizeAbsolute)
+						(style (backgroundColor = "BACKGROUND_EFFECT_COLOR_DEFAULT"))
+					)
+				)
+
+				(block
+					(bind visible "isHighContrast")
+					(class $FullsizeAbsolute)
+					(style
+						(backgroundImage = "'url:../service_kit/panel_backgrounds/infotip_panel.png'")
+						(scale9grid = 3)
+					)
+				)
+			)
+
+			
+			(block
+				(class $FullsizeAbsolute)
+				(style
+					(bind alpha "strokeAlpha")
+
+					(backgroundSize = "fill")
+					(backgroundImage = "'url:../service_kit/frames/one_pixel_frame.png'")
+					(scale9grid = 2)
+				)
+			)
+
+			
+			(block
+				(bind visible "isRewardAvailableState")
+				(style
+					(position = "absolute")
+
+					(bind width "NY_MARKER_SIZE + M") (bind height "NY_MARKER_SIZE + M")
+					(left = "-S") (top = "-S")
+
+					(backgroundSize = "fill")
+					(backgroundImage = "'url:../port_markers/ny_2025/stroke_effect.png'")
+				)
+			)
+
+			
+			(block
+				(bind visible "isRewardAvailableState")
+				(style
+					(position = "absolute")
+					(hitTest = false)
+
+					(bind width "NY_MARKER_REGION_SIZE") (bind height "NY_MARKER_REGION_SIZE")
+					(left = "-SXS") (top = "-SXS")
+
+					(backgroundSize = "fill")
+					(backgroundImage = "'url:../ny_2025/port_markers/glow_effect.png'")
+				)
+			)
+		)
+
+		
+		(block
+			(style
+				(bind width "NY_MARKER_ICON_SIZE") (bind height "NY_MARKER_ICON_SIZE")
+
+				(bind alpha "iconAlpha")
+
+				(backgroundSize = "fill")
+				(bind backgroundImage "iconImage")
+			)
+		)
+	)
+)

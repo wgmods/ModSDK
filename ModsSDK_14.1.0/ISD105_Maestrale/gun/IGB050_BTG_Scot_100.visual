@@ -1,0 +1,115 @@
+<IGB050_BTG_Scot_100.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	IGB050_BTG_Scot_100	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_gunFire1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.7071 -0.7071 0.0000	</row1>
+						<row2>	0.0000 0.7071 0.7071 0.0000	</row2>
+						<row3>	0.0000 0.0721 0.0274 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0667 -0.0222 -0.0669	</min>
+		<max>	0.0667 0.1664 0.1216	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	IGB050_BTG_Scot_100Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	IGB050_BTG_Scot_100	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD105_Maestrale/gun/IGB050_BTG_Scot_100.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	IGB050_BTG_Scot_100_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	IGB050_BTG_Scot_100	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD105_Maestrale/gun/IGB050_BTG_Scot_100.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	IGB050_BTG_Scot_100_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	IGB050_BTG_Scot_100	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD105_Maestrale/gun/IGB050_BTG_Scot_100.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	IGB050_BTG_Scot_100_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	IGB050_BTG_Scot_100	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD105_Maestrale/gun/IGB050_BTG_Scot_100.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	IGB050_BTG_Scot_100Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	12.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	IGB050_BTG_Scot_100_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	20.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	IGB050_BTG_Scot_100_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	80.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	IGB050_BTG_Scot_100_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</IGB050_BTG_Scot_100.visual>

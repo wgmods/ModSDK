@@ -1,0 +1,121 @@
+(def constant PORT_MARKER_TEXT_COLOR 0xFFF5F8FF)
+(def constant PORT_MARKER_ANIMATION_DURATION 0.07)
+
+(def constant PORT_MARKER_WIDTH "60")
+(def constant PORT_MARKER_HEIGHT "60")
+
+(def macro PULL_INTERACTIVE_OBJECT_STATES(_ioState:expression)
+	(var isRollOver:bool = "_ioState == SC.Common.INTERACTIVE_OBJECT_STATE.HOVERED")
+	(var isReleased:bool = "_ioState == SC.Common.INTERACTIVE_OBJECT_STATE.RELEASED")
+	(var isSelected:bool = "_ioState == SC.Common.INTERACTIVE_OBJECT_STATE.SELECTED")
+	(var isBlocked:bool = "_ioState == SC.Common.INTERACTIVE_OBJECT_STATE.BLOCKED")
+)
+
+(def element PortMarkersContainer (_interactiveComponentClass:number, _interactiveRenderer:str)
+	(scope
+		(macro STAGE_SIZE)
+
+		(var interactiveObjectsCollection:gfx = "$datahub.getCollection(_interactiveComponentClass)")
+		(var interactiveObjects:gfx = "interactiveObjectsCollection ? interactiveObjectsCollection.items : []"	(event "interactiveObjectsCollection.evAdded")
+																												(event "interactiveObjectsCollection.evRemoved"))
+	)
+
+	(style
+		(position = "absolute")
+		(width = "stageWidth")
+		(height = "stageHeight")
+	)
+
+	(controller $Repeat renderer='PortMarkerBase' layout=true
+		(bind count "interactiveObjects.length")
+
+		(args
+			_markerEntity = "interactiveObjects[$index]"
+			_markerRenderer = "_interactiveRenderer"
+		)
+	)
+)
+
+
+(def element PortMarkerBase (_markerEntity:gfx, _markerRenderer:str)
+	(scope
+		(event evMarkerUpdate)
+
+		(macro MOUSE_HANDLER_SCOPE
+			_prefix = "'portMarker_'"
+		)
+
+		(var screenPosition:gfx = "_markerEntity ? _markerEntity.screenPosition : null" (event "_markerEntity.evAdded") (event "_markerEntity.evRemoved"))
+		(var posX:number = "screenPosition ? screenPosition.position.x : 0" (event "evMarkerUpdate"))
+		(var posY:number = "screenPosition ? screenPosition.position.y : 0" (event "evMarkerUpdate"))
+
+		(var interactiveObjectComponent:gfx = "_markerEntity ? _markerEntity.interactiveObject : null" (event "_markerEntity.evAdded") (event "_markerEntity.evRemoved"))
+		(var interactiveObjectGuid:str = "interactiveObjectComponent ? interactiveObjectComponent.guid : null")
+		(var interactiveObjectState:str = "interactiveObjectComponent ? interactiveObjectComponent.state : null" (event "interactiveObjectComponent.evStateChanged"))
+		(var isLocked:bool = "interactiveObjectComponent ? interactiveObjectComponent.isLocked : null" (event "interactiveObjectComponent.evIsLockedChanged"))
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER
+		_prefix = "'portMarker_'"
+	)
+
+	(bindcall externalCall
+		"'inputMapping.onAction'" "[!isLocked ? 'rollOverIO' : '', {guid: interactiveObjectGuid}]"
+		init=false watch=false
+		(event "portMarker_evRollOver")
+	)
+
+	(bindcall externalCall
+		"'inputMapping.onAction'" "[!isLocked ? 'rollOutIO' : '', {guid: interactiveObjectGuid}]"
+		init=false watch=false
+		(event "portMarker_evRollOut")
+	)
+
+	(bindcall externalCall
+		"'inputMapping.onAction'" "[!isLocked ? 'mouseClickIO' : '', {guid: interactiveObjectGuid}]"
+		init=false watch=false
+		(event "portMarker_evClicked")
+	)
+
+	(dispatch evMarkerUpdate args={} (event "evEnterFrame"))
+
+	(style
+		(pivotX = 50%)
+		(pivotY = 100%)
+		(bind left "posX")
+		(bind top "posY")
+		(position = "absolute")
+		(align = "center|bottom")
+	)
+
+	
+	(controller $Instance
+		(bind renderer "_markerRenderer")
+		(args
+			_ioState = "interactiveObjectState"
+			_markerEntity = "_markerEntity"
+		)
+	)
+)
+
+(def element PortMarkersContainerInset()
+	(scope
+		(macro PULL_PORT_INFO "'current'" "'current'") 
+		(macro PULL_PORT_INFO "'newYear'" "'visible.newYearPort'") 
+		(macro PULL_PORT_INFO "'starTrek'" "'visible.starTrekPort'") 
+
+		(macro PULL_ROUTE "SC.Ui_windows.ROUTE.COLLECTION_PREVIEW" "'isOnCollectionPreviewInset'")
+
+		(var containerVariantRenderer:str = "	currentPortId == newYearPortId	? 'NewYearPortMarkersContainer' :
+												currentPortId == starTrekPortId	? isOnCollectionPreviewInset	? 'STCollectionPortMarkersContainer'
+																												: 'STRoutePortMarkersContainer'
+																				: ''")
+	)
+
+	(class $FullsizeAbsolute)
+
+	(controller $Instance
+		(bind enabled "containerVariantRenderer != ''")
+		(bind renderer "containerVariantRenderer")
+	)
+)

@@ -1,0 +1,155 @@
+<AGT064_18in_Mk5_Torpedo_Tube.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	AGT064_18in_Mk5_TA	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+			<node>
+				<identifier>	Root	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Root_BlendBone	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 -1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	Rotate_Y	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0184 0.0000 1.0000	</row3>
+					</transform>
+					<node>
+						<identifier>	HP_gunFire1	</identifier>
+						<transform>
+							<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+							<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+							<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+							<row3>	0.0000 0.0249 -0.1413 1.0000	</row3>
+						</transform>
+					</node>
+					<node>
+						<identifier>	Rotate_Y_BlendBone	</identifier>
+						<transform>
+							<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+							<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+							<row2>	0.0000 0.0000 -1.0000 0.0000	</row2>
+							<row3>	0.0000 -0.0184 0.0000 1.0000	</row3>
+						</transform>
+					</node>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0499 0.0000 -0.1564	</min>
+		<max>	0.0498 0.0784 0.2918	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	AGT064_18in_Mk5_TAShape	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASD502_Smith/gun/AGT064_18in_Mk5_Torpedo_Tube_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	AGT064_18in_Mk5_TA_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASD502_Smith/gun/AGT064_18in_Mk5_Torpedo_Tube_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	AGT064_18in_Mk5_TA_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASD502_Smith/gun/AGT064_18in_Mk5_Torpedo_Tube_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	AGT064_18in_Mk5_TA_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASD502_Smith/gun/AGT064_18in_Mk5_Torpedo_Tube_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	AGT064_18in_Mk5_TAShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	15.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	AGT064_18in_Mk5_TA_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	AGT064_18in_Mk5_TA_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	50.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	AGT064_18in_Mk5_TA_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</AGT064_18in_Mk5_Torpedo_Tube.visual>

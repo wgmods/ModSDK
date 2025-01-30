@@ -1,0 +1,106 @@
+<ZGT052_533mm_Torpedo_Tubes_Triple_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	RGT054_533mm_1N_3tubes_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1159 -0.0117 -0.2531	</min>
+		<max>	0.1167 0.0960 0.3708	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	RGT054_533mm_1N_3tubes_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RGT054_533mm_1N_3tubes_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC506_Huang_he/gun/ZGT052_533mm_Torpedo_Tubes_Triple_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RGT054_533mm_1N_3tubes_dead_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RGT054_533mm_1N_3tubes_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC506_Huang_he/gun/ZGT052_533mm_Torpedo_Tubes_Triple_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RGT054_533mm_1N_3tubes_dead_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RGT054_533mm_1N_3tubes_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC506_Huang_he/gun/ZGT052_533mm_Torpedo_Tubes_Triple_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RGT054_533mm_1N_3tubes_dead_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RGT054_533mm_1N_3tubes_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC506_Huang_he/gun/ZGT052_533mm_Torpedo_Tubes_Triple_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	4.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RGT054_533mm_1N_3tubes_deadShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RGT054_533mm_1N_3tubes_dead_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	15.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RGT054_533mm_1N_3tubes_dead_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	100.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	RGT054_533mm_1N_3tubes_dead_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</ZGT052_533mm_Torpedo_Tubes_Triple_dead.visual>

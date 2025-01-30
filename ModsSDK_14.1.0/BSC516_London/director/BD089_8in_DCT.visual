@@ -1,0 +1,139 @@
+<BD089_8in_DCT.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	DB089_8in_DCT	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	DB089_8in_DCT_wires	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1372 -0.0136 -0.0833	</min>
+		<max>	0.1372 0.1872 0.1001	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	DB089_8in_DCTShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	DB089_8in_DCT	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSC516_London/director/BD089_8in_DCT.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	DB089_8in_DCT_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	DB089_8in_DCT	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSC516_London/director/BD089_8in_DCT.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	DB089_8in_DCT_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	DB089_8in_DCT	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSC516_London/director/BD089_8in_DCT.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	DB089_8in_DCT_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	DB089_8in_DCT	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSC516_London/director/BD089_8in_DCT.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	DB089_8in_DCT_wiresShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	DB089_8in_DCT_wires	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSC516_London/director/BD089_8in_DCT_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	DB089_8in_DCT_wires_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	DB089_8in_DCT_wires	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSC516_London/director/BD089_8in_DCT_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	DB089_8in_DCTShape	</renderSet>
+				<renderSet>	DB089_8in_DCT_wiresShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	DB089_8in_DCT_lod1Shape	</renderSet>
+				<renderSet>	DB089_8in_DCT_wires_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	20.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	DB089_8in_DCT_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	200.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	DB089_8in_DCT_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</BD089_8in_DCT.visual>

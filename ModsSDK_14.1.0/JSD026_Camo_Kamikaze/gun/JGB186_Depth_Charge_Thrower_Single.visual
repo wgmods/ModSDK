@@ -1,0 +1,115 @@
+<JGB186_Depth_Charge_Thrower_Single.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	JM188	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_gunFire1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.5839 -0.8118 0.0000	</row1>
+						<row2>	0.0000 0.8118 0.5839 0.0000	</row2>
+						<row3>	0.0000 0.0518 0.0389 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0667 -0.0413 -0.0542	</min>
+		<max>	0.0667 0.1448 0.1319	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	JM188Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JM188	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD026_Camo_Kamikaze/gun/JM188_Depth_Charge_Thrower.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JM188_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JM188	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD026_Camo_Kamikaze/gun/JM188_Depth_Charge_Thrower.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JM188_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JM188	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD026_Camo_Kamikaze/gun/JM188_Depth_Charge_Thrower.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JM188_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JM188	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD026_Camo_Kamikaze/gun/JM188_Depth_Charge_Thrower.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	4.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JM188Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JM188_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	15.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JM188_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	60.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	JM188_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JGB186_Depth_Charge_Thrower_Single.visual>

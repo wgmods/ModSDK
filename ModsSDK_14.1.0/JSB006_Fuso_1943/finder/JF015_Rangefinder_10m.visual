@@ -1,0 +1,229 @@
+<JF015_Rangefinder_10m.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	JF015_Rangefinder10m	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	JRS002	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	JRS002_Grid	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	JRS002_wire	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.3735 -0.0007 -0.0717	</min>
+		<max>	0.3735 0.2702 0.1262	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	JF015_Rangefinder10mShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JF015_Rangefinder10m	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB006_Fuso_1943/finder/JF015_Rangefinder_10m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JF015_Rangefinder10m_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JF015_Rangefinder10m	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB006_Fuso_1943/finder/JF015_Rangefinder_10m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JF015_Rangefinder10m_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JF015_Rangefinder10m	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB006_Fuso_1943/finder/JF015_Rangefinder_10m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JF015_Rangefinder10m_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JF015_Rangefinder10m	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB006_Fuso_1943/finder/JF015_Rangefinder_10m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JRS002Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JRS002	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director1	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB006_Fuso_1943/finder/JRS002_Radar_Type_21_2.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JRS002_GridShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JRS002_Grid	</node>
+			</nodes>
+			<material>
+				<identifier>	GRID_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB006_Fuso_1943/finder/C010_Grid_8_alpha.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JRS002_Grid_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JRS002_Grid	</node>
+			</nodes>
+			<material>
+				<identifier>	GRID_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB006_Fuso_1943/finder/C010_Grid_8_alpha.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JRS002_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JRS002	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director1	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB006_Fuso_1943/finder/JRS002_Radar_Type_21_2.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JRS002_wireShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JRS002_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Director1	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB006_Fuso_1943/finder/JRS002_Radar_Type_21_2_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JRS002_wire_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JRS002_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Director1	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB006_Fuso_1943/finder/JRS002_Radar_Type_21_2_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JRS002_wire_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JRS002_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Director1	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB006_Fuso_1943/finder/JRS002_Radar_Type_21_2_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JRS002_wire_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JRS002_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Director1	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB006_Fuso_1943/finder/JRS002_Radar_Type_21_2_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JF015_Rangefinder10mShape	</renderSet>
+				<renderSet>	JRS002Shape	</renderSet>
+				<renderSet>	JRS002_GridShape	</renderSet>
+				<renderSet>	JRS002_wireShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	15.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JF015_Rangefinder10m_lod1Shape	</renderSet>
+				<renderSet>	JRS002_Grid_lod1Shape	</renderSet>
+				<renderSet>	JRS002_lod1Shape	</renderSet>
+				<renderSet>	JRS002_wire_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JF015_Rangefinder10m_lod2Shape	</renderSet>
+				<renderSet>	JRS002_wire_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	65.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	JF015_Rangefinder10m_lod3Shape	</renderSet>
+				<renderSet>	JRS002_wire_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JF015_Rangefinder_10m.visual>

@@ -1,0 +1,106 @@
+<IF058_Rangefinder_3m.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Rangefinder_3m	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1110 -0.0025 -0.0460	</min>
+		<max>	0.1110 0.0985 0.0229	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	Rangefinder_3mShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Rangefinder_3m	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD104_Turbine/finder/IF036_Rangefinder_3m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Rangefinder_3m_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Rangefinder_3m	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD104_Turbine/finder/IF036_Rangefinder_3m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Rangefinder_3m_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Rangefinder_3m	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD104_Turbine/finder/IF036_Rangefinder_3m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Rangefinder_3m_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Rangefinder_3m	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD104_Turbine/finder/IF036_Rangefinder_3m.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Rangefinder_3mShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Rangefinder_3m_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Rangefinder_3m_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	45.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Rangefinder_3m_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</IF058_Rangefinder_3m.visual>

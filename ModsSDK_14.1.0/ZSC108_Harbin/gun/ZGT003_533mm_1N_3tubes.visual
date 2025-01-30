@@ -1,0 +1,166 @@
+<ZGT003_533mm_1N_3tubes.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	ZTG003_533mm_1N_3tube	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_gunFire1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	-0.0560 0.0494 -0.2300 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire2	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0494 -0.2300 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire3	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0560 0.0494 -0.2300 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	ZTG003_533mm_1N_3tube_wire	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1226 -0.0173 -0.2967	</min>
+		<max>	0.1226 0.1895 0.3609	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	ZTG003_533mm_1N_3tubeShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	ZTG003_533mm_1N_3tube	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC108_Harbin/gun/ZGT003_533mm_1N_3Tubes.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	ZTG003_533mm_1N_3tube_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	ZTG003_533mm_1N_3tube	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC108_Harbin/gun/ZGT003_533mm_1N_3Tubes.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	ZTG003_533mm_1N_3tube_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	ZTG003_533mm_1N_3tube	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC108_Harbin/gun/ZGT003_533mm_1N_3Tubes.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	ZTG003_533mm_1N_3tube_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	ZTG003_533mm_1N_3tube	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC108_Harbin/gun/ZGT003_533mm_1N_3Tubes.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	ZTG003_533mm_1N_3tube_wireShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	ZTG003_533mm_1N_3tube_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC108_Harbin/gun/ZGT003_533mm_1N_3Tubes_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	ZTG003_533mm_1N_3tube_wire_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	ZTG003_533mm_1N_3tube_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC108_Harbin/gun/ZGT003_533mm_1N_3Tubes_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	2.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	ZTG003_533mm_1N_3tubeShape	</renderSet>
+				<renderSet>	ZTG003_533mm_1N_3tube_wireShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	5.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	ZTG003_533mm_1N_3tube_lod1Shape	</renderSet>
+				<renderSet>	ZTG003_533mm_1N_3tube_wire_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	20.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	ZTG003_533mm_1N_3tube_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	100.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	ZTG003_533mm_1N_3tube_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</ZGT003_533mm_1N_3tubes.visual>

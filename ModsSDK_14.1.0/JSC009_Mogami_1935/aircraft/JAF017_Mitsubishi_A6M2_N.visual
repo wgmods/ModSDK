@@ -1,0 +1,310 @@
+<JAF017_Mitsubishi_A6M2_N.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	hull	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_Air_gunfire_1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0138 0.1988 0.0842 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_Air_gunfire_2	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	-0.0138 0.1988 0.0842 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	hull_float	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	hull_wire	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	mod	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	propeller_mod	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	-0.0002 0.1626 0.1482 1.0000	</row3>
+					</transform>
+					<node>
+						<identifier>	disc	</identifier>
+						<transform>
+							<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+							<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+							<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+							<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+						</transform>
+						<node>
+							<identifier>	disc_cap	</identifier>
+							<transform>
+								<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+								<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+								<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+								<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+							</transform>
+						</node>
+					</node>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.3995 -0.0069 -0.4069	</min>
+		<max>	0.3995 0.2796 0.2641	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	discShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	disc	</node>
+			</nodes>
+			<material>
+				<identifier>	PROPELLERMAT_propeller	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC009_Mogami_1935/aircraft/Planes_Propeller_jap_red_alpha.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	disc_capShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	disc_cap	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC009_Mogami_1935/aircraft/JAF017_Mitsubishi_A6M2_N.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	disc_cap_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	disc_cap	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC009_Mogami_1935/aircraft/JAF017_Mitsubishi_A6M2_N.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	disc_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	disc	</node>
+			</nodes>
+			<material>
+				<identifier>	PROPELLERMAT_propeller	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC009_Mogami_1935/aircraft/Planes_Propeller_jap_red_alpha.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hullShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC009_Mogami_1935/aircraft/JAF017_Mitsubishi_A6M2_N.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_floatShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull_float	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Other	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC009_Mogami_1935/aircraft/JAF017_Mitsubishi_A6M2_N_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_float_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull_float	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Other	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC009_Mogami_1935/aircraft/JAF017_Mitsubishi_A6M2_N_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_float_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull_float	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Other	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC009_Mogami_1935/aircraft/JAF017_Mitsubishi_A6M2_N_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_float_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull_float	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Other	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC009_Mogami_1935/aircraft/JAF017_Mitsubishi_A6M2_N_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC009_Mogami_1935/aircraft/JAF017_Mitsubishi_A6M2_N.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC009_Mogami_1935/aircraft/JAF017_Mitsubishi_A6M2_N.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC009_Mogami_1935/aircraft/JAF017_Mitsubishi_A6M2_N.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_wireShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC009_Mogami_1935/aircraft/JAF017_Mitsubishi_A6M2_N_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	modShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	mod	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC009_Mogami_1935/aircraft/JAF017_Mitsubishi_A6M2_N.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	mod_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	mod	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC009_Mogami_1935/aircraft/JAF017_Mitsubishi_A6M2_N.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	5.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	discShape	</renderSet>
+				<renderSet>	disc_capShape	</renderSet>
+				<renderSet>	hullShape	</renderSet>
+				<renderSet>	hull_floatShape	</renderSet>
+				<renderSet>	hull_wireShape	</renderSet>
+				<renderSet>	modShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	20.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	disc_cap_lod1Shape	</renderSet>
+				<renderSet>	disc_lod1Shape	</renderSet>
+				<renderSet>	hull_float_lod1Shape	</renderSet>
+				<renderSet>	hull_lod1Shape	</renderSet>
+				<renderSet>	mod_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	40.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	hull_float_lod2Shape	</renderSet>
+				<renderSet>	hull_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	200.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	hull_float_lod3Shape	</renderSet>
+				<renderSet>	hull_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JAF017_Mitsubishi_A6M2_N.visual>

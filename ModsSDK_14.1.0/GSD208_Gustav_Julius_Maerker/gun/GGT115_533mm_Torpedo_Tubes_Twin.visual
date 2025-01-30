@@ -1,0 +1,124 @@
+<GGT115_533mm_Torpedo_Tubes_Twin.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	GGT115_533mm_Torpedo_Tubes_Twin	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_gunFire1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0250 0.0592 -0.2203 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire2	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	-0.0246 0.0592 -0.2203 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1192 -0.0075 -0.2870	</min>
+		<max>	0.1192 0.1620 0.3642	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	GGT115_533mm_Torpedo_Tubes_TwinShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GGT115_533mm_Torpedo_Tubes_Twin	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSD208_Gustav_Julius_Maerker/gun/GGT115_533mm_Torpedo_Tubes_Twin.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	GGT115_533mm_Torpedo_Tubes_Twin_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GGT115_533mm_Torpedo_Tubes_Twin	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSD208_Gustav_Julius_Maerker/gun/GGT115_533mm_Torpedo_Tubes_Twin.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	GGT115_533mm_Torpedo_Tubes_Twin_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GGT115_533mm_Torpedo_Tubes_Twin	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSD208_Gustav_Julius_Maerker/gun/GGT115_533mm_Torpedo_Tubes_Twin.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	GGT115_533mm_Torpedo_Tubes_Twin_lodShape3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GGT115_533mm_Torpedo_Tubes_Twin	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSD208_Gustav_Julius_Maerker/gun/GGT115_533mm_Torpedo_Tubes_Twin.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	4.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	GGT115_533mm_Torpedo_Tubes_TwinShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	15.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	GGT115_533mm_Torpedo_Tubes_Twin_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	30.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	GGT115_533mm_Torpedo_Tubes_Twin_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	200.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	GGT115_533mm_Torpedo_Tubes_Twin_lodShape3	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</GGT115_533mm_Torpedo_Tubes_Twin.visual>

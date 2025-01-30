@@ -1,0 +1,142 @@
+<WGB022_Depth_Charge_Roller_Track_L_SW.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	WGB022_Depth_Charge_Roller_Track	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_Track_1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.9811 0.1935 0.0000	</row1>
+						<row2>	0.0000 -0.1935 0.9811 0.0000	</row2>
+						<row3>	0.0062 0.0353 0.0633 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.9811 0.1935 0.0000	</row1>
+						<row2>	0.0000 -0.1935 0.9811 0.0000	</row2>
+						<row3>	0.0062 0.0415 0.0317 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire2	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.9811 0.1935 0.0000	</row1>
+						<row2>	0.0000 -0.1935 0.9811 0.0000	</row2>
+						<row3>	0.0062 0.0480 0.0041 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire3	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.9811 0.1935 0.0000	</row1>
+						<row2>	0.0000 -0.1935 0.9811 0.0000	</row2>
+						<row3>	0.0062 0.0545 -0.0235 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0605 -0.0430 -0.1018	</min>
+		<max>	0.0729 0.1328 0.1416	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	WGB022_Depth_Charge_Roller_TrackShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WGB022_Depth_Charge_Roller_Track	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSD107_Skane/gun/WGB022_Depth_Charge_Roller_Track_L_SW.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	WGB022_Depth_Charge_Roller_Track_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WGB022_Depth_Charge_Roller_Track	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSD107_Skane/gun/WGB022_Depth_Charge_Roller_Track_L_SW.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	WGB022_Depth_Charge_Roller_Track_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WGB022_Depth_Charge_Roller_Track	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSD107_Skane/gun/WGB022_Depth_Charge_Roller_Track_L_SW.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	WGB022_Depth_Charge_Roller_Track_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WGB022_Depth_Charge_Roller_Track	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSD107_Skane/gun/WGB022_Depth_Charge_Roller_Track_L_SW.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	WGB022_Depth_Charge_Roller_TrackShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	WGB022_Depth_Charge_Roller_Track_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	WGB022_Depth_Charge_Roller_Track_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	100.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	WGB022_Depth_Charge_Roller_Track_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</WGB022_Depth_Charge_Roller_Track_L_SW.visual>

@@ -1,0 +1,106 @@
+<WGB048_Depth_Charge_Shelving_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	BGB113_Depth_Charge_Shelving_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0404 -0.0017 -0.1083	</min>
+		<max>	0.0404 0.0570 0.1071	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	BGB113_Depth_Charge_Shelving_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	BGB113_Depth_Charge_Shelving_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSD717_Stord_1943/gun/WGB048_Depth_Charge_Shelving_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	BGB113_Depth_Charge_Shelving_dead_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	BGB113_Depth_Charge_Shelving_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSD717_Stord_1943/gun/WGB048_Depth_Charge_Shelving_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	BGB113_Depth_Charge_Shelving_dead_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	BGB113_Depth_Charge_Shelving_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSD717_Stord_1943/gun/WGB048_Depth_Charge_Shelving_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	BGB113_Depth_Charge_Shelving_dead_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	BGB113_Depth_Charge_Shelving_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSD717_Stord_1943/gun/WGB048_Depth_Charge_Shelving_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	BGB113_Depth_Charge_Shelving_deadShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	BGB113_Depth_Charge_Shelving_dead_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	10.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	BGB113_Depth_Charge_Shelving_dead_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	100.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	BGB113_Depth_Charge_Shelving_dead_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</WGB048_Depth_Charge_Shelving_dead.visual>

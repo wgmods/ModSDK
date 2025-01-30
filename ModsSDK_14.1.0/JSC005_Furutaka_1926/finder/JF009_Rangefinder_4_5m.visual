@@ -1,0 +1,151 @@
+<JF009_Rangefinder_4_5m.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	JF0014	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	JM107	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1635 -0.0448 -0.0755	</min>
+		<max>	0.1635 0.0799 0.0755	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	JF0014Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JF0014	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC005_Furutaka_1926/finder/JF009_Rangefinder_4_5.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JF0014_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JF0014	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC005_Furutaka_1926/finder/JF009_Rangefinder_4_5.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JF0014_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JF0014	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC005_Furutaka_1926/finder/JF009_Rangefinder_4_5.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JF0014_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JF0014	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC005_Furutaka_1926/finder/JF009_Rangefinder_4_5.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JM107Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JM107	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC005_Furutaka_1926/finder/JM107_Binocular.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JM107_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JM107	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC005_Furutaka_1926/finder/JM107_Binocular.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JM107_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JM107	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC005_Furutaka_1926/finder/JM107_Binocular.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	4.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JF0014Shape	</renderSet>
+				<renderSet>	JM107Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	12.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JF0014_lod1Shape	</renderSet>
+				<renderSet>	JM107_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	20.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JF0014_lod2Shape	</renderSet>
+				<renderSet>	JM107_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	80.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	JF0014_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JF009_Rangefinder_4_5m.visual>

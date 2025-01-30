@@ -1,0 +1,22 @@
+(def element CollectionPreviewModal()
+	(macro MODAL_WINDOW_INIT)
+
+	(scope
+		(macro PULL_PORT_INFO "'current'" "'current'") 
+		(macro PULL_PORT_INFO "'starTrek'" "'visible.starTrekPort'") 
+
+		(var collectionPreviewRenderer:str = "	currentPortId == starTrekPortId	? 'StarTrekCollectionInset'
+																				: ''")
+	)
+
+	(name = 'CollectionPreviewInset')
+
+	(class $FullsizeAbsolute)
+
+	(controller $Instance
+		(bind enabled "collectionPreviewRenderer != ''")
+		(bind renderer "collectionPreviewRenderer")
+	)
+
+	(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+)

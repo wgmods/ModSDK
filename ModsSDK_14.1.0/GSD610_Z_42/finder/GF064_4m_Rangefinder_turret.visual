@@ -1,0 +1,106 @@
+<GF064_4m_Rangefinder_turret.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	GF064_4m_Rangefinder_turret	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1550 -0.0076 -0.1173	</min>
+		<max>	0.1550 0.0801 0.1173	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	GF064_4m_Rangefinder_turretShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GF064_4m_Rangefinder_turret	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSD610_Z_42/finder/GF064_4m_Rangefinder_turret.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	GF064_4m_Rangefinder_turret_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GF064_4m_Rangefinder_turret	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSD610_Z_42/finder/GF064_4m_Rangefinder_turret.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	GF064_4m_Rangefinder_turret_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GF064_4m_Rangefinder_turret	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSD610_Z_42/finder/GF064_4m_Rangefinder_turret.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	GF064_4m_Rangefinder_turret_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GF064_4m_Rangefinder_turret	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSD610_Z_42/finder/GF064_4m_Rangefinder_turret.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	GF064_4m_Rangefinder_turretShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	12.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	GF064_4m_Rangefinder_turret_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	40.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	GF064_4m_Rangefinder_turret_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	140.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	GF064_4m_Rangefinder_turret_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</GF064_4m_Rangefinder_turret.visual>

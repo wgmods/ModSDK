@@ -1,0 +1,217 @@
+<JGS184_127mm40_Type_89_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Turret_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Shield_dead	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+					<node>
+						<identifier>	SP_YMS100_YGBS_M_1_INDEX_2	</identifier>
+						<transform>
+							<row0>	0.3807 -0.2914 -0.1072 0.0000	</row0>
+							<row1>	0.2522 0.3892 -0.1622 0.0000	</row1>
+							<row2>	0.1811 0.0706 0.4512 0.0000	</row2>
+							<row3>	-0.0387 0.1246 -0.0637 1.0000	</row3>
+						</transform>
+					</node>
+					<node>
+						<identifier>	SP_YMS100_YGBS_M_1_INDEX_3	</identifier>
+						<transform>
+							<row0>	0.3807 -0.2914 -0.1072 0.0000	</row0>
+							<row1>	0.2522 0.3892 -0.1622 0.0000	</row1>
+							<row2>	0.1811 0.0706 0.4512 0.0000	</row2>
+							<row3>	-0.0026 0.1043 -0.0666 1.0000	</row3>
+						</transform>
+					</node>
+					<node>
+						<identifier>	SP_YMS104_YGRS_M_1_INDEX_2	</identifier>
+						<transform>
+							<row0>	0.3150 -0.2448 -0.0887 0.0000	</row0>
+							<row1>	0.2108 0.3215 -0.1388 0.0000	</row1>
+							<row2>	0.1529 0.0612 0.3740 0.0000	</row2>
+							<row3>	0.0749 0.1705 0.2155 1.0000	</row3>
+						</transform>
+					</node>
+					<node>
+						<identifier>	SP_YMS104_YGRS_M_1_INDEX_3	</identifier>
+						<transform>
+							<row0>	0.3150 -0.2448 -0.0887 0.0000	</row0>
+							<row1>	0.2108 0.3215 -0.1388 0.0000	</row1>
+							<row2>	0.1529 0.0612 0.3740 0.0000	</row2>
+							<row3>	0.1065 0.1498 0.2009 1.0000	</row3>
+						</transform>
+					</node>
+					<node>
+						<identifier>	SP_YMS106_YGLL_M_1_INDEX_1	</identifier>
+						<transform>
+							<row0>	0.8617 0.0000 0.0000 0.0000	</row0>
+							<row1>	0.0000 0.8617 0.0000 0.0000	</row1>
+							<row2>	0.0000 0.0000 0.8617 0.0000	</row2>
+							<row3>	-0.1511 0.1373 -0.0654 1.0000	</row3>
+						</transform>
+					</node>
+					<node>
+						<identifier>	SP_YMS107_YGLR_M_1	</identifier>
+						<transform>
+							<row0>	0.8617 0.0000 0.0000 0.0000	</row0>
+							<row1>	0.0000 0.8617 0.0000 0.0000	</row1>
+							<row2>	0.0000 0.0000 0.8617 0.0000	</row2>
+							<row3>	0.1365 0.1373 -0.0654 1.0000	</row3>
+						</transform>
+					</node>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.2086 0.0000 -0.1731	</min>
+		<max>	0.1939 0.2880 0.2556	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	Shield_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Shield_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC719_Chikuma_2_Hyb/gun/JGS184_127mm40_Type_89_shield_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Shield_dead_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Shield_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC719_Chikuma_2_Hyb/gun/JGS184_127mm40_Type_89_shield_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Shield_dead_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Shield_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC719_Chikuma_2_Hyb/gun/JGS184_127mm40_Type_89_shield_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Shield_dead_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Shield_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC719_Chikuma_2_Hyb/gun/JGS184_127mm40_Type_89_shield_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Turret_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun1Dead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC719_Chikuma_2_Hyb/gun/JGS158_127mm40_Type_89_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Turret_dead_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun1Dead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC719_Chikuma_2_Hyb/gun/JGS158_127mm40_Type_89_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Turret_dead_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun1Dead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC719_Chikuma_2_Hyb/gun/JGS158_127mm40_Type_89_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Turret_dead_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun1Dead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC719_Chikuma_2_Hyb/gun/JGS158_127mm40_Type_89_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	12.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Shield_deadShape	</renderSet>
+				<renderSet>	Turret_deadShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Shield_dead_lod1Shape	</renderSet>
+				<renderSet>	Turret_dead_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	40.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Shield_dead_lod2Shape	</renderSet>
+				<renderSet>	Turret_dead_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	150.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Shield_dead_lod3Shape	</renderSet>
+				<renderSet>	Turret_dead_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JGS184_127mm40_Type_89_dead.visual>

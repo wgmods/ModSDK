@@ -1,0 +1,88 @@
+<JF043_Rangefinder_66cm.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Rangefinder66cm	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0275 0.0000 -0.0040	</min>
+		<max>	0.0275 0.0215 0.0040	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	Rangefinder66cmShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Rangefinder66cm	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_radar	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD507_Yudachi/finder/JF043_Rangefinder_66cm.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Rangefinder66cm_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Rangefinder66cm	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_radar	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD507_Yudachi/finder/JF043_Rangefinder_66cm.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Rangefinder66cm_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Rangefinder66cm	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_radar	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD507_Yudachi/finder/JF043_Rangefinder_66cm.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	1.000000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Rangefinder66cmShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	3.000000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Rangefinder66cm_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	8.000000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Rangefinder66cm_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JF043_Rangefinder_66cm.visual>

@@ -1,0 +1,115 @@
+<RD024_Dip_Compass_dir_TA_ITA.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	RD024_Dip_Compass_dir_TA_ITA	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	SP_YMS200_YDCS_M_1	</identifier>
+					<transform>
+						<row0>	0.7440 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.7440 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 0.7440 0.0000	</row2>
+						<row3>	0.0000 0.0926 -0.0217 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0496 -0.0017 -0.0713	</min>
+		<max>	0.0496 0.1421 0.0279	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	RD024_Dip_Compass_dir_TA_ITAShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RD024_Dip_Compass_dir_TA_ITA	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSC525_Kirov/director/RD024_Dip_Compass_dir_TA_ITA.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RD024_Dip_Compass_dir_TA_ITA_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RD024_Dip_Compass_dir_TA_ITA	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSC525_Kirov/director/RD024_Dip_Compass_dir_TA_ITA.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RD024_Dip_Compass_dir_TA_ITA_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RD024_Dip_Compass_dir_TA_ITA	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSC525_Kirov/director/RD024_Dip_Compass_dir_TA_ITA.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RD024_Dip_Compass_dir_TA_ITA_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RD024_Dip_Compass_dir_TA_ITA	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSC525_Kirov/director/RD024_Dip_Compass_dir_TA_ITA.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	2.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RD024_Dip_Compass_dir_TA_ITAShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RD024_Dip_Compass_dir_TA_ITA_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	5.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RD024_Dip_Compass_dir_TA_ITA_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	15.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	RD024_Dip_Compass_dir_TA_ITA_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</RD024_Dip_Compass_dir_TA_ITA.visual>

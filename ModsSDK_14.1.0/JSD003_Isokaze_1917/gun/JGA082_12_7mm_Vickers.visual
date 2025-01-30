@@ -1,0 +1,115 @@
+<JGA082_12_7mm_Vickers.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	JGA082	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_gunFire1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.8660 -0.5000 0.0000	</row1>
+						<row2>	0.0000 0.5000 0.8660 0.0000	</row2>
+						<row3>	0.0000 0.1386 0.0465 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0238 -0.0016 -0.0488	</min>
+		<max>	0.0238 0.1399 0.0474	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	JGA082_lodShape1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JGA082	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD003_Isokaze_1917/gun/JGA082_12_7_mm_Vickers.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JGA082_lodShape2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JGA082	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD003_Isokaze_1917/gun/JGA082_12_7_mm_Vickers.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JGA082_lodShape3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JGA082	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD003_Isokaze_1917/gun/JGA082_12_7_mm_Vickers.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JGA0Shape82	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JGA082	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD003_Isokaze_1917/gun/JGA082_12_7_mm_Vickers.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	2.000000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JGA0Shape82	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	4.000000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JGA082_lodShape1	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	10.000000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JGA082_lodShape2	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	15.000000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	JGA082_lodShape3	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JGA082_12_7mm_Vickers.visual>

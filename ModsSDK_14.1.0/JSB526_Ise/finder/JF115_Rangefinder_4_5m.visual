@@ -1,0 +1,139 @@
+<JF115_Rangefinder_4_5m.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	JF115_Rengefinder_4_5m	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Type_95_Mod1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1602 -0.0269 -0.1027	</min>
+		<max>	0.1602 0.1465 0.1027	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	JF115_Rengefinder_4_5mShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JF115_Rengefinder_4_5m	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB526_Ise/finder/JF115_Rangefinder_4_5m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JF115_Rengefinder_4_5m_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JF115_Rengefinder_4_5m	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB526_Ise/finder/JF115_Rangefinder_4_5m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JF115_Rengefinder_4_5m_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JF115_Rengefinder_4_5m	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB526_Ise/finder/JF115_Rangefinder_4_5m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JF115_Rengefinder_4_5m_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JF115_Rengefinder_4_5m	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB526_Ise/finder/JF115_Rangefinder_4_5m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Type_95_Mod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Type_95_Mod1	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director1	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB526_Ise/finder/JD022_Director_Type_95_Mod1.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Type_95_Mod1_lodShape1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Type_95_Mod1	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director1	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB526_Ise/finder/JD022_Director_Type_95_Mod1.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JF115_Rengefinder_4_5mShape	</renderSet>
+				<renderSet>	Type_95_Mod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JF115_Rengefinder_4_5m_lod1Shape	</renderSet>
+				<renderSet>	Type_95_Mod1_lodShape1	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	10.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JF115_Rengefinder_4_5m_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	100.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	JF115_Rengefinder_4_5m_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JF115_Rangefinder_4_5m.visual>

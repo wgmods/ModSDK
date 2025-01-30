@@ -1,0 +1,291 @@
+
+(def element STRoutePortMarkersContainer()
+	(element PortMarkersContainer
+		_interactiveComponentClass = "CC.interactiveRouteItem"
+		_interactiveRenderer = "'STInteractiveObjectRouteMarker'"
+	)
+)
+
+(def element STCollectionPortMarkersContainer()
+	(element PortMarkersContainer
+		_interactiveComponentClass = "CC.interactiveCollectionItem"
+		_interactiveRenderer = "'STInteractiveObjectCollectionMarker'"
+	)
+)
+
+(def element STInteractiveObjectMarkerWrapper (_markerEntity:gfx, _ioState:number) layout=true
+	(scope
+		(var routeMarkerComponent:gfx = "_markerEntity ? _markerEntity.interactiveRouteItem : null" (event "_markerEntity.evAdded") (event "_markerEntity.evRemoved"))
+		(var hasRouteMarkerComponent:bool = "routeMarkerComponent != null")
+
+		(var collectionMarkerComponent:gfx = "_markerEntity ? _markerEntity.interactiveCollectionItem : null" (event "_markerEntity.evAdded") (event "_markerEntity.evRemoved"))
+		(var hasCollectionMarkerComponent:bool = "collectionMarkerComponent != null")
+
+		(var starTrekMarkerRenderer:str = "	hasRouteMarkerComponent			? 'STInteractiveObjectRouteMarker' :
+											hasCollectionMarkerComponent	? 'STInteractiveObjectCollectionMarker'
+																			: ''")
+	)
+
+	(controller $Instance
+		(bind enabled "starTrekMarkerRenderer != ''")
+		(bind renderer "starTrekMarkerRenderer")
+
+		(args
+			_markerEntity = "_markerEntity"
+			_ioState = "_ioState"
+		)
+	)
+)
+
+
+(def element STInteractiveObjectRouteMarker (_markerEntity:gfx, _ioState:number) layout=true
+	(scope
+		(var interactiveComponent:gfx = "_markerEntity ? _markerEntity.interactiveRouteItem : null")
+
+		(var route:str = "interactiveComponent ? interactiveComponent.route : null")
+		(var name:str = "'IDS_ST_PORT_MARKER_' + toUpper(route)")
+
+		(macro MOUSE_HANDLER_SCOPE "'IO_RouteMarker_'")
+		(macro PULL_INTERACTIVE_OBJECT_STATES "_ioState")
+	)
+
+	
+	(style
+		(bind alpha "isSelected ? 0.5 : 1")
+		(bind hitTest "!isSelected")
+	)
+	
+	
+	(block
+		(class $MiddleAlignedAbsolutely)
+		(style
+			(top = -15px)
+			(hitTest = false)
+			(alpha = 0)
+		)
+
+		(controller $Animation
+			(bindcall play  duration="PORT_MARKER_ANIMATION_DURATION"
+							action="kill"
+							from = "{ alpha: 0, top: -15 }"
+							to = "{ alpha: 1, top: -20 }"
+							watch=false
+							reverse="!isRollOver"
+							(bind trigger "isRollOver")
+			)
+			(bindcall play  duration="PORT_MARKER_ANIMATION_DURATION"
+							action="kill"
+							from = "{ alpha: 1 }"
+							to = "{ alpha: 0.5 }"
+							watch=false
+							reverse="!IO_RouteMarker_mouseDown"
+							(bind trigger "IO_RouteMarker_mouseDown")
+							(bind enabled "isRollOver")
+
+			)
+		)
+
+		(tf
+			(class $TextDefaultBold19NM)
+			(style (bind textColor "PORT_MARKER_TEXT_COLOR"))
+			(bind text "name")
+		)
+	)
+
+	(element STInteractiveObjectMarker
+		_image = "route"
+		_isRollOver = "isRollOver"
+		_isMouseDown = "IO_RouteMarker_mouseDown"
+	)
+
+	(macro MOUSE_HANDLER
+		_prefix = "'IO_RouteMarker_'"
+		_soundSet = "'button_strk_marker'"
+	)
+)
+
+
+(def element STInteractiveObjectCollectionMarker(_markerEntity:gfx, _ioState:number)
+	(scope
+		
+		(var interactiveComponent:gfx = "_markerEntity ? _markerEntity.interactiveCollectionItem : null" 	(event "_markerEntity.evAdded")
+																											(event "_markerEntity.evRemoved"))
+		(var itemID:number = "interactiveComponent ? interactiveComponent.itemID : null")
+
+		(macro PULL_COLLECTION_CARD_INFO "itemID")
+
+		(var collectionCardNewItemComponent:gfx = "collectionCardEntity ? collectionCardEntity.newItem : null" (event "collectionCardEntity.evAdded") (event "collectionCardEntity.evRemoved"))
+		(var hasCollectionCardNewItem:bool = "collectionCardNewItemComponent != null")
+		
+
+		
+		(macro PULL_ROUTE "SC.Ui_windows.ROUTE.COLLECTION_PREVIEW" "'isOnScreen'")
+		
+
+		
+		(macro MOUSE_HANDLER_SCOPE "'IO_CollectionMarker_'")
+		(macro PULL_INTERACTIVE_OBJECT_STATES "_ioState")
+		
+	)
+
+	(macro PULL_IO_TOOLTIP_STATE "isRollOver")
+
+	(controller $Tooltip
+		(bind renderer "'CollectionCardItemTooltip'")
+		(args
+			_cardID = "itemID"
+		)
+		(macro IO_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(controller $Instance renderer='STInteractiveObjectMarker'
+		(bind enabled "!isOwned")
+		(args
+			_image = "'collection_item_locked'"
+			_isRollOver = "IO_CollectionMarker_rollOver"
+			_isMouseDown = "IO_CollectionMarker_mouseDown"
+		)
+		(bindcall externalCall "'inputMapping.onRequest'" "['buyObjectWindow', { objID: itemID }]" init=false watch=false on='click')
+	)
+
+	(macro MOUSE_HANDLER
+		_prefix = "'IO_CollectionMarker_'"
+		_soundSet = "'button_strk_collection_lock'"
+	)
+
+	(bindcall externalCall "'inputMapping.onAction'" "['makeSeen', { entityId: collectionCardEntity.id }]" 	init=false
+																											watch=false
+																											on='addedToStage'
+																											(bind enabled "isOnScreen && hasCollectionCardNewItem"))
+)
+
+
+(def element STInteractiveObjectMarker (_image:str, _isRollOver:bool = false, _isMouseDown:bool = false) layout=true
+	(scope
+		(var IOState:str = "_isRollOver ? '_hover' : '_def'")
+		(var imageName:str = "_image + IOState")
+	)
+
+	(style
+		(width = "PORT_MARKER_WIDTH")
+		(height = "PORT_MARKER_HEIGHT")
+		(align = "middle|center")
+		(backgroundColor = "0x01FFFFFF")
+	)
+
+	(block
+		(style
+			(width = 40px)
+			(height = 40px)
+			(align = "middle|center")
+		)
+
+		
+		(block
+			(style
+				(position = "absolute")
+				(width = 100%)
+				(height = 100%)
+
+				(marginLeft = 50%)
+				(marginTop = 50%)
+
+				(rotation = -45)
+				(pivotX = 50%)
+				(pivotY = 50%)
+
+				(alpha = 1)
+
+				(backgroundColor = "0x30ffffff")
+
+				(align = "middle|center")
+			)
+
+			(controller $Animation
+				(bindcall play  duration="PORT_MARKER_ANIMATION_DURATION"
+								action="kill"
+								from = "{rotation: -45, colorTransform: { redMultiplier: 1, greenMultiplier: 1, blueMultiplier: 1 }}"
+								to = "{rotation: 0, colorTransform: { redMultiplier: 0.71, greenMultiplier: 0.76, blueMultiplier: 0.88 }}"
+								watch=false
+								reverse="!_isRollOver"
+								(bind trigger "_isRollOver")
+				)
+				(bindcall play  duration="PORT_MARKER_ANIMATION_DURATION"
+								action="combine"
+								from = "{alpha: 1}"
+								to = "{alpha: 0.5}"
+								watch=false
+								reverse="!_isMouseDown"
+								(bind trigger "_isMouseDown")
+								(bind enabled "_isRollOver")
+				)
+			)
+
+			
+			(block
+				(controller $Animation
+					(bindcall play  duration="PORT_MARKER_ANIMATION_DURATION"
+									action="kill"
+									from = "{alpha: 0.35}"
+									to = "{alpha: 0.7}"
+									watch=false
+									reverse="!_isRollOver"
+									(bind trigger "_isRollOver")
+					)
+				)
+
+				(class $FullsizeAbsolute)
+				(style
+					(hitTest = "false")
+					(alpha = 0.35)
+					(backgroundImage = "'url:../service_kit/frames/one_pixel_frame.png'")
+					(scale9grid = "[2, 2, 2, 2]")
+				)
+			)
+
+			
+			(block
+				(controller $Animation
+					(bindcall play  duration="PORT_MARKER_ANIMATION_DURATION"
+									action="kill"
+									from = "{alpha: 0.5}"
+									to = "{alpha: 1}"
+									watch=false
+									reverse="!_isRollOver"
+									(bind trigger "_isRollOver")
+					)
+				)
+
+				(class $FullsizeAbsolute)
+				(style
+					(left = -20%) (top = -20%)
+					(hitTest = false)
+					(alpha = 1)
+					(backgroundImage = "'url:../port_markers/star_trek/stroke_effect.png'")
+				)
+			)
+		)
+
+		
+		(block
+			(controller $Animation
+				(bindcall play  duration="PORT_MARKER_ANIMATION_DURATION"
+								action="append"
+								from = "{alpha: 1}"
+								to = "{alpha: 0.5}"
+								watch=false
+								reverse="!_isMouseDown"
+								(bind trigger "_isMouseDown")
+								(bind enabled "_isRollOver")
+				)
+			)
+
+			(style
+				(width = 32px)
+				(height = 32px)
+
+				(bind backgroundImage "'url:../port_markers/star_trek/types/' + imageName + '.png'")
+			)
+		)
+	)
+)

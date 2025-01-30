@@ -1,0 +1,139 @@
+<IGT024_533_mm_2_tubes_R_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	IGT024_533_mm_2_tubes_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	wire_dead	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0728 0.0000 -0.2296	</min>
+		<max>	0.1122 0.1020 0.3573	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	IGT024_533_mm_2_tubes_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	IGT024_533_mm_2_tubes_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC505_Genova/gun/IGT024_533_mm_2_tubes_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	IGT024_533_mm_2_tubes_dead_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	IGT024_533_mm_2_tubes_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC505_Genova/gun/IGT024_533_mm_2_tubes_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	IGT024_533_mm_2_tubes_dead_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	IGT024_533_mm_2_tubes_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC505_Genova/gun/IGT024_533_mm_2_tubes_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	IGT024_533_mm_2_tubes_dead_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	IGT024_533_mm_2_tubes_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC505_Genova/gun/IGT024_533_mm_2_tubes_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	wire_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	wire_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC505_Genova/gun/IGT024_533_mm_2_tubes_dead_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	wire_dead_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	wire_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC505_Genova/gun/IGT024_533_mm_2_tubes_dead_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	2.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	IGT024_533_mm_2_tubes_deadShape	</renderSet>
+				<renderSet>	wire_deadShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	IGT024_533_mm_2_tubes_dead_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	IGT024_533_mm_2_tubes_dead_lod2Shape	</renderSet>
+				<renderSet>	wire_dead_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	120.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	IGT024_533_mm_2_tubes_dead_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</IGT024_533_mm_2_tubes_R_dead.visual>

@@ -1,0 +1,106 @@
+<RGT055_533mm_2N_5tubes_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	RGT055_533mm_2N_5tubes_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1159 -0.0122 -0.2533	</min>
+		<max>	0.1359 0.2021 0.3692	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	RGT055_533mm_2N_5tubes_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RGT055_533mm_2N_5tubes_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD107_Pr_35_Udaloy/gun/RGT055_533mm_2N_5tubes_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RGT055_533mm_2N_5tubes_dead_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RGT055_533mm_2N_5tubes_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD107_Pr_35_Udaloy/gun/RGT055_533mm_2N_5tubes_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RGT055_533mm_2N_5tubes_dead_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RGT055_533mm_2N_5tubes_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD107_Pr_35_Udaloy/gun/RGT055_533mm_2N_5tubes_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RGT055_533mm_2N_5tubes_dead_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RGT055_533mm_2N_5tubes_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD107_Pr_35_Udaloy/gun/RGT055_533mm_2N_5tubes_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	4.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RGT055_533mm_2N_5tubes_deadShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RGT055_533mm_2N_5tubes_dead_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	15.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RGT055_533mm_2N_5tubes_dead_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	120.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	RGT055_533mm_2N_5tubes_dead_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</RGT055_533mm_2N_5tubes_dead.visual>

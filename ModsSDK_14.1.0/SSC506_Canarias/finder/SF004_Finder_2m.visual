@@ -1,0 +1,106 @@
+<SF004_Finder_2m.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	finder_2m	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0783 0.0000 -0.0269	</min>
+		<max>	0.0783 0.0915 0.0269	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	finder_2mShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	finder_2m	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/SSC506_Canarias/finder/SF004_Finder_2m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	finder_2m_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	finder_2m	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/SSC506_Canarias/finder/SF004_Finder_2m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	finder_2m_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	finder_2m	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/SSC506_Canarias/finder/SF004_Finder_2m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	finder_2m_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	finder_2m	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/SSC506_Canarias/finder/SF004_Finder_2m.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	finder_2mShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	finder_2m_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	20.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	finder_2m_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	80.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	finder_2m_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</SF004_Finder_2m.visual>

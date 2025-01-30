@@ -1,0 +1,115 @@
+<FGB079_Depth_Charge_Thornycroft.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	FGB079_Depth_Charge_Thornycroft	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_gunFire1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.6613 -0.7501 0.0000	</row1>
+						<row2>	0.0000 0.7501 0.6613 0.0000	</row2>
+						<row3>	0.0000 0.0629 0.0426 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0667 -0.0313 -0.0516	</min>
+		<max>	0.0667 0.1569 0.1366	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	FGB079_Depth_Charge_ThornycroftShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FGB079_Depth_Charge_Thornycroft	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD015_L_Adroit/gun/FGB079_Depth_Charge_Thornycroft.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	FGB079_Depth_Charge_Thornycroft_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FGB079_Depth_Charge_Thornycroft	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD015_L_Adroit/gun/FGB079_Depth_Charge_Thornycroft.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	FGB079_Depth_Charge_Thornycroft_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FGB079_Depth_Charge_Thornycroft	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD015_L_Adroit/gun/FGB079_Depth_Charge_Thornycroft.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	FGB079_Depth_Charge_Thornycroft_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FGB079_Depth_Charge_Thornycroft	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD015_L_Adroit/gun/FGB079_Depth_Charge_Thornycroft.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	FGB079_Depth_Charge_ThornycroftShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	FGB079_Depth_Charge_Thornycroft_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	20.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	FGB079_Depth_Charge_Thornycroft_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	80.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	FGB079_Depth_Charge_Thornycroft_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</FGB079_Depth_Charge_Thornycroft.visual>

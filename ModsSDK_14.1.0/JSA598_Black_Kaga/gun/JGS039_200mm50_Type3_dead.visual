@@ -1,0 +1,124 @@
+<JGS039_200mm50_Type3_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	gun200mm_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	SP_YMS100_YGBS_M_1_INDEX_1	</identifier>
+					<transform>
+						<row0>	0.5250 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.5248 -0.0138 0.0000	</row1>
+						<row2>	0.0000 0.0138 0.5248 0.0000	</row2>
+						<row3>	0.0000 0.0701 0.2718 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	SP_YMS104_YGRS_M_1_INDEX_1	</identifier>
+					<transform>
+						<row0>	0.4363 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.4362 -0.0115 0.0000	</row1>
+						<row2>	0.0000 0.0115 0.4362 0.0000	</row2>
+						<row3>	0.0000 0.0805 0.6668 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1288 0.0000 -0.1294	</min>
+		<max>	0.1545 0.1774 0.6966	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	gun200mm_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	gun200mm_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSA598_Black_Kaga/gun/JGS008_150mm50_Type_41_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	gun200mm_dead_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	gun200mm_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSA598_Black_Kaga/gun/JGS008_150mm50_Type_41_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	gun200mm_dead_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	gun200mm_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSA598_Black_Kaga/gun/JGS008_150mm50_Type_41_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	gun200mm_dead_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	gun200mm_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSA598_Black_Kaga/gun/JGS008_150mm50_Type_41_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	4.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	gun200mm_deadShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	15.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	gun200mm_dead_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	30.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	gun200mm_dead_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	100.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	gun200mm_dead_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JGS039_200mm50_Type3_dead.visual>

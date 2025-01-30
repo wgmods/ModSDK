@@ -1,0 +1,163 @@
+<JGM140_120mm45_twin_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	turret_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	shield_dead	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1553 -0.0008 -0.1410	</min>
+		<max>	0.1636 0.1931 0.2938	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	shield_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	shield_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC037_Hashidate_1940/gun/JGM139_120mm45_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	shield_dead_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	shield_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC037_Hashidate_1940/gun/JGM139_120mm45_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	shield_dead_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	shield_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC037_Hashidate_1940/gun/JGM139_120mm45_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	shield_dead_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	shield_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC037_Hashidate_1940/gun/JGM139_120mm45_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	turret_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun1Dead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC037_Hashidate_1940/gun/JGS009_127mm40_Type_89_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	turret_dead_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun1Dead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC037_Hashidate_1940/gun/JGS009_127mm40_Type_89_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	turret_dead_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun1Dead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC037_Hashidate_1940/gun/JGS009_127mm40_Type_89_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	turret_dead_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun1Dead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC037_Hashidate_1940/gun/JGS009_127mm40_Type_89_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	shield_deadShape	</renderSet>
+				<renderSet>	turret_deadShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	12.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	shield_dead_lod1Shape	</renderSet>
+				<renderSet>	turret_dead_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	35.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	shield_dead_lod2Shape	</renderSet>
+				<renderSet>	turret_dead_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	100.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	shield_dead_lod3Shape	</renderSet>
+				<renderSet>	turret_dead_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JGM140_120mm45_twin_dead.visual>

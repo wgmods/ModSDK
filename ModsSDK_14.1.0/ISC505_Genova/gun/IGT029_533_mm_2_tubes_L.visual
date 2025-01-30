@@ -1,0 +1,169 @@
+<IGT029_533_mm_2_tubes_L.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	IGT024_533_mm_2_tubes	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_gunFire1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0284 0.0550 -0.2168 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire2	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	-0.0284 0.0550 -0.2168 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	wire	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1122 -0.0117 -0.2835	</min>
+		<max>	0.0951 0.1216 0.3573	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	IGT024_533_mm_2_tubesShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	IGT024_533_mm_2_tubes	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC505_Genova/gun/IGT024_533_mm_2_tubes.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	IGT024_533_mm_2_tubes_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	IGT024_533_mm_2_tubes	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC505_Genova/gun/IGT024_533_mm_2_tubes.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	IGT024_533_mm_2_tubes_lod2Shape2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	IGT024_533_mm_2_tubes	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC505_Genova/gun/IGT024_533_mm_2_tubes.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	IGT024_533_mm_2_tubes_lod3Shape3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	IGT024_533_mm_2_tubes	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC505_Genova/gun/IGT024_533_mm_2_tubes.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	wireShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC505_Genova/gun/IGT024_533_mm_2_tubes_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	wire_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC505_Genova/gun/IGT024_533_mm_2_tubes_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	wire_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC505_Genova/gun/IGT024_533_mm_2_tubes_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	4.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	IGT024_533_mm_2_tubesShape	</renderSet>
+				<renderSet>	wireShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	IGT024_533_mm_2_tubes_lod1Shape	</renderSet>
+				<renderSet>	wire_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	IGT024_533_mm_2_tubes_lod2Shape2	</renderSet>
+				<renderSet>	wire_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	120.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	IGT024_533_mm_2_tubes_lod3Shape3	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</IGT029_533_mm_2_tubes_L.visual>

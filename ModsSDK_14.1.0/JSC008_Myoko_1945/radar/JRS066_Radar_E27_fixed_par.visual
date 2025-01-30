@@ -1,0 +1,139 @@
+<JRS066_Radar_E27_fixed_par.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	JRS066_Radar_E27	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	grid	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0622 -0.0093 -0.0108	</min>
+		<max>	0.0293 0.1336 0.0155	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	JRS066_Radar_E27Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JRS066_Radar_E27	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC008_Myoko_1945/radar/JRS066_Radar_E27_fixed_par.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JRS066_Radar_E27_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JRS066_Radar_E27	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC008_Myoko_1945/radar/JRS066_Radar_E27_fixed_par.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JRS066_Radar_E27_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JRS066_Radar_E27	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC008_Myoko_1945/radar/JRS066_Radar_E27_fixed_par.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JRS066_Radar_E27_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JRS066_Radar_E27	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC008_Myoko_1945/radar/JRS066_Radar_E27_fixed_par.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	gridShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	grid	</node>
+			</nodes>
+			<material>
+				<identifier>	GRID_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC008_Myoko_1945/radar/C005_Grid_2_alpha.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	grid_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	grid	</node>
+			</nodes>
+			<material>
+				<identifier>	GRID_Misc	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC008_Myoko_1945/radar/C005_Grid_2_alpha.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	2.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JRS066_Radar_E27Shape	</renderSet>
+				<renderSet>	gridShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JRS066_Radar_E27_lod1Shape	</renderSet>
+				<renderSet>	grid_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	10.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JRS066_Radar_E27_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	50.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	JRS066_Radar_E27_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JRS066_Radar_E27_fixed_par.visual>

@@ -1,0 +1,289 @@
+<AAF022_F3F_float.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	hull	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_Air_gunfire_1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	-0.0151 0.2066 0.1489 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_Air_gunfire_2	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0149 0.2066 0.1489 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	float_mod	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	hull_wire	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	mod	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	propeller_mod	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.1649 0.1632 1.0000	</row3>
+					</transform>
+					<node>
+						<identifier>	disc	</identifier>
+						<transform>
+							<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+							<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+							<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+							<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+						</transform>
+					</node>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.3362 -0.0008 -0.3039	</min>
+		<max>	0.3362 0.2808 0.2832	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	discShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	disc	</node>
+			</nodes>
+			<material>
+				<identifier>	PROPELLERMAT_propeller	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB008_Colorado_1945/aircraft/Planes_Propeller_2_alpha.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	disc_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	disc	</node>
+			</nodes>
+			<material>
+				<identifier>	PROPELLERMAT_propeller	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB008_Colorado_1945/aircraft/Planes_Propeller_2_alpha.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	float_modShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	float_mod	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Other	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB008_Colorado_1945/aircraft/AAF022_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	float_mod_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	float_mod	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Other	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB008_Colorado_1945/aircraft/AAF022_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	float_mod_lodShape2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	float_mod	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Other	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB008_Colorado_1945/aircraft/AAF022_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	float_mod_lodShape3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	float_mod	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Other	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB008_Colorado_1945/aircraft/AAF022_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hullShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB008_Colorado_1945/aircraft/AAF022_F3F_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB008_Colorado_1945/aircraft/AAF022_F3F_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_lodShape1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB008_Colorado_1945/aircraft/AAF022_F3F_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_lodShape2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB008_Colorado_1945/aircraft/AAF022_F3F_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_wireShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB008_Colorado_1945/aircraft/AAF022_F3F_float_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_wire_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB008_Colorado_1945/aircraft/AAF022_F3F_float_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	modShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	mod	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB008_Colorado_1945/aircraft/AAF022_F3F_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	mod_lodShape1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	mod	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASB008_Colorado_1945/aircraft/AAF022_F3F_float.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	5.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	discShape	</renderSet>
+				<renderSet>	float_modShape	</renderSet>
+				<renderSet>	hullShape	</renderSet>
+				<renderSet>	hull_wireShape	</renderSet>
+				<renderSet>	modShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	20.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	disc_lod1Shape	</renderSet>
+				<renderSet>	float_mod_lod1Shape	</renderSet>
+				<renderSet>	hull_lodShape1	</renderSet>
+				<renderSet>	hull_wire_lod1Shape	</renderSet>
+				<renderSet>	mod_lodShape1	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	40.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	float_mod_lodShape2	</renderSet>
+				<renderSet>	hull_lodShape2	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	200.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	float_mod_lodShape3	</renderSet>
+				<renderSet>	hull_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</AAF022_F3F_float.visual>

@@ -1,0 +1,106 @@
+<JD056_MachineGun_Control_Position.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	JD056_MachineGun_Control_Position	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0329 -0.0005 -0.0290	</min>
+		<max>	0.0393 0.0831 0.0363	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	JD056_MachineGun_Control_PositionShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JD056_MachineGun_Control_Position	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB526_Ise/director/JD056_MachineGun_Control_Position.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JD056_MachineGun_Control_Position_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JD056_MachineGun_Control_Position	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB526_Ise/director/JD056_MachineGun_Control_Position.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JD056_MachineGun_Control_Position_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JD056_MachineGun_Control_Position	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB526_Ise/director/JD056_MachineGun_Control_Position.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JD056_MachineGun_Control_Position_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JD056_MachineGun_Control_Position	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSB526_Ise/director/JD056_MachineGun_Control_Position.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	1.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JD056_MachineGun_Control_PositionShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	2.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JD056_MachineGun_Control_Position_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	5.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JD056_MachineGun_Control_Position_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	12.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	JD056_MachineGun_Control_Position_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JD056_MachineGun_Control_Position.visual>

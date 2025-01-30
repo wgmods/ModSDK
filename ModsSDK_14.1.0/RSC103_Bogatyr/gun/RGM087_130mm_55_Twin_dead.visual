@@ -1,0 +1,106 @@
+<RGM087_130mm_55_Twin_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	RGM087_130mm_55_Twin_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1624 -0.0002 -0.2203	</min>
+		<max>	0.1568 0.2148 0.3881	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	RGM087_130mm_55_Twin_dead_Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RGM087_130mm_55_Twin_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSC103_Bogatyr/gun/RGM073_152mm_45_Twin_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RGM087_130mm_55_Twin_dead_lod1_Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RGM087_130mm_55_Twin_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSC103_Bogatyr/gun/RGM073_152mm_45_Twin_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RGM087_130mm_55_Twin_dead_lod2_Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RGM087_130mm_55_Twin_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSC103_Bogatyr/gun/RGM073_152mm_45_Twin_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RGM087_130mm_55_Twin_dead_lod3_Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RGM087_130mm_55_Twin_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSC103_Bogatyr/gun/RGM073_152mm_45_Twin_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	2.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RGM087_130mm_55_Twin_dead_Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	7.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RGM087_130mm_55_Twin_dead_lod1_Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	15.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RGM087_130mm_55_Twin_dead_lod2_Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	120.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	RGM087_130mm_55_Twin_dead_lod3_Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</RGM087_130mm_55_Twin_dead.visual>

@@ -1,0 +1,172 @@
+<WD018_Director_4m_SW.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	WD018_Director_4m_SW_main	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	WD018_Director_4m_SW_glass	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	WD018_Director_4m_SW_wire	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1451 0.0000 -0.1233	</min>
+		<max>	0.1451 0.1641 0.1469	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	WD018_Director_4m_SW_glassShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WD018_Director_4m_SW_glass	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPGLASS_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSC710_Svea/director/transparent_glass_alpha.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	WD018_Director_4m_SW_glass_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WD018_Director_4m_SW_glass	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPGLASS_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSC710_Svea/director/transparent_glass_alpha.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	WD018_Director_4m_SW_mainShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WD018_Director_4m_SW_main	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSC710_Svea/director/WD018_Director_4m_SW.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	WD018_Director_4m_SW_main_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WD018_Director_4m_SW_main	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSC710_Svea/director/WD018_Director_4m_SW.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	WD018_Director_4m_SW_main_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WD018_Director_4m_SW_main	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSC710_Svea/director/WD018_Director_4m_SW.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	WD018_Director_4m_SW_main_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WD018_Director_4m_SW_main	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSC710_Svea/director/WD018_Director_4m_SW.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	WD018_Director_4m_SW_wireShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WD018_Director_4m_SW_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSC710_Svea/director/WD018_Director_4m_SW_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	WD018_Director_4m_SW_wire_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WD018_Director_4m_SW_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSC710_Svea/director/WD018_Director_4m_SW_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	WD018_Director_4m_SW_glassShape	</renderSet>
+				<renderSet>	WD018_Director_4m_SW_mainShape	</renderSet>
+				<renderSet>	WD018_Director_4m_SW_wireShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	12.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	WD018_Director_4m_SW_glass_lod1Shape	</renderSet>
+				<renderSet>	WD018_Director_4m_SW_main_lod1Shape	</renderSet>
+				<renderSet>	WD018_Director_4m_SW_wire_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	WD018_Director_4m_SW_main_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	150.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	WD018_Director_4m_SW_main_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</WD018_Director_4m_SW.visual>

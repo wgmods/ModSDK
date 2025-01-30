@@ -1,0 +1,157 @@
+<FGT069_550mm_2tube.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	FGT069_550_mm_2_tubes	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_gunFire1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	-0.0347 0.0433 -0.2484 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire2	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0347 0.0433 -0.2484 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	wire	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1096 -0.0234 -0.3150	</min>
+		<max>	0.1013 0.1099 0.3101	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	FGT069_550_mm_2_tubesShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FGT069_550_mm_2_tubes	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD103_Fusilier/gun/FGT069_550mm_2tube.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	FGT069_550_mm_2_tubes_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FGT069_550_mm_2_tubes	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD103_Fusilier/gun/FGT069_550mm_2tube.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	FGT069_550_mm_2_tubes_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FGT069_550_mm_2_tubes	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD103_Fusilier/gun/FGT069_550mm_2tube.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	FGT069_550_mm_2_tubes_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FGT069_550_mm_2_tubes	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD103_Fusilier/gun/FGT069_550mm_2tube.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	wireShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD103_Fusilier/gun/FGT069_550mm_2tube_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	wire_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSD103_Fusilier/gun/FGT069_550mm_2tube_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	FGT069_550_mm_2_tubesShape	</renderSet>
+				<renderSet>	wireShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	12.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	FGT069_550_mm_2_tubes_lod1Shape	</renderSet>
+				<renderSet>	wire_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	FGT069_550_mm_2_tubes_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	120.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	FGT069_550_mm_2_tubes_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</FGT069_550mm_2tube.visual>

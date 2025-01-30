@@ -1,0 +1,106 @@
+<BD067_DDS_Destroyer_director_site.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	ZF024_DDS_Destroyer_director_site	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0231 0.0000 -0.0317	</min>
+		<max>	0.0231 0.1203 0.0213	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	ZF024_DDS_Destroyer_director_siteShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	ZF024_DDS_Destroyer_director_site	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSD103_Valkyrie/director/BD067_DDS_Destroyer_director_site.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	ZF024_DDS_Destroyer_director_site_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	ZF024_DDS_Destroyer_director_site	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSD103_Valkyrie/director/BD067_DDS_Destroyer_director_site.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	ZF024_DDS_Destroyer_director_site_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	ZF024_DDS_Destroyer_director_site	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSD103_Valkyrie/director/BD067_DDS_Destroyer_director_site.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	ZF024_DDS_Destroyer_director_site_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	ZF024_DDS_Destroyer_director_site	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSD103_Valkyrie/director/BD067_DDS_Destroyer_director_site.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	ZF024_DDS_Destroyer_director_siteShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	ZF024_DDS_Destroyer_director_site_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	10.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	ZF024_DDS_Destroyer_director_site_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	20.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	ZF024_DDS_Destroyer_director_site_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</BD067_DDS_Destroyer_director_site.visual>

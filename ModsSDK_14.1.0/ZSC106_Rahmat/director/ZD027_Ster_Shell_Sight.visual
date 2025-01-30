@@ -1,0 +1,106 @@
+<ZD027_Ster_Shell_Sight.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	BD018_Ster_Sell_Sight	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0285 -0.0008 -0.0372	</min>
+		<max>	0.0238 0.1148 0.0242	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	BD018_Ster_Sell_SightShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	BD018_Ster_Sell_Sight	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC106_Rahmat/director/ZD027_Ster_Shell_Sight.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	BD018_Ster_Sell_Sight_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	BD018_Ster_Sell_Sight	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC106_Rahmat/director/ZD027_Ster_Shell_Sight.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	BD018_Ster_Sell_Sight_lodShape2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	BD018_Ster_Sell_Sight	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC106_Rahmat/director/ZD027_Ster_Shell_Sight.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	BD018_Ster_Sell_Sight_lodShape3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	BD018_Ster_Sell_Sight	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC106_Rahmat/director/ZD027_Ster_Shell_Sight.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	2.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	BD018_Ster_Sell_SightShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	4.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	BD018_Ster_Sell_Sight_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	7.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	BD018_Ster_Sell_Sight_lodShape2	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	10.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	BD018_Ster_Sell_Sight_lodShape3	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</ZD027_Ster_Shell_Sight.visual>

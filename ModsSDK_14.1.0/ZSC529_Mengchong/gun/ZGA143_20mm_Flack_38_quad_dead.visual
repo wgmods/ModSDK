@@ -1,0 +1,106 @@
+<ZGA143_20mm_Flack_38_quad_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	GGA042_20mm_Flack_38_quad_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0868 0.0000 -0.1014	</min>
+		<max>	0.0843 0.1333 0.1087	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	GGA042_20mm_Flack_38_quad_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GGA042_20mm_Flack_38_quad_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC529_Mengchong/gun/ZGA143_20mm_Flack_38_quad_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	GGA042_20mm_Flack_38_quad_dead_lodShape1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GGA042_20mm_Flack_38_quad_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC529_Mengchong/gun/ZGA143_20mm_Flack_38_quad_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	GGA042_20mm_Flack_38_quad_dead_lodShape2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GGA042_20mm_Flack_38_quad_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC529_Mengchong/gun/ZGA143_20mm_Flack_38_quad_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	GGA042_20mm_Flack_38_quad_dead_lodShape3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GGA042_20mm_Flack_38_quad_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ZSC529_Mengchong/gun/ZGA143_20mm_Flack_38_quad_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	GGA042_20mm_Flack_38_quad_deadShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	15.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	GGA042_20mm_Flack_38_quad_dead_lodShape1	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	30.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	GGA042_20mm_Flack_38_quad_dead_lodShape2	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	100.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	GGA042_20mm_Flack_38_quad_dead_lodShape3	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</ZGA143_20mm_Flack_38_quad_dead.visual>

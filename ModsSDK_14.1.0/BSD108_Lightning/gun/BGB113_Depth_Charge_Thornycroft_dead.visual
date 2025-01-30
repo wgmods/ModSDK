@@ -1,0 +1,106 @@
+<BGB113_Depth_Charge_Thornycroft_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	ZGB121_Depth_Charge_Thrower_Single_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0156 -0.0022 -0.0280	</min>
+		<max>	0.0153 0.0595 0.0394	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	ZGB121_Depth_Charge_Thrower_Single_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	ZGB121_Depth_Charge_Thrower_Single_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSD108_Lightning/gun/BGB113_Depth_Charge_Thornycroft_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	ZGB121_Depth_Charge_Thrower_Single_dead_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	ZGB121_Depth_Charge_Thrower_Single_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSD108_Lightning/gun/BGB113_Depth_Charge_Thornycroft_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	ZGB121_Depth_Charge_Thrower_Single_dead_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	ZGB121_Depth_Charge_Thrower_Single_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSD108_Lightning/gun/BGB113_Depth_Charge_Thornycroft_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	ZGB121_Depth_Charge_Thrower_Single_dead_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	ZGB121_Depth_Charge_Thrower_Single_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSD108_Lightning/gun/BGB113_Depth_Charge_Thornycroft_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	ZGB121_Depth_Charge_Thrower_Single_deadShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	ZGB121_Depth_Charge_Thrower_Single_dead_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	12.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	ZGB121_Depth_Charge_Thrower_Single_dead_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	80.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	ZGB121_Depth_Charge_Thrower_Single_dead_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</BGB113_Depth_Charge_Thornycroft_dead.visual>

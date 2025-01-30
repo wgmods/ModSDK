@@ -1,0 +1,106 @@
+<JGA082_12_7mm_Vickers_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	JGA082_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0238 -0.0016 -0.0522	</min>
+		<max>	0.0238 0.1221 0.0535	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	JGA082_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JGA082_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD003_Isokaze_1917/gun/JGA082_12_7mm_Vickers_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JGA082_dead_lodShape1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JGA082_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD003_Isokaze_1917/gun/JGA082_12_7mm_Vickers_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JGA082_dead_lodShape2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JGA082_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD003_Isokaze_1917/gun/JGA082_12_7mm_Vickers_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JGA082_dead_lodShape3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JGA082_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD003_Isokaze_1917/gun/JGA082_12_7mm_Vickers_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	2.000000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JGA082_deadShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	4.000000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JGA082_dead_lodShape1	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	10.000000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JGA082_dead_lodShape2	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	15.000000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	JGA082_dead_lodShape3	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JGA082_12_7mm_Vickers_dead.visual>

@@ -1,0 +1,181 @@
+<GPT007_F5b.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Torpedo	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_Trace	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0125 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	propeller_mod_l	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	propeller_mod_r	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0667 -0.0667 -0.0541	</min>
+		<max>	0.0667 0.0667 0.3434	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	TorpedoShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Torpedo	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_NODAMAGE_PBS_Projectile	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSA610_Max_Immelmann/projectile/GPR001_Wfr_Gr_21E_projectile.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Torpedo_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Torpedo	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_NODAMAGE_PBS_Projectile	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSA610_Max_Immelmann/projectile/GPR001_Wfr_Gr_21E_projectile.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Torpedo_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Torpedo	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_NODAMAGE_PBS_Projectile	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSA610_Max_Immelmann/projectile/GPR001_Wfr_Gr_21E_projectile.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Torpedo_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Torpedo	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_NODAMAGE_PBS_Projectile	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSA610_Max_Immelmann/projectile/GPR001_Wfr_Gr_21E_projectile.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	propeller_mod_lShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	propeller_mod_l	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_NODAMAGE_PBS_Projectile	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSA610_Max_Immelmann/projectile/GPR001_Wfr_Gr_21E_projectile.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	propeller_mod_l_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	propeller_mod_l	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_NODAMAGE_PBS_Projectile	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSA610_Max_Immelmann/projectile/GPR001_Wfr_Gr_21E_projectile.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	propeller_mod_rShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	propeller_mod_r	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_NODAMAGE_PBS_Projectile	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSA610_Max_Immelmann/projectile/GPR001_Wfr_Gr_21E_projectile.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	propeller_mod_r_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	propeller_mod_r	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_NODAMAGE_PBS_Projectile	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSA610_Max_Immelmann/projectile/GPR001_Wfr_Gr_21E_projectile.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	TorpedoShape	</renderSet>
+				<renderSet>	propeller_mod_lShape	</renderSet>
+				<renderSet>	propeller_mod_rShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	12.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Torpedo_lod1Shape	</renderSet>
+				<renderSet>	propeller_mod_l_lod1Shape	</renderSet>
+				<renderSet>	propeller_mod_r_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	22.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Torpedo_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	1000.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Torpedo_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</GPT007_F5b.visual>

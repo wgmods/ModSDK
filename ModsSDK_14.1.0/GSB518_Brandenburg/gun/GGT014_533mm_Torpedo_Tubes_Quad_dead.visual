@@ -1,0 +1,106 @@
+<GGT014_533mm_Torpedo_Tubes_Quad_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	GGT014_533mm_Torpedo_Tubes_Quad_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1287 -0.0007 -0.2556	</min>
+		<max>	0.1293 0.1605 0.3778	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	GGT014_533mm_Torpedo_Tubes_Quad_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GGT014_533mm_Torpedo_Tubes_Quad_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSB518_Brandenburg/gun/GGT014_533mm_Torpedo_Tubes_Quad_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	GGT014_533mm_Torpedo_Tubes_Quad_dead_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GGT014_533mm_Torpedo_Tubes_Quad_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSB518_Brandenburg/gun/GGT014_533mm_Torpedo_Tubes_Quad_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	GGT014_533mm_Torpedo_Tubes_Quad_dead_lodShape2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GGT014_533mm_Torpedo_Tubes_Quad_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSB518_Brandenburg/gun/GGT014_533mm_Torpedo_Tubes_Quad_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	GGT014_533mm_Torpedo_Tubes_Quad_dead_lodShape3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GGT014_533mm_Torpedo_Tubes_Quad_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSB518_Brandenburg/gun/GGT014_533mm_Torpedo_Tubes_Quad_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	4.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	GGT014_533mm_Torpedo_Tubes_Quad_deadShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	15.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	GGT014_533mm_Torpedo_Tubes_Quad_dead_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	30.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	GGT014_533mm_Torpedo_Tubes_Quad_dead_lodShape2	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	200.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	GGT014_533mm_Torpedo_Tubes_Quad_dead_lodShape3	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</GGT014_533mm_Torpedo_Tubes_Quad_dead.visual>
