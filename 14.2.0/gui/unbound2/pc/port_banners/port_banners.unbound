@@ -1,0 +1,827 @@
+(def css $PortBannerMargins ()
+	(width = 64px)
+	(marginBottom = "XS")
+	
+)
+
+(def css $PortBannerInnerMargins ()
+	(width = 100%)
+	
+)
+
+(def css $PortBannerStatusMargin ()
+	(width = "L")
+	(height = "L")
+	(position = "absolute")
+	(right = 0)
+)
+
+(def constant EVENT_HUB_EVENT_ENTER_BANNER_WIDTH 240)
+(def constant EVENT_HUB_EVENT_ENTER_BANNER_HEIGHT 116)
+(def constant EVENT_HUB_EVENT_ENTER_CROPPED_BANNER_HEIGHT 36)
+
+(def element EventHubBanner (_isEventModeEnabled:bool, _battleTypeDenyReasons:array, _isBattleTypeStateDisabled:bool, _eventBattleStateName:str, _isEventHubBattleTypeAvailable:bool=false)
+	(scope
+		(event evAddedToStage)
+		(var dockDataWatcher:gfx = "$datahub.getFirstWatcher(CC.dockData)")
+		(var dockDataEntity:gfx = "dockDataWatcher.entity" (event "dockDataWatcher.event"))
+		(var dockDataComponent:gfx = "dockDataEntity ? dockDataEntity.dockData : null")
+		(var isDockInputLockedByEH:bool = "dockDataComponent ? dockDataComponent.isDockInputLockedByEH : false" (event "dockDataComponent.evIsDockInputLockedByEHChanged"))
+
+		(var selfPlayerWatcher:gfx = "$datahub.getFirstWatcher(CC.accountSelf)")
+		(var selfPlayerEntity:gfx = "selfPlayerWatcher.entity" (event "selfPlayerWatcher.event"))
+		(var preBattlePlayerComponent:gfx = "selfPlayerEntity ? selfPlayerEntity.preBattlePlayerSimple : null" (event "selfPlayerEntity.evAdded") (event "selfPlayerEntity.evRemoved"))
+		(var isSelfPlayerIsReady:bool = "preBattlePlayerComponent	? preBattlePlayerComponent.isReady : false" (event "preBattlePlayerComponent.evIsReadyChanged"))
+		(var isSelfPlayerCommander:bool = "preBattlePlayerComponent	? preBattlePlayerComponent.isCommander : false" (event "preBattlePlayerComponent.evIsCommanderChanged"))
+
+		(var preBattleComponent:gfx = "$datahub.getSingleComponent(CC.preBattle)")
+		(var isDivisionInBattle:bool = "preBattleComponent.isInBattle" (event "preBattleComponent.evStatusChanged"))
+
+		(var isBannerEnabled:bool = "(isSelfPlayerCommander || !isSelfPlayerIsReady) && !isDockInputLockedByEH && !_isBattleTypeStateDisabled && !isDivisionInBattle")
+
+		(var tooltipData:dict =
+			"{	unifiedStatus: isBannerEnabled ? SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT : SC.Ui_styles.UNIFIED_STATUS.NEGATIVE,
+				text: !isBannerEnabled	?	isDockInputLockedByEH												? 'IDS_DOCK_BANNER_EVENT_HUB_UNAVAILABLE_LOADING' :
+											isSelfPlayerIsReady	&& !isSelfPlayerCommander						? 'IDS_SET_UNREADY_DIVISION_FIRST_TO_CHANGE_BATTLE_TYPE':
+											_battleTypeDenyReasons.length && _isBattleTypeStateDisabled			? _battleTypeDenyReasons[0]
+																												: 'IDS_DOCK_BANNER_EVENT_HUB_UNAVAILABLE_SQUAD_IN_BATTLE'
+										:	_isEventModeEnabled ?	'IDS_DOCK_EXIT_EVENT_HUB_MOUSE_INSTRUCTION'
+																:	'IDS_GO_TO_EVENT_HUB_MOUSE_INSTRUCTION'	}")
+
+		(var staticsEvent:str = "_isEventModeEnabled	? SC.Common.EVENT_HUB_STATISTICS.EVENT_HUB_BANNER_LEAVE
+														: SC.Common.EVENT_HUB_STATISTICS.EVENT_HUB_BANNER_ENTER")
+
+		(var newYearPortCollection:gfx = "$datahub.getCollection(CC.port).getChildByPath('visible.newYearPort')")
+		(var newYearPortEntity:gfx = "newYearPortCollection ? newYearPortCollection.items[0] : null"	(event "newYearPortCollection.evAdded")
+																										(event "newYearPortCollection.evRemoved"))
+		(var hasPrioritizedBanner:bool = "newYearPortEntity")
+	)
+
+	(style
+		(align = "center")
+		(bind height "_isEventModeEnabled ? L : hasPrioritizedBanner ? EVENT_HUB_EVENT_ENTER_CROPPED_BANNER_HEIGHT : EVENT_HUB_EVENT_ENTER_BANNER_HEIGHT")
+		(bind width "_isEventModeEnabled ? XL : EVENT_HUB_EVENT_ENTER_BANNER_WIDTH")
+	)
+
+	(bindcall externalCall "isBannerEnabled ? 'inputMapping.onRequest' : ''" "['eventHubBannerClick', {}]"
+																			init=false watch=false on='click')
+	(bindcall externalCall "isBannerEnabled ? 'direct.action' : ''" "[SC.Common.STATISTICS_EVENTS.LOG, [staticsEvent]]" init=false watch=false on='click')
+
+	(controller $Animation
+		(bindcall play  duration="0.15"
+						delay="0.15"
+						from = "{ alpha: 0, top: 5 }"
+						to = "{ alpha: 1, top: 0 }"
+						(event "evAddedToStage")
+		)
+	)
+
+	(block
+		(class $Fullsize)
+
+		(controller $Instance renderer='EventHubEventEnterBanner'
+			(bind enabled "!_isEventModeEnabled && _isEventHubBattleTypeAvailable")
+			(args
+				_isBannerEnabled = "isBannerEnabled"
+				_hasPrioritizedBanner = "hasPrioritizedBanner"
+			)
+		)
+
+		(controller $Instance renderer='EventHubEventExitBanner'
+			(bind enabled "_isEventModeEnabled")
+			(args
+				_isBannerEnabled = "isBannerEnabled"
+			)
+		)
+	)
+
+	(controller $Tooltip
+		(bind renderer "_isEventModeEnabled ? 'EventHubExitTooltip' : 'EventHubEnterTooltip'")
+		(args
+			_eventBattleStateName = "_eventBattleStateName"
+			_text = "tooltipData.text"
+			_unifiedStatus = "tooltipData.unifiedStatus"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element EventHubEventEnterBanner (_isBannerEnabled:bool, _hasPrioritizedBanner:bool=false)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(macro EVENT_HUB_ACTIVE_PHASE_SCOPE)
+		(var urlLink:str = "_hasPrioritizedBanner	? 'url:../event_hub/banners/enter_banner_cropped.png'
+													: 'url:../event_hub/banners/enter_banner_' + activePhase + '.png'")
+	)
+
+	(class $Fullsize)
+	(style
+		(align = "bottom")
+	)
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundSize = "cover")
+			(bind backgroundImage "urlLink")
+		)
+		(bind alpha "!_isBannerEnabled ? 0.4 : 1")
+		(macro DESATURATION_DEFAULT "_isBannerEnabled")
+	)
+
+	(block
+		(bind visible "_isBannerEnabled && rollOver")
+
+		(class $FullsizeAbsolute)
+		(style (backgroundColor = "0x10FFFFFF"))
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_banner'"
+	)
+)
+
+(def element EventHubEventExitBanner (_isBannerEnabled:bool)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+
+	(style (align = "center"))
+	(macro PORT_BANNER_BG)
+	(class $PortBannerInnerMargins)
+
+	(block
+		(style (marginTop = "S") (marginBottom = "S"))
+		(element BannerItemIcon
+			_iconUrl = "'event_hub/banners/icon_banner_exit'"
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(alpha = 0.17)
+			(scale9grid = [2, 2, 2, 2])
+			(hitTest = false)
+			(backgroundImage = 'url:../service_kit/frames/one_pixel_frame.png')
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_strk_tabs'"
+	)
+)
+
+
+(def element EventHubMetaShopBanner ()
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(macro FEATURES "29")
+
+		(var metashopBannerStateEntity:gfx = "$datahub.getSingleEntity(CC.metashopBannerState)")
+		(var isActive:bool = "metashopBannerStateEntity ? metashopBannerStateEntity.metashopBannerState.isActive : false" (event "metashopBannerStateEntity.metashopBannerState.evUpdate"))
+		(var isNewBannerWebState:bool = "metashopBannerStateEntity ? metashopBannerStateEntity.metashopBannerState.isNew : false" (event "metashopBannerStateEntity.metashopBannerState.evUpdate"))
+
+		(var realmConstantsEntity:gfx = "$datahub.getSingleEntity(CC.realmConstants)")
+		(var isMergedShopsRealm:bool = "realmConstantsEntity ? realmConstantsEntity.realmConstants.isMergedShopsRealm : false")
+		(var isMergedShopsVisibilityLocked:bool = "isMergedShopsRealm && feature_29 == 'locked'")
+
+		(var isNew:bool = "isNewBannerWebState && !isMergedShopsVisibilityLocked || feature_29 == 'new'")
+		(var isBannerActive:bool = "isActive && !isMergedShopsVisibilityLocked")
+	)
+
+	(bindcall externalCall "'inputMapping.onRequest'" "['openMetashop', {}]" init=false watch=false  on='click')
+	(bindcall externalCall "'inputMapping.onAction'" "['featureSeen', {featureIndex: 29}]" init=false watch=false  on='click')
+
+	(controller $Tooltip
+		(bind renderer "'MetaShopBannerTooltip'")
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(class $PortBannerMargins)
+	(style (align = "center"))
+	(macro PORT_BANNER_BG)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(alpha = 0.17)
+			(scale9grid = [2, 2, 2, 2])
+			(hitTest = false)
+			(backgroundImage = 'url:../service_kit/frames/one_pixel_frame.png')
+		)
+	)
+
+	(block
+		(block
+			(style (marginTop = "S") (marginBottom = "S"))
+			(element BannerItemIcon
+				_iconUrl = "isBannerActive ? 'event_hub/banners/icon_banner_arsenal_active' : 'event_hub/banners/icon_banner_arsenal'"
+			)
+		)
+
+		
+		(block
+			(style (position = "absolute") (right = "-L") (top = "-XXS"))
+
+			(block
+				(macro DEFAULT_CONTROL_MARKER_ANIMATION "isNew")
+
+				(style
+					(bind alpha "isNew ? 1 : 0" watch=false)
+				)
+
+				(element MarkerNew)
+			)
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_strk_tabs'"
+	)
+)
+
+(def element EventHubSseBanner ()
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var unseenSseCategoriesEntity:gfx = "$datahub.getPrimaryEntity(CC.newContent, SC.Common.CONTENT_CATEGORY.SSETAGS)")
+		(var unseenSseCategoriesCounter:number = "unseenSseCategoriesEntity ? unseenSseCategoriesEntity.newContent.count : 0" (event "unseenSseCategoriesEntity.newContent.evCountChanged"))
+
+		(var shipAcesSeasonEntity:gfx = "$datahub.getSingleEntity(CC.shipAcesSeason)")
+		(var sseOpenEndedEntity:gfx = "$datahub.getSingleEntity(CC.sseOpenEnded)")
+
+		(macro FEATURES "9")
+
+		(var sseOpenEndedCounterEntity:gfx = "$datahub.getSingleEntity(CC.sseOpenEndedCounter)")
+		(var sseOpenEndedCounter:gfx = "sseOpenEndedCounterEntity ? sseOpenEndedCounterEntity.sseOpenEndedCounter : null")
+		(var activeSseOpenEndedTasks:number = "sseOpenEndedCounter ? sseOpenEndedCounter.activeAmount : 0" (event "sseOpenEndedCounter.evChanged"))
+
+		(var sseItemsFirstLine:gfx = "$datahub.getCollection(CC.sseCore).child('bannerSSEItems')")
+
+		(var sseCommonTasks:number = "sseItemsFirstLine ? sseItemsFirstLine.items.length : 0"	(event "sseItemsFirstLine.evAdded")
+																								(event "sseItemsFirstLine.evRemoved")
+																								(event "sseItemsFirstLine.evChanged"))
+		(var sseCommonTasksAmount:number = "sseCommonTasks ? sseCommonTasks : 0")
+		(var activeSseOpenEndedTasksAmount:number = "activeSseOpenEndedTasks ? activeSseOpenEndedTasks : 0")
+		(var sseAmount:number = "sseCommonTasksAmount + activeSseOpenEndedTasksAmount")
+		(var sseActive:bool = "sseAmount > 0")
+
+		(var newbieQuestsAll:gfx = "$datahub.getCollection(CC.newbieQuest).child('byTier')")
+		(var isNQAvailable:bool = "newbieQuestsAll.length > 0")
+
+		(var sseWindowStateEntity:gfx = "$datahub.getSingleEntity(CC.sseWindowState)")
+		(var unclaimedRewardCount:number = "sseWindowStateEntity ? sseWindowStateEntity.sseWindowState.unclaimedRewardCount : 0" (event "sseWindowStateEntity.sseWindowState.evChanged"))
+
+		(var newbieQuestsActive:gfx = "$datahub.getCollection(CC.newbieQuest).child('notDone.byTier')")
+		(var activeNQAmount:number = "newbieQuestsActive ? newbieQuestsActive.length : 0")
+		(var isNQBannerCount:bool = "activeNQAmount > 0")
+
+		(var sseBannerAmount:number = "	sseActive && !unclaimedRewardCount	? sseAmount
+																			: feature_9 == 'locked' && isNQBannerCount	? activeNQAmount
+																														: 0")
+
+		(var isNew:bool = "shipAcesSeasonEntity && sseOpenEndedEntity	? (sseActive && unseenSseCategoriesCounter) || shipAcesSeasonEntity.newItem || sseOpenEndedEntity.newItem
+																		: false")
+	)
+
+	(bindcall externalCall 'inputMapping.onAction' "['navigateTo', feature_9 == 'locked'	?	{route: SC.Ui_windows.ROUTE.MANAGEMENT}
+																							:	{route: SC.Ui_windows.ROUTE.SSE}]" init=false watch=false  on='click')
+	(bindcall externalCall "'inputMapping.onAction'" "['featureSeen', {featureIndex: 9}]" init=false watch=false  on='click')
+
+	(controller $Tooltip
+		(bind renderer "'SseBannerTooltip'")
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(class $PortBannerMargins)
+	(style (align = "center"))
+	(bind alpha "!(sseActive || isNQAvailable || unclaimedRewardCount || shipAcesSeasonEntity) ? 0.5 : 1")
+
+	(macro PORT_BANNER_BG)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(alpha = 0.17)
+			(scale9grid = [2, 2, 2, 2])
+			(hitTest = false)
+			(backgroundImage = 'url:../service_kit/frames/one_pixel_frame.png')
+		)
+	)
+
+	(block
+		(block
+			(style (marginTop = "S") (marginBottom = "S"))
+			(element BannerItemIcon
+				_iconUrl = "unclaimedRewardCount ? 'event_hub/banners/icon_banner_combat_missions_reward' : 'event_hub/banners/icon_banner_combat_missions'"
+			)
+		)
+
+		
+		(block
+			(style (position = "absolute") (right = "-L") (top = "-XXS"))
+
+			(block
+				(macro DEFAULT_CONTROL_MARKER_ANIMATION "isNew")
+
+				(style
+					(bind alpha "isNew ? 1 : 0" watch=false)
+				)
+
+				(element MarkerNew)
+			)
+		)
+	)
+
+	(block
+		(bind visible "sseBannerAmount")
+		(style (width = "100%") (align = "center") (marginTop = "-S") (marginBottom = "XS"))
+		(element BannerAmount
+			_amount = "sseBannerAmount"
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_strk_tabs'"
+	)
+)
+
+(def element EventHubLootboxBanner ()
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(macro FEATURES "21")
+		(macro FEATURES "30")
+
+		(var dockDataEntity:gfx = "$datahub.getSingleEntity(CC.dockData)")
+		(var isArmorVisible:bool = "dockDataEntity.dockData.isArmorVisible" (event "dockDataEntity.dockData.evIsArmorVisibleChanged"))
+
+		(var lootboxEntity:gfx = "$datahub.getSingleEntity(CC.lootboxConfigComponent)")
+		(var lootboxInStorage:number = "lootboxEntity.lootboxStorageComponent.inStorage" (event "lootboxEntity.lootboxStorageComponent.evUpdate"))
+
+		(var lootboxStorageComponent:gfx = "lootboxEntity.lootboxStorageComponent")
+		(var lootboxExp:number = "lootboxStorageComponent.lootExp" (event "lootboxStorageComponent.evUpdate"))
+		(var boughtToday:number = "lootboxStorageComponent.boughtToday" (event "lootboxStorageComponent.evUpdate"))
+		(var maxBought:number = "lootboxEntity.lootboxConfigComponent.maxBought" (event "lootboxEntity.lootboxConfigComponent.evUpdate"))
+		(var allBoxesBought:bool = "maxBought == boughtToday")
+
+		(var canBuyLootbox:bool = "lootboxExp >= lootboxEntity.lootboxConfigComponent.prices[boughtToday]")
+
+		(var isMaxDailyExp:bool = "lootboxExp >= lootboxEntity.lootboxConfigComponent.prices[2]")
+		(var curLootExpStep:number = "	lootboxExp >= lootboxEntity.lootboxConfigComponent.prices[1]	? lootboxExp - lootboxEntity.lootboxConfigComponent.prices[1] :
+										lootboxExp >= lootboxEntity.lootboxConfigComponent.prices[0]	? lootboxExp - lootboxEntity.lootboxConfigComponent.prices[0]
+																										: lootboxExp")
+
+		(var maxLootExpStep:number = "	lootboxExp >= lootboxEntity.lootboxConfigComponent.prices[1]	? lootboxEntity.lootboxConfigComponent.prices[2] - lootboxEntity.lootboxConfigComponent.prices[1] :
+										lootboxExp >= lootboxEntity.lootboxConfigComponent.prices[0]	? lootboxEntity.lootboxConfigComponent.prices[1] - lootboxEntity.lootboxConfigComponent.prices[0]
+																										: lootboxEntity.lootboxConfigComponent.prices[0]")
+
+		(var dailyLootProgress:number = "curLootExpStep / maxLootExpStep")
+
+		(var isNew:bool = "(feature_21 == 'new') || ((feature_30 == 'new') && canBuyLootbox)")
+	)
+
+	(bindcall externalCall 'inputMapping.onAction' "['navigateTo', {route: SC.Ui_windows.ROUTE.BARGE}]" init=false watch=false  on='click')
+	(bindcall externalCall "'inputMapping.onRequest'" "[isArmorVisible ? 'hideArmour' : '', {}]" init=false watch=false  on='click')
+	(bindcall externalCall "'inputMapping.onAction'" "['featureSeen', {featureIndex: 21}]" init=false watch=false  on='click')
+
+	(controller $Tooltip
+		(bind renderer "'LootboxBannerTooltip'")
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(class $PortBannerMargins)
+	(style (align = "center"))
+	(bind alpha "!allBoxesBought ? 1 : 0.5")
+
+	(macro PORT_BANNER_BG)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(alpha = 0.17)
+			(scale9grid = [2, 2, 2, 2])
+			(hitTest = false)
+			(backgroundImage = 'url:../service_kit/frames/one_pixel_frame.png')
+		)
+	)
+
+	(block
+		(block
+			(style (marginTop = "S") (marginBottom = "S"))
+			(element BannerItemIcon
+				_iconUrl = "canBuyLootbox && !allBoxesBought? 'event_hub/banners/icon_banner_container' : 'event_hub/banners/icon_banner_container_lock'"
+			)
+		)
+
+		
+		(block
+			(style (position = "absolute") (right = "-L") (top = "-XXS"))
+
+			(block
+				(macro DEFAULT_CONTROL_MARKER_ANIMATION "isNew")
+
+				(style
+					(bind alpha "isNew ? 1 : 0" watch=false)
+				)
+
+				(element MarkerNew)
+			)
+		)
+	)
+
+	(block
+		(style (width = "100%") (align = "center") (marginBottom = "XS"))
+
+		(controller $Instance renderer='DefaultProgressBar'
+			(bind enabled "!isMaxDailyExp")
+			(args
+				_progress = "dailyLootProgress"
+				_width = "L"
+				_height = "6"
+			)
+		)
+
+		(controller $Instance renderer='BannerAmount'
+			(bind enabled "lootboxInStorage")
+			(args
+				_amount = "lootboxInStorage"
+			)
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_strk_tabs'"
+	)
+)
+
+(def element EventHubBattlePassBanner ()
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var battlePassCurrentLevelCollection:gfx = "$datahub.getCollection(CC.battlePassCurrentLevel)")
+		(var battlePassCurrentLevelEntity:gfx = "	battlePassCurrentLevelCollection &&
+													battlePassCurrentLevelCollection.items.length > 0	? battlePassCurrentLevelCollection.items[0]
+																										: null"
+													(event "battlePassCurrentLevelCollection.evAdded") (event "battlePassCurrentLevelCollection.evRemoved"))
+
+		(var battlePassCurrentLevel:gfx = "battlePassCurrentLevelEntity ? battlePassCurrentLevelEntity.battlePassLevel : null" (event "battlePassCurrentLevelEntity.battlePassLevel.evChanged"))
+
+		(var curLevel:number = "battlePassCurrentLevel ? battlePassCurrentLevel.level : 0" (event "battlePassCurrentLevel.evChanged"))
+		(var curPoints:number = "battlePassCurrentLevel ? battlePassCurrentLevel.points : 0" (event "battlePassCurrentLevel.evChanged"))
+		(var maxPoints:number = "battlePassCurrentLevel ? battlePassCurrentLevel.pointsPerLevel : 0" (event "battlePassCurrentLevel.evChanged"))
+
+		(var battlePassPostProgressionLevel:gfx = "battlePassCurrentLevelEntity ? battlePassCurrentLevelEntity.battlePassPostProgressionLevel : null" (event "battlePassCurrentLevelEntity.battlePassPostProgressionLevel.evChanged"))
+
+		(var countCompleted:number = "battlePassPostProgressionLevel ? battlePassPostProgressionLevel.countCompleted : 0" (event "battlePassPostProgressionLevel.evChanged"))
+
+		(var curPointsProgress:number = "maxPoints ? curPoints / maxPoints : 0")
+		(var level:number = "countCompleted		? curLevel + countCompleted - 1
+												: curLevel - 1")
+
+		(var unclaimedRewards:gfx = "$datahub.getCollection(CC.battlePassReward).getChildByPath('unclaimedRewards')")
+		(var hasReward:bool = "unclaimedRewards && unclaimedRewards.items.length > 0" (event "unclaimedRewards.evAdded") (event "unclaimedRewards.evRemoved"))
+	)
+
+	(bindcall externalCall "'inputMapping.onRequest'" "['showBattlePassMain', {}]" init=false watch=false  on='click')
+
+	(controller $Tooltip
+		(bind renderer "'BattlePassBannerTooltip'")
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(class $PortBannerMargins)
+	(style (align = "center"))
+	(macro PORT_BANNER_BG)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(alpha = 0.17)
+			(scale9grid = [2, 2, 2, 2])
+			(hitTest = false)
+			(backgroundImage = 'url:../service_kit/frames/one_pixel_frame.png')
+		)
+	)
+
+	(block
+		(style (marginTop = "S") (marginBottom = "S"))
+		(element BannerItemIcon
+			_iconUrl = "hasReward ? 'event_hub/banners/icon_banner_event_pass_reward' : 'event_hub/banners/icon_banner_event_pass'"
+		)
+	)
+
+	(block
+		(style (width = "100%") (align = "center") (marginBottom = "XS"))
+		(element DefaultProgressBar
+			_progress = "curPointsProgress"
+			_width = "32"
+			_height = "6"
+		)
+
+		(element BannerAmount
+			_amount = "level"
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_strk_tabs'"
+	)
+)
+
+(def element EventHubShipyardBanner ()
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var shipyardBannerStateEntity:gfx = "$datahub.getSingleEntity(CC.shipyardBannerState)")
+		(var shipyardProgressbar:dict = "shipyardBannerStateEntity ? shipyardBannerStateEntity.shipyardBannerState.progressbar : null" (event "shipyardBannerStateEntity.shipyardBannerState.evUpdate"))
+		(var shipyardStepProgress:number = "shipyardProgressbar ? shipyardProgressbar.points/shipyardProgressbar.pointsMax : 0")
+		(var isActiveState:bool = "shipyardBannerStateEntity ? shipyardBannerStateEntity.shipyardBannerState.type != 'finished' : false" (event "shipyardBannerStateEntity.shipyardBannerState.evUpdate"))
+		(var isShipyardMaxProgressReached:bool = "shipyardProgressbar ? shipyardProgressbar.points == shipyardProgressbar.pointsMax : false")
+		(var rewardsAvailable:bool = "shipyardBannerStateEntity ? shipyardBannerStateEntity.shipyardBannerState.availableRewards > 0 : null" (event "shipyardBannerStateEntity.shipyardBannerState.evUpdate"))
+		(var boosterAvailable:bool = "shipyardBannerStateEntity ? shipyardBannerStateEntity.shipyardBannerState.boosterAvailable : null" (event "shipyardBannerStateEntity.shipyardBannerState.evUpdate"))
+	)
+
+	(bindcall externalCall 'inputMapping.onAction' "['navigateTo', {route: SC.Ui_windows.ROUTE.SHIPYARD}]" init=false watch=false  on='click')
+
+	(controller $Tooltip
+		(bind renderer "'ShipyardBannerTooltip'")
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(class $PortBannerMargins)
+	(style (align = "center"))
+	(macro PORT_BANNER_BG)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(alpha = 0.17)
+			(scale9grid = [2, 2, 2, 2])
+			(hitTest = false)
+			(backgroundImage = 'url:../service_kit/frames/one_pixel_frame.png')
+		)
+	)
+
+	(block
+		(style (marginTop = "S") (marginBottom = "S"))
+		(element BannerItemIcon
+			_iconUrl = "rewardsAvailable || boosterAvailable ? 'event_hub/banners/icon_banner_shipyard_reward' : 'event_hub/banners/icon_banner_shipyard'"
+		)
+	)
+
+	(block
+		(bind visible "isActiveState && !isShipyardMaxProgressReached")
+		(style (width = "100%") (align = "center") (marginBottom = "S"))
+		(element DefaultProgressBar
+			_progress = "shipyardStepProgress"
+			_width = "L"
+			_height = "6"
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_strk_tabs'"
+	)
+)
+
+(def element EventHubSnowflakesBanner ()
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var bonustagSeasonEntity:gfx = "$datahub.getCollection(CC.bonusTagSeason).getChildByPath('snowflakeSeasonCollection').items[0]")
+		(var bonusTagSeason:gfx = "bonustagSeasonEntity ? bonustagSeasonEntity.bonusTagSeason : null" (event "bonustagSeasonEntity.bonusTagSeason.evChanged"))
+		(var bonusSnowflakesCount:number = "bonusTagSeason ? bonusTagSeason.bonusSnowflakes : 0" (event "bonusTagSeason.evChanged"))
+		(var bonusSnowflakeProgress:number = "bonusTagSeason ? bonusTagSeason.bonusSnowflakeProgress : 0" (event "bonusTagSeason.evChanged"))
+		(var bonusSnowflakeThreshold:number = "bonusTagSeason ? bonusTagSeason.bonusSnowflakeThreshold : 0" (event "bonusTagSeason.evChanged"))
+		(var bannerState:number = "bonusTagSeason ? bonusTagSeason.bannerState : 0" (event "bonusTagSeason.evBannerStateChanged"))
+		(var isInactive:bool = "bonusSnowflakesCount == 0 || bannerState == SC.Ui_common.SNOWFLAKES_BANNER_STATE.INACTIVE")
+		(var isActive:bool = "bonusSnowflakesCount > 0 && bannerState == SC.Ui_common.SNOWFLAKES_BANNER_STATE.ACTIVE")
+		(var bonusSnowflakeBarProgress:number = "bonusSnowflakeThreshold ? bonusSnowflakeProgress / bonusSnowflakeThreshold * 100 : 0")
+		(var expToNextSnowflake:number = "bonusSnowflakeThreshold - bonusSnowflakeProgress")
+		(var isNew:bool = "bonustagSeasonEntity.newItem != null")
+	)
+
+	(bindcall externalCall "'inputMapping.onAction'" "[isNew ? 'makeSeen' : '', {}]" init=false watch=false  on='click')
+	(bindcall externalCall "'inputMapping.onAction'" "['showSnowflakesModal', {}]" init=false watch=false  on='click')
+
+	(controller $Tooltip
+		(bind renderer "'SnowflakesBannerTooltip'")
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(class $PortBannerMargins)
+	(style (align = "center"))
+	(macro PORT_BANNER_BG)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(alpha = 0.17)
+			(scale9grid = [2, 2, 2, 2])
+			(hitTest = false)
+			(backgroundImage = 'url:../service_kit/frames/one_pixel_frame.png')
+		)
+	)
+
+	(block
+		(style (marginTop = "S") (marginBottom = "S"))
+		(element BannerItemIcon
+			_iconUrl = "'event_hub/banners/icon_banner_snowflakes'"
+		)
+	)
+
+
+	(block
+		(style (width = "100%") (align = "center") (marginBottom = "XS"))
+
+		(controller $Instance renderer='DefaultProgressBar'
+			(args
+				_progress = "bonusSnowflakeBarProgress"
+				_width = "L"
+				_height = "6"
+			)
+		)
+
+		(controller $Instance renderer='BannerAmount'
+			(bind enabled "isActive")
+			(args
+				_amount = "bonusSnowflakesCount"
+			)
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_strk_tabs'"
+	)
+)
+
+(def element EventHubLeftSideBannersInset ()
+	(scope
+		(var realmConstantsEntity:gfx = "$datahub.getSingleEntity(CC.realmConstants)")
+		(var isMergedShopsRealm:bool = "realmConstantsEntity.realmConstants.isMergedShopsRealm")
+		(var isPremshopUIAvailable:bool = "realmConstantsEntity.realmConstants.isPremshopUIAvailable")
+
+		(var metashopBannerStateEntity:gfx = "$datahub.getSingleEntity(CC.metashopBannerState)")
+		(var metashopVisible:bool = "metashopBannerStateEntity ? metashopBannerStateEntity.metashopBannerState.visible : false" (event "metashopBannerStateEntity.metashopBannerState.evUpdate"))
+
+		(var battlePassCollection:gfx = "$datahub.getCollection(CC.battlePass)")
+		(var battlePassEntity:gfx = "battlePassCollection.length ? battlePassCollection.items[0] : null" (event "battlePassCollection.evAdded") (event "battlePassCollection.evRemoved"))
+		(var battlePass:gfx = "battlePassEntity ? battlePassEntity.battlePass : null" (event "battlePassEntity.battlePass.evChanged"))
+		(var battlePassState:number = "battlePass ? battlePass.state : 0" (event "battlePass.evBattlePassStateChanged"))
+		(var isBattlePassBannerVisible:bool = "battlePassState == SC.Common.BATTLEPASS_SEASON_STATE.ACTIVE")
+
+		(macro FEATURES "9")
+		(var shipyardBannerStateEntity:gfx = "$datahub.getSingleEntity(CC.shipyardBannerState)")
+		(var isShipyardVisible:bool = "shipyardBannerStateEntity ? shipyardBannerStateEntity.shipyardBannerState.visible : false" (event "shipyardBannerStateEntity.shipyardBannerState.evUpdate"))
+
+		(var newbieQuestsCollection:gfx = "$datahub.getCollection(CC.newbieQuest)")
+		(var isNewbieQuestsVisible:bool = "newbieQuestsCollection.length > 0")
+		(var isSSEBannerVisible:bool = "feature_9 != 'locked'")
+
+		(var snowflakeSeasonEntity:gfx = "$datahub.getCollection(CC.bonusTagSeason).getChildByPath('snowflakeSeasonCollection').items[0]")
+		(var snowflakeBannerState:number = "snowflakeSeasonEntity ? snowflakeSeasonEntity.bonusTagSeason.bannerState : SC.Ui_common.SNOWFLAKES_BANNER_STATE.DISABLED" (event "snowflakeSeasonEntity.bonusTagSeason.evBannerStateChanged"))
+		(var isSnowflakesBannerVisible:bool = "snowflakeSeasonEntity && snowflakeBannerState != SC.Ui_common.SNOWFLAKES_BANNER_STATE.DISABLED")
+
+		(macro FEATURES "21")
+		(var showLootBox:bool = "feature_21 != 'locked'")
+	)
+
+	(block
+		(controller $Instance renderer='EventHubMetaShopBanner'
+			(bind enabled "isMergedShopsRealm || metashopVisible || isPremshopUIAvailable")
+		)
+	)
+
+	(block
+		(controller $Instance renderer='EventHubBattlePassBanner'
+			(bind enabled "isBattlePassBannerVisible")
+		)
+	)
+
+	(block
+		(controller $Instance renderer='EventHubShipyardBanner'
+			(bind enabled "feature_9 != 'locked' && isShipyardVisible")
+		)
+	)
+
+	(block
+		(controller $Instance renderer='EventHubSseBanner'
+			(bind enabled "isSSEBannerVisible")
+		)
+	)
+
+	(block
+		(controller $Instance renderer='EventHubLootboxBanner'
+			(bind enabled "showLootBox")
+		)
+	)
+)
+
+(def element BannerItemIcon (_iconUrl:str)
+	(style
+		(width = "32") (height = "32")
+		(bind backgroundImage "'url:../' + _iconUrl + '.png'")
+	)
+)
+
+(def element BannerAmount (_amount:number)
+	(scope
+		(var isCompactView:bool = "_amount > 999")
+	)
+
+	(style (width = 100%) (align = "center") (marginTop = "S") (marginBottom = "S"))
+	(tf
+		(style (width = 100%) (alpha = "TA") (textAlign = "center") (multiline = "false") (bind marginTop "isCompactView ? 1px : 0"))
+		(bind class "isCompactView ? '$TextDefaultBoldNM' : '$TextDefaultBold17NM'")
+
+		(bind text "_amount")
+	)
+)
+
+(def element BannerItemTitle (_title:str, _textColor:str = null)
+	(style
+		(width = "100%")
+	)
+
+	(tf
+		(class $TextDefaultBold17NM)
+		(style
+			(textColor = "_textColor ? _textColor : SC.Ui_styles.SERVICE_COLORS.WHITE")
+			(alpha = "_textColor ? 1 : TA")
+		)
+		(bind text "_title")
+	)
+)
+
+(def element FlagshipPVEBanner (_operationEntityId:number)
+	(scope
+		(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM_SCOPE)
+		(macro MOUSE_HANDLER_SCOPE)
+		(var operationEntity:gfx="$datahub.getEntity(_operationEntityId)")
+		(var bannerPath:str = "'url:../flagships_pve/port_banner/banner_flagships.png'")
+	)
+
+	(class $Fullsize)
+	(style
+		(align = "bottom")
+		(width = 240px)
+		(height = 36px)
+	)
+
+	(bindcall externalCall "'inputMapping.onRequest'" "['openEventWikiPage', {}]" init=false watch=false on='click')
+
+	
+	(block
+		(bind visible "rollOver")
+
+		(class $FullsizeAbsolute)
+		(style (backgroundColor = "0x10FFFFFF"))
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundSize = "cover")
+			(backgroundImage = "bannerPath")
+		)
+	)
+
+	(block
+		(style
+			(width = 100%)
+			(position = "absolute")
+			(left = 12px)
+			(bottom = 12px)
+		)
+		(controller $Instance renderer='BannerItemTitle'
+			(bind enabled "true")
+			(args
+				_title = "toUpper(tr('IDS_FLAGSHIP_BANNER_TITLE'))"
+				_textColor = "SC.Ui_styles.SERVICE_COLORS.PAPER"
+			)
+		)
+	)
+	(block
+		(bind visible "rollOver")
+
+		(class $FullsizeAbsolute)
+		(style (backgroundColor = "0x10FFFFFF"))
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_banner'"
+	)
+	
+	(controller $Tooltip
+		(bind renderer "'FlagshipBannerTooltip'")
+		(args
+			_operationEntity = "operationEntity"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)

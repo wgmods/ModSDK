@@ -1,0 +1,45 @@
+(def element FlagshipsDescriptionTooltip (_name:str = "''", _imageUrl:str = "''", _isShowUB2Tooltip:bool=false) layout=true dispatch_size_change=true
+	(name = "'FlagshipsDescriptionTooltip'") 
+	(style (hitTest = false) (width = 300px))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+						_imageUrl = "_imageUrl"
+						_imageWidth = 60
+						_imageHeight = 60
+						_headerText = "'IDS_FLAGSHIPS_BATTLESTAT_SPEC_NAME_' + toUpper(_name)"
+						_subheaderText = 'IDS_FLAGSHIPS_BATTLESTAT_TOOLTIP_SUBHEADER'
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemDescriptionText _descriptionText = "'IDS_FLAGSHIPS_BATTLESTAT_DESC_' + toUpper(_name)")
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemSecondaryHeaderText _headerText = 'IDS_FLAGSHIPS_BUFFS_HEADER')
+		
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(block
+					(style (width = 100%) (marginTop = "S") (marginBottom = "S"))
+					(element TooltipSystemDescriptionText _descriptionText = "'IDS_FLAGSHIPS_BATTLESTAT_' + toUpper(_name) + '_BUFF'")
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemSecondaryHeaderText _headerText = 'IDS_FLAGSHIPS_NERFS_HEADER')
+
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(block
+					(style (width = 100%) (marginTop = "S") (marginBottom = "S"))
+					(element TooltipSystemDescriptionText _descriptionText = "'IDS_FLAGSHIPS_BATTLESTAT_' + toUpper(_name) + '_NERF'")
+				)
+			)
+		)
+	)
+)

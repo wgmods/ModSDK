@@ -1,0 +1,1752 @@
+(def constant ST_EQUIPMENT_HD_CUTOFF 800)
+(def constant ST_EQUIPMENT_HD_AR_CUTOFF 1.4)
+
+(def constant ST_EQUIPMENT_LEFT_OFFSET 1)
+(def constant ST_EQUIPMENT_TOP_OFFSET 0.6)
+
+(def constant ST_GRID_ITEM_SIZE 80)
+(def constant ST_HD_GRID_ITEM_SIZE 60)
+(def constant ST_INFOTIP_ITEM_HEIGHT 52)
+(def constant ST_ICONS_CORNER_OFFSET 6)
+
+(def constant ST_COLORS {
+	'installed':				'0xFFfac363',
+	'installed_over':			'0xFFfbcf82',
+	'available':				'0xFFff9e1a',
+	'available_over':			'0xFFffb148',
+	'not_available':			'0xFFa686b6',
+	'not_available_over':		'0xFFb89ec5',
+	'not_available_disabled':	'0x88a686b6',
+	'unavailable':				'0xFFed8146',
+	'system_block':				'0xFFb78096',
+	'system_block_secondary':	'0xFFa1597a'
+})
+
+(def constant ST_COLOR_TRANSFORM {
+	'connection_main':		{redOffset: -5, greenOffset: -60, blueOffset: -156},
+	'connection_main_over':	{redOffset: -4, greenOffset: -48, blueOffset: -125},
+	'connection_base':		{redOffset: 0, greenOffset: -97, blueOffset: -229},
+	'decor_base':			{redOffset: -72, greenOffset: -127, blueOffset: -105},
+	'decor_sec':			{redOffset: -89, greenOffset: -121, blueOffset: -73},
+	'decor_sec_over':		{redOffset: -71, greenOffset: -97, blueOffset: -58},
+	'blocked':				{redOffset: -18, greenOffset: -126, blueOffset: -185},
+	'decor_third':			{redOffset: -94, greenOffset: -166, blueOffset: -133},
+})
+
+
+(def constant ST_BONUS_POSITION {
+	0: 0,
+	1: -1,
+	2: -1,
+	3: 1,
+	4: 2,
+	5: -1,
+	6: 3,
+	7: 4,
+	8: 5,
+	9: 6,
+	10: -1,
+	11: 7
+})
+
+(def constant ST_MAX_ACTIVE_BONUSES 4)
+
+(def css $TextDefaultBoldST ()
+	(extends $TextDefaultBoldNM)
+	(textColor = 0xFF000000)
+	(filters)
+)
+
+(def css $TextDefaultST ()
+	(extends $TextDefaultNM)
+	(textColor = 0xFF000000)
+	(filters)
+)
+
+(def css $TextST7NM ()
+	(extends $TextDefaultBold7NM)
+	(textColor = 0xFF000000)
+	(filters)
+)
+
+(def element STEquipmentScreen (_shipId:number)
+	(scope
+		(event evStartShow)
+		(event evStartHide)
+
+		(macro STAGE_SIZE)
+		(var aspectRatio:number = "stageWidth / stageHeight")
+
+		(var isHD:bool = "aspectRatio < ST_EQUIPMENT_HD_AR_CUTOFF || stageHeight < ST_EQUIPMENT_HD_CUTOFF")
+		(var shipEntity:gfx = "$datahub.getPrimaryEntity(CC.ship, _shipId)")
+		(var isCV:str = "shipEntity && shipEntity.ship.subtype == SC.Common.SHIP_TYPE.AIRCARRIER ? true : false")
+
+
+		(var newContentEntity:gfx = "$datahub.getPrimaryEntity(CC.newContent, SC.Common.CONTENT_CATEGORY.BATTLE_CARD)")
+		(var newContentCounter:gfx = "newContentEntity ? newContentEntity.newContent.count : 0" (event "newContentEntity.newContent.evCountChanged"))
+		(var unseenModulesCollection:gfx = "$datahub.getCollection(CC.moduleST).getChildByPath('unseen')")
+		(var unseenModules:array = "unseenModulesCollection.items" (event "unseenModulesCollection.evAdded") (event "unseenModulesCollection.evRemoved"))
+
+		(var isNew:bool = "newContentCounter > 0 || unseenModules.length != 0")
+	)
+
+	(style
+		(bind height "stageHeight")
+		(bind width "stageWidth")
+		(backgroundImage = 'url:../event_hub/equipment/background.jpg')
+		(backgroundSize = "cover")
+	)
+
+	(dispatch evStartShow on='addedToStage')
+	(dispatch evStartHide on='removedFromStage')
+
+	(bindcall externalCall 'sound.playSetSoundDirect' "['dock_inset', 'tab_equipment_whoosh']" init=false watch=false on='addedToStage')
+	(bindcall externalCall "isNew ? 'inputMapping.onAction' : ''" "['setEventHubFlag', {flag: SC.Common.EVENT_HUB_FLAGS.EQUIPMENT_SEEN}]" init=false watch=false on='addedToStage')
+
+
+	(controller $Animation
+		(bindcall play duration=0.25 delay=0.2 from="{alpha: 0}" to="{alpha: 1}" action="killAll" (event "evStartShow"))
+		(bindcall play duration=0.35 from="{alpha: 1}" to="{alpha: 0}" action="killAll" (event "evStartHide"))
+	)
+
+	(block
+
+		(style
+			(bind height "stageHeight - TOP_BAR_HEIGHT")
+			(width = 100%)
+		)
+
+		(block
+			(style 
+				(bind width "!isHD ? 1520 : 1040")
+				(bind height "!isHD ? 640 : 480")
+				(position = "absolute")
+				(bind left "!isHD ? (stageWidth - 1520) / 2 * ST_EQUIPMENT_LEFT_OFFSET : (stageWidth - 1040) / 2 * ST_EQUIPMENT_LEFT_OFFSET")
+				(bind top "!isHD ? (stageHeight - 640) / 2 * ST_EQUIPMENT_TOP_OFFSET : (stageHeight - 480) / 2 * ST_EQUIPMENT_TOP_OFFSET")
+			)
+
+			(hblock
+				(style
+					(width = 100%)
+					(height = 168)
+					(position = "absolute")
+					(bind bottom "isCV ? -16 : 0")
+					(left = 0)
+				)
+				(element STArmamentsAndConsumables
+					_shipId = "_shipId"
+					_stageHeight = "stageHeight"
+					_isHD = "isHD"
+				)
+			)
+
+			(hblock
+				(class $FullsizeAbsolute)
+				(element PivotContainer
+					_shipId = "_shipId"
+					_isHD = "isHD"
+					_visible = "!isCV"
+				)
+
+				(element CVPivotContainer
+					_shipId = "_shipId"
+					_isHD = "isHD"
+					_visible = "isCV"
+				)
+
+				(element TTXPanelST
+					_shipId = "_shipId"
+					_isHD = "isHD"
+				)
+			)
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(bind height "stageHeight")
+			(bind width "stageWidth")
+			(bind backgroundImage "'url:../event_hub/equipment/overlay.png'")
+			(backgroundSize = "fill")
+			(hitTest = false)
+		)
+	)
+)
+
+(def element PivotContainer(_shipId:number, _isHD:bool, _visible:bool)
+	(scope
+		(event evInfotipVisible)
+
+		(var shipEntity:gfx = "$datahub.getPrimaryEntity(CC.ship, _shipId)")
+		(var moduleSetUp:gfx = "shipEntity ? shipEntity.shipST : null")
+		(var allModules:gfx = "moduleSetUp ? moduleSetUp.allModules : null" (event "moduleSetUp.evUpdated"))
+		(var installed:gfx = "moduleSetUp ? moduleSetUp.installed : null" (event "moduleSetUp.evUpdated"))
+		(var previewID:number = "moduleSetUp ? moduleSetUp.inPreview : -1" (event "moduleSetUp.evUpdated"))
+
+		(var infotipOpenId:number = "-1")
+		(bind infotipOpenId "$event.state ? $event.eId : -1" init=false watch=false (event "evInfotipVisible"))
+	)
+
+	(bind visible "_visible")
+
+	(style
+		(bind width "!_isHD ? 1040 : 720")
+		(bind height "!_isHD ? 400 : 280")
+	)
+
+	(element STCentralDecor
+		_isHD = "_isHD"
+	)
+
+	(element ExternalPivotSelector
+		_pivotPoint = "!_isHD ? {x: 480, y: 290} : {x: 314, y: 170}"
+		_selectorPosition = "!_isHD ? {x: 800, y: 400} : {x: 480, y: 280}"
+		_selectorItems = "_visible ? allModules[3] : []"
+		_selectorRenderer = 'ModuleItem'
+		_currentSelection = "_visible ? indexOf(installed[3], allModules[3]) : 0"
+		_selectorType = "SC.Common.ST_EQUIPMENT_ITEM_GROUP.SECONDARY_WEAPON"
+	)
+	(element ExternalPivotSelector
+		_pivotPoint = "!_isHD ? {x: 220, y: 290} : {x: 70, y: 170}"
+		_selectorPosition = "!_isHD ? {x: 0, y: 400} : {x: 0, y: 280}"
+		_selectorItems = "_visible ? allModules[2]: []"
+		_selectorRenderer = 'ModuleItem'
+		_currentSelection = "_visible ? indexOf(installed[2], allModules[2]) : 0"
+		_angleType = 1
+		_selectorType = "SC.Common.ST_EQUIPMENT_ITEM_GROUP.HULL"
+	)
+	(element ExternalPivotSelector
+		_pivotPoint = "!_isHD ? {x: 320, y: 118} : {x: 154, y: 98}"
+		_selectorPosition = "!_isHD ? {x: 0, y: 0} : {x: 0, y: 0}"
+		_selectorItems = "_visible ? allModules[0] : []"
+		_selectorRenderer = 'ModuleItem'
+		_currentSelection = "_visible ? indexOf(installed[0], allModules[0]) : 0"
+		_selectorType = "SC.Common.ST_EQUIPMENT_ITEM_GROUP.SHIELD"
+	)
+	(element ExternalPivotSelector
+		_pivotPoint = "!_isHD ? {x: 580, y: 118} : {x: 398, y: 98}"
+		_selectorPosition = "!_isHD ? {x: 800, y: 0} : {x: 480, y: 0}"
+		_selectorItems = "_visible ? allModules[1] : []"
+		_selectorRenderer = 'ModuleItem'
+		_currentSelection = "_visible ? indexOf(installed[1], allModules[1]) : 0"
+		_angleType = 1
+		_selectorType = "SC.Common.ST_EQUIPMENT_ITEM_GROUP.PRIMARY_WEAPON"
+	)
+
+	(element ShipDollST
+		_shipEntity = "shipEntity"
+		_allModules = "allModules"
+		_installed = "installed"
+		_previewID = "previewID"
+		_isHD = "_isHD"
+		_infotipOpenId = "infotipOpenId"
+	)
+)
+
+(def element ShipDollST (_shipEntity:gfx, _allModules:gfx, _installed:gfx, _previewID:number, _isHD:bool = false, _infotipOpenId:number = -1)
+	(scope
+		(var shortName:str = "_shipEntity ? _shipEntity.ship.shortName : ''")
+		(var previewEntity:gfx = "_previewID != -1 ? $datahub.getEntity(_previewID) : null")
+		(var previewModule:gfx = "previewEntity ? previewEntity.moduleST : null")
+		(var previewModuleIndex:number = "previewModule ? previewModule.stGroup : null" (event "previewModule.evUpdated"))
+
+		(var infotipEntity:gfx = "_infotipOpenId != -1 ? $datahub.getEntity(_infotipOpenId) : null")
+		(var infotipModule:gfx = "infotipEntity ? infotipEntity.moduleST : null")
+		(var infotipModuleIndex:number = "infotipModule ? infotipModule.stGroup : -1")
+	)
+
+	(class $MiddleVHAbsolutely)
+	(style
+		(bind width "!_isHD ? 880 : 440")
+		(bind height "!_isHD ? 240 : 120")
+	)
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(bind backgroundImage "'url:../event_hub/equipment/ship_dolls/' + shortName + '/1_bg.png'")
+			(backgroundSize = "fill")
+		)
+	)
+
+	(element ShipDollLayerST
+		_shipName = "shortName"
+		_layerIndex = 2
+		_moduleType = '_hull'
+		_moduleSubtype = "previewModuleIndex == 2 ? indexOf(previewEntity.id, _allModules[2]) + 1 : indexOf(_installed[2], _allModules[2]) + 1"
+		_moduleState = "	previewModuleIndex == 2	? '_inactive' :
+							infotipModuleIndex == 2 ? '_selected' : '_up'"
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(bind backgroundImage "'url:../event_hub/equipment/ship_dolls/' + shortName + '/3_border.png'")
+			(backgroundSize = "fill")
+		)
+	)
+
+	(element ShipDollLayerST
+		_shipName = "shortName"
+		_layerIndex = 4
+		_moduleType = '_maingun'
+		_moduleSubtype = "previewModuleIndex == 1 ? indexOf(previewEntity.id, _allModules[1]) + 1  : indexOf(_installed[1], _allModules[1]) + 1"
+		_moduleState = "	previewModuleIndex == 1	? '_inactive' :
+							infotipModuleIndex == 1 ? '_selected' : '_up'"
+	)
+
+	(element ShipDollLayerST
+		_shipName = "shortName"
+		_layerIndex = 5
+		_moduleType = '_secgun'
+		_moduleSubtype = "previewModuleIndex == 3 ? indexOf(previewEntity.id, _allModules[3]) + 1  : indexOf(_installed[3], _allModules[3]) + 1"
+		_moduleState = "	previewModuleIndex == 3	? '_inactive' :
+							infotipModuleIndex == 3 ? '_selected' : '_up'"
+	)
+
+	(element ShipDollLayerST
+		_shipName = "shortName"
+		_layerIndex = 6
+		_moduleType = '_shield'
+		_moduleSubtype = "previewModuleIndex == 0 ? indexOf(previewEntity.id, _allModules[0]) + 1  : indexOf(_installed[0], _allModules[0]) + 1"
+		_moduleState = "	previewModuleIndex == 0	? '_inactive' :
+							infotipModuleIndex == 0 ? '_selected' : '_up'"
+	)
+)
+
+(def element ShipDollLayerST (_shipName:str, _layerIndex:number, _moduleType:str, _moduleSubtype:number, _moduleState:str)
+	(class $FullsizeAbsolute)
+	(style
+		(bind backgroundImage "'url:../event_hub/equipment/ship_dolls/' + _shipName + '/' + _layerIndex + _moduleType + '_type' + _moduleSubtype + _moduleState + '.png'")
+		(backgroundSize = "fill")
+	)
+)
+
+(def element CVPivotContainer(_shipId:number, _isHD:bool, _visible:bool)
+	(scope
+		(var shipEntity:gfx = "$datahub.getPrimaryEntity(CC.ship, _shipId)")
+		(var shortName:str = "shipEntity ? shipEntity.ship.shortName : ''")
+		(var moduleSetUp:gfx = "shipEntity ? shipEntity.shipST : null")
+		(var allModules:gfx = "moduleSetUp ? moduleSetUp.allModules : null" (event "moduleSetUp.evUpdated"))
+		(var installed:gfx = "moduleSetUp ? moduleSetUp.installed : null" (event "moduleSetUp.evUpdated"))
+	)
+
+	(bind visible "_visible")
+
+	(style
+		(bind width "!_isHD ? 1040 : 720")
+		(bind height "!_isHD ? 400 : 280")
+	)
+
+	(element STCVCentralDecor
+		_isHD = "_isHD"
+	)
+
+	(element ExternalPivotSelector
+		_pivotPoint = "!_isHD ? {x: 524, y: 290} : {x: 322, y: 170}"
+		_selectorPosition = "!_isHD ? {x: 800, y: 372} : {x: 480, y: 252}"
+		_selectorItems = "_visible ? allModules[4] : []"
+		_selectorRenderer = 'ModuleItem'
+		_currentSelection = "_visible ? indexOf(installed[4], allModules[4]) : 0"
+		_selectorType = "SC.Common.ST_EQUIPMENT_ITEM_GROUP.TORPEDO_BOMBERS"
+	)
+	(element ExternalPivotSelector
+		_pivotPoint = "!_isHD ? {x: 276, y: 290} : {x: 74, y: 170}"
+		_selectorPosition = "!_isHD ? {x: 0, y: 400} : {x: 0, y: 280}"
+		_selectorItems = "allModules[1]"
+		_selectorRenderer = 'ModuleItem'
+		_currentSelection = "indexOf(installed[1], allModules[1])"
+		_angleType = "!_isHD ? 0 : 1"
+		_selectorType = "SC.Common.ST_EQUIPMENT_ITEM_GROUP.HULL"
+	)
+	(element ExternalPivotSelector
+		_pivotPoint = "!_isHD ? {x: 276, y: 118} : {x: 74, y: 98}"
+		_selectorPosition = "!_isHD ? {x: 0, y: 0} : {x: 0, y: 0}"
+		_selectorItems = "_visible ? allModules[0] : []"
+		_selectorRenderer = 'ModuleItem'
+		_currentSelection = "_visible ? indexOf(installed[0], allModules[0]) : 0"
+		_angleType = "!_isHD ? 0 : 1"
+		_selectorType = "SC.Common.ST_EQUIPMENT_ITEM_GROUP.SHIELD"
+	)
+	(element ExternalPivotSelector
+		_pivotPoint = "!_isHD ? {x: 524, y: 118} : {x: 322, y: 98}"
+		_selectorPosition = "!_isHD ? {x: 800, y: 0} : {x: 480, y: 0}"
+		_selectorItems = "_visible ? allModules[2] : []"
+		_selectorRenderer = 'ModuleItem'
+		_currentSelection = "_visible ? indexOf(installed[2], allModules[2]) : 0"
+		_selectorType = "SC.Common.ST_EQUIPMENT_ITEM_GROUP.FIGHTERS"
+	)
+	(element ExternalPivotSelector
+		_pivotPoint = "!_isHD ? {x: 616, y: 118} : {x: 410, y: 98}"
+		_selectorPosition = "!_isHD ? {x: 800, y: 56} : {x: 480, y: 56}"
+		_selectorItems = "_visible ? allModules[3] : []"
+		_selectorRenderer = 'ModuleItem'
+		_currentSelection = "_visible ? indexOf(installed[3], allModules[3]) : 0"
+		_angleType = 2
+		_selectorType = "SC.Common.ST_EQUIPMENT_ITEM_GROUP.DIVE_BOMBERS"
+	)
+	(block
+		(class $MiddleVHAbsolutely)
+		(style
+			(bind width "!_isHD ? 880 : 440")
+			(bind height "!_isHD ? 240 : 120")
+		)
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(bind backgroundImage "'url:../event_hub/equipment/ship_dolls/' + shortName + '/1_bg.png'")
+				(backgroundSize = "fill")
+			)
+		)
+	)
+)
+
+(def element STCentralDecor (_isHD:bool)
+	(style
+		(position = "absolute")
+		(bind width "!_isHD ? 240 : 208")
+		(bind height "!_isHD ? 160 : 60")
+		(bind left "!_isHD ? 400 : 250")
+		(bind top "!_isHD ? 120 : 100")
+	)
+
+	(block
+		(style 
+			(position = "absolute")
+			(bind backgroundImage "PIVOT_ANGLE_TYPE[1][0]")
+			(width = 60)
+			(height = 100%)
+			(scale9grid = "PIVOT_ANGLE_TYPE[1][3]")
+		)
+
+		(bind colorTransform "ST_COLOR_TRANSFORM['connection_base']")
+	)
+	(block
+		(style
+			(position = "absolute")
+			(width = 8)
+			(height = 16)
+			(backgroundColor = "ST_COLORS['available']")
+			(top = 0)
+			(left = -10)
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(width = 80)
+			(height = 100%)
+			(bind left "!_isHD ? 80 : 64")
+			(backgroundColor = "ST_COLORS['available']")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(width = 28)
+			(height = 100%)
+			(bind left "!_isHD ? 180 : 148")
+			(backgroundColor = "ST_COLORS['available']")
+		)
+	)
+
+	(block
+		(style 
+			(position = "absolute")
+			(bind backgroundImage "PIVOT_ANGLE_TYPE[1][0]")
+			(width = 60)
+			(height = 40)
+			(scaleX = -1)
+			(right = -60)
+			(scaleY = -1)
+			(bottom = -82)
+			(scale9grid = "PIVOT_ANGLE_TYPE[1][3]")
+		)
+
+		(bind colorTransform "ST_COLOR_TRANSFORM['connection_main']")
+	)
+)
+
+(def element STCVCentralDecor (_isHD:bool)
+	(style
+		(position = "absolute")
+		(bind width "!_isHD ? 240 : 208")
+		(bind height "!_isHD ? 160 : 60")
+		(bind left "!_isHD ? 420 : 286")
+		(bind top "!_isHD ? 120 : 100")
+	)
+
+	(block
+		(style 
+			(position = "absolute")
+			(bind width "!_isHD ? 80 : 28")
+			(height = 100%)
+			(bind left "!_isHD ? 16 : 0")
+			(backgroundColor = "ST_COLORS['available']")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(width = 80)
+			(height = 100%)
+			(bind left "!_isHD ? 104 : 36")
+			(backgroundColor = "ST_COLORS['available']")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(width = 28)
+			(height = 100%)
+			(bind left "!_isHD ? 196 : 124")
+			(backgroundColor = "ST_COLORS['available']")
+		)
+	)
+
+	(block
+		(style 
+			(position = "absolute")
+			(bind backgroundImage "PIVOT_ANGLE_TYPE[1][0]")
+			(width = 60)
+			(height = 40)
+			(scaleX = -1)
+			(bind right "!_isHD ? -76 : -36")
+			(scaleY = -1)
+			(bottom = -82)
+			(scale9grid = "PIVOT_ANGLE_TYPE[1][3]")
+		)
+
+		(bind colorTransform "ST_COLOR_TRANSFORM['connection_main']")
+	)
+)
+
+(def element ModuleItem (_itemData:gfx, _selectedItem:number, _totalCount:number, _isLeftPivot:bool)
+	(scope
+		(event evPreviewChanged)
+		(event evMouseOver)
+		(event evisOverChanged)
+
+		(event evHideInfotip)
+		(event evInfotipVisible)
+
+		(macro MOUSE_HANDLER_SCOPE "'StModuleItem_'")
+
+		(var moduleEntity:gfx = "_itemData ? $datahub.getEntity(_itemData) : null")
+		(var moduleComponent:gfx = "moduleEntity ? moduleEntity.moduleST : null")
+		(var isSelected:bool = "moduleComponent ? moduleComponent.isInstalled : false" (event "moduleComponent.evUpdated"))
+		(var inPreview:bool = "moduleComponent ? moduleComponent.inPreview : false" (event "moduleComponent.evUpdated"))
+		(var isPurchased:number = "moduleComponent ? moduleComponent.isPurchased : false" (event "moduleComponent.evUpdated"))
+		(var nextGrades:array = "moduleComponent ? moduleComponent.nextGrades : []" (event "moduleComponent.evUpdated"))
+		(var isSeen:bool = "moduleComponent ? moduleComponent.isSeen : true" (event "moduleComponent.evUpdated"))
+
+		(var canBuy:bool = "moduleComponent && nextGrades.length > 0 ? $datahub.getPrimaryEntity(CC.moduleST, moduleComponent.nextGrades[0]).moduleST.purchaseState == SC.Common.ST_PURCHASE_STATE.AVAILABLE : false" (event "moduleComponent.evUpdated"))
+
+		(var infotipVisible:bool = "false")
+
+		(macro PULL_ACTIVE_CHILD_ROUTE
+			_nodeId = "SC.Ui_windows.ROUTE.EVENT_HUB"
+			_fieldActiveChild = "'currentControlRoute'"
+		)
+		(var isEquipmentOpen:bool = "currentControlRoute == SC.Ui_windows.ROUTE.EVENT_HUB_EQUIPMENT")
+
+		(var isOver:bool = false)
+		(var isLastInstalled:bool = "nextGrades.length == 0 && isSelected")
+		(bind isOver "$event.value" init=false (event "evMouseOver"))
+
+		(var colorKey:str = "	isSelected ? 'installed' : 
+								isPurchased ? 'available' : 'not_available'")
+
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+		(var isHD:bool = "stageHeight < ST_EQUIPMENT_HD_CUTOFF")
+
+		(var isInfotipRight:bool = "isHD	? _isLeftPivot	? true
+															: false
+											: _isLeftPivot	? false
+															: true")
+		(var xOffset:number = "isHD		? isInfotipRight	? 8
+															: 0
+										: isInfotipRight	? canBuy ? 0 : 8
+															: canBuy ? -12 : 0")
+	)
+
+	(macro MOUSE_LMB_EXTERNAL_CALL 'direct.action' "['moduleST.select', [moduleComponent.id]]" "true")
+	(bindcall externalCall 'direct.action' "['moduleST.clearPreview', [_itemData]]" (event "evHideInfotip"))
+	(bindcall externalCall 'direct.action' "['setModuleSeen', [moduleComponent.id]]" init=false watch=false on='rollOver')
+
+	(dispatch evPreviewChanged args="{selection: $index, value: inPreview}" init=false dir="EventDirection.UP"(bind enabled "!isPurchased") (bind trigger "inPreview"))
+	(dispatch evPreviewChanged args="{selection: $index, value: false}" init=false dir="EventDirection.UP"(bind enabled "isPurchased") (bind trigger "isPurchased"))
+
+
+	(dispatch evisOverChanged args="{selection: $index, value: isOver}" init=false dir="EventDirection.UP" (bind trigger "isOver"))
+
+	(dispatch evInfotipVisible args="{state: infotipVisible, eId: moduleEntity.id}" init=false dir="EventDirection.UP" (bind trigger "infotipVisible"))
+
+	(macro SOUND_HANDLER
+		_soundSet = "	!isPurchased ? 'button_Strk_Main' :
+						!isSelected ? 'button_Strk_Accent' : ''"
+		_prefix = "'StModuleItem_'"
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER
+		_prefix = "'StModuleItem_'"
+	)
+
+	(style
+		(height = "SELECTOR_ITEM_HEIGHT")
+		(width = "SELECTOR_ITEM_WIDTH")
+		(bind marginBottom "$index != _totalCount - 1 ? VERTICAL_MARGIN : 0")
+		(bind backgroundColor "	isOver ? ST_COLORS[toString(colorKey+'_over')] : ST_COLORS[colorKey]")
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundColor = 0x01000000)
+		)
+
+		(dispatch evMouseOver args="{value: true}" init=false on='mouseOver' (bind enabled "!isLastInstalled"))
+		(dispatch evMouseOver args="{value: false}" init=false on='mouseOut' (bind trigger "isLastInstalled"))
+
+		(controller $Tooltip
+			(renderer='ModuleSTTooltip')
+			(bind enabled "!infotipVisible")
+			(args
+				_moduleSTid = "moduleComponent.id"
+			)
+
+			(offset = {	x: 5, y: 25 })
+			(screenBoundsOffset = 10)
+
+			(bindcall show animation =	{	duration:	"0.3",
+											delay:		"0.3",
+											easing:		"Easing.cubic_out",
+											from:		{ alpha: 0, top: 5 },
+											to:			{ alpha: 1, top: 0 }
+										}
+										on = 'rollOver'
+			)
+
+			(bindcall hide animation = {	duration:	"0.05",
+											delay:		"0",
+											easing:		"Easing.cubic_out",
+											from:		{ alpha: 1, top: 0 },
+											to:			{ alpha: 0, top: -5}
+										}
+										on = 'rollOut'
+										(bind trigger "!infotipVisible")
+			)
+		)
+	)
+
+	(element ModuleBuyIndicator
+		_isLeft = "_isLeftPivot"
+		_canBuy = "canBuy"
+		_isHD = "isHD"
+	)
+
+	(controller $Tooltip
+		(bind enabled "nextGrades.length > 0 && isEquipmentOpen")
+		(renderer = 'ModuleInfotip')
+		
+		(args
+			_items = "nextGrades"
+		)
+
+		(bindcall show animation={delay: 0.1, duration:0.1, easing:"Easing.cubic_in", from:{alpha:1}, to:{alpha:1}} on='leftClick')
+		(bindcall hide animation={duration:0.005, easing:"Easing.cubic_out", from:{alpha:1}, to:{alpha:0}} on='evClickOutside' (bind trigger "!isEquipmentOpen"))
+
+		(dispatch evHideInfotip dir="EventDirection.UP" on='evClickOutside' (bind trigger "!isEquipmentOpen"))
+
+		(bind align "isInfotipRight ? left|bottom : right|bottom")
+		(position = "borderNoTrack")
+		(bind offset "{	x: xOffset, y: -SELECTOR_ITEM_HEIGHT}")
+		(bind infotipVisible "true" init=false on='evStartShow')
+		(bind infotipVisible "false" init=false on='evStartHide')
+	)
+
+	(hblock
+		(class $FullsizeAbsolute)
+		(style
+			(hitTest = false)
+		) 
+		(tf
+			(class $TextDefaultBoldST)
+			(style
+				(marginLeft = "M")
+				(marginTop = "6")
+			)
+			(bind text "moduleComponent ? toUpper(tr('IDS_' + moduleComponent.name  + '_SHORT')) : ''")
+		)
+		(block
+			(style
+				(bind alpha "!isSeen ? 1 : 0")
+				(marginLeft = "XS")
+				(marginTop = "-XS")
+				(hitTest = false)
+			)
+			(element MarkerNew)
+
+			(controller $Animation
+				(bindcall play
+					duration = 0.15
+					from	 = { alpha: 0, top: 5 }
+					to		 = { alpha: 1, top: -5 }
+					easing = "Easing.quad_in"
+					(bind enabled "!isSeen")
+				)
+				(bindcall play
+					duration = 0.15
+					from	 = { alpha: 1, top: -5 }
+					to		 = { alpha: 0, top: -15 }
+					easing = "Easing.quad_in"
+					(bind enabled "isSeen")
+				)
+			)
+		)
+	)
+)
+
+(def element ModuleBuyIndicator (_isLeft:bool = false, _canBuy:bool = false) layout=true
+	(bind visible "_canBuy")
+
+	(style
+		(position = "absolute")
+		(width = 8)
+		(height = 24)
+		(hitTest = false)
+		(bind left "_isLeft ? SELECTOR_ITEM_WIDTH + XS : -SXS")
+		(backgroundColor = "ST_COLORS['available']")
+	)
+
+	(controller $Animation
+		(play
+			repeatCount = -1
+			keyframes="[
+			{frame:0, to:{backgroundColor: 0xFFff9e1a}},
+			{frame:30, to:{backgroundColor: 0xFFff9e1a}},
+			{frame:36, to:{backgroundColor: 0xFFfac363}},
+			{frame:54, to:{backgroundColor: 0xFFfac363}}
+			]"
+		)
+	)
+)
+
+(def element ModuleInfotip (_items:array)
+	(scope
+		(event evExpandInfotip)
+		(event evResetInfotip)
+
+		(var isExpanded:bool = false)
+		(bind isExpanded "true" init=false watch=false (event "evExpandInfotip"))
+		(bind isExpanded "false" init=false watch=false (event "evResetInfotip"))
+	)
+
+	(dispatch evExpandInfotip on='click' (bind enabled "!isExpanded"))
+	(dispatch evResetInfotip on='addedToStage')
+
+	(style
+		(width = 168)
+		(bind height "isExpanded ? _items.length * (ST_INFOTIP_ITEM_HEIGHT + XS) + XS : 32")
+		(position = "absolute")
+		(backgroundColor = 0xFF000000)
+		(gap = "XS")
+		(padding = "XS")
+		(flow = "Flow.TILE_VERTICAL")
+		(top = "-XS")
+	)
+
+	(block
+		(bind visible "!isExpanded")
+		(style
+			(width = 160)
+			(height = 24)
+			(backgroundColor = "ST_COLORS['not_available']")
+			(hitTest = false)
+		)
+
+		(tf
+			(class $TextDefaultBoldST)
+			(style
+				(marginTop = 6)
+				(marginLeft = "SXS")
+			)
+			(bind text "'IDS_STEQ_MODULE_UPGRADE'")
+		)
+	)
+
+	(controller $Repeat
+		(bind enabled "isExpanded && _items.length > 0")
+		(bind count "_items.length")
+		(bind renderer "'ModuleInfotipItem'")
+		(args
+			_entityId = "_items[$index]"
+		)
+	)
+)
+
+(def element ModuleInfotipItem (_entityId:number)
+	(scope
+		(event evMouseOver)
+
+		(macro MOUSE_HANDLER_SCOPE "'StInfotipItem_'")
+
+		(var moduleComponent:gfx = "$datahub.getPrimaryEntity(CC.moduleST, _entityId).moduleST")
+		(var isPurchased:bool = "moduleComponent.isPurchased" (event "moduleComponent.evUpdated"))
+		(var purchaseState:number = "moduleComponent.purchaseState" (event "moduleComponent.evUpdated"))
+		(var isBlocked:bool = "purchaseState != SC.Common.ST_PURCHASE_STATE.AVAILABLE")
+		(var price:number = "moduleComponent.price" (event "moduleComponent.evUpdated"))
+		(var upgradeGrade:number = "moduleComponent.subBranchIndex == -1 ? moduleComponent.grade - 1 : moduleComponent.grade" (event "moduleComponent.evUpdated"))
+
+		(var isOver:bool = false)
+		(bind isOver "$event.value" init=false (event "evMouseOver"))
+
+		(var colorKey:str = "isBlocked ? 'unavailable' : 'not_available'")
+	)
+
+
+	(macro MOUSE_LMB_EXTERNAL_CALL 'inputMapping.onRequest' "['showMetashopItemWindow', { itemId: moduleComponent.id, source:'module'}]" "!isPurchased && !isBlocked")
+
+	(macro SOUND_HANDLER
+		_soundSet = "!isBlocked ? 'button_Strk_Main' : ''"
+		_prefix = "'StInfotipItem_'"
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER
+		_prefix = "'StInfotipItem_'"
+	)
+
+	(dispatch evMouseOver args="{value: true}" init=false on='mouseOver' (bind enabled "!isBlocked"))
+	(dispatch evMouseOver args="{value: false}" init=false on='mouseOut' (bind trigger "!isBlocked"))
+
+	(style
+		(height = "ST_INFOTIP_ITEM_HEIGHT")
+		(width = 160)
+		(bind backgroundColor "isOver ? ST_COLORS[colorKey + '_over'] : ST_COLORS[colorKey]")
+		(padding = "XS")
+	)
+
+	(controller $Tooltip
+		(renderer='ModuleSTTooltip')
+		(args
+			_moduleSTid = "_entityId"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(bindcall hide animation = {
+			duration:	"0.05",
+			delay:		"0",
+			easing:		"Easing.cubic_out",
+			from:		{ alpha: 1, top: 0 },
+			to:			{ alpha: 0, top: -5}
+			}
+		on = 'removedFromStage'
+		)
+		(offset = {	x: 5, y: 25 })
+		(screenBoundsOffset = 10)
+	)
+
+	(tf
+		(class $TextDefaultBoldST)
+		(style
+			(marginTop = "XXS")
+			(marginLeft = "S")
+		)
+		(bind text "moduleComponent ? tr('IDS_STEQ_MODULE_UPGRADE') + ' ' +  upgradeGrade : ''")
+	)
+
+	(hblock
+		(style
+			(position = "absolute")
+			(width = 152)
+			(height = 24)
+			(right = 0)
+			(bottom = 0)
+			(backgroundColor = 0xFF000000)
+		)
+
+		(tf
+			(class $TextDefaultNM)
+			(style
+				(position = "absolute")
+				(width = 70%)
+				(height = 100%)
+				(textAlign = "left")
+				(marginLeft = "S")
+				(marginTop = 6)
+			)
+			(bind text "purchaseState == SC.Common.ST_PURCHASE_STATE.AVAILABLE ? 'IDS_STEQ_MODULE_CANBUY' : 'IDS_STEQ_MODULE_CANTBUY'")
+		)
+
+		(hblock
+			(bind visible "price > 0")
+			(style
+				(width = 30%)
+				(height = 100%)
+				(position = "absolute")
+				(width = 30%)
+				(height = 100%)
+				(right = 0)
+				(align = "right")
+				(marginRight = "XS")
+			)
+			(tf
+				(class $TextDefaultBoldNM)
+				(style
+					(marginTop = 6)
+					(marginRight = "XS")
+					(textAlign = "right")
+				)
+				(bind text "price")
+
+			)
+			(controller $Instance renderer='Currency'
+				(args
+					_currency =	"SC.Common.CURRENCIES.EVENTUM_6"
+				)
+				(exprs
+					(style (marginTop = "XS"))
+				)
+			)
+		)
+	)
+)
+
+(def element STArmamentsAndConsumables (_shipId:number, _stageHeight:number, _isHD:bool)
+	(scope
+		(var shipEntity:gfx = "$datahub.getPrimaryEntity(CC.ship, _shipId)")
+		(var shipST:gfx = "shipEntity ? shipEntity.shipST : null")
+		(var shipTTX:gfx = "shipST ? shipST.shipTTX : null" (event "shipST.evUpdated"))
+		(var previewTTX:gfx = "shipST ? shipST.previewTTX : null" (event "shipST.evUpdated"))
+
+		(var isCV:bool = "shipEntity && shipEntity.ship.subtype == SC.Common.SHIP_TYPE.AIRCARRIER ? true : false")
+
+		(var armaments:gfx = "previewTTX ? shipST.previewArmaments : shipST.armaments" (event "shipST.evUpdated"))
+		(var consumables:gfx = "previewTTX ? shipST.previewConsumables : shipST.consumables" (event "shipST.evUpdated"))
+		(var rageFireMode:gfx = "previewTTX ? shipST.previewRageMode : shipST.rageMode" (event "shipST.evUpdated"))
+		(var secondaries:gfx = "previewTTX ? shipST.previewSecondaries: shipST.secondaries" (event "shipST.evUpdated"))
+	)
+
+	(style
+		(bind width "!_isHD ? 1040 : 720")
+		(height = 168)
+	)
+
+	(hblock
+		(class $Fullsize)
+
+		(element STEquipmentItemsBlock
+			_gridRenderer = 'STItemGrid'
+			_horizontalItemCount = 3
+			_shipTTX = "previewTTX ? previewTTX : shipTTX"
+			_isLeftside = false
+			_barWidth = "!_isHD ? 45 : 30"
+			_firstRowType = "SC.Common.ST_EQUIPMENT_ITEM_GROUP.AUXILIARY"
+			_firstRowItems = "secondaries"
+			_isHD = "_isHD"
+		)
+
+		(block
+			(style
+				(height = 100%)
+				(bind width "!_isHD ? 11 : 13")
+			)
+		)
+
+		(controller $Instance
+			(bind renderer "isCV ? 'STSVEquipment' : 'STEquipmentItemsBlock'")
+			(args
+				_gridRenderer = 'STItemGrid'
+				_horizontalItemCount = 5
+				_shipTTX = "previewTTX ? previewTTX : shipTTX"
+				_isLeftside = false
+				_barWidth = "!_isHD ? 60 : 30"
+				_firstRowType = "SC.Common.ST_EQUIPMENT_ITEM_GROUP.ARMAMENTS"
+				_secondRowType = "SC.Common.ST_EQUIPMENT_ITEM_GROUP.CONSUMABLES"
+				_firstRowItems = "armaments"
+				_secondRowItems = "consumables"
+				_rageMode = "rageFireMode"
+				_isHD = "_isHD"
+			)
+		)
+	)
+)
+
+(def element STSVEquipment (_shipTTX:gfx, _firstRowItems:gfx, _secondRowItems:gfx, _barWidth:number, _horizontalItemCount:number = 5, _isHD:bool = false)
+	(scope
+		(event evSquadronItemClicked)
+		(var itemWidth:number = "!_isHD ? ST_GRID_ITEM_SIZE : ST_HD_GRID_ITEM_SIZE")
+
+		(var selectedSquadron:number = 0)
+		(bind selectedSquadron "$event.value" init=false watch=false (event "evSquadronItemClicked"))
+
+		(var squadronConsumables:gfx = "_firstRowItems && selectedSquadron < _firstRowItems.length ? _firstRowItems[selectedSquadron].planeConsumables : null")
+		(var squadronArmaments:gfx = "_firstRowItems && selectedSquadron < _firstRowItems.length ? _firstRowItems[selectedSquadron].planeArmament : null")
+		(var squadronArmament:gfx = "squadronArmaments ? squadronArmaments[0] : null")
+
+	)
+
+	(style
+		(position = "absolute")
+		(right = 0)
+		(bottom = 0)
+		(bind width "_horizontalItemCount * itemWidth + XXS + _barWidth")
+		(bind height "!_isHD ? 244 : 240")
+	)
+
+	(element STCVVertBar
+		_width = "_barWidth"
+	)
+
+	(element STCVItemGrid
+		_itemCount = 3
+		_shipTTX = "_shipTTX"
+		_rowItems = "_firstRowItems"
+		_isHD = "_isHD"
+		_itemWidth = "itemWidth"
+		_tooltipRenderer = 'BattleWeaponTooltip'
+		_selectedSquadron = "selectedSquadron"
+	)
+
+	(block
+		(style
+			(bind marginLeft "!_isHD ? 64 : 34")
+			(bind width "itemWidth * _horizontalItemCount")
+			(height = 76)
+		)
+
+		(htile
+			(class $Fullsize)
+			(style
+				(bind gap "!_isHD ? 20 : 0")
+				(bind padding "!_isHD ? [10,8,10,8] : 0")
+				(bind marginTop "!_isHD ? 0 : 10")
+			)
+			(controller $Repeat
+				(bind count "_horizontalItemCount")
+				(bind renderer "'STGridItem'")
+				(args
+					_itemData = "	$index == 0														? squadronArmament :
+									squadronConsumables && $index - 1 < squadronConsumables.length	? squadronConsumables[$index - 1] 
+																									: null"
+					_tooltipRenderer = "$index == 0 ? 'BattleWeaponTooltip' : 'BattleConsumableTooltip'"
+					_shipTTX = "_shipTTX"
+				)
+			)
+		)
+	)
+
+	(block
+		(style
+			(bind marginLeft "!_isHD ? 64 : 34")
+			(bind width "itemWidth * _horizontalItemCount")
+			(height = 88)
+			(align = "right")
+		)
+
+		(block
+			(style
+				(bind width "_horizontalItemCount * itemWidth - ST_ICONS_CORNER_OFFSET + 2")
+				(height = 4)
+				(backgroundColor = "ST_COLORS['system_block']")
+			)
+		)
+
+		(htile
+			(class $Fullsize)
+			(style
+				(bind gap "!_isHD ? 20 : 0")
+				(bind padding "!_isHD ? [10,10,10,10] : 0")
+				(bind marginTop "!_isHD ? 0 : 10")
+			)
+			(controller $Repeat
+				(bind count "_horizontalItemCount")
+				(bind renderer "'STGridItem'")
+				(args
+					_itemData = "$index < _secondRowItems.length	? _secondRowItems[$index] : null"
+					_tooltipRenderer = 'BattleConsumableTooltip'
+					_shipTTX = "_shipTTX"
+				)
+			)
+		)
+	)
+
+
+)
+
+(def element STCVVertBar (_width:number = 60)
+	(scope
+		(var borderSize:str = "	_width == 30	? '_small' 	:
+								_width == 45	? '_medium'	:
+								_width == 60	? '_big'
+												: '_small'")
+	)
+	
+	(block
+		(style
+			(bind width "_width")
+			(height = 100%)
+		)
+
+		(block
+			(style
+				(bind width "_width + ST_ICONS_CORNER_OFFSET")
+				(height = 84)
+				(position = "absolute")
+				(scaleX = -1)
+				(bind right "-_width - 12")
+				(bind backgroundImage "'url:../event_hub/equipment/border' + borderSize + '.png'")
+				(scale9grid = [0,8,0,1])
+			)
+			(bind colorTransform "ST_COLOR_TRANSFORM['decor_third']")
+		)
+
+		(block
+			(style
+				(width = 100%)
+				(height = 84)
+				(marginBottom = "XXS")
+				(backgroundColor = 0x01000000)
+			)
+
+			(controller $Tooltip
+				(renderer='HeaderDescriptionInstructionTooltip')
+				(args
+					_headerText = "'IDS_STEQ_SQUADRONS_FULL'"
+					_descriptionText = "'IDS_STEQ_SQUADRONS_DESCRIPTION'"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+				(offset = {	x: 5, y: 25 })
+				(screenBoundsOffset = 10)
+			)
+
+			(block
+				(style
+					(width = 10)
+					(height = 4)
+					(position = "absolute")
+					(bottom = 0)
+					(right = -6)
+					(backgroundColor = "ST_COLORS['system_block_secondary']")
+				)
+			)
+
+			(tf
+				(class $TextST7NM)
+				(style
+					(width = 100%)
+					(height = 15)
+					(position = "absolute")
+					(bottom = 0)
+					(margin = "XXS")
+					(textAlign = "right")
+				)
+				(bind text "'IDS_STEQ_SQUADRONS_SHORT'")
+			)
+
+		)
+
+		(block
+			(style
+				(width = 100%)
+				(height = 78)
+				(backgroundColor = "ST_COLORS['system_block']")
+				(marginBottom = "XXS")
+			)
+
+			(controller $Tooltip
+				(renderer='HeaderDescriptionInstructionTooltip')
+				(args
+					_headerText = "'IDS_STEQ_SQUADRONS_CONSUMABLES_FULL'"
+					_descriptionText = "'IDS_STEQ_SQUADRONS_CONSUMABLES_DESCRIPTION'"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+				(offset = {	x: 5, y: 25 })
+				(screenBoundsOffset = 10)
+			)
+
+			(tf
+				(class $TextST7NM)
+				(style
+					(width = 100%)
+					(height = 15)
+					(position = "absolute")
+					(bottom = 0)
+					(margin = "XXS")
+					(textAlign = "right")
+				)
+				(bind text "'IDS_STEQ_SQUADRONS_CONSUMABLES_SHORT'")
+			)
+
+			(block
+				(style
+					(width = 6)
+					(height = 4)
+					(position = "absolute")
+					(bottom = 0)
+					(right = -6)
+					(backgroundColor = "ST_COLORS['system_block']")
+				)
+			)
+		)
+
+		(block
+			(style
+				(width = 100%)
+				(height = 78)
+				(backgroundColor = "ST_COLORS['system_block']")
+				(marginBottom = "XXS")
+			)
+
+			(controller $Tooltip
+				(renderer='HeaderDescriptionInstructionTooltip')
+				(args
+					_headerText = "'IDS_STEQ_CONSUMABLES_FULL'"
+					_descriptionText = "'IDS_STEQ_CONSUMABLES_DESCRIPTION'"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+				(offset = {	x: 5, y: 25 })
+				(screenBoundsOffset = 10)
+			)
+
+			(tf
+				(class $TextST7NM)
+				(style
+					(width = 100%)
+					(height = 15)
+					(position = "absolute")
+					(bottom = 0)
+					(margin = "XXS")
+					(textAlign = "right")
+				)
+				(bind text "'IDS_STEQ_CONSUMABLES_SHORT'")
+			)
+		)
+	)
+)
+
+(def element STCVItemGrid(_rowItems:gfx, _itemWidth:number, _tooltipRenderer:str, _shipTTX:gfx, _itemCount:number = 5, _isHD:bool = false, _isLeftside:bool = true, _selectedSquadron:number = 0)
+	(style
+		(align = "right")
+		(width = "100%")
+		(height = 84)
+	)
+
+	(block
+		(style
+			(flow = "Flow.VERTICAL")
+			(align = "right")
+
+			(bind width "5 * _itemWidth + XXS")
+			(height = 100%)
+		)
+
+		(block
+			(style
+				(bind width "!_isHD ? 78 : 60")
+				(height = 4)
+				(position = "absolute")
+				(bottom = 0)
+				(right = 0)
+				(backgroundColor = "ST_COLORS['system_block_secondary']")
+			)
+		)
+
+		(block
+			(style
+				(bind width "5 * _itemWidth - ST_ICONS_CORNER_OFFSET")
+				(height = 4)
+				(backgroundColor = "ST_COLORS['system_block_secondary']")
+			)
+		)
+
+		(block
+			(style
+				(bind marginRight "_itemWidth")
+				(bind width "_itemWidth * _itemCount")
+				(height = 80)
+			)
+
+			(htile
+				(class $Fullsize)
+				(style
+					(bind gap "!_isHD ? 20 : 0")
+					(bind padding "!_isHD ? [10,10,10,10] : 0")
+					(bind marginTop "!_isHD ? 0 : 10")
+				)
+				(controller $Repeat
+					(bind count "_itemCount")
+					(bind renderer "'STSelectableGridItem'")
+					(args
+						_itemData = "_rowItems[$index]"
+						_tooltipRenderer = "_tooltipRenderer"
+						_shipTTX = "_shipTTX"
+						_selection = "_selectedSquadron"
+						_isHD = "_isHD"
+					)
+				)
+			)
+		)
+
+		(block
+			(style
+				(bind width "!_isHD ? 74 : 52")
+				(height = 4)
+				(position = "absolute")
+				(bottom = 0)
+				(left = 8)
+				(backgroundColor = "ST_COLORS['system_block_secondary']")
+			)
+		)
+	)
+
+	
+)
+
+(def element STSelectableGridItem (_itemData:gfx = null, _tooltipRenderer:str = '', _shipTTX:gfx = null, _selection:number = 0, _isHD:bool = false)
+	(scope
+		(event evSquadronItemClicked)
+		(macro MOUSE_HANDLER_SCOPE "'StGridItem_'")
+		(var isSelected:bool = "$index == _selection")
+	)
+
+	(style
+		(width = "CONSUMABLE_ICON_SIZE_LARGE")
+		(height = "CONSUMABLE_ICON_SIZE_LARGE")
+		(bind backgroundImage "_itemData && _itemData.iconPath ? 'url:' + _itemData.iconPath : ''")
+		(backgroundSize = "fill")
+	)
+
+	(macro SOUND_HANDLER
+		_soundSet = "'button_Strk_Second'"
+		_prefix = "'StGridItem_'"
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER
+		_prefix = "'StGridItem_'"
+	)
+
+	(dispatch evSquadronItemClicked args="{value: $index}" init=false dir="EventDirection.UP" on='click')
+
+	(controller $Tooltip
+		(bind enabled "_itemData != null")
+		(bind renderer "_tooltipRenderer")
+		(args
+			_viewData = "_itemData"
+			_shipTTX = "_shipTTX"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(offset = {	x: 5, y: 25 })
+		(screenBoundsOffset = 10)
+	)
+
+	(block
+		(style
+			(bind width "!_isHD ? 78 : 58")
+			(bind height "isSelected ? 8 : 4")
+			(position = "absolute")
+			(bottom = -10)
+			(bind left "!_isHD ? -S : 0")
+			(bind backgroundColor "isSelected ? ST_COLORS['installed'] : ST_COLORS['not_available']")
+		)
+	)
+)
+
+(def element STEquipmentItemsBlock (_gridRenderer:str, _firstRowItems:gfx, _rageMode:gfx = null, _shipTTX:gfx = null, _secondRowItems:gfx = null, _horizontalItemCount:number = 3, _isLeftside:bool = false, _barWidth:number = 30,
+_firstRowType:number = -1, _secondRowType:number = -1, _isHD:bool = false) layout = true
+	(scope
+		(var itemWidth:number = "!_isHD ? ST_GRID_ITEM_SIZE : ST_HD_GRID_ITEM_SIZE")
+		(var firstTooltipRenderer:str = "	_firstRowType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.ARMAMENTS		? 'BattleWeaponTooltip'		:
+											_firstRowType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.CONSUMABLES		? 'BattleConsumableTooltip'	:
+											_firstRowType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.AUXILIARY		? 'STSecondaryTooltip'		:
+											''")
+
+		(var secondTooltipRenderer:str = "	_secondRowType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.ARMAMENTS	? 'BattleWeaponTooltip'		:
+											_secondRowType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.CONSUMABLES	? 'BattleConsumableTooltip'	:
+											''")
+	)
+	
+	(style
+		(bind width "_horizontalItemCount * itemWidth + XXS + _barWidth")
+		(height = 100%)
+	)
+
+	(hblock
+		(class $Fullsize)
+
+		(controller $Instance
+			(bind enabled "_isLeftside")
+			(bind renderer "_gridRenderer")
+			(args
+				_itemCount = "_horizontalItemCount"
+				_shipTTX = "_shipTTX"
+				_isLeftside = "_isLeftside"
+				_firstRowItems = "_firstRowItems"
+				_rageMode = "_rageMode"
+				_secondRowItems = "_secondRowItems"
+				_isHD = "_isHD"
+				_itemWidth = "itemWidth"
+				_firstTooltipRenderer = "firstTooltipRenderer"
+				_secondTooltipRenderer = "secondTooltipRenderer"
+			)
+		)
+		
+		(element STVertBar
+			_width = "_barWidth"
+			_isLeftside = "_isLeftside"
+			_firstRowType = "_firstRowType"
+			_secondRowType = "_secondRowType"
+		)
+
+		(controller $Instance
+			(bind enabled "!_isLeftside")
+			(bind renderer "_gridRenderer")
+			(args
+				_itemCount = "_horizontalItemCount"
+				_shipTTX = "_shipTTX"
+				_isLeftside = "_isLeftside"
+				_firstRowItems = "_firstRowItems"
+				_rageMode = "_rageMode"
+				_secondRowItems = "_secondRowItems"
+				_isHD = "_isHD"
+				_itemWidth = "itemWidth"
+				_firstTooltipRenderer = "firstTooltipRenderer"
+				_secondTooltipRenderer = "secondTooltipRenderer"
+			)
+		)
+	)
+)
+
+(def element STVertBar (_width:number = 30, _isLeftside:bool = false, _firstRowType:number = -1, _secondRowType:number = -1)
+	(scope
+		(var firstRowIDS:str = "	_firstRowType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.UPGRADES		? 'IDS_STEQ_UPGRADES' :
+									_firstRowType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.AUXILIARY	? 'IDS_STEQ_SECONDARIES' :
+									_firstRowType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.ARMAMENTS	? 'IDS_STEQ_ARMAMENTS' :
+									_firstRowType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.CONSUMABLES	? 'IDS_STEQ_CONSUMABLES' : ''")
+
+		(var secondRowIDS:str = "	_secondRowType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.UPGRADES	? 'IDS_STEQ_UPGRADES' :
+									_secondRowType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.AUXILIARY	? 'IDS_STEQ_SECONDARIES' :
+									_secondRowType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.ARMAMENTS	? 'IDS_STEQ_ARMAMENTS' :
+									_secondRowType == SC.Common.ST_EQUIPMENT_ITEM_GROUP.CONSUMABLES	? 'IDS_STEQ_CONSUMABLES' : ''")
+
+		(var borderSize:str = "	_width == 30	? '_small' 	:
+								_width == 45	? '_medium'	:
+								_width == 60	? '_big'
+												: '_small'")
+	)
+
+	(block
+		(style
+			(bind width "_width")
+			(height = 100%)
+		)
+
+		(block
+			(style
+				(bind width "_width + ST_ICONS_CORNER_OFFSET")
+				(height = 48)
+				(position = "absolute")
+				(bind scaleX "_isLeftside ? 1 : -1")
+				(bind right "_isLeftside ? 0 : -_width - 12")
+				(bind backgroundImage "'url:../event_hub/equipment/border' + borderSize + '.png'")
+				(scale9grid = [0,8,0,1])
+			)
+			(bind colorTransform "ST_COLOR_TRANSFORM['decor_base']")
+		)
+
+		(block
+			(style
+				(width = 100%)
+				(height = 48)
+				(marginBottom = "XXS")
+			)
+		)
+
+		(block
+			(style
+				(width = 100%)
+			)
+
+			(controller $Tooltip
+				(renderer='HeaderDescriptionInstructionTooltip')
+				(bind enabled "_secondRowType == -1")
+				(args
+					_headerText = "firstRowIDS + '_FULL'"
+					_descriptionText = "firstRowIDS + '_DESCRIPTION'"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+				(offset = {	x: 5, y: 25 })
+				(screenBoundsOffset = 10)
+			)
+
+			(block
+				(style
+					(width = 100%)
+					(height = 30)
+					(backgroundColor = "ST_COLORS['system_block']")
+					(marginBottom = "XXS")
+				)
+
+				(controller $Tooltip
+					(renderer='HeaderDescriptionInstructionTooltip')
+					(bind enabled "_secondRowType != -1")
+					(args
+						_headerText = "firstRowIDS + '_FULL'"
+						_descriptionText = "firstRowIDS + '_DESCRIPTION'"
+					)
+					(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+					(offset = {	x: 5, y: 25 })
+					(screenBoundsOffset = 10)
+				)
+
+				(tf
+					(class $TextST7NM)
+					(style
+						(width = 100%)
+						(height = 15)
+						(position = "absolute")
+						(bottom = 0)
+						(margin = "XXS")
+						(bind textAlign "_isLeftside ? left : right")
+					)
+					(bind text "firstRowIDS + '_SHORT'")
+				)
+			)
+
+			(block
+				(style
+					(width = 100%)
+					(height = 10)
+					(backgroundColor = "ST_COLORS['system_block_secondary']")
+					(marginBottom = "XXS")
+				)
+			)
+
+			(block
+				(style
+					(width = 100%)
+					(height = 40)
+					(backgroundColor = "ST_COLORS['system_block']")
+					(marginBottom = "XXS")
+				)
+
+				(controller $Tooltip
+					(renderer='HeaderDescriptionInstructionTooltip')
+					(bind enabled "_secondRowType != -1")
+					(args
+						_headerText = "secondRowIDS + '_FULL'"
+						_descriptionText = "secondRowIDS + '_DESCRIPTION'"
+					)
+					(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+					(offset = {	x: 5, y: 25 })
+					(screenBoundsOffset = 10)
+				)
+
+				(tf
+					(class $TextST7NM)
+					(style
+						(width = 100%)
+						(height = 15)
+						(position = "absolute")
+						(top = 0)
+						(margin = "XXS")
+						(bind textAlign "_isLeftside ? left : right")
+					)
+					(bind text "secondRowIDS ? secondRowIDS + '_SHORT' : firstRowIDS + '_SHORT'")
+				)
+			)
+		)
+
+		(block
+			(style
+				(width = 100%)
+				(height = 32)
+				(backgroundColor = "ST_COLORS['system_block']")
+			)
+		)
+	)
+)
+
+(def element STItemGrid (_firstRowItems:gfx, _itemWidth:number, _firstTooltipRenderer:str, _rageMode:gfx = null, _secondRowItems:gfx = null, _secondTooltipRenderer:str = '', _shipTTX:gfx = null, _itemCount:number = 3, _isLeftside:bool = false, _isHD:bool = false)
+	(class $Fullsize)
+	(style
+		(flow = "Flow.VERTICAL")
+		(bind align "_isLeftside ? right : left")
+	)
+	(block
+		(style
+			(bind width "_itemCount * _itemWidth - ST_ICONS_CORNER_OFFSET")
+			(height = 4)
+			(bind marginLeft "_isLeftside ? 0 : ST_ICONS_CORNER_OFFSET + XXS")
+			(bind marginRight "_isLeftside ? ST_ICONS_CORNER_OFFSET + XXS : 0")
+			(backgroundColor = "ST_COLORS['system_block']")
+		)
+	)
+
+	(block
+		(style
+			(bind width "_itemWidth * _itemCount")
+			(height = 160)
+		)
+
+		(htile
+			(class $Fullsize)
+			(style
+				(bind gap "!_isHD ? 20 : 0")
+				(bind padding "!_isHD ? [10,10,10,10] : 0")
+				(bind marginTop "!_isHD ? 0 : 20")
+			)
+			(controller $Repeat
+				(bind count "_secondRowItems ? _itemCount : _itemCount * 2")
+				(bind renderer "'STGridItem'")
+				(args
+					_itemData = "$index < _firstRowItems.length ? _firstRowItems[$index] : $index == _firstRowItems.length && _rageMode != null ? _rageMode : null"
+					_tooltipRenderer = " $index == _firstRowItems.length && _rageMode != null ? 'RageModeTooltip' : _firstTooltipRenderer"
+					_shipTTX = "_shipTTX"
+				)
+			)
+
+			(controller $Repeat
+				(bind enabled "_secondRowItems")
+				(bind count "_itemCount")
+				(bind renderer "'STGridItem'")
+				(args
+					_itemData = "$index < _secondRowItems.length ? _secondRowItems[$index] : null"
+					_tooltipRenderer = "_secondTooltipRenderer"
+					_shipTTX = "_shipTTX"
+				)
+			)
+		)
+	)
+)
+
+(def element STGridItem(_itemData:gfx = null, _tooltipRenderer:str = '', _shipTTX:gfx = null)
+	(scope
+		(var isPreview:bool = "_itemData ? _itemData.isPreview : false")
+	)
+
+	(style
+		(width = "CONSUMABLE_ICON_SIZE_LARGE")
+		(height = "CONSUMABLE_ICON_SIZE_LARGE")
+	)
+
+	(block
+		(class $Fullsize)
+		(style
+			(bind backgroundImage "_itemData && _itemData.iconPath ? 'url:' + _itemData.iconPath : 'url:../event_hub/equipment/slot_empty.png'")
+			(backgroundSize = "fill")
+		)
+
+		(bind colorTransform "_tooltipRenderer == 'STSecondaryTooltip' ? ST_COLOR_TRANSFORM['connection_main'] : {}")
+
+		(controller $Tooltip
+			(bind enabled "_itemData != null")
+			(bind renderer "_tooltipRenderer")
+			(args
+				_viewData = "_itemData"
+				_shipTTX = "_shipTTX"
+				_rageModeStruct = "_itemData"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			(offset = {	x: 5, y: 25 })
+			(screenBoundsOffset = 10)
+		)
+	)
+
+	(block
+		(bind visible "isPreview")
+		(style
+			(bind width "CONSUMABLE_ICON_SIZE_LARGE")
+			(bind height "CONSUMABLE_ICON_SIZE_LARGE")
+			(position = "absolute")
+			(backgroundImage = 'url:../event_hub/equipment/slot_notavailable.png')
+			(backgroundSize = "fill")
+			(hitTest = false)
+		)
+	)
+)
+
+(def element STSecondaryTooltip (_viewData:gfx, _shipTTX:gfx)
+	(scope
+		(var paramsRenderer:str = "_viewData.abilityType <= SC.Common.ST_SECONDARY_TYPE.ATBA_PULSE ? 'STSecondaryATBAParams' : 'STSecondaryModifiers'")
+	)
+
+	(style (width = 320px) (hitTest = false))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+
+		(element TooltipSystemHeaderWithIconAndText
+			_imageUrl = "'url:' + _viewData.iconPath"
+			_imageWidth = 60
+			_imageHeight = 60
+			_unifiedStatus = ''
+			_headerText = "_viewData.title"
+			_subheaderText = "_viewData.subheader"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "_viewData.description"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(controller $Instance
+			(bind renderer "paramsRenderer")
+			(args
+				_viewData = "_viewData"
+				_shipTTX = "_shipTTX"
+			)
+		)
+	)
+)
+
+(def element STSecondaryATBAParams (_viewData:gfx, _shipTTX:gfx)
+	(scope
+		(var gunTTX:gfx = "_shipTTX.artillery.atba[0]")
+		(var ammoTTX:gfx = "gunTTX.ammoHE ? gunTTX.ammoHE : gunTTX.ammoAP")
+	)
+	
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_GunConfigurationSimple 'IDS_SHIP_PARAM_MOUNT_CONFIGURATION' "gunTTX" _externalDiff="false")
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+											_value = "gunTTX.reloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+											_value = "ammoTTX.damage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE'
+											_value = "ammoTTX.damageToShield"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_ARTILLERY_BURN_PROB'
+											_value = "ammoTTX.burnChance"
+											_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAX_DIST'
+											_value = "_shipTTX.artillery.atbaMaxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+		)
+	)
+)
+
+(def element STSecondaryModifiers (_viewData:gfx, _shipTTX:gfx)
+	(style (width = 100%))
+	(element TooltipSystemParamsModifiersList
+		_attributesNegative="_viewData.attributes.negative"
+		_attributesPositive="_viewData.attributes.positive"
+		_attributesNeutral="_viewData.attributes.neutral"
+	)
+)

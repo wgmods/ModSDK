@@ -1,0 +1,94 @@
+(def element AccountResource(_currencyId:str, _onMouseDownCallback:str=null)
+	(scope
+		(macro PULL_ACCOUNT_RESOURCES)
+		(macro PULL_ACCOUNT_RESOURCE_BY_ID "_currencyId" 'accountResourceAmount')
+	)
+
+	(style
+		(gap = "S") (align = "right")
+		(backgroundColor = 0x01000000)
+	)
+
+	(element PriceTag
+		_priceInfo = "{ currency: _currencyId, finalPrice: accountResourceAmount }"
+		_size = "SIZE.MEDIUM"
+	)
+
+	(tf
+		(class $TextDefault13NM)
+		(style (alpha = "TS") (marginRight = "XS"))
+		(bind text "'IDS_CURRENCY_' + toUpper(_currencyId)")
+	)
+
+	(controller $Tooltip
+		(bind renderer "'AccountResourceTooltip'")
+		(args
+			_currencyId = "_currencyId"
+			_isShowMouseInstruction = "_onMouseDownCallback != null"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(align = "bottom|left")
+		(screenBoundsOffset={left:15, top:15, right:15, bottom:15})
+	)
+)
+
+(def element AccountResourceTooltip(_currencyId:str, isShowMouseInstruction:bool)
+	(scope
+		(macro PULL_ACCOUNT_RESOURCES)
+		(macro PULL_ACCOUNT_RESOURCE_BY_ID "_currencyId" 'accountResourceAmount')
+
+		(var priceInfo:dict = "{ currency: _currencyId, finalPrice: accountResourceAmount }")
+	)
+
+	(style (hitTest = false) (width = 340px))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_imageUrl =	"'url:../reward_icons/' + _currencyId + '.png'"
+			_imageWidth = 80
+			_imageHeight = 80
+			_headerText = "'IDS_CURRENCY_' + toUpper(_currencyId)"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemPriceTagLine
+			_title = "'IDS_CURRENCY_IN_STOCK_COLON'"
+			_priceInfo = "priceInfo"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		
+		(block
+			(style (width = 100%) (gap = "SXS"))
+
+			(element TooltipSystemSecondaryHeaderText _headerText='IDS_CURRENCY_EXPLANATION_TITLE')
+			(element TooltipSystemDescriptionText _descriptionText="'IDS_CURRENCY_' + toUpper(_currencyId) + '_SPEND_DESCRIPTION'")
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		
+		(block
+			(style (width = 100%) (gap = "SXS"))
+
+			(element TooltipSystemSecondaryHeaderText _headerText='IDS_CURRENCY_HOW_TO_GET_TITLE')
+			(element TooltipSystemDescriptionText _descriptionText="'IDS_CURRENCY_' + toUpper(_currencyId) + '_GET_DESCRIPTION'")
+		)
+
+		(block
+			(bind visible "isShowMouseInstruction")
+			(style (width = 100%))
+
+			(element TooltipSystemHorizontalDivider)
+
+			(element TooltipSystemStatusLine
+				_text = "'IDS_CURRENCY_' + toUpper(_currencyId) + '_MOUSE_INSTRUCTION'"
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+			)
+		)
+	)
+)

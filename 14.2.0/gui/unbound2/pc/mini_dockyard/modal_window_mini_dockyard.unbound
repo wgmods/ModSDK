@@ -1,0 +1,1827 @@
+(def constant MINI_DOCKYARD_SELECTOR_CONTAINER_HEIGHT "193")
+
+(def constant MINI_DOCKYARD_SHIP_SELECTOR_ITEM_HEIGHT "96")
+(def constant MINI_DOCKYARD_SHIP_SELECTOR_ITEM_WIDTH "204")
+
+(def constant MINI_DOCKYARD_SHIP_SCHEME_HEIGHT "358")
+(def constant MINI_DOCKYARD_SHIP_SCHEME_WIDTH "818")
+(def constant MINI_DOCKYARD_SHIP_SCHEME_MIN_HEIGHT "205")
+(def constant MINI_DOCKYARD_SHIP_SCHEME_MIN_WIDTH "469")
+
+(def constant MINI_DOCKYARD_SHIP_COMPONENT_SIZE "48")
+(def constant MINI_DOCKYARD_SHIP_COMPONENT_CONTAINER_WIDTH "78")
+
+(def constant MINI_DOCKYARD_HEIGHT_TO_TURN_HD "950")
+(def constant MINI_DOCKYARD_WIDTH_TO_TURN_HD "1580")
+
+(def constant MINI_DOCKYARD_SHIP_COMPONENT_POSITION_FHD "[26, 198, 360, 543, 714]")
+(def constant MINI_DOCKYARD_SHIP_COMPONENT_POSITION_HD "[0, 104, 208, 312, 416]")
+
+(def constant MINI_DOCKYARD_TASKS_SIDEBAR_WIDTH "[320, 384]")
+(def constant MINI_DOCKYARD_TASK_CARD_WIDTH "[296, 360]")
+
+(def constant MINI_DOCKYARD_BUY_ACCESS_BUTTON_WIDTH 240)
+
+(def css $MiniDockyardContentLeftMargin ()
+	(marginLeft = "{1280: MS, 1920: LS}")
+)
+
+(def macro PULL_MINI_DOCKYARD_WINDOW_DATA ()
+	(var miniDockyardWindowDataCollection:gfx = "$datahub.getCollection(CC.miniDockyardWindowData)")
+	(var miniDockyardWindowDataEntity:gfx = "miniDockyardWindowDataCollection ? miniDockyardWindowDataCollection.items[0] : null"	(event "miniDockyardWindowDataCollection.evAdded")
+																																	(event "miniDockyardWindowDataCollection.evRemoved"))
+	(var miniDockyardWindowData:gfx = "miniDockyardWindowDataEntity ? miniDockyardWindowDataEntity.miniDockyardWindowData : null")
+	(var selectedBranchEntityId:number = "miniDockyardWindowData ? miniDockyardWindowData.selectedBranchEntityId : null" (event "miniDockyardWindowData.evChanged"))
+	(var selectedShipEntityId:number = "miniDockyardWindowData ? miniDockyardWindowData.selectedShipEntityId : null" (event "miniDockyardWindowData.evChanged"))
+)
+
+(def macro PULL_MINI_DOCKYARD_SHIP_DATA (_shipEntityId:expression)
+	(var miniDockyardShipEntity:gfx = "$datahub.getEntity(_shipEntityId)")
+	(var miniDockyardShipComponent:gfx = "miniDockyardShipEntity ? miniDockyardShipEntity.miniDockyardShip : null")
+
+	(var shipId:number =			"miniDockyardShipComponent ? miniDockyardShipComponent.shipId : null"				(event "miniDockyardShipComponent.evChanged"))
+	(var state:number =				"miniDockyardShipComponent ? miniDockyardShipComponent.state : null" 				(event "miniDockyardShipComponent.evChanged"))
+	(var researchPriceId:number =	"miniDockyardShipComponent ? miniDockyardShipComponent.researchPriceId : null"		(event "miniDockyardShipComponent.evChanged"))
+	(var freeRewardStackId:number =	"miniDockyardShipComponent ? miniDockyardShipComponent.freeRewardStackId : null"	(event "miniDockyardShipComponent.evChanged"))
+	(var paidRewardStackId:number =	"miniDockyardShipComponent ? miniDockyardShipComponent.paidRewardStackId : null"	(event "miniDockyardShipComponent.evChanged"))
+	(var compensationPrices:array =	"miniDockyardShipComponent ? miniDockyardShipComponent.compensationPrices : null"	(event "miniDockyardShipComponent.evChanged"))
+
+	(var isLocked:bool = "state == SC.Common.MINI_DOCKYARD_SHIP_STATE.LOCKED")
+	(var isInProgress:bool = "state == SC.Common.MINI_DOCKYARD_SHIP_STATE.IN_PROGRESS")
+	(var isCompletedWithoutGold:bool = "state == SC.Common.MINI_DOCKYARD_SHIP_STATE.COMPLETED")
+	(var isCompletedByGold:bool = "state == SC.Common.MINI_DOCKYARD_SHIP_STATE.COMPLETED_FOR_GOLD")
+	(var isCompleted:bool = "isCompletedByGold || isCompletedWithoutGold")
+)
+
+(def macro PULL_MINI_DOCKYARD_BRANCH_DATA (_branchEntityId:expression)
+	(var miniDockyardBranchEntity:gfx = "$datahub.getEntity(_branchEntityId)")
+	(var miniDockyardBranchComponent:gfx = "miniDockyardBranchEntity ? miniDockyardBranchEntity.miniDockyardBranch : null")
+
+	(var miniDockyardBranchId:str =			"miniDockyardBranchComponent ? miniDockyardBranchComponent.id : null"						(event "miniDockyardBranchComponent.evChanged"))
+	(var afterSeasonRewardStackId:number =	"miniDockyardBranchComponent ? miniDockyardBranchComponent.afterSeasonRewardStackId : null"	(event "miniDockyardBranchComponent.evChanged"))
+)
+
+(def macro PULL_MINI_DOCKYARD_SEASON_TIMELEFT(_timeLeftVarName:expression)
+	
+	
+
+	(var finishTime:number = "miniDockyardSeason ? miniDockyardSeason.finishTime : null" (event "miniDockyardSeason.evChanged"))
+
+	(macro SERVER_TIME_SCOPE)
+	(macro COUNTDOWN_SCOPE "_timeLeftVarName" "finishTime" "'HIGHEST,WITH_DAYS'")
+)
+
+(def macro PULL_MINI_DOCKYARD_SHIP_COMPONENT_DATA (_shipComponentEntity:expression)
+	(var shipComponent:gfx = "_shipComponentEntity ? _shipComponentEntity.miniDockyardShipComponent : null")
+
+	
+	(var componentId:str =		"shipComponent ? shipComponent.id : ''"					(event "shipComponent.evChanged"))
+	(var shipId:number =		"shipComponent ? shipComponent.shipId : -1"				(event "shipComponent.evChanged"))
+	(var slotIndex:number =		"shipComponent ? shipComponent.slotIndex : -1"			(event "shipComponent.evChanged"))
+	(var state:number =			"shipComponent ? shipComponent.state : -1"				(event "shipComponent.evChanged"))
+	(var iconPath:str =			"shipComponent ? shipComponent.iconPath : ''"			(event "shipComponent.evChanged"))
+	(var tooltipIconPath:str =	"shipComponent ? shipComponent.tooltipIconPath : ''"	(event "shipComponent.evChanged"))
+	(var shipIndex:str =		"shipComponent ? shipComponent.shipIndex : ''"			(event "shipComponent.evChanged"))
+	(var prices:array =			"shipComponent ? shipComponent.prices : []"				(event "shipComponent.evChanged"))
+
+)
+
+(def macro PULL_MINI_DOCKYARD_SHIP_COMPONENT_STATE()
+	
+	
+
+	(var isNotEnoughResources:bool = "state == SC.Common.MINI_DOCKYARD_SHIP_COMPONENT_STATE.NOT_ENOUGH_RESOURCES")
+	(var isAvailable:bool = "state == SC.Common.MINI_DOCKYARD_SHIP_COMPONENT_STATE.AVAILABLE")
+
+	(var isUnlocked:bool = "state == SC.Common.MINI_DOCKYARD_SHIP_COMPONENT_STATE.UNLOCKED")
+
+	(var isLockedByTime:bool = "state == SC.Common.MINI_DOCKYARD_SHIP_COMPONENT_STATE.LOCKED_BY_TIME")
+	(var isLockedByPreviousShip:bool = "state == SC.Common.MINI_DOCKYARD_SHIP_COMPONENT_STATE.LOCKED_BY_PREVIOUS_SHIP")
+	(var isLockedByGettingProjectAccess:bool = "state == SC.Common.MINI_DOCKYARD_SHIP_COMPONENT_STATE.LOCKED_BY_GETTING_ACCESS")
+
+	(var isLocked:bool = "isLockedByTime || isLockedByPreviousShip || isLockedByGettingProjectAccess")
+)
+
+(def element ModalWindowMiniDockyard () dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+
+	(scope
+		(macro PULL_MINI_DOCKYARD_SEASON_SCOPE)
+		(macro PULL_MINI_DOCKYARD_SEASON_TIMELEFT "'timeLeft'")
+
+		(var miniDockyardSeasonId:str =	"miniDockyardSeason ? miniDockyardSeason.id : null" (event "miniDockyardSeason.evChanged"))
+		(var isUnlocked:bool = 			"miniDockyardSeason ? miniDockyardSeason.isUnlocked : false" (event "miniDockyardSeason.evChanged"))
+
+		(var sidebarContentRenderer:str = "isUnlocked	? 'MiniDockyardTasks'
+														: 'MiniDockyardBuyShipAccess'")
+
+		(var shipInfoBgPath:str = "'url:../mini_dockyard/main/description_bg.png'")
+		(var shipInfoBgHeight:number = "stageHeight - MINI_DOCKYARD_SELECTOR_CONTAINER_HEIGHT - XLL" (event "stageComponent.evStageSizeChanged"))
+	)
+
+	
+	(bindcall externalCall
+		"'inputMapping.onAction'" "[miniDockyardSeasonId ? 'updateMiniDockyardWindowData' : '', {seasonId: miniDockyardSeasonId}]"
+		init=false watch=false
+		(event "startShow")
+	)
+
+	
+	(block
+		(controller $Animation
+			(bindcall play  duration=0.2
+							from = "{ alpha: 0 }"
+							to = "{ alpha: 1 }"
+							action="killAll"
+							(event "startShow")
+			)
+			(bindcall play  duration=0.2
+							delay=0.2
+							from = "{ alpha: 1 }"
+							to = "{ alpha: 0 }"
+							action="killAll"
+							(event "startHide")
+			)
+		)
+
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundSize = "cover")
+			(backgroundImage = 'url:../mini_dockyard/main/main_modal_background.jpg')
+		)
+	)
+
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(style (width = 100%))
+
+		(element ModalWindowHeaderFullSize
+			_windowName = 'IDS_MINI_DOCKYARD_TITLE'
+			_paddingRight = "M"
+			_paddingLeft = "M"
+
+			(element MiniDockyardCurrenciesPanel
+				(style
+					(position = "absolute")
+					(bottom = "{720: 10, 1080:18}") (right = 91px)
+				)
+			)
+		)
+
+		(hblock
+			(style
+				(width = 100%) (marginTop = "M") (align = "center|middle")
+			)
+
+			(element StatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DATE"
+				_text = "'IDS_MINI_DOCKYARD_AVAILABLE_WITHIN'"
+
+				(style (marginRight = "MS"))
+			)
+
+			(element RulesButton
+				_methods = "[{	type: 'inputMapping.onRequest',
+								name: 'showRules',
+								args: { _rulesType: 'miniDockyard' } }]"
+				_label = "'IDS_MINI_DOCKYARD_RULES_BUTTON'"
+			)
+		)
+
+		(element HorizontalDividerTwoPx
+			(style (marginTop = "M"))
+		)
+	)
+
+	
+	(hblock
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1.5)
+		(class $Fullsize)
+
+		(block
+			(class $FullsizeAbsolute)
+			(block
+				(style
+					(align = "left")
+					(height = 100%)
+					(width = "{1280: 326, 1920: 400}")
+					(backgroundSize = "cover") 
+					(backgroundImage = "shipInfoBgPath") 
+				)
+			)
+			
+			(block
+				(style
+					(width = 100%)
+					(height = "MINI_DOCKYARD_SELECTOR_CONTAINER_HEIGHT - 38")
+				)
+			)
+		)
+
+		(block
+			(class $Fullsize)
+
+			(hblock
+				(style
+					(width = 100%)
+				)
+
+				(element MiniDockyardShipInformation)
+
+				(element MiniDockyardShipComponents)
+			)
+
+			(block
+				(style
+					(height = "MINI_DOCKYARD_SELECTOR_CONTAINER_HEIGHT")
+					(width = 100%)
+					(position = "absolute")
+					(bottom = 40px)
+				)
+
+				(element MiniDockyardShipSelector
+					_seasonId = "miniDockyardSeasonId"
+				)
+			)
+		)
+
+		(controller $Instance
+			(bind renderer "sidebarContentRenderer")
+		)
+	)
+)
+
+(def element MiniDockyardShipInformation ()
+	(scope
+		(macro PULL_MINI_DOCKYARD_WINDOW_DATA) 
+		(macro PULL_MINI_DOCKYARD_SHIP_DATA "selectedShipEntityId") 
+
+		(macro PULL_GAMEPLAY_FEATURES) 
+	)
+
+	(style
+		(width = "{1280: 304, 1920: 360}")
+	)
+
+	(scrollArea
+		(class $MiniDockyardContentLeftMargin)
+		(style
+			(width = 100%)
+			(height = "{720:364, 1080:700}")
+			(backgroundColor = "0x01000000")
+		)
+
+		(verticalSlider = 'ScrollBarVLight')
+		(hscrollPolicy = 'off')
+		(vscrollPolicy = 'auto')
+		(topShadow='ScrollAreaShadowTop')
+		(bottomShadow='ScrollAreaShadowBottom')
+
+		(content
+			(style
+				(width = "{1280: 304, 1920: 360}") (height = 100%)
+			)
+
+			(block
+				(style
+					(marginTop = "{720:S, 1080:L}")
+				)
+
+				(controller $Instance renderer='ShipLineItemNM'
+					(args
+						_shipId = "shipId"
+						_withFlag = "true"
+						_fontClass = "'$TextDefaultBold21NM'"
+					)
+				)
+			)
+
+			(block
+				(style
+					(marginTop = "SXS")
+				)
+
+				(controller $Instance renderer='ShipClassLineItemNM'
+					(args
+						_shipId = "shipId"
+						_fontClass = "'$TextDefault17NM'"
+					)
+				)
+			)
+
+			(block
+				(bind visible "!isCompleted")
+				(style (marginTop = "M"))
+				(element DefaultButton
+					_width = 296
+					_type = "SC.Ui_styles.BUTTON_TYPE.SECONDARY"
+					_name = 'mini_dockyard_go_to_equipment_button'
+					_enabled = "!isCompleted"
+					_label = 'IDS_MINI_DOCKYARD_EQUIPMENT_BUTTON'
+					_methods = "[	{	type: 'inputMapping.onRequest',
+										name: 'openMiniDockyardEquipmentWindow',
+										args: {}
+									}]"
+				)
+			)
+
+			(block
+				(style (marginTop = "S"))
+
+				(element DefaultButton
+					_width = 296
+					_type = "SC.Ui_styles.BUTTON_TYPE.SECONDARY"
+					_name = 'mini_dockyard_preview_ship_button'
+					_enabled = true
+					_label = 'IDS_MINI_DOCKYARD_PREVIEW_SHIP_BUTTON'
+					_methods = "[	{	type: 'inputMapping.onAction',
+										name: 'selectShipForPreview',
+										args: { shipId: shipId }},
+									{	type: 'inputMapping.onAction',
+										name: 'navigateTo',
+										args: {
+											route: SC.Ui_windows.ROUTE.SHIP_PREVIEW,
+											data: {	isRewardShipPreview: true }
+										}}]"
+				)
+			)
+
+			
+			(block
+				(bind visible "hasGameplayFeatures")
+
+				(style
+					(width = 100%)
+					(marginTop = "L")
+				)
+
+				(tf
+					(class $TextDefaultBold19NM)
+					(style
+						(alpha = "TA")
+					)
+
+					(text = "'IDS_MINI_DOCKYARD_SHIP_FEATURES_TITLE'")
+				)
+
+				(element HorizontalDividerTwoPx
+					(style (marginTop = "SXS"))
+				)
+
+				(hblock
+					(style
+						(width = 100%) (marginTop = "M")
+					)
+
+					(element GameplayFeaturesContainer
+						_gameplayFeaturesList = "gameplayFeaturesList"
+						_isNewMarkerEnabled = false
+						_tooltipRenderer = 'MiniDockyardGameplayFeatureTooltip'
+					)
+				)
+			)
+
+			
+			(block
+				(style
+					(width = 100%)
+					(marginTop = "L")
+					(marginBottom = "M")
+				)
+
+				(tf
+					(class $TextDefaultBold19NM)
+					(style
+						(alpha = "TA")
+					)
+
+					(text = "'IDS_MINI_DOCKYARD_RESEARCH_REWARD_TITLE'")
+				)
+
+				(element HorizontalDividerTwoPx
+					(style
+						(marginTop = "SXS")
+						(marginBottom = "SXS")
+					)
+				)
+
+				(tf
+					(bind visible "!isCompleted")
+					(class $TextDefault17NM)
+					(style (maxWidth = 200px))
+					(text = "'IDS_MINI_DOCKYARD_RESEARCH_REWARD_DESCRIPTION'")
+				)
+
+				(block
+					(bind visible "isCompleted")
+
+					(element StatusLine
+						_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+						_textClass = '$TextDefault17NM'
+						_text = "'IDS_MINI_DOCKYARD_RESEARCH_REWARD_RECEIVED'"
+						_maxWidth = 240
+					)
+				)
+			)
+		)
+	)
+)
+
+
+(def element MiniDockyardRewardContainer (_rewardEntityId:str, _isReceived:bool=false)
+	(scope
+		(macro PULL_REWARD_INFO_BY_ENTITY_ID "_rewardEntityId") 
+	)
+
+	(style
+		(marginTop = "S")
+	)
+
+	(controller $Instance renderer='RewardItem'
+		(args
+			_reward="rewardItem"
+			_isReceived="_isReceived"
+			_isBattlePassSmallShipView="true"
+			_isClickDisabled="true"
+		)
+	)
+)
+
+(def element MiniDockyardShipComponents ()
+	(scope
+		(macro STAGE_SIZE)
+		(macro PULL_MINI_DOCKYARD_SEASON_SCOPE) 
+		(macro PULL_MINI_DOCKYARD_WINDOW_DATA) 
+		(macro PULL_MINI_DOCKYARD_SHIP_DATA "selectedShipEntityId") 
+		(macro PULL_SHIP "shipId") 
+
+		(var isSmallResolution:bool = "stageHeight < MINI_DOCKYARD_HEIGHT_TO_TURN_HD || stageWidth < MINI_DOCKYARD_WIDTH_TO_TURN_HD")
+
+		(var miniDockyardSeasonId:str = "miniDockyardSeason ? miniDockyardSeason.id : null" (event "miniDockyardSeason.evChanged"))
+		(var miniDockyardSeasonIsUnlocked:bool = "miniDockyardSeason ? miniDockyardSeason.isUnlocked : false" (event "miniDockyardSeason.evChanged"))
+
+		(var shipComponentsCollection:gfx = "shipId	?	$datahub.getCollection(CC.miniDockyardShipComponent).getChildByPath('byShipId.' + shipId)
+														: null")
+		(var shipComponentsArray:array = "shipComponentsCollection ? shipComponentsCollection.items : []"	(event "shipComponentsCollection.evAdded")
+																											(event "shipComponentsCollection.evRemoved"))
+
+		(var unlockedShipComponentsCollection:gfx = " $datahub.getCollection(CC.miniDockyardShipComponent).getChildByPath('byShipId.' + shipId + '.unlocked')")
+		(var unlockedShipComponentsArray:array = "unlockedShipComponentsCollection ? unlockedShipComponentsCollection.items : []"	(event "unlockedShipComponentsCollection.evAdded")
+																																	(event "unlockedShipComponentsCollection.evRemoved"))
+
+		(var shipSchemeUrl:str = "'url:../mini_dockyard/ship_schemes/' + shipComponent.shortName + (isSmallResolution ? '_small.png' : '.png')")
+
+		(var isShipCompleted:bool = "state ? state == SC.Common.MINI_DOCKYARD_SHIP_STATE.COMPLETED : false")
+		(var currentComponentsProgress:number = "unlockedShipComponentsArray.length")
+		(var maxComponentsProgress:number = "shipComponentsArray.length")
+		(var barProgress:number = "currentComponentsProgress == 0 || maxComponentsProgress == 0	? 0 :
+																				isShipCompleted	? 1
+																								: currentComponentsProgress/maxComponentsProgress")
+
+		(var priceEntity:gfx = "researchPriceId ? $datahub.getEntity(researchPriceId) : null")
+		(var priceInfo:dict = "priceEntity ? priceEntity.itemPrice : null" (event "priceEntity.itemPrice.evChanged"))
+
+		(macro PULL_ACCOUNT_RESOURCES)
+		(macro IS_ENOUGH_RESROUCES_FOR_BUYING "[priceInfo]") 
+
+		(var schemeWidth:number = "isSmallResolution ? MINI_DOCKYARD_SHIP_SCHEME_MIN_WIDTH : MINI_DOCKYARD_SHIP_SCHEME_WIDTH")
+		(var schemeHeight:number = "isSmallResolution ? MINI_DOCKYARD_SHIP_SCHEME_MIN_HEIGHT : MINI_DOCKYARD_SHIP_SCHEME_HEIGHT")
+	)
+
+	(style
+		(width = 100%)
+		(align = "center")
+	)
+
+	(block
+		(style
+			(width = 100%)
+			(height = "{720:96, 1080:168}")
+			(paddingTop = "{720:S, 1080:L}")
+			(paddingRight = "{1280:M, 1920:LS}")
+			(paddingLeft = "{1280:LS, 1920:XL}")
+		)
+
+		
+		(hblock
+			(bind visible "miniDockyardSeasonIsUnlocked && isInProgress")
+
+			(style
+				(width = 100%)
+				(align = "middle")
+			)
+
+			(block
+				(style
+					(minWidth = 252px)
+				)
+
+				(block
+					(style
+						(width = 100%)
+						(align = "center")
+						(backgroundColor = "0x10FFFFFF")
+					)
+
+					(tf
+						(class $TextDefaultNM)
+						(style
+							(marginTop = "SXS")
+							(alpha = "TC")
+						)
+
+						(text = "'IDS_MINI_DOCKYARD_SHIP_INFORMATION_COMPONENTS_RESEARCHED'")
+					)
+
+					(block
+						(style
+							(marginTop = "S")
+							(marginBottom = "SXS")
+						)
+
+						(element DefaultDividedCounter
+							_curValueTextClass = '$TextDefaultBold17NM'
+							_curValue = "currentComponentsProgress"
+							_maxValue = "maxComponentsProgress"
+						)
+					)
+				)
+
+				(element DefaultProgressBar
+					_progress = "barProgress"
+					_width = 100%
+					_height = 4
+				)
+			)
+
+			
+			(hblock
+				(bind visible "miniDockyardSeasonIsUnlocked && isInProgress")
+
+				(style
+					(width = 100%)
+					(align = "right")
+				)
+
+				(block
+					(style
+						(width = 240px)
+					)
+
+					(hblock
+						(style (width = 100%))
+
+						(tf
+							(class $TextDefaultNM)
+							(style
+								(alpha = "TC")
+								(width = 100%)
+							)
+
+							(text = "'IDS_MINI_DOCKYARD_SHIP_INFORMATION_PURCHASE'")
+						)
+
+						(controller $Instance renderer='PriceTag'
+							(bind enabled "priceInfo")
+							(args
+								_priceInfo = "priceInfo"
+							)
+						)
+					)
+
+					(block
+						(style (marginTop = "SXS"))
+
+						
+						(block
+							(bind visible "!isEnough")
+							(class $FullsizeAbsolute)
+							(style (backgroundColor = 0x01000000))
+
+							(controller $Tooltip
+								(bind renderer "'SimpleStatusTooltip'")
+								(args
+									_text = 'IDS_NOT_ENOUGH_GOLD'
+									_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.NEGATIVE"
+								)
+								(macro DEFAULT_TOOLTIP_BEHAVIOUR "1")
+								(align = "right|innerTop")
+								(offset = { x: 6, y: -26 })
+							)
+						)
+
+
+						(element DefaultButton
+							_width = 240
+							_name = 'mini_dockyard_purchase_ship_button'
+							_enabled = "isEnough"
+							_isTransactionBtn = true
+							_label = 'IDS_MINI_DOCKYARD_PURCHASE_SHIP_BUTTON'
+							_methods = "[	{	type: 'inputMapping.onRequest',
+												name: 'openMiniDockyardPurchaseShipWindow',
+												args: {shipEntityId: selectedShipEntityId, seasonId: miniDockyardSeasonId}
+											}]"
+						)
+					)
+				)
+			)
+		)
+
+		
+		(block
+			(bind visible "miniDockyardSeasonIsUnlocked && (isCompleted || isLocked)")
+
+			(style
+				(width = 100%)
+				(align = "center")
+			)
+
+			(block
+				(style
+					(minWidth = 240px)
+					(paddingLeft = "L")
+					(paddingRight = "L")
+					(paddingTop = "M")
+					(paddingBottom = "M")
+					(align = "center|middle")
+					(backgroundColor = "0x10FFFFFF")
+				)
+
+				(block
+					(bind visible "isLocked")
+
+					(tf
+						(class $TextDefaultNM)
+						(style
+							(maxWidth = 240px)
+							(textAlign = "center")
+							(alpha = "TC")
+						)
+
+						(text = "'IDS_MINI_DOCKYARD_SHIP_INFORMATION_SHIP_LOCKED'")
+					)
+				)
+
+				(block
+					(bind visible "isCompleted")
+
+					(element StatusLine
+						_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+						_text = "'IDS_MINI_DOCKYARD_SHIP_INFORMATION_SHIP_COMPLETED'"
+						_maxWidth = 240
+					)
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(class $Fullsize)
+		(style
+			(align = "center")
+		)
+
+		
+		(block
+			(style
+				(backgroundSize = "contain")
+				(bind backgroundImage "shipSchemeUrl")
+				(marginTop = "MINI_DOCKYARD_SHIP_COMPONENT_SIZE")
+				(bind width "schemeWidth")
+				(bind height "schemeHeight")
+			)
+
+			(controller $Repeat renderer='MiniDockyardShipComponentItem'
+				(bind count "shipComponentsArray.length")
+
+				(args
+					_shipComponentEntity = "shipComponentsArray[$index]"
+					_containerHeight = "schemeHeight"
+				)
+			)
+		)
+	)
+)
+
+(def element MiniDockyardShipComponentItem (_shipComponentEntity:gfx, _containerHeight:number)
+	(scope
+		(macro STAGE_SIZE)
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(macro PULL_MINI_DOCKYARD_SEASON_SCOPE)
+		(var miniDockyardSeasonId:str = "miniDockyardSeason ? miniDockyardSeason.id : null" (event "miniDockyardSeason.evChanged"))
+
+		(macro PULL_MINI_DOCKYARD_SHIP_COMPONENT_DATA "_shipComponentEntity") 
+		(macro PULL_MINI_DOCKYARD_SHIP_COMPONENT_STATE) 
+
+		(var imageUrl:str = "	isUnlocked	? 'url:../mini_dockyard/ship_components/recieved.png' :
+								isLocked	? 'url:../mini_dockyard/ship_components/locked.png'
+											: iconPath")
+
+		(var indexToGetOffset:number = "slotIndex < 5 ? slotIndex : slotIndex - 5")
+		(var isSmallResolution:bool = "stageHeight < MINI_DOCKYARD_HEIGHT_TO_TURN_HD || stageWidth < MINI_DOCKYARD_WIDTH_TO_TURN_HD")
+		(var leftOffset:number = "isSmallResolution	? MINI_DOCKYARD_SHIP_COMPONENT_POSITION_HD[indexToGetOffset]
+													: MINI_DOCKYARD_SHIP_COMPONENT_POSITION_FHD[indexToGetOffset]")
+
+		(var isTopRow:bool = "slotIndex < 5")
+		(var topOffset:number = "(isTopRow ? 0 : _containerHeight) + (MINI_DOCKYARD_SHIP_COMPONENT_SIZE * (isTopRow ? -1 : 0))")
+
+		(var researchComponentButtonMethods:array = "[{	type: 'inputMapping.onRequest',
+														name: 'openMiniDockyardPurchaseModuleWindow',
+														args: {_componentId: componentId, _shipId: shipId, _seasonId: miniDockyardSeasonId}}]")
+	)
+
+	(style
+		(width = "MINI_DOCKYARD_SHIP_COMPONENT_CONTAINER_WIDTH")
+		(height = "MINI_DOCKYARD_SHIP_COMPONENT_SIZE")
+		(position = "absolute")
+		(align = "center|middle")
+		
+		(bind left "leftOffset")
+		(bind top "topOffset")
+		(backgroundColor = 0x01000000)
+	)
+
+	(block
+		(style
+			(width = "MINI_DOCKYARD_SHIP_COMPONENT_SIZE")
+			(height = "MINI_DOCKYARD_SHIP_COMPONENT_SIZE")
+			(align = "center|middle")
+			(bind backgroundColor "rollOver ? 0x20FFFFFF : 0x10FFFFFF")
+		)
+
+		
+		(block
+			(bind visible "isAvailable")
+			(class $FullsizeAbsolute)
+			(style
+				(backgroundSize = "fill")
+				(backgroundImage = 'url:../mini_dockyard/ship_components/available_to_buy_frame.png')
+			)
+		)
+
+		
+		(element OnePixelFrameBorder
+			_alpha = "rollOver ? 0.5 : 0.3"
+		)
+
+		
+		(block
+			(style
+				(width = 28px)
+				(height = 28px)
+				(backgroundSize = "align")
+				(bind backgroundImage "imageUrl")
+			)
+		)
+	)
+
+	
+	(block
+		(style
+			(width = 100%)
+			(position = "absolute")
+			(bind top "MINI_DOCKYARD_SHIP_COMPONENT_SIZE + (isNotEnoughResources ? S : -1)")
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style (alpha = 0) (align = "center"))
+
+			
+			(controller $Animation
+				(bindcall play  duration=0.1
+								from = "{ alpha: 0, top: -10 }"
+								to = "{ alpha: 1, top: 0 }"
+								reverse="!rollOver"
+								(bind trigger "rollOver")
+				)
+			)
+
+			
+			(block
+				(bind visible "isNotEnoughResources")
+				(style (width = 100%) (gap = "S") (align = "center") (hitTest = false))
+
+				(controller $Repeat renderer='PriceTag'
+					(bind count "prices.length")
+					(args
+						_priceInfo = "prices[$index]"
+					)
+				)
+			)
+
+			
+			(controller $Instance renderer='DefaultButton'
+				(bind enabled "isAvailable")
+				(args
+					_label = 'IDS_MINI_DOCKYARD_SHIP_COMPONENT_RESEARCH_BUTTON'
+					_size = "SIZE.SMALL"
+					_width = '104px'
+					_enabled = true
+					_isTransactionBtn = true
+					_methods = "researchComponentButtonMethods"
+				)
+			)
+		)
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER)
+
+	(controller $Tooltip
+		(renderer='MiniDockyardShipComponentItemTooltip')
+		(args
+			_shipComponentEntity = "_shipComponentEntity"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+		(offset = {	x: 15, y: 25})
+	)
+)
+
+(def element MiniDockyardShipComponentItemTooltip (_shipComponentEntity:gfx) layout=true
+	(scope
+		(macro PULL_MINI_DOCKYARD_SHIP_COMPONENT_DATA "_shipComponentEntity") 
+		(macro PULL_MINI_DOCKYARD_SHIP_COMPONENT_STATE) 
+
+		(var headerText:str = "'IDS_' + toUpper(componentId) + '_MINI_DOCKYARD_COMPONENT'")
+
+		
+		(var tooltipStatusLineText:str = "	isLockedByTime					? 'IDS_MINI_DOCKYARD_SHIP_COMPONENT_TOOLTIP_LOCKED_BY_TIME' :
+											isLockedByPreviousShip			? 'IDS_MINI_DOCKYARD_SHIP_COMPONENT_TOOLTIP_LOCKED_BY_PREVIOUS_SHIP' :
+											isLockedByGettingProjectAccess	? 'IDS_MINI_DOCKYARD_SHIP_COMPONENT_TOOLTIP_LOCKED_BY_PROJECT_ACCESS' :
+											isUnlocked						? 'IDS_MINI_DOCKYARD_SHIP_COMPONENT_TOOLTIP_RESEARCHED'
+																			: 'IDS_MINI_DOCKYARD_SHIP_COMPONENT_TOOLTIP_RESEARCH_TO_OBTAIN'")
+		(var tooltipStatusLineUnifiedStatus:str = "	isUnlocked	? SC.Ui_styles.UNIFIED_STATUS.CHECK :
+													isLocked	? SC.Ui_styles.UNIFIED_STATUS.LOCK
+																: null")
+	)
+
+	(style (hitTest = false) (width = 340px))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+
+		(element TooltipSystemHeaderWithIconAndText
+			_imageUrl =	"tooltipIconPath"
+			_imageWidth = 60
+			_imageHeight = 60
+			_headerText = "headerText"
+			_subheaderText = "'IDS_MINI_DOCKYARD_SHIP_COMPONENT_TOOLTIP_SUBHEADER'"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemStatusLine
+			_text = "tooltipStatusLineText"
+			_unifiedStatus = "tooltipStatusLineUnifiedStatus"
+		)
+
+		
+		(block
+			(bind visible "!isUnlocked")
+			(style (width = 100%))
+
+			(element TooltipSystemHorizontalDivider)
+
+			(block
+				(style (width = 100%) (gap = "S"))
+
+				(tf
+					(class $TextDefaultNM)
+					(style (alpha = "TC"))
+					(text = 'IDS_MINI_DOCKYARD_SHIP_COMPONENT_TOOLTIP_PRICE')
+				)
+
+				(hblock
+
+					(style (gap = "S") (width = "100%") (align = "middle"))
+
+					(controller $Instance renderer='PriceTag'
+						(bind enabled "prices[0]")
+						(args
+							_priceInfo = "prices[0]"
+						)
+					)
+
+					(tf
+						(bind visible "prices[1]")
+						(class $TextDefaultNM)
+						(style (alpha = "TC"))
+						(text = 'IDS_AND')
+					)
+
+					(controller $Instance renderer='PriceTag'
+						(bind enabled "prices[1]")
+						(args
+							_priceInfo = "prices[1]"
+						)
+					)
+				)
+			)
+		)
+
+
+		(block
+			(bind visible "isNotEnoughResources")
+			(style (width = 100%))
+
+			(element TooltipSystemHorizontalDivider)
+
+			(element TooltipSystemStatusLine
+				_text = 'IDS_MINI_DOCKYARD_SHIP_COMPONENT_TOOLTIP_MOUSE_INSTRUCTION_TEXT_LOCKED'
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.NEGATIVE"
+			)
+		)
+	)
+)
+
+(def element MiniDockyardShipSelector (_seasonId:str)
+	(scope
+		(var branchesCollection:gfx = "_seasonId ?	$datahub.getCollection(CC.miniDockyardBranch).getChildByPath('bySeasonId.' + _seasonId)
+													: null")
+		(var branchesArray:array = "branchesCollection ? branchesCollection.items : []"	(event "branchesCollection.evAdded")
+																						(event "branchesCollection.evRemoved"))
+
+		(macro PULL_MINI_DOCKYARD_WINDOW_DATA) 
+		(macro PULL_MINI_DOCKYARD_BRANCH_DATA "selectedBranchEntityId") 
+
+		(var shipsCollection:gfx = "miniDockyardBranchId	? $datahub.getCollection(CC.miniDockyardShip).getChildByPath('byBranchId.' + miniDockyardBranchId)
+															: null")
+		(var shipsArray:array = "shipsCollection ? shipsCollection.items : []"	(event "shipsCollection.evAdded")
+																				(event "shipsCollection.evRemoved"))
+
+		(var rewardStackEntity:gfx = "$datahub.getEntity(afterSeasonRewardStackId)")
+		(var rewards:array = "rewardStackEntity ? rewardStackEntity.rewardsStack.rewards : []" (event "rewardStackEntity.rewardsStack.evChanged"))
+	)
+
+	(style
+		(width = 100%)
+		(height = 100%)
+	)
+
+	(hblock
+		(class $MiniDockyardContentLeftMargin)
+		(style (paddingTop = "XS"))
+
+		(controller $Repeat renderer='MiniDockyardBranchSelectorItem'
+			(bind count "branchesArray.length")
+
+			(args
+				_branchEntityId = "branchesArray[$index].id"
+			)
+		)
+	)
+
+	(element HorizontalDividerTwoPx)
+
+	(block
+		(style
+			(width = 100%)
+			(marginTop = "M")
+			(paddingLeft = "{1280:MS, 1920:LS}")
+		)
+
+		(scrollArea
+			(style
+				(width = 100%)
+				(bind height "MINI_DOCKYARD_SHIP_SELECTOR_ITEM_HEIGHT")
+				(backgroundColor = "0x01000000")
+			)
+
+			(horizontalSlider = 'CarouselScroll')
+			(hscrollPolicy = 'auto')
+			(vscrollPolicy = 'off')
+			(drag = true)
+
+			(repeatController = 'miniDockyardShipSelectorItem')
+
+			(content
+				(style
+					(width = 100%) (height = 100%)
+					(backgroundColor = "0x21ffffff") (flow = "horizontal")
+				)
+
+				(hblock
+					(controller $Repeat renderer = 'MiniDockyardShipSelectorItem' name='miniDockyardShipSelectorItem'
+						(bind count "shipsArray.length")
+						(args
+							_miniDockyardShipEntityId = "shipsArray[$index].id"
+						)
+					)
+				)
+
+				(controller $Instance renderer='MiniDockyardSeasonBranchReward'
+					(args
+						_rewards = "rewards"
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element MiniDockyardBranchSelectorItem (_branchEntityId:number)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+		(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM_SCOPE)
+
+		(macro PULL_MINI_DOCKYARD_BRANCH_DATA "_branchEntityId") 
+
+		
+		(var imageUrl:str = "'url:../mini_dockyard/main/branch_selector/icons/'+ ($index + 1) +'.png'")
+
+		(macro PULL_MINI_DOCKYARD_WINDOW_DATA) 
+
+		(var unexploredShipsCollection:gfx = "miniDockyardBranchId	?	$datahub.getCollection(CC.miniDockyardShip).getChildByPath('byBranchId.' + miniDockyardBranchId + '.unexplored')
+																	: null")
+		(var unexploredShipsArray:array = "unexploredShipsCollection ? unexploredShipsCollection.items : []"	(event "unexploredShipsCollection.evAdded")
+																												(event "unexploredShipsCollection.evRemoved"))
+		
+		(var isBranchUnlocked:bool = "unexploredShipsArray.length == 0")
+		(var isSelected:bool = "_branchEntityId == selectedBranchEntityId")
+	)
+
+	(style
+		(width = 64px)
+		(height = 64px)
+		(backgroundSize = "cover")
+		(bind backgroundImage "imageUrl")
+		(bind marginLeft "$index != 0 ? MS : 0")
+	)
+
+	(bindcall externalCall
+		"'inputMapping.onAction'" "['updateMiniDockyardSelectedBranch', {branchId: _branchEntityId}]"
+		init=false watch=false
+		on='click'
+	)
+
+	(controller $Tooltip
+		(bind enabled "!isSelected")
+		(bind renderer "'MiniDockyardShipSelectorItemTooltip'")
+		(args
+			_isBranchUnlocked = "isBranchUnlocked"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_default'"
+	)
+
+	(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM "true")
+)
+
+(def element MiniDockyardShipSelectorItem (_miniDockyardShipEntityId:number)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(macro PULL_MINI_DOCKYARD_SHIP_DATA "_miniDockyardShipEntityId") 
+
+		(macro PULL_SHIP "shipId") 
+
+		(var shipSilhouettesUrl:str = "'url:../mini_dockyard/ship_silhouettes/' + shipComponent.shortName + '.png'")
+
+		(macro PULL_MINI_DOCKYARD_WINDOW_DATA) 
+
+		(var isSelected:bool = "selectedShipEntityId == _miniDockyardShipEntityId")
+	)
+
+	(bindcall externalCall
+		"'inputMapping.onAction'" "['updateMiniDockyardSelectedShip', {shipId: _miniDockyardShipEntityId}]"
+		init=false watch=false
+		on='click'
+	)
+
+	(style
+		(flow = "horizontal")
+	)
+
+	
+	(block
+		(bind visible "$index != 0")
+
+		(style
+			(height = 100%)
+			(width = 64px)
+			(align = "middle")
+		)
+
+		(block
+			(style
+				(width = 100%)
+				(height = 1px)
+				(alpha = 0.3)
+				(backgroundColor = "0xFFC4C4C4")
+			)
+		)
+	)
+
+	
+	(block
+		(style
+			(width = "MINI_DOCKYARD_SHIP_SELECTOR_ITEM_WIDTH")
+			(height = "MINI_DOCKYARD_SHIP_SELECTOR_ITEM_HEIGHT")
+		)
+
+		
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(backgroundColor = "0x50FFFFFF")
+				(bind alpha "	isSelected	? rollOver	? 0.3
+														: 0.2
+											: rollOver	? 0.2
+														: 0.1")
+			)
+		)
+
+		
+		(element TwoPixelFrameBorder
+			_enabled = "isSelected"
+			_alpha = "rollOver ? 0.4 : 0.3"
+		)
+
+		(element OnePixelFrameBorder
+			_enabled = "!isSelected"
+			_alpha = "rollOver ? 0.2 : 0.1"
+		)
+
+		
+		(block
+			(style
+				(marginTop = "S") (marginBottom = "S")
+				(marginLeft = "XS")
+			)
+
+			(controller $Instance renderer='ShipLineItemNM'
+				(args
+					_shipId = "shipId"
+					_withFlag = "true"
+					_fontClass = "'$TextDefaultBoldNM'"
+				)
+			)
+		)
+
+		
+		(block
+			(class $Fullsize)
+
+			(block
+				(class $Fullsize)
+				(style
+					(align = "center")
+					(paddingTop = "S") (paddingBottom = "S")
+					(paddingLeft = 10px)
+				)
+
+				
+				(block
+					(style
+						(width = 100%)
+						(bind alpha "isLocked ? 0.5 : 1")
+						(bind backgroundImage "shipSilhouettesUrl")
+						(hitTest = "false")
+					)
+					(bind colorTransform "	isInProgress	? COLOR_TRANSFORM_WHITE_TO_GREY :
+											isCompleted		? COLOR_TRANSFORM_WHITE_TO_YELLOW
+											: {}")
+				)
+			)
+
+			
+			(block
+				(bind visible "isLocked")
+
+				(class $FullsizeAbsolute)
+				(style
+					(padding = "XS")
+				)
+
+				(block
+					(class $FullsizeAbsolute)
+					(style
+						(backgroundSize = "cover")
+						(backgroundImage = "'url:../mini_dockyard/main/ship_selector/locked.png'")
+					)
+				)
+			)
+		)
+
+
+		(macro MOUSE_EVENTS_DISPATCHER)
+		(macro SOUND_HANDLER "'button_ship'")
+
+		(controller $Tooltip
+			(renderer='ShipExtendedTooltip')
+			(args
+				_shipId = "shipId"
+			)
+			(macro SHIP_TREE_TOOLTIP_BEHAVIOUR "shipId" "0")
+		)
+	)
+)
+
+(def element MiniDockyardShipSelectorItemTooltip(_isBranchUnlocked:bool)
+	(style (hitTest = false) (width = 320px))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(bind visible "_isBranchUnlocked")
+			(style (width = 100%))
+
+			(element TooltipSystemStatusLine
+				_text = 'IDS_MINI_DOCKYARD_SEASON_BRANCH_SELECTOR_TOOLTIP_CHECK_INSTRUCTION'
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+			)
+
+			(element TooltipSystemHorizontalDivider)
+		)
+
+		(element TooltipSystemStatusLine
+			_text = 'IDS_MINI_DOCKYARD_SEASON_BRANCH_SELECTOR_TOOLTIP_MOUSE_INSTRUCTION'
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+		)
+	)
+)
+
+(def element MiniDockyardSeasonBranchReward (_rewards:array)
+	(scope
+		(macro PULL_MINI_DOCKYARD_SEASON_SCOPE) 
+
+		(var miniDockyardSeasonId:str = "miniDockyardSeason ? miniDockyardSeason.id : null" (event "miniDockyardSeason.evChanged"))
+		(var finishTime:number = "miniDockyardSeason ? miniDockyardSeason.finishTime : null" (event "miniDockyardSeason.evChanged"))
+		(macro SERVER_TIME_SCOPE)
+		(macro COUNTDOWN_SCOPE "'timeLeft'" "finishTime" "'HIGHEST,WITH_DAYS'")
+
+		(macro PULL_MINI_DOCKYARD_WINDOW_DATA) 
+		(macro PULL_MINI_DOCKYARD_BRANCH_DATA "selectedBranchEntityId") 
+
+		(var unexploredShipsCollection:gfx = "miniDockyardBranchId	?	$datahub.getCollection(CC.miniDockyardShip).getChildByPath('byBranchId.' + miniDockyardBranchId + '.unexplored')
+																	: null")
+		(var unexploredShipsArray:array = "unexploredShipsCollection ? unexploredShipsCollection.items : []"	(event "unexploredShipsCollection.evAdded")
+																												(event "unexploredShipsCollection.evRemoved"))
+		(var isBranchRewardUnlocked:bool = "unexploredShipsArray.length == 0")
+
+		(var iconPath:str = "!isBranchRewardUnlocked	? 'url:../reward_icons/minidockyard_branch_reward_unavailable.png'
+														: 'url:../reward_icons/minidockyard_branch_reward.png'")
+	)
+
+	(style
+		(align = "middle")
+		(flow = "horizontal")
+		(height = "MINI_DOCKYARD_SHIP_SELECTOR_ITEM_HEIGHT")
+		(width = 320px)
+		(marginRight = "M")
+		(backgroundSize = "cover")
+		(backgroundImage = "'url:../mini_dockyard/main/ship_selector/season_reward_bg.png'")
+	)
+
+	(block
+		(style
+			(marginLeft = "MS")
+		)
+
+		(block
+			(style
+				(bind alpha "isBranchRewardUnlocked ? 1 : 0.5")
+			)
+
+			(element MultiRewardItem
+				_rewards = "_rewards"
+				_iconPath = "iconPath"
+				_tooltipHeader = "'IDS_MINI_DOCKYARD_SEASON_BRANCH_REWARD_TOOLTIP_HEADER'"
+				_tooltipDescription = "isBranchRewardUnlocked	? 'IDS_MINI_DOCKYARD_SEASON_BRANCH_REWARD_TOOLTIP_WILL_BE_AVAILABLE'
+																: 'IDS_MINI_DOCKYARD_SEASON_BRANCH_REWARD_TOOLTIP_LOCKED'"
+				_tooltipDescriptionStatus = "isBranchRewardUnlocked	? SC.Ui_styles.UNIFIED_STATUS.DATE
+																	: SC.Ui_styles.UNIFIED_STATUS.LOCK"
+			)
+		)
+	)
+
+	(block
+		(style
+			(align = "middle")
+				(marginLeft = "M")
+		)
+
+		(tf
+			(class $TextDefaultBold19NM)
+			(style
+				(alpha = "TA")
+			)
+
+			(text = "'IDS_MINI_DOCKYARD_SEASON_BRANCH_REWARD'")
+		)
+
+		(block
+			(bind visible "isBranchRewardUnlocked")
+
+			(style
+				(marginTop = "S")
+			)
+
+			(element StatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DATE"
+				_text = "'IDS_MINI_DOCKYARD_SEASON_BRANCH_REWARD_WILL_BE_AVAILABLE'"
+			)
+		)
+	)
+)
+
+(def element MiniDockyardBuyShipAccess () layout=true
+	(scope
+		(macro PULL_MINI_DOCKYARD_SEASON_SCOPE) 
+
+		(var miniDockyardSeasonId:str = "miniDockyardSeason ? miniDockyardSeason.id : null" 		(event "miniDockyardSeason.evChanged"))
+		(var unlockTaskTag:str = "miniDockyardSeason ? miniDockyardSeason.unlockTaskTag : null" 		(event "miniDockyardSeason.evChanged"))
+		(var unlockTaskId:number = "miniDockyardSeason ? miniDockyardSeason.unlockTaskId : null"	(event "miniDockyardSeason.evChanged"))
+		(var unlockPriceId:number = "miniDockyardSeason ? miniDockyardSeason.unlockPriceId : null"	(event "miniDockyardSeason.evChanged"))
+
+		
+		(var unlockSseTaskEntity:gfx = "$datahub.getEntity(unlockTaskId)")
+
+		
+		(var priceItemEntity:gfx = "$datahub.getEntity(unlockPriceId)")
+		(var priceItemComponent:dict = "priceItemEntity ? priceItemEntity.itemPrice : null" (event "priceItemEntity.itemPrice.evChanged"))
+	)
+
+	(style
+		(width = "{1280: MINI_DOCKYARD_TASKS_SIDEBAR_WIDTH[0], 1920: MINI_DOCKYARD_TASKS_SIDEBAR_WIDTH[1]}")
+		(height = 100%)
+	)
+
+	(element OnePixelFrameBorder
+		_alpha = 0.1
+		_postfix = 'no_top'
+	)
+
+	
+	(block
+		(style
+			(width = "{1280: MINI_DOCKYARD_TASKS_SIDEBAR_WIDTH[0], 1920: MINI_DOCKYARD_TASKS_SIDEBAR_WIDTH[1]}")
+			(height = 100%)
+
+			(paddingLeft = "SXS") (paddingRight = "SXS")
+			(paddingTop = "{720: M, 1080: L}")
+
+			(gap = "MS")
+		)
+
+		(tf
+			(class $TextDefaultBold25NM)
+			(style
+				(width = 100%)
+				(alpha = "TA")
+			)
+
+			(text = "'IDS_MINI_DOCKYARD_WINDOW_SHIP_ACCESS_TITLE'")
+		)
+
+		(tf
+			(class $TextDefault17NM)
+			(style
+				(width = 100%)
+				(alpha = "TC")
+			)
+
+			(text = "'IDS_MINI_DOCKYARD_WINDOW_SHIP_ACCESS_DESCRIPTION'")
+		)
+
+		
+		(block
+			(style (width = 100%))
+
+			(element OnePixelFrameBorder
+				_alpha = 0.1
+			)
+
+			(element SseCardContentWithCriteria
+				_sseTaskEntity = "unlockSseTaskEntity"
+				(style (padding = "SXS"))
+			)
+		)
+
+		
+		(hblock
+			(style (width = 100%))
+
+			(element DottedHorizontalDivider
+				(style (width = 50%))
+			)
+
+			(block
+				(style
+					(marginLeft = "SXS") (marginRight = "SXS")
+					(marginTop = -6px) (marginBottom = 0)
+				)
+				(tf
+					(class $TextDefaultNM)
+					(style (alpha = "TS"))
+					(bind text "toUpper(tr('IDS_OR'))")
+				)
+			)
+
+			(element DottedHorizontalDivider
+				(style (width = 50%))
+			)
+		)
+
+		(block
+			(style (width = 100%) (align = "middle|center"))
+
+			(tf
+				(class $TextDefault17NM)
+				(style
+					(width = 100%)
+					(textAlign = "center")
+					(alpha = "TA")
+					(marginBottom = "SXS")
+				)
+
+				(text = "'IDS_MINI_DOCKYARD_WINDOW_SHIP_ACCESS_BUY_INFO'")
+			)
+
+			(controller $Instance renderer='PriceTag'
+				(bind enabled "priceItemComponent != null")
+				(args
+					_priceInfo = "priceItemComponent"
+					_size = "SIZE.LARGE"
+				)
+				(exprs
+					(style (marginBottom = "M"))
+				)
+			)
+
+			(element DefaultButton
+				_width = "MINI_DOCKYARD_BUY_ACCESS_BUTTON_WIDTH"
+				_label = "'IDS_MINI_DOCKYARD_WINDOW_SHIP_ACCESS_BUY_BUTTON'"
+				_enabled = true
+				_methods = "[	{	type: 'inputMapping.onRequest',
+									name: 'openMiniDockyardGetAccessWindow',
+									args: {seasonId: miniDockyardSeasonId}
+								}]"
+			)
+		)
+	)
+)
+
+(def element MiniDockyardTasks () layout=true
+	(scope
+		(macro PULL_MINI_DOCKYARD_SEASON_SCOPE)
+
+		(var mainTasksTag:str = "miniDockyardSeason ? miniDockyardSeason.mainTasksTag : null" (event "miniDockyardSeason.evChanged"))
+
+		(var miniDockyardTasksCollection:gfx = "mainTasksTag	? $datahub.getCollection(CC.sseTask).getChildByPath('SSECoreTasks.bySSETag.' + mainTasksTag)
+																: null")
+		(var miniDockyardTasks:array = "miniDockyardTasksCollection ? miniDockyardTasksCollection.items : []"	(event "miniDockyardTasksCollection.evAdded")
+																												(event "miniDockyardTasksCollection.evRemoved"))
+		(var numberOfTasks:number = "miniDockyardTasks.length")
+	)
+
+	(style
+		(width = "{1280: MINI_DOCKYARD_TASKS_SIDEBAR_WIDTH[0], 1920: MINI_DOCKYARD_TASKS_SIDEBAR_WIDTH[1]}")
+		(height = 100%)
+	)
+
+	(element OnePixelFrameBorder
+		_alpha = 0.1
+		_postfix = 'no_top'
+	)
+
+	
+	(block
+		(style
+			(width = "{1280: MINI_DOCKYARD_TASKS_SIDEBAR_WIDTH[0], 1920: MINI_DOCKYARD_TASKS_SIDEBAR_WIDTH[1]}")
+			(height = 100%)
+
+			(paddingLeft = "SXS") (paddingRight = "SXS")
+			(paddingTop = "{720: M, 1080: L}")
+
+			(gap = "MS")
+		)
+
+		(tf
+			(class $TextDefaultBold25NM)
+			(style
+				(width = 100%)
+				(alpha = "TA")
+			)
+
+			(text = "'IDS_MINI_DOCKYARD_WINDOW_TASKS_TITLE'")
+		)
+
+		(tf
+			(class $TextDefault17NM)
+			(style
+				(width = 100%)
+				(alpha = "TC")
+			)
+
+			(text = "'IDS_MINI_DOCKYARD_WINDOW_TASKS_DESCRIPTION'")
+		)
+
+		(element HorizontalDividerTwoPx)
+
+		(block
+			(style
+				(width = "{1280: MINI_DOCKYARD_TASK_CARD_WIDTH[0] + S, 1920: MINI_DOCKYARD_TASK_CARD_WIDTH[1] + S}")
+				(height = 100%)
+				(paddingBottom = "LS")
+			)
+
+			(scrollArea
+				(class $Fullsize)
+
+				(verticalSlider = 'ScrollBarVLight')
+
+				(hscrollPolicy = 'off')
+				(vscrollPolicy = 'auto')
+
+				(topShadow='ScrollAreaShadowTop')
+				(bottomShadow='ScrollAreaShadowBottom')
+
+				(repeatController = 'miniDockyardTaskItem')
+
+				(drag=true)
+
+				(content
+					(style
+						(width = "{1280: MINI_DOCKYARD_TASK_CARD_WIDTH[0], 1920: MINI_DOCKYARD_TASK_CARD_WIDTH[1]}")
+						(height = 100%)
+					)
+
+					(block
+						(style
+							(width = 100%) (gap = "SXS")
+							(marginBottom = "S")
+						)
+
+						(controller $Repeat renderer='MiniDockyardTaskCard' name='miniDockyardTaskItem'
+							(bind count "numberOfTasks")
+							(args
+								_sseTaskEntity = "miniDockyardTasks[$index]"
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element MiniDockyardTaskCard (_sseTaskEntity:gfx) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'MiniDockyardTaskCard_'")
+
+		(macro PULL_SSE_TASK_INFO "_sseTaskEntity") 
+		(macro PULL_SSE_STATUS_INFO) 
+
+		(var isSseOpenEnded:bool = "!!_sseTaskEntity.sseOpenEnded")
+		(var isCompleted:bool = "!isSseOpenEnded && (isDone || isFailed)")
+
+		
+		(var sseConditionsEntity:gfx = "conditions.length > 0 ? $datahub.getEntity(conditions[0]) : null")
+		(var sseConditionsComponent:gfx = "sseConditionsEntity ? sseConditionsEntity.sseConditions : null")
+
+		(var countablesIdsDict:dict =	"sseConditionsComponent ? sseConditionsComponent.countablesIds[0] : null"	(event "sseConditionsComponent.evConditionSetChanged"))
+
+		(var conditionProgressCurrent:number = "countablesIdsDict ? countablesIdsDict.currentProgress : 0")
+		(var conditionProgressMax:number = "countablesIdsDict ? countablesIdsDict.maxProgress : -1")
+		(var conditionProgressDiff:number = "conditionProgressCurrent / conditionProgressMax")
+
+		
+		(var rewardEntity:gfx = "rewards.length > 0 ? $datahub.getEntity(rewards[0]) : null")
+		(var rewardComponent:gfx = "rewardEntity ? rewardEntity.rewardComponent : null")
+
+		(var rewardCurrencyType:str =	"rewardComponent ? rewardComponent.subtype : null"	(event "rewardComponent.evUpdate"))
+		(var rewardPrice:number =		"rewardComponent ? rewardComponent.amount : null"	(event "rewardComponent.evUpdate"))
+
+		(var rewardCurrencyPrice:dict = "rewardPrice && rewardCurrencyType	? { finalPrice: rewardPrice, currency: rewardCurrencyType }
+																			: null")
+		
+		(var taskMessage:str = "countablesIdsDict ? countablesIdsDict.ids : ''")
+
+		(var rewardMessage:str = "isCompleted	? 'IDS_MINI_DOCKYARD_WINDOW_TASKS_REWARD_COMPLETED_COLON'
+												: 'IDS_MINI_DOCKYARD_WINDOW_TASKS_REWARD'")
+	)
+
+	(style (width = 100%))
+
+	
+	(controller $Tooltip
+		(bind renderer "'MiniDockyardTaskCardTooltip'")
+		(args
+			_sseTaskEntity = "_sseTaskEntity"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(align="bottom|center")
+		(screenBoundsOffset={left:15, top:15, right:15, bottom:15})
+	)
+
+	
+	(element OnePixelFrameBorder
+		_alpha = "0.1"
+	)
+
+	
+	(block
+		(style
+			(width = 100%)
+			(padding = "SXS") (gap = "SXS")
+			(bind backgroundColor "MiniDockyardTaskCard_rollOver ? 0x05FFFFFF : 0x15051523")
+		)
+
+		(tf
+			(class $TextDefault17NM)
+			(style
+				(width = 100%)
+				(bind alpha "isCompleted ? TS : TC")
+			)
+
+			(bind text "taskMessage")
+		)
+
+		
+		(block
+			(bind visible "!isCompleted")
+			(style (width = 100%) (gap = "XS"))
+
+			(element DefaultProgressBar
+				_progress = "conditionProgressDiff"
+				(style (width = 100%) (marginRight = -1px) (marginLeft = -1px))
+			)
+
+			(element DefaultDividedCounter
+				_doNotAlphaOnZeroCurValue = true
+				_doNotHideOnZeroMaxValue = true
+				_curValue = "conditionProgressCurrent"
+				_maxValue = "conditionProgressMax"
+			)
+		)
+
+		
+		(controller $Instance renderer='StatusLine'
+			(bind enabled "isCompleted")
+			(args
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+				_text = 'IDS_MINI_DOCKYARD_WINDOW_TASKS_REWARD_STATUS_TEXT'
+			)
+			(exprs
+				(style
+					(bind alpha "isCompleted ? TS : TA")
+				)
+			)
+		)
+
+		(element HorizontalDividerTwoPx)
+
+		
+		(controller $Instance renderer='MiniDockyardTaskCardRewardInfo'
+			(bind enabled "rewardCurrencyPrice")
+			(args
+				_rewardPrice = "rewardCurrencyPrice"
+				_rewardMessage = 'IDS_MINI_DOCKYARD_WINDOW_TASKS_REWARD'
+				_isCompleted = "isCompleted"
+			)
+		)
+
+		(controller $Instance renderer='HorizontalDividerTwoPx'
+			(bind enabled "isSseStatusAvailable")
+		)
+
+		
+		(element SseStatus
+			_sseTaskEntity = "_sseTaskEntity"
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_prefix="'MiniDockyardTaskCard_'"
+	)
+)
+
+(def element MiniDockyardTaskCardRewardInfo(_rewardPrice:dict, _rewardMessage:str, _isCompleted:bool)
+	(style
+		(flow = "horizontal")
+		(width = 100%)
+		(gap = "S")
+		(align = "middle")
+	)
+
+	(tf
+		(class $TextDefault17NM)
+		(style (bind alpha "_isCompleted ? TS : TC"))
+
+		(bind text "_rewardMessage")
+	)
+
+	(element PriceTag
+		_priceInfo = "_rewardPrice"
+		_size = "SIZE.MEDIUM"
+
+		(style (bind alpha "_isCompleted ? TS : TC"))
+	)
+)
+
+(def element MiniDockyardTaskCardTooltip(_sseTaskEntity:gfx)
+	(scope
+		(macro PULL_SSE_TASK_INFO "_sseTaskEntity") 
+		(macro PULL_SSE_STATUS_INFO) 
+
+		(var isSseOpenEnded:bool = "!!_sseTaskEntity.sseOpenEnded")
+		(var isCompleted:bool = "!isSseOpenEnded && (isDone || isFailed)")
+
+		
+		(var rewardEntity:gfx = "rewards.length > 0 ? $datahub.getEntity(rewards[0]) : null")
+		(var rewardComponent:gfx = "rewardEntity ? rewardEntity.rewardComponent : null")
+
+		(var rewardCurrencyType:str =	"rewardComponent ? rewardComponent.subtype : null"	(event "rewardComponent.evUpdate"))
+		(var rewardPrice:number =		"rewardComponent ? rewardComponent.amount : null"	(event "rewardComponent.evUpdate"))
+
+		(var rewardCurrencyPrice:dict = "rewardPrice && rewardCurrencyType	? { finalPrice: rewardPrice, currency: rewardCurrencyType }
+																			: null")
+	)
+
+
+	(style (hitTest = "false") (width = "320px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_MINI_DOCKYARD_WINDOW_TASKS_TOOLTIP_TITLE'
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		
+		(controller $Instance renderer='StatusLine'
+			(bind enabled "isCompleted")
+			(args
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+				_text = 'IDS_MINI_DOCKYARD_WINDOW_TASKS_TOOLTIP_REWARD_RECEIVED_MESSAGE'
+			)
+		)
+
+		
+		(controller $Instance renderer='MiniDockyardTaskCardRewardInfo'
+			(bind enabled "!isCompleted && rewardCurrencyPrice")
+			(args
+				_rewardPrice = "rewardCurrencyPrice"
+				_rewardMessage = 'IDS_MINI_DOCKYARD_WINDOW_TASKS_REWARD'
+				_isCompleted = "isCompleted"
+			)
+		)
+
+		(block
+			(bind visible "conditions.length > 0")
+			(style (width = 100%))
+
+			(element TooltipSystemHorizontalDivider)
+
+			
+			(element SseCompletionCriteria
+				_sseTaskEntityId = "conditions[0]"
+			)
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "isSseStatusAvailable")
+		)
+
+		
+		(element SseStatus
+			_sseTaskEntity = "_sseTaskEntity"
+			_isDividerVisible = false
+		)
+	)
+)
+
+(def element MiniDockyardCurrenciesPanel()
+	(scope
+		(macro PULL_MINI_DOCKYARD_SEASON_SCOPE)
+
+		(var miniDockyardCurrencyId:str = "miniDockyardSeason ? miniDockyardSeason.currencyId : null" (event "miniDockyardSeason.evChanged"))
+
+		(var currenciesToRender:array = "[	SC.Common.CURRENCIES.GOLD,
+											SC.Common.CURRENCIES.CREDITS,
+											SC.Common.CURRENCIES.FREE_XP,
+											miniDockyardCurrencyId]" (event "miniDockyardSeason.evChanged"))
+	)
+
+	(style
+		(flow = "horizontal")
+		(gap = "MS")
+	)
+
+	(controller $Repeat renderer='AccountResource' count="currenciesToRender.length"
+		(args
+			_currencyId = "currenciesToRender[$index]"
+		)
+	)
+)

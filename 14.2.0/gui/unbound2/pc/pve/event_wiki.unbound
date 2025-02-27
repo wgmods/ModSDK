@@ -1,0 +1,294 @@
+
+
+
+
+
+
+
+(def constant framesPath "'url:../service_kit/frames/wiki_element'")
+
+(def element ModalWindowEventWiki () layout=true
+	(macro MODAL_WINDOW_INIT)
+	(scope
+		(var operations:gfx = "$datahub.getCollection(CC.battleType).getChildByPath('selected')")
+		(var currentOperation:gfx = "operations.items.length > 0 ? operations.items[0] : null")
+		(var operationComponent:gfx = "currentOperation ? currentOperation.operation : null")
+		(var flagshipList:gfx = "operationComponent.flagships")
+	)
+
+	(style 
+		(align = "center")
+		(backgroundImage = "'url:../event_wiki/' + event_wiki_settings.backgroundImagePath")
+		(backgroundSize = "fill")
+	)
+
+	(macro ABSOLUTE_MODAL_WINDOW_ANIMATION 1)
+
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+		(style (width = 100%) (align = "center"))
+
+		
+		(block
+			(style
+				(width = 100%)
+				(marginTop = "SXS")
+			)
+
+			(element ModalWindowHeaderFullSize
+				_windowName = 'IDS_FLAGSHIP_MODAL_TITLE'
+				_hideBackButton = true
+				_paddingRight = "M"
+				_paddingLeft = "M"
+				_paddingTop = "MS"
+			)
+		)
+	)
+
+	
+	(element FlagshipModalContent)
+
+	
+	(hblock
+		(macro ABSOLUTE_MODAL_WINDOW_ANIMATION 3)
+		(style
+			(height = "{720: L, 1080: XLL}")
+			(width = 100%)
+			(marginBottom = "LS")
+			(marginTop = "S")
+			(align = "center|top")
+		)
+		(element DefaultButton
+			_label = 'IDS_CLOSE_UPPER_CASE'
+			_name = 'btn_cancel'
+			_dispatchedEv = 'evClose'
+		)
+	)
+)
+
+(def element categoryElement (_category:str, _elementName:str, _isHeader:bool, _dispatchedEv:str='', _dispatchParams:gfx={}, _evSelected:bool=false) layout=true
+	(scope
+		(var elementName:str = "_isHeader ? '_HEADER' : '_' + toUpper(_elementName)")
+		(var captionText:str = "'IDS_EVENT_WIKI_' + toUpper(_category) + elementName")
+
+		(macro MOUSE_HANDLER_SCOPE)
+		(var backgroundImgPath:str = "framesPath + (_evSelected ? '_selected.png' : rollOver ? '_hover.png' : '.png')")
+		(var imgPath:str = "'url:../event_wiki/' + toLower(_category) + '/button' + toLower(elementName) + '.png'")
+	)
+
+	(style
+		(width = 320px)
+		(height = 88px)
+		(bind marginBottom "_isHeader ? M : XS")
+		(flow = "horizontal")
+		(align = "middle")
+		(bind backgroundImage "backgroundImgPath")
+		(scale9grid = "3")
+		
+	)
+
+	
+	(block
+		(style
+			(width = 60px)
+			(height = 60px)
+			(marginLeft = "M")
+			(marginRight = "M")
+			(bind backgroundImage "imgPath")
+		)
+	)
+	(tf
+		(style
+			(width = 100%)
+			(wordWrap = true)
+		)
+		(class $TextDefaultBold19NM)
+		(bind text "captionText")
+	)
+
+	(macro MOUSE_HANDLER
+		_dispatchedEv = "_dispatchedEv"
+		_dispatchParams = "_dispatchParams"
+		_soundSet = "'button_secondary'"
+	)
+)
+
+(def element EventWikiTextWithHeaderElement (_headerText:str, _paragraphText:str, _textWidth:number) layout=true
+	(style
+		(bind width "_textWidth")
+	)
+	(tf
+		(style
+			(width = 100%)
+			(wordWrap = true)
+			(alpha = "TA")
+		)
+		(class $TextDefaultBold19NM)
+		(bind text "_headerText")
+	)
+	(tf
+		(class $TextDefault17NM)
+		(style
+			(width = 100%)
+			(marginTop = "S")
+			(marginBottom = "L")
+			(wordWrap = true)
+			(alpha = "TA")
+		)
+		(class $TextDefault17NM)
+		(bind text "_paragraphText")
+	)
+)
+
+(def element WikiContent (_content:gfx) layout=true
+	(scope
+		(event evCategoryChanged)
+		(event evTabChanged)
+
+		(var elementCount:number = "_content['ElementList'].length" (event "evTabChanged"))
+		(var categoryName:str = "_content['CategoryName']")
+		(var elementList:gfx = "_content['ElementList']")
+		
+		(var selectedElement:number = 0)
+
+		(bind selectedElement "$event.index" init=false (event "evCategoryChanged"))
+		(bind selectedElement "0" init=false (event "evTabChanged"))
+
+		(var selectedElementObject:gfx = "elementList && selectedElement < elementList.length ? elementList[selectedElement] : null")
+		(var selectedElementName:str = "selectedElementObject ? selectedElementObject.name : ''")
+		(var withPicture:bool = "selectedElementObject ? selectedElementObject.picture : false")
+		(var paragraphCount:number = "selectedElementObject ? selectedElementObject.paragraphCount : 0")
+
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+		(var isSmall:bool = "stageWidth < 1920")
+		(var textWidth:number = "withPicture	?	isSmall ? 300px : 500px
+												:	isSmall ? 600px : 900px")
+	)
+
+	(style
+		(bind width "isSmall ? 1050 : 1290")
+		(height = 100%)
+		(flow = "horizontal")
+		(align = "center")
+		
+	)
+
+	
+	(scrollArea
+		(style
+			(bind width "elementCount > 1 ? 340 : 0")
+			(height=100%)
+		)
+		(verticalSlider = 'ScrollBarVLight')
+		(topShadow = 'ScrollAreaShadowTop')
+		(bottomShadow = 'ScrollAreaShadowBottom')
+
+		(hscrollPolicy = 'off')
+		(vscrollPolicy = 'auto')
+
+		(content
+			(controller $Repeat renderer='categoryElement'
+				(bind count "elementCount")
+				(bind enabled "elementCount > 1")
+				(args
+					_category = "categoryName"
+					_elementName = "elementList[$index].name"
+					_isHeader = "'isHeader' in elementList[$index] && elementList[$index].isHeader"
+					_dispatchedEv = "'evCategoryChanged'"
+					_dispatchParams = "{index: $index}"
+					_evSelected = "selectedElement == $index"
+				)
+			)
+		)
+	)
+
+	
+	(scrollArea
+		(style
+			(bind width "textWidth")
+			(marginLeft = "SXS")
+			(backgroundColor = "0x00FF0000")
+			(height=100%)
+		)
+		(verticalSlider = 'ScrollBarVLight')
+		(topShadow = 'ScrollAreaShadowTop')
+		(bottomShadow = 'ScrollAreaShadowBottom')
+
+		(hscrollPolicy = 'off')
+		(vscrollPolicy = 'auto')
+
+		(content
+			(style
+				(width = 100%)
+			)
+			(controller $Repeat renderer='EventWikiTextWithHeaderElement'
+				(bind count "paragraphCount")
+				(args
+					_headerText = "'IDS_EVENT_WIKI_' + toUpper(categoryName) + '_' + toUpper(selectedElementName) + '_HEADER' + '_' + toString($index+1)"
+					_paragraphText = "'IDS_EVENT_WIKI_' + toUpper(categoryName) + '_' + toUpper(selectedElementName) + '_PARAGRAPH' + '_' + toString($index+1)"
+					_textWidth = "textWidth"
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "withPicture")
+		(style
+			(backgroundSize = "cover")
+			(bind width "!withPicture ? 0 : isSmall ? 300 : 400")
+			(marginLeft = "20px")
+			(bind height "isSmall ? 300 : 400")
+			(bind backgroundImage "'url:../event_wiki/' + toLower(categoryName) + '/' + toLower(selectedElementName) + '.png'")
+		)
+	)
+)
+
+(def element FlagshipModalContent () layout=true 
+	(scope
+		(event evTabSelected)
+		(var selectedTab:number = "0")
+		(var isWithTabs:bool = "event_wiki_content.length > 1")
+		(bind selectedTab "$event['index']" init=false (event "evTabSelected"))
+	)
+
+	(class $Fullsize)
+
+	(style
+		(align = "left")
+		(paddingTop = "XL")
+		(flow = "horizontal")
+	)
+	
+	(block
+		(style
+			(width = 240px)
+		)
+
+		
+		(controller $Repeat renderer='SideTabButton' count="event_wiki_content.length"
+			(bind enabled "isWithTabs")
+			(args
+				_label = "'IDS_EVENT_WIKI_TAB_' + event_wiki_content[$index].CategoryName"
+				_isSelected = "selectedTab == $index"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{index: $index}"
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			)
+		)
+	)
+
+	(block
+		(class $Fullsize)
+		(style
+			(align = "center")
+		)
+		(element WikiContent _content="event_wiki_content[selectedTab]"
+			(dispatch evTabChanged args="{'index': $event.index}" dir=2 (event "evTabSelected"))
+		)
+	)
+)

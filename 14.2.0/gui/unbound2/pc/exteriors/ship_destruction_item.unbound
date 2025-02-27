@@ -1,0 +1,420 @@
+(def element ShipDestructionItem (_shipDestructionEntityId:number, _isActionsAvailable:bool="false", _sid:number=0) layout=true dispatch_size_change=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+		(var shipDestructionEntity:gfx = "$datahub.getEntity(_shipDestructionEntityId)")
+		(var shipDestructionId:number = "shipDestructionEntity ? shipDestructionEntity.ownShipDestruction.id : null")
+		(var exteriorConfig:gfx = "shipDestructionEntity.exteriorConfig")
+
+		(var peculiarityEyeEntity:gfx = "exteriorConfig ? $datahub.getPrimaryEntity(CC.peculiarityEye, exteriorConfig.peculiarity) : null")
+		(var isPeculiarityDisabled:bool = "exteriorConfig.peculiarity && !peculiarityEyeEntity.peculiarityEye.enabled" (event "peculiarityEyeEntity.peculiarityEye.evEnabledChanged"))
+
+		(var exteriorsInStorage:number = "shipDestructionEntity ? shipDestructionEntity.countComponent.value : false" (event "shipDestructionEntity.countComponent.evUpdate"))
+		(var isLinkedToShip:bool = "shipDestructionEntity ? shipDestructionEntity.ownShipDestruction.isLinkedToShip : false" (event "shipDestructionEntity.ownShipDestruction.evUpdated"))
+		(var installedShipDestructionComponent:gfx = "shipDestructionEntity ? shipDestructionEntity.installedShipDestruction : null" (event "shipDestructionEntity.evAdded") (event "shipDestructionEntity.evRemoved"))
+		(var isInstalled:bool = "installedShipDestructionComponent")
+		(var isInStorage:bool = "exteriorsInStorage > 0")
+		(var isAvailableToLink:bool = "!isLinkedToShip && isInStorage")
+
+		(var clickAction:str = "!_isActionsAvailable	? '' :
+								isInstalled				? SC.Ui_common.SHIP_DESTRUCTION_ACTIONS.UNINSTALL :
+								isLinkedToShip			? SC.Ui_common.SHIP_DESTRUCTION_ACTIONS.INSTALL
+														: ''")
+	)
+	(bind name "'ExteriorItemDock_' + exteriorConfig.name")
+	(bind visible "isInStorage || isLinkedToShip")
+	(macro MOUSE_EVENTS_DISPATCHER)
+
+	(bindcall externalCall 'inputMapping.onAction' "['setNewVideoSource', {videoSourcePath:'coui://gui/video/ship_destruction/' + exteriorConfig.name + '.webm'}]" init=false watch=false on=mouseOver)
+
+	(style (paddingBottom = "-MS"))
+
+	(block
+		(bind colorTransform "	!_isActionsAvailable	? {} :
+								mouseDown				? ITEM_DOWN_COLOR_TRANSFORM_PARAMS :
+								rollOver				? ITEM_OVER_COLOR_TRANSFORM_PARAMS
+														: {}")
+
+		(style (height = 60px) (width = 60px))
+	
+		(block
+			(class $Fullsize)
+			(style (bind backgroundImage "'url:../exteriors/ship_destruction/' + exteriorConfig.name + '.png'"))
+		)
+
+		(block
+			(bind visible "isInstalled")
+
+			(class $FullsizeAbsolute)
+			(style (hitTest = "false") (padding = "XXS") (backgroundImage = "'url:../service_kit/frames/one_pixel_frame.png'") (scale9grid = "2"))
+			(bind colorTransform "	isInstalled	? COLOR_TRANSFORM_WHITE_TO_YELLOW
+												: {}")
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style (align = "bottom|right"))
+			(controller $Instance renderer='ImageItemsCounter'
+				(bind enabled "isAvailableToLink")
+				(args
+					_amount = "exteriorsInStorage"
+				)
+			)
+		)
+
+		(block
+			(style (position = "absolute") (top = 1px))
+			(controller $Instance renderer='LinkableItemIcon'
+				(bind enabled "isAvailableToLink")
+			)
+		)
+	)
+
+	(block
+		(style	(position = "absolute") 
+				(top = 1px)
+				(bind left "isAvailableToLink ? 19 : 0")
+		)
+		(controller $Instance renderer='PeculiarityDisabledIcon'
+			(bind enabled "isPeculiarityDisabled")
+			(args
+				_exteriorId = "shipDestructionId"
+			)
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+
+		(block
+			(class $Fullsize)
+			(style (backgroundColor = "0x01000000"))
+			
+			(macro SOUND_HANDLER _soundSet = "clickAction ? 'button_camouflage' : ''")
+			(bindcall externalCall "'inputMapping.onAction'" "[clickAction, {exteriorId: shipDestructionId}]" init=false watch=false on='click')
+			
+			(controller $Tooltip
+				(renderer='ShipDestructionTooltip')
+				(args
+					_id = "shipDestructionId"
+					_isExteriorTab = "true"
+					_isActionsAvailable = "_isActionsAvailable"
+					_sid = "_sid"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			)
+		)
+	)
+
+		(block
+			(style (width = 100%) (height = "MS") (align = "center|middle")) 
+			(controller $Instance renderer='ExteriorLinkButton'
+				(bind enabled "isAvailableToLink && _isActionsAvailable")
+				(args
+					_rollOver = "rollOver"
+					_exteriorId = "shipDestructionId"
+				)
+			)
+		)
+)
+
+(def element ShipDestructionItemStatic (_id:number, _amount:number=0, _isReward:bool="false", _sid:number=0)
+	(scope
+		(var shipDestructionEntity:gfx = "$datahub.getPrimaryEntity(CC.exteriorConfig, _id)")
+		(var exteriorConfig:gfx = "shipDestructionEntity ? shipDestructionEntity.exteriorConfig : null")
+		(var ownShipDestruction:gfx = "shipDestructionEntity && shipDestructionEntity.ownShipDestruction ? shipDestructionEntity.ownShipDestruction : null")
+		(var isLinkedToShip:bool = "ownShipDestruction ? ownShipDestruction.isLinkedToShip : false" (event "ownShipDestruction.evUpdated"))
+	)
+	(bind name "'ExteriorItemDock_' + exteriorConfig.name")
+	(style (width = 100%) (align = "center|middle"))
+
+	(bindcall externalCall 'inputMapping.onAction' "['setNewVideoSource', {videoSourcePath:'coui://gui/video/ship_destruction/' + exteriorConfig.name + '.webm'}]" init=false watch=false on=mouseOver)
+
+	(controller $Instance renderer='ShipDestructionItemView'
+		(bind enabled "exteriorConfig")
+		(args
+			_shipDestructionName = "exteriorConfig.name"
+			_isReward = "_isReward"
+			_amount = "_amount"
+			_exteriorType = "exteriorConfig.type"
+		)
+	)
+
+	(controller $Tooltip
+		(renderer = 'ShipDestructionTooltip')
+		(args
+			_id = "_id"
+			_isReward = "_isReward"
+			_amount = "_amount"
+			_noMouseInstructions = "true"
+			_sid = "_sid"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element ShipDestructionItemView (_shipDestructionName:str, _exteriorType:str, _amount:number=0, _isReward:bool="false")	layout=true
+	(scope
+		(var isInStorage:bool = "_amount > 0")
+		(var isAmountVisible:bool = "isInStorage && _exteriorType == SC.Exteriors.EXTERIOR_TYPE.SHIP_DESTRUCTION")
+		(var pathImageUrl:str = "'url:../exteriors/ship_destruction/' + _shipDestructionName + '.png'")
+	)
+	(bind name "'ExteriorWithAmount_' + _shipDestructionName")
+	(style (height = 60px) (width = 60px))
+	
+	(block
+		(class $Fullsize)
+		(style (bind backgroundImage "pathImageUrl"))
+		(bind alpha "!isInStorage && !_isReward ? 0.2 : 1")
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "bottom|right"))
+
+		(controller $Instance renderer='ImageItemsCounter'
+			(bind enabled "isAmountVisible")
+			(args
+				_amount = "_amount"
+			)
+		)
+	)
+
+	(block
+		(style (position = "absolute"))
+		(controller $Instance renderer='LinkableItemIcon')
+	)
+)
+
+(def element ShipDestructionIconWithHeaderAndSubheader (_id:number, _noMouseInstructions:bool="false", _sid:number="0")
+	(scope
+		(var shipDestructionEntity:gfx = "$datahub.getPrimaryEntity(CC.exteriorConfig, _id)")
+		(var exteriorConfig:gfx = "shipDestructionEntity ? shipDestructionEntity.exteriorConfig : null")
+		(var pathImageUrl:str = "'url:../exteriors/ship_destruction/' + exteriorConfig.name + '.png'")
+		(var headerText:str = "tr('IDS_' + toUpper(exteriorConfig.name))")
+		(var subheaderText:str = "'IDS_EXTERIOR_TYPE_' + SC.Exteriors.EXTERIOR_TYPE.VALUE_TO_NAME[exteriorConfig.type]")
+	)
+	(style (width = 100%))
+
+	(bindcall externalCall 'inputMapping.onAction' "['setNewVideoSource', {videoSourcePath:'coui://gui/video/ship_destruction/' + exteriorConfig.name + '.webm'}]" init=false watch=false on=mouseOver)
+
+	(block
+		(style (width = 400px) (flow = "horizontal") (align = "middle"))
+		(block
+			(style (height = 60px) (width = 60px))
+			
+			(block
+				(class $Fullsize)
+				(style (bind backgroundImage "pathImageUrl"))
+			)
+
+			(block
+				(style (position = "absolute"))
+				(controller $Instance renderer='LinkableItemIcon')
+			)
+		)
+
+		(block
+			(style (marginLeft = "SXS"))
+			(tf 
+				(class $TextDefaultBold19NM)
+				(style (marginBottom = "S") (width = 300px))
+				(alpha = "TA")
+				(bind text "headerText") 
+			)
+			(tf 
+				(class $TextDefaultNM)
+				(alpha = "TC")
+				(bind text "subheaderText")
+			)
+		)
+	)
+
+	(controller $Tooltip
+		(renderer = 'ShipDestructionTooltip')
+		(args
+			_id = "_id"
+			_noMouseInstructions = "_noMouseInstructions"
+			_sid = "_sid"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element ShipDestructionTooltip (_id:number, _isReward:bool="false", _amount:number=0, _noMouseInstructions:bool="false",
+									_isExteriorTab:bool="false", _isActionsAvailable:bool="false", _isShowUB2Tooltip:bool="false", _sid:number=0)
+	(scope
+		(var shipDestructionEntity:gfx = "$datahub.getPrimaryEntity(CC.exteriorConfig, _id)")
+		(var exteriorConfig:gfx = "shipDestructionEntity ? shipDestructionEntity.exteriorConfig : null")
+		(var hasOwnShipDestruction:gfx = "shipDestructionEntity ? shipDestructionEntity.hasComponent(CC.ownShipDestruction) : false")
+	
+		(macro PULL_CURRENT_SHIP_ID)
+
+		(var shipEntity:gfx = "shipId ? $datahub.getPrimaryEntity(CC.ship, shipId) : null")
+		(var ownShipInfo:gfx = "shipEntity ? shipEntity.ownShip : null"	(event "shipEntity.ship.evUpdate")
+																		(event "shipEntity.ship.evCurrentSkinChanged"))
+
+		(var isNeedRepair:bool =	"ownShipInfo ? ownShipInfo.isNeedRepair : false"	(event "ownShipInfo.evUpdateDockState"))
+		(var isNeedShell:bool =		"ownShipInfo ? ownShipInfo.isNeedShell : false"		(event "ownShipInfo.evUpdateDockState"))
+		(var isLocked:bool =		"ownShipInfo ? ownShipInfo.isLocked : false"		(event "ownShipInfo.evUpdateLock"))
+		(var isInFormation:bool =	"ownShipInfo ? ownShipInfo.isInFormation : false"	(event "ownShipInfo.evUpdateLock"))
+
+		(var isLinkedToShip:bool = "hasOwnShipDestruction ? shipDestructionEntity.ownShipDestruction.isLinkedToShip : false" (event "shipDestructionEntity.ownShipDestruction.evUpdated"))
+		(var installedShipDestructionComponent:gfx = "shipDestructionEntity ? shipDestructionEntity.installedShipDestruction : null" (event "shipDestructionEntity.evAdded") (event "shipDestructionEntity.evRemoved"))
+		(var isInstalled:bool = "installedShipDestructionComponent && !_isReward")
+		(var exteriorsInStorage:number = "hasOwnShipDestruction ? shipDestructionEntity.countComponent.value : 0" (event "shipDestructionEntity.countComponent.evUpdate"))
+
+		(var peculiarityEyeEntity:gfx = "exteriorConfig ? $datahub.getPrimaryEntity(CC.peculiarityEye, exteriorConfig.peculiarity) : null")
+		(var isPeculiarityDisabled:bool = "exteriorConfig.peculiarity && !peculiarityEyeEntity.peculiarityEye.enabled" (event "peculiarityEyeEntity.peculiarityEye.evEnabledChanged"))
+
+		
+		(var gfName:str = "SC.Gameface.DATA_PROVIDER_NAME.SHIP_DESTRUCTION + _sid")
+		(var gfPath:str = "'gui/gameface/static/ship_destruction/index.html'")
+
+		
+		(var amount:number = "_isReward	? _amount : exteriorsInStorage")
+		(var isAmountVisible:bool = "amount > 0 && (!isLinkedToShip || _isReward)")
+		
+
+		
+		(var isUnlinked:bool = "(_isReward || (!_isReward && !isLinkedToShip))")
+		(var isUnlinkedStatusVisible:bool = "isUnlinked && amount > 0")
+		
+
+		
+		(var unifiedStatus:str = "	_isReward	? SC.Ui_styles.UNIFIED_STATUS.DEFAULT :
+									isInstalled	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+												: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+
+		
+		
+		
+		
+
+		(var exteriorConfigNameUpper:str = "tr('IDS_' + toUpper(exteriorConfig.name))")
+		(var headerText:str = "exteriorConfigNameUpper")
+		(var subheaderText:str = "'IDS_EXTERIOR_TYPE_' + SC.Exteriors.EXTERIOR_TYPE.VALUE_TO_NAME[exteriorConfig.type]")
+
+		(var mouseInstructionText:str = "	isInstalled		? 'IDS_MOUSE_INSTRUCTION_TAKE_AWAY_SHIP_DESTRUCTION'
+															: 'IDS_MOUSE_INSTRUCTION_INSTALL_SHIP_DESTRUCTION'")
+
+		(var mouseInstruction:dict = "	_noMouseInstructions			?	null :
+										isInFormation					?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																				_text: 'IDS_SET_UNREADY_DIVISION_FIRST_TO_OPERATE_EXTERIORS' } :
+										isLocked						?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																				_text: 'IDS_LEAVE_BATTLE_FIRST_TO_OPERATE_EXTERIORS' } :
+										isNeedRepair || isNeedShell		?	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																				_text: 'IDS_SERVICE_SHIP_TO_OPERATE_EXTERIORS' }
+																		:	{	_unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																				_text: mouseInstructionText }")
+	)
+	(macro PULL_TOOLTIP_UB2_STATE)
+
+	(style (hitTest = "false") (width = 380px))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = 100%) (height = 214px))
+			(style
+				(width = 100%)
+				(paddingLeft = "-M")
+				(paddingRight = "-M")
+				(paddingTop = "-SXS")
+				(paddingBottom = "-SXS")
+			)
+			(element GamefaceWidget
+				_gfPath = "gfPath"
+				_gfName = "gfName"
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(element TooltipSystemHeaderSubheaderText
+				_unifiedStatus = "unifiedStatus"
+				_headerText = "headerText"
+				_subheaderText = "subheaderText"
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isInstalled"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isInstalled")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+					_text = "'IDS_INSTALLED'"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isAmountVisible"))
+		)
+		(element TOOLTIP_SYSTEM_ELEMENTS_GROUP
+			(bind visible "isAmountVisible")
+
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+				(bind visible "isAmountVisible")
+				(controller $Instance renderer='TooltipSystemCounterLineAdjoined'
+					(bind enabled "isAmountVisible")
+					(args
+						_title = "_isReward ? 'IDS_COUNT' : 'IDS_IN_WAREHOUSE'"
+						_count = "amount"
+					)
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isUnlinkedStatusVisible"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isUnlinkedStatusVisible")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.LINKED"
+					_text = "'IDS_SHIP_DESTRUCTION_NOT_LINKED'"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isPeculiarityDisabled"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isPeculiarityDisabled")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.HIDDEN"
+					_text = "tr(toUpper('IDS_SHIP_DESTRUCTION_DESCR_HIDDEN_BY_PECULARITY_' + exteriorConfig.peculiarity))"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "mouseInstruction && (isLinkedToShip || !_isActionsAvailable)"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "mouseInstruction && (isLinkedToShip || !_isActionsAvailable)")
+				(args
+					_unifiedStatus = "mouseInstruction._unifiedStatus"
+					_text = "mouseInstruction._text"
+				)
+			)
+		)
+	)
+)

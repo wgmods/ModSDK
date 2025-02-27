@@ -1,0 +1,252 @@
+(def macro PULL_MINI_DOCKYARD_SEASON_SCOPE ()
+	(var miniDockyardSeasonsCollection:gfx = "$datahub.getCollection(CC.miniDockyardSeason)")
+	(var miniDockyardSeasons:array = "miniDockyardSeasonsCollection ? miniDockyardSeasonsCollection.items : []"	(event "miniDockyardSeasonsCollection.evAdded")
+																												(event "miniDockyardSeasonsCollection.evRemoved"))
+	(var miniDockyardSeason:gfx = "miniDockyardSeasons.length ? miniDockyardSeasons[0].miniDockyardSeason : null")
+)
+
+(def element MiniDockyardBanner () layout=true dispatch_size_change=true
+	(scope
+		(macro BLUR_MAP_SCOPE) 
+		(event startHide)
+		(event startShow)
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(macro PULL_MINI_DOCKYARD_SEASON_SCOPE) 
+		(var finishTime:number = "miniDockyardSeason ? miniDockyardSeason.finishTime : null" (event "miniDockyardSeason.evChanged"))
+		(macro SERVER_TIME_SCOPE)
+		(macro COUNTDOWN_SCOPE "'timeLeft'" "finishTime" "'HIGHEST,WITH_DAYS'")
+
+		(var miniDockyardSeasonId:str = "miniDockyardSeason ? miniDockyardSeason.id : null" (event "miniDockyardSeason.evChanged"))
+		(var isUnlocked:bool = "miniDockyardSeason ? miniDockyardSeason.isUnlocked : false" (event "miniDockyardSeason.evChanged"))
+
+		(macro PULL_MINI_DOCKYARD_WINDOW_DATA) 
+		(macro PULL_MINI_DOCKYARD_SHIP_DATA "selectedShipEntityId") 
+
+		(var availableShipComponentsCollection:gfx = "shipId	?	$datahub.getCollection(CC.miniDockyardShipComponent).getChildByPath('available')
+																:	null")
+		(var availableShipComponentsArray:array = "availableShipComponentsCollection ? availableShipComponentsCollection.items : []"	(event "availableShipComponentsCollection.evAdded")
+																																		(event "availableShipComponentsCollection.evRemoved"))
+		(var isNew:bool = "miniDockyardSeasons[0] ? miniDockyardSeasons[0].hasComponent(CC.newItem) : false"	(event "miniDockyardSeasons[0].evAdded")
+		 																										(event "miniDockyardSeasons[0].evRemoved"))
+	)
+
+	(bind visible "miniDockyardSeason")
+	(style (width = 220px))
+
+	(bindcall externalCall "isNew ? 'inputMapping.onAction' : ''" "['makeSeen', {entityId: miniDockyardSeasons[0].id}]" init=false watch=false on=click)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (backgroundColor = 0x50D9D9D9))
+		(bind alpha "rollOver ? 0.3 : 0.1" watch=true)
+		(controller $Animation
+			(bindcall play  duration=0.2
+							delay=0.1
+							from = "{ alpha: 0 }"
+							to = "{ alpha: 1 }"
+							(event "startShow")
+			)
+			(bindcall play  duration=0.2
+							delay=0.2
+							from = "{ alpha: 1 }"
+							to = "{ alpha: 0 }"
+							action="kill"
+							(event "startHide")
+			)
+		)
+	)
+
+	(block
+		(style
+			(width = 100%)
+			(marginLeft = "S")
+			(paddingTop = "M")
+			(paddingBottom = "M")
+		)
+
+		(hblock
+			(style (width = 100%))
+			(block
+				(style
+					(width = 48px) (height = 48px)
+					(bind backgroundImage "'url:../mini_dockyard/main/banner_icon.png'")
+				)
+			)
+
+			(block
+				(class $Fullsize)
+				(style (align = "middle"))
+				(tf
+					(class $TextDefaultBoldNM)
+					(style
+						(alpha = "TA")
+						(maxWidth = 156px)
+					)
+
+					(text = "'IDS_MINI_DOCKYARD_BANNER_TITLE'")
+				)
+
+				(tf
+					(bind visible "isUnlocked && !availableShipComponentsArray.length")
+					(class $TextDefaultNM)
+					(style
+						(alpha = "TC")
+						(marginTop = "S")
+						(maxWidth = 156px)
+						(leading = "-4")
+					)
+
+					(bind text "'IDS_MINI_DOCKYARD_BANNER_AVAILABLE_WITHIN'")
+				)
+
+				(tf
+					(bind visible "availableShipComponentsArray.length")
+					(class $TextDefaultNM)
+					(style
+						(marginTop = "S")
+						(maxWidth = 156px)
+						(leading = "-4")
+						(textColor = "SC.Ui_styles.SERVICE_COLORS.YELLOW")
+					)
+					(bind text "'IDS_MINI_DOCKYARD_BANNER_DESCRIPTION_AVAILABLE'")
+				)
+
+				(tf
+					(bind visible "!isUnlocked")
+					(class $TextDefaultNM)
+					(style
+						(alpha = "TC")
+						(marginTop = "S")
+						(maxWidth = 156px)
+						(leading = "-4")
+					)
+
+					(bind text "'IDS_MINI_DOCKYARD_BANNER_DESCRIPTION_LOCKED'")
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(style (position = "absolute") (right = "isBlurOptionEnabled ? M : MS"))
+
+		(block
+			(macro DEFAULT_CONTROL_MARKER_ANIMATION "isNew")
+
+			(style
+				(bind alpha "isNew ? 1 : 0" watch=false)
+			)
+
+			(element MarkerNew)
+		)
+	)
+
+	(controller $Tooltip
+		(bind renderer "'MiniDockyardBannerTooltip'")
+		(args
+			_timeLeft = "timeLeft"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_secondary'"
+		_methods="[{ type: 'inputMapping.onAction', name: 'navigateTo', args: {route: SC.Ui_windows.ROUTE.MINI_DOCKYARD_MAIN} }]"
+	)
+)
+
+(def element MiniDockyardBannerTooltip (_isShowUB2Tooltip:bool, _timeLeft:str)
+	(scope
+		(macro PULL_MINI_DOCKYARD_WINDOW_DATA) 
+		(macro PULL_MINI_DOCKYARD_SHIP_DATA "selectedShipEntityId") 
+		(macro PULL_SHIP "shipId") 
+		(macro PULL_MINI_DOCKYARD_SEASON_SCOPE) 
+
+		(var availableShipComponentsCollection:gfx = "shipId	?	$datahub.getCollection(CC.miniDockyardShipComponent).getChildByPath('available')
+																:	null")
+		(var availableShipComponentsArray:array = "availableShipComponentsCollection ? availableShipComponentsCollection.items : []"	(event "availableShipComponentsCollection.evAdded")
+																																		(event "availableShipComponentsCollection.evRemoved"))
+
+		(var miniDockyardSeasonId:str = "miniDockyardSeason ? miniDockyardSeason.id : null" (event "miniDockyardSeason.evChanged"))
+		(var isUnlocked:bool = "miniDockyardSeason ? miniDockyardSeason.isUnlocked : false" (event "miniDockyardSeason.evChanged"))
+	)
+
+
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (width = "360px") (hitTest = false))
+	(name = "'EventHubEnterTooltip'")
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = 100%) (align = "middle"))
+			(block
+				(style (width = "100%"))
+				(element TooltipSystemHeaderSubheaderText
+					_headerText = "'IDS_MINI_DOCKYARD_BANNER_TOOLTIP_HEADER'"
+				)
+			)
+
+			(block
+				(bind visible "!isUnlocked || availableShipComponentsArray.length")
+				(style (width = "100%"))
+				(element TooltipSystemHorizontalDivider)
+			)
+
+			(block
+				(bind visible "!isUnlocked")
+				(style (width = "100%"))
+				(controller $Instance renderer='TooltipSystemDescriptionText'
+					(args
+						_descriptionText = "'IDS_MINI_DOCKYARD_BANNER_TOOLTIP_LOCKED'"
+						_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+					)
+				)
+			)
+
+			(block
+				(bind visible "availableShipComponentsArray.length")
+				(style (width = "100%"))
+				(controller $Instance renderer='TooltipSystemStatusLine'
+					(args
+						_text = "'IDS_MINI_DOCKYARD_BANNER_TOOLTIP_AVAILABLE'"
+						_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+					)
+				)
+			)
+
+			(block
+				(style (width = "100%"))
+				(controller $Instance renderer='TooltipSystemHorizontalDivider'
+					(bind enabled "isUnlocked")
+				)
+			)
+
+			(block
+				(style (width = "100%"))
+				(controller $Instance renderer='TooltipSystemStatusLine'
+					(bind enabled "isUnlocked")
+					(args
+						_text = "'IDS_MINI_DOCKYARD_BANNER_TOOLTIP_WILL_BE_AVAILABLE'"
+						_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DATE"
+					)
+				)
+			)
+
+			(block
+				(style (width = "100%"))
+				(element TooltipSystemHorizontalDivider)
+			)
+
+			(block
+				(style (width = "100%"))
+				(element TooltipSystemStatusLine
+					_text = "'IDS_GO_TO_MINI_DOCKYARD_MOUSE_INSTRUCTION'"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+				)
+			)
+		)
+	)
+)

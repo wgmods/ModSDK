@@ -1,0 +1,277 @@
+(def constant MINI_DOCKYARD_PURCHASE_WINDOW_WIDTH 412)
+
+(def element ModalWindowMiniDockyardPurchaseShip (shipEntityId:number, seasonId:str) dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(scope
+		(macro PULL_MINI_DOCKYARD_SHIP_DATA "shipEntityId") 
+
+		(var priceEntity:gfx = "researchPriceId ? $datahub.getEntity(researchPriceId) : null")
+
+		(var priceInfo:dict = "priceEntity ? priceEntity.itemPrice : null" (event "priceEntity.itemPrice.evChanged"))
+		(var currenciesPanelPrices:array = "[{currency: priceInfo.currency,	finalPrice: -priceInfo.finalPrice}]")
+
+		
+		(macro PULL_ACCOUNT_RESOURCES)
+		(macro IS_ENOUGH_RESROUCES_FOR_BUYING "[priceInfo]") 
+
+		(var costDiff:number = "firstCurrencyAmount - priceInfo.finalPrice")
+
+		
+		(macro PULL_REWARD_STACK "freeRewardStackId" 'freeRewards')
+		(macro PULL_REWARD_STACK "paidRewardStackId" 'paidRewards')
+
+		
+		(macro PULL_MINI_DOCKYARD_SEASON_SCOPE)
+		(macro PULL_MINI_DOCKYARD_SEASON_TIMELEFT "'timeLeft'")
+
+		
+		(var hasUnlockedShipComponents:bool = "compensationPrices.length > 0")
+	)
+
+	(style (align = "middle|center"))
+
+	(block
+		(style
+			(width = "MINI_DOCKYARD_PURCHASE_WINDOW_WIDTH")
+		)
+
+		(element ModalWindowShortHeader
+			_header = "'IDS_MINI_DOCKYARD_WINDOW_PURCHASE_SHIP_TITLE'"
+			_hasDivider = false
+			_headerWidth = "MINI_DOCKYARD_PURCHASE_WINDOW_WIDTH"
+		)
+
+		(element CurrenciesPanel
+			_priceInfo = "currenciesPanelPrices"
+			_width = "MINI_DOCKYARD_PURCHASE_WINDOW_WIDTH"
+		)
+
+		(element ModalWindowShipPreview
+			_shipId = "shipId"
+			_width = "MINI_DOCKYARD_PURCHASE_WINDOW_WIDTH"
+			(style (marginBottom = "SXS"))
+		)
+
+		(element HorizontalDividerTwoPx)
+
+		(block
+			(style
+				(width = 100%)
+				(height = "35px")
+			)
+
+			(block
+				(style
+					(width = "MINI_DOCKYARD_PURCHASE_WINDOW_WIDTH")
+				)
+
+				
+
+				(block
+					(style
+						(width = 100%)
+						(paddingTop = "SXS") (paddingBottom = "SXS")
+						(paddingLeft = "M") (paddingRight = "M")
+					)
+
+					(hblock
+						(style (width = 100%))
+
+						(tf
+							(style (width = 100%) (alpha = "TC"))
+							(class $TextDefault17NM)
+							(text = "'IDS_MODAL_WINDOW_SHIP_PURCHASE_SHIP_PRICE'")
+						)
+
+						(element PriceTag
+							_priceInfo = "priceInfo"
+						)
+					)
+
+					(controller $Instance renderer='PriceDeficit'
+						(bind enabled "!isEnough")
+						(args
+							_priceInfo = "priceInfo"
+							_deficit = "-costDiff"
+							_hideIcon = true
+						)
+						(exprs
+							(style (marginTop = "SXS"))
+						)
+					)
+				)
+			)
+		)
+
+		
+
+		(element HorizontalDividerTwoPx)
+
+		(block
+			(bind visible "hasUnlockedShipComponents")
+
+			(style
+				(width = 100%)
+				(paddingTop = "SXS") (paddingBottom = "SXS")
+				(paddingLeft = "M") (paddingRight = "M")
+			)
+
+			(element StatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.INFO"
+				_text = 'IDS_MINI_DOCKYARD_WINDOW_PURCHASE_SHIP_COMPENSATION_INFO'
+				_textClass = '$TextDefault17NM'
+				(style (alpha = "TC"))
+			)
+
+			(controller $Tooltip
+				(bind renderer "'ModalWindowMiniDockyardCompensationTooltip'")
+				(args
+					_compensationPrices = "compensationPrices"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			)
+
+		)
+
+		(controller $Instance renderer='HorizontalDividerTwoPx'
+			(bind enabled "hasUnlockedShipComponents")
+		)
+
+		
+
+		(block
+			(style
+				(width = 100%) (align = "center")
+				(marginTop = "MS")
+				(gap = "MS")
+			)
+
+			(element PriceTagWithQuestion
+				_questionText = 'IDS_MINI_DOCKYARD_WINDOW_QUESTION_PURCHASE_SHIP_FOR'
+				_priceInfo = "priceInfo"
+			)
+
+			(element StatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.WARNING"
+				_text = "'IDS_MINI_DOCKYARD_WINDOW_PURCHASE_SHIP_TIME_LEFT_INFO'"
+			)
+
+			(hblock
+				(style (gap = "M"))
+
+				(element DefaultButton
+					_width = '129px'
+					_label = 'IDS_YES'
+					_name = 'btn_ok'
+					_focusIndex = 0
+					_defaultFocused = true
+					_enabled = "isEnough"
+					_methods = "[{	type: 'inputMapping.onRequest',
+					 				name: 'purchaseMiniDockyardShip',
+					 				args: {shipId: shipId, seasonId: seasonId}}]"
+				)
+
+				(element DefaultButton
+					_width = '129px'
+					_label = 'IDS_NO'
+					_focusIndex = 1
+					_name = 'btn_cancel'
+				)
+			)
+		)
+
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+	)
+
+)
+
+(def element ModalWindowMiniDockyardPurchaseShipRewardsStack (_freeRewards:array, _paidRewards:array)
+	(style
+		(width = 100%)
+
+		(flow = "tile_horizontal")
+
+		(paddingTop = "SXS") (paddingBottom = "SXS")
+		(paddingLeft = "MS") (paddingRight = "MS")
+
+		(backgroundColor = 0x10000000)
+	)
+
+	(controller $Repeat renderer='ModalWindowMiniDockyardPurchaseShipRewardItem'
+		(bind count "_freeRewards.length")
+		(args
+			_rewardEntityId = "_freeRewards[$index]"
+			_isClickDisabled = true
+		)
+	)
+
+	(controller $Repeat renderer='ModalWindowMiniDockyardPurchaseShipRewardItem'
+		(bind count "_paidRewards.length")
+		(args
+			_rewardEntityId = "_paidRewards[$index]"
+			_isClickDisabled = true
+		)
+	)
+)
+
+(def element ModalWindowMiniDockyardPurchaseShipRewardItem(_rewardEntityId:number)
+	(scope
+		(macro PULL_REWARD_INFO_BY_ENTITY_ID "_rewardEntityId") 
+	)
+	(element RewardItem
+		_reward="rewardItem"
+		_isClickDisabled="true"
+	)
+)
+
+(def element ModalWindowMiniDockyardCompensationTooltip(_compensationPrices:array)
+	(style (hitTest = false) (width = 340px))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemStatusLine
+			_text = 'IDS_MINI_DOCKYARD_WINDOW_PURCHASE_SHIP_COMPENSATION_INFO_TOOLTIP'
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemSecondaryHeaderText
+			_headerText = 'IDS_MINI_DOCKYARD_WINDOW_PURCHASE_SHIP_COMPENSATION_INFO_TOOLTIP_SUBHEADER'
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(block
+			(style (width = 100%) (gap = "S"))
+
+			(controller $Repeat renderer='ModalWindowMiniDockyardCompensationTooltipItem'
+				(bind count "_compensationPrices.length")
+				(args
+					_compensationPrice = "_compensationPrices[$index]"
+				)
+			)
+		)
+	)
+)
+
+(def element ModalWindowMiniDockyardCompensationTooltipItem(_compensationPrice:dict)
+	(style
+		(width = 100%)
+		(flow = "horizontal") (gap = "S")
+		(paddingTop = "XS") (paddingBottom = "XS")
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(style (alpha = "TC") (width = 100%))
+		(bind text "'IDS_CURRENCY_' + toUpper(_compensationPrice.currency)")
+	)
+
+	(element PriceTag
+		_priceInfo = "_compensationPrice"
+		_size = "SIZE.MEDIUM"
+	)
+)

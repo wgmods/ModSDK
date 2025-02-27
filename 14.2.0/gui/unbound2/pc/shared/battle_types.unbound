@@ -1,0 +1,21 @@
+(def element BattleTypeIcon(_battleType:str, _isDisabled:bool, _size:number="SC.Ui_common.BATTLE_TYPES_SIZE.MEDIUM") layout=true
+	(scope
+		(var size:number = "_size == SC.Ui_common.BATTLE_TYPES_SIZE.LARGE	? 112 :
+							_size == SC.Ui_common.BATTLE_TYPES_SIZE.SMALL	? 35 :
+							_size == SC.Ui_common.BATTLE_TYPES_SIZE.TINY	? 23
+																			: 80")
+
+		(var sizeImagePrefix:str = "	_size == SC.Ui_common.BATTLE_TYPES_SIZE.LARGE	? '_big' :
+										_size == SC.Ui_common.BATTLE_TYPES_SIZE.SMALL	? '_small' :
+										_size == SC.Ui_common.BATTLE_TYPES_SIZE.TINY	? '_tiny'
+																						: ''")
+
+		(var imagePath:str = "'url:../service_kit/battle_types/' + _battleType + (_isDisabled ? '_disabled' : '') + sizeImagePrefix + '.png'")
+	)
+
+	(style
+		(bind width "size") (bind height "size")
+		(bind backgroundImage "imagePath")
+		(hitTest = false) (backgroundSize = "cover")
+	)
+)

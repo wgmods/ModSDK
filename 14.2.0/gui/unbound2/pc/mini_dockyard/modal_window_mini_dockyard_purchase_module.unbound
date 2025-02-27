@@ -1,0 +1,125 @@
+(def constant MINI_DOCKYARD_PURCHASE_MODULE_WINDOW_WIDTH 398)
+(def constant MINI_DOCKYARD_PURCHASE_MODULE_COMPONENT_SIZE 80)
+
+
+(def element ModalWindowMiniDockyardPurchaseModule (_componentId:str, _shipId:str, _seasonId:str) dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(scope
+		(var shipComponentEntity:gfx = "$datahub.getPrimaryEntity(CC.miniDockyardShipComponent, _componentId + '_' + _shipId)")
+
+		(macro PULL_MINI_DOCKYARD_SHIP_COMPONENT_DATA "shipComponentEntity") 
+		(macro PULL_MINI_DOCKYARD_SHIP_COMPONENT_STATE) 
+
+		
+		(var pricesForCurrenciesPanel:array = "shipComponent ? shipComponent.pricesForUICurrenciesPanel : []" (event "shipComponent.evChanged"))
+
+		
+		(var headerText:str = "'IDS_' + toUpper(componentId) + '_MINI_DOCKYARD_COMPONENT'")
+	)
+
+	(style (align = "middle|center"))
+
+	(block
+		(style
+			(width = "MINI_DOCKYARD_PURCHASE_MODULE_WINDOW_WIDTH")
+			(align = "center")
+		)
+
+		(element ModalWindowShortHeader
+			_header = 'IDS_MINI_DOCKYARD_WINDOW_PURCHASE_MODULE_TITLE'
+			_hasDivider = false
+			_headerWidth = "MINI_DOCKYARD_PURCHASE_MODULE_WINDOW_WIDTH"
+		)
+
+		(element CurrenciesPanel
+			_priceInfo = "pricesForCurrenciesPanel"
+			_width = "MINI_DOCKYARD_PURCHASE_MODULE_WINDOW_WIDTH"
+		)
+
+		
+		(hblock
+			(style
+				(width = 100%)
+				(gap = "S")
+				(align = "middle")
+				(marginBottom = "M")
+			)
+
+			
+			(block
+				(style
+					(width = "MINI_DOCKYARD_PURCHASE_MODULE_COMPONENT_SIZE")
+					(height = "MINI_DOCKYARD_PURCHASE_MODULE_COMPONENT_SIZE")
+					(backgroundSize = "cover")
+					(bind backgroundImage "tooltipIconPath")
+				)
+			)
+
+			
+			(block
+				(style (width = 100%))
+
+				(tf
+					(style (width = "100%") (leading = "-4") (alpha = "TA"))
+					(class $TextDefaultBold19NM)
+					(bind text "headerText")
+				)
+
+				(tf
+					(class $TextDefaultNM)
+					(style	
+						(width = 100%)
+						(marginTop = "S")
+						(leading = "-2")
+						(alpha = "TC")
+					)
+					(text = 'IDS_MINI_DOCKYARD_SHIP_COMPONENT_TOOLTIP_SUBHEADER')
+				)
+			)
+		)
+
+		(element HorizontalDividerTwoPx
+			(style (marginBottom = "MS"))
+		)
+
+		(element PriceTagWithQuestion
+			_questionText = 'IDS_MINI_DOCKYARD_WINDOW_PURCHASE_MODULE_CONFIRMATION_MESSAGE_FOR'
+			_priceInfo = "prices[0]"
+			_optionalPriceInfo = "prices[1]"
+
+			(style
+				(flow = "tile_horizontal")
+				(width = "MINI_DOCKYARD_PURCHASE_MODULE_WINDOW_WIDTH")
+				(align = "center")
+				(bind gap "prices[1] ? S : 0")
+			)
+		)
+
+		(hblock
+			(style (gap = "M") (marginTop = "MS"))
+
+			(element DefaultButton
+				_width = '129px'
+				_label = 'IDS_YES'
+				_name = 'btn_ok'
+				_focusIndex = 0
+				_defaultFocused = true
+				_enabled = "isAvailable"
+				_methods = "[{	type: 'inputMapping.onRequest',
+								name: 'purchaseMiniDockyardShipComponent',
+								args: {shipId: shipId, componentId: componentId, seasonId: _seasonId}}]"
+			)
+
+			(element DefaultButton
+				_width = '129px'
+				_label = 'IDS_NO'
+				_focusIndex = 1
+				_name = 'btn_cancel'
+			)
+		)
+
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+	)
+)

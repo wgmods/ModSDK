@@ -1,0 +1,194 @@
+(def macro PULL_SSE_TASK_INFO(_sseEntity:expression)
+	(var sseCoreComponent:gfx =		"_sseEntity ? _sseEntity.sseCore : null")
+	(var sseTaskComponent:gfx =		"_sseEntity ? _sseEntity.sseTask : null")
+	(var sseRefreshComponent:gfx =	"_sseEntity ? _sseEntity.sseRefresh : null")
+
+	
+	(var isDone:bool =		"sseCoreComponent ? sseCoreComponent.isDone : false"							(event "sseCoreComponent.evChanged"))
+	(var isFailed:bool =	"sseCoreComponent ? sseCoreComponent.isFailed : false"							(event "sseCoreComponent.evChanged"))
+	(var isClaimed:bool =	"sseCoreComponent ? sseCoreComponent.isClaimed : false"							(event "sseCoreComponent.evChanged"))
+	(var isFeatured:bool =	"sseCoreComponent ? sseCoreComponent.isFeatured : false"						(event "sseCoreComponent.evChanged"))
+	(var isLocked:bool =	"sseCoreComponent ? sseCoreComponent.state == SC.Sse.SSE_STATE.LOCKED : false"	(event "sseCoreComponent.evChanged"))
+	(var isActive:bool =	"sseCoreComponent ? sseCoreComponent.state == SC.Sse.SSE_STATE.ACTIVE : false"	(event "sseCoreComponent.evChanged"))
+
+	
+	(var endAt:number = 	"sseCoreComponent ? sseCoreComponent.stop : -1"			(event "sseCoreComponent.evChanged"))
+	(var startAt:number = 	"sseCoreComponent ? sseCoreComponent.start : -1"		(event "sseCoreComponent.evChanged"))
+	(var claimedAt:number = "sseCoreComponent ? sseCoreComponent.claimedAt : -1"	(event "sseCoreComponent.evChanged"))
+
+	
+	(var name:str = 			"sseTaskComponent ? sseTaskComponent.name : null"				(event "sseTaskComponent.evChanged"))
+	(var sortIndex:number = 	"sseTaskComponent ? sseTaskComponent.sortIndex : -1"			(event "sseTaskComponent.evChanged"))
+	(var isPersonal:bool = 		"sseTaskComponent ? sseTaskComponent.isPersonal : false"		(event "sseTaskComponent.evChanged"))
+	(var claimRewards:number =	"sseTaskComponent ? sseTaskComponent.claimRewards : -1"			(event "sseTaskComponent.evChanged"))
+	(var epicId:str = 			"sseTaskComponent ? sseTaskComponent.epicId : null"				(event "sseTaskComponent.evChanged"))
+	(var chainId:str = 			"sseTaskComponent ? sseTaskComponent.chainId : null"			(event "sseTaskComponent.evChanged"))
+	(var rewardCategory:str =	"sseTaskComponent ? sseTaskComponent.rewardCategory : null"		(event "sseTaskComponent.evChanged"))
+	(var rewards:array =		"sseTaskComponent ? sseTaskComponent.rewards : []"				(event "sseTaskComponent.evRewardsChanged"))
+	(var conditions:array =		"sseTaskComponent ? sseTaskComponent.conditions : []"			(event "sseTaskComponent.evChanged"))
+	(var refreshTime:number =	"sseRefreshComponent ? sseRefreshComponent.refreshTime : -1"	(event "sseRefreshComponent.evChanged"))
+
+	
+	(var isEpic:bool = "epicId != null")
+	(var isChain:bool = "chainId != null")
+	(var isDaily:bool = "sseRefreshComponent ? sseRefreshComponent.isDaily : false" 	(event "sseRefreshComponent.evChanged"))
+	(var isWeekly:bool = "sseRefreshComponent ? sseRefreshComponent.weekly > 0 : false" (event "sseRefreshComponent.evChanged"))
+)
+
+(def macro PULL_SSE_STATUS_INFO()
+	
+	
+
+	(macro SERVER_TIME_SCOPE)
+
+	(macro COUNTDOWN_SCOPE "'timeTillNextDay'" "refreshTime" "'HH:mm:ss'")
+	(macro COUNTDOWN_SCOPE "'timeTillNextWeek'" "refreshTime" "'HIGHEST'")
+
+	(var isDailyOrWeeklyBlockVisible:bool = "isWeekly || isDaily")
+
+	
+	(var sseProgressComponent:gfx = "_sseTaskEntity ? _sseTaskEntity.progress : null")
+
+	(var taskProgressMax:number = "sseProgressComponent ? sseProgressComponent.max : 0" (event "sseProgressComponent.evChanged"))
+	(var taskProgressCurrent:number = "sseProgressComponent ? sseProgressComponent.value : 0" (event "sseProgressComponent.evChanged"))
+
+	(var taskRepetitionsLeft:number = "taskProgressMax - taskProgressCurrent")
+	(var isTaskRepeatable:bool = "!(isEpic || isChain) && (taskProgressMax > 1 || taskProgressMax == 0)")
+	(var isRepeatableBlockVisible:bool = "isTaskRepeatable && (taskRepetitionsLeft || !(isDone || isFailed))")
+
+	
+	(var isSseStatusAvailable:bool = "isDailyOrWeeklyBlockVisible || isRepeatableBlockVisible")
+)
+
+(def element SseCardContentWithCriteria (_sseTaskEntity:gfx)
+	(scope
+		(macro PULL_SSE_TASK_INFO "_sseTaskEntity") 
+
+		
+		(var sseConditionsEntity:gfx = "conditions.length > 0 ? $datahub.getEntity(conditions[0]) : null")
+		(var sseConditionsComponent:gfx = "sseConditionsEntity ? sseConditionsEntity.sseConditions : null")
+
+		(var countablesIdsDict:dict =	"sseConditionsComponent ? sseConditionsComponent.countablesIds[0] : null"	(event "sseConditionsComponent.evConditionSetChanged"))
+
+		(var titleText:str = "countablesIdsDict ? countablesIdsDict.ids : ''")
+
+		(var conditionProgressCurrent:number = "countablesIdsDict ? countablesIdsDict.currentProgress : 0")
+		(var conditionProgressMax:number = "countablesIdsDict ? countablesIdsDict.maxProgress : -1")
+		(var conditionProgressDiff:number = "conditionProgressCurrent / conditionProgressMax")
+	)
+
+	(style (width = 100%) (gap = "SXS"))
+
+	
+	(tf
+		(class $TextDefault17NM)
+		(style (alpha = "TC"))
+		(bind text "titleText")
+	)
+
+	
+	(block
+		(style (width = 100%) (gap = "XS"))
+
+		(element DefaultProgressBar
+			_progress = "conditionProgressDiff"
+			(style (width = 100%) (marginRight = -1px) (marginLeft = -1px))
+		)
+
+		(element DefaultDividedCounter
+			_doNotAlphaOnZeroCurValue = true
+			_doNotHideOnZeroMaxValue = true
+			_curValue = "conditionProgressCurrent"
+			_maxValue = "conditionProgressMax"
+		)
+	)
+
+	(element HorizontalDividerTwoPx)
+
+	
+	(element SseCompletionCriteria
+		_sseTaskEntityId = "conditions[0]"
+	)
+)
+
+(def element SseCompletionCriteria(_sseTaskEntityId:number)
+	(scope
+		(var sseConditionsEntity:gfx = "$datahub.getEntity(_sseTaskEntityId)")
+
+		(var sseConditionsComponent:gfx = "sseConditionsEntity ? sseConditionsEntity.sseConditions : null")
+		(var sseFilteringGroupComponent:gfx = "sseConditionsEntity ? sseConditionsEntity.filteringGroup : null")
+		(var sseSpecificShipListComponent:gfx = "sseConditionsEntity ? sseConditionsEntity.specificShipsList : null")
+
+		(var battleTypes:array = "sseConditionsComponent ? sseConditionsComponent.sortedBattleTypesForUI : []" (event "sseConditionsComponent.evSortedBattleTypesForUIChanged"))
+		(var shipHasEmptyRestrictions:bool =	"sseFilteringGroupComponent ? sseFilteringGroupComponent.isEmpty : false"			(event "sseFilteringGroupComponent.evUpdate"))
+		(var includedShips:array = 				"sseSpecificShipListComponent ? sseSpecificShipListComponent.includedShips : []"	(event "sseSpecificShipListComponent.evUpdate"))
+		(var isSpecificShipsVisible:bool = 		"includedShips && includedShips.length > 0")
+	)
+
+	(style (width = 100%) (gap = "S"))
+
+	(tf
+		(class $TextDefault17NM)
+		(style (alpha = "TC"))
+		(text = "'IDS_SSE_TASK_RESTRICTIONS_COLON'")
+	)
+
+	(hblock
+		(style (gap = "S"))
+
+		(controller $Repeat renderer='BattleTypeIcon'
+			(bind count "battleTypes.length")
+			(args
+				_battleType = "battleTypes[$index]"
+				_size = "SC.Ui_common.BATTLE_TYPES_SIZE.TINY"
+			)
+		)
+
+		(block
+			(style (height = 21px))
+			(element VerticalDivider)
+		)
+
+		(controller $Instance renderer='ShipRestrictions'
+			(bind enabled "!shipHasEmptyRestrictions || isSpecificShipsVisible")
+			(args
+				_restrictionsEntityId = "_sseTaskEntityId"
+			)
+		)
+	)
+)
+
+(def element SseStatus(_sseTaskEntity:gfx) layout=true
+	(scope
+		(macro PULL_SSE_TASK_INFO "_sseTaskEntity") 
+		(macro PULL_SSE_STATUS_INFO) 
+
+		(var dailyOrWeeklyText:str = "	isWeekly	? subst('IDS_SUBST_SSE_DAILY_RESET_IN', [], { timeLeft: timeTillNextWeek }) :
+										isDaily		? subst('IDS_SUBST_SSE_DAILY_RESET_IN', [], { timeLeft: timeTillNextDay })
+													: null")
+
+		(var statusTextRepeatable:str = "taskProgressMax	? subst('IDS_SUBST_PL_SSE_REPEAT_NUMBER', [], {repeatNum: taskRepetitionsLeft}, taskRepetitionsLeft)
+															: 'IDS_SSE_REPEAT_NUMBER_UNLIMITED'")
+	)
+
+	(bind visible "isSseStatusAvailable")
+
+	(style (width = 100%) (gap = "SXS"))
+
+	(controller $Instance renderer='StatusLine'
+		(bind enabled "isDailyOrWeeklyBlockVisible && dailyOrWeeklyText")
+		(args
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DATE"
+			_text = "dailyOrWeeklyText"
+		)
+	)
+
+	(controller $Instance renderer='StatusLine'
+		(bind enabled "isRepeatableBlockVisible")
+		(args
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.UPDATE"
+			_text = "statusTextRepeatable"
+			_width = "100%"
+		)
+	)
+)

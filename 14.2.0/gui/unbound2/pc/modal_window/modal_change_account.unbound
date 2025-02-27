@@ -1,0 +1,185 @@
+(def element ModalWindowChangeAccountLogin (_modal:str = '') layout=true
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(block
+		(element ModalWindowChangeAccountContent
+			_modal = "_modal"
+		)
+	)
+)
+
+(def element ModalWindowChangeAccountPort (_modal:str = '') layout=true
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(block
+		(element ModalWindowChangeAccountContent
+			_modal = "_modal"
+		)
+	)
+)
+
+(def element ModalWindowChangeAccountContent (_modal:str = '') layout=true
+	(macro MODAL_WINDOW_INIT)
+
+	(scope
+		(var steamLoginDataEntity:gfx = "$datahub.getSingleEntity(CC.steamLoginData).steamLoginData")
+		(var availableAccounts:array = "steamLoginDataEntity.availableAccounts" (event "steamLoginDataEntity.evUpdate"))
+		(var firstSteamLoginDataEntity:gfx = "$datahub.getEntity(availableAccounts[0])")
+		(var isFirstEntityCurrentAccount:gfx = "firstSteamLoginDataEntity ? firstSteamLoginDataEntity.availableAccount.isCurrentAccount : null" (event "firstSteamLoginDataEntity.evCurrentAccountChanged"))
+		(var subheader:str = "'IDS_CHANGE_ACCOUNT_SUBHEADER_' + _modal")
+
+		(event evMenuItemSelected)
+
+		(var menuItemIndex:number = "isFirstEntityCurrentAccount ? 1 : 0")
+		(bind menuItemIndex "$event.selectedIndex" init=false (event "evMenuItemSelected"))
+	)
+
+	(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+
+	(class $Fullsize)
+	(style (align = "center|middle"))
+
+	(block
+		(style (width = 800px))
+
+		
+		(block
+			(style (width = 100%))
+			
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+				(style (width = 100%))
+
+				(element ModalWindowHeaderFullSize
+					_windowName = "'IDS_CHANGE_ACCOUNT_HEADER'"
+					_hideBackButton = true
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%) (marginTop = "L"))
+
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 3)
+
+				(style (width = 100%))
+
+				(tf
+					(class $TextDefault17NM)
+					(style (width = 100%) (textAlign = "center") (alpha = "TA"))
+
+					(bind text "subheader")
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%) (align = "center"))
+
+			(scrollArea
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 4)
+				(style 
+					(width = 400px)
+					(minHeight = 70px)
+					(maxHeight = 280px)
+					(marginTop = "L")
+				)
+
+				(verticalSlider='ScrollBarVLight')
+
+				(topShadow='InfotipShadowTop')
+				(bottomShadow='InfotipShadowBottom')
+
+				(hscrollPolicy='off')
+				(vscrollPolicy='auto')
+
+				(content
+					(style (width = 400px))
+					
+					(controller $Repeat renderer = 'AccountListItem'
+						(bind count "availableAccounts.length")
+						(args
+							_accountId = "availableAccounts[$index]"
+							_isSelected = "$index == menuItemIndex"
+						)
+					)
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%) (marginTop = "L"))
+
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 5)
+
+				(style (width = 100%))
+
+				(tf
+					(class $TextDefault19NM)
+					(style (width = 100%) (textAlign = "center") (alpha = "TA"))
+
+					(bind text "'IDS_CONFIRM_ACCOUNT_CHANGE'")
+				)
+			)
+		)
+
+		
+		(hblock
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 6)
+
+			(style (width = 100%) (marginTop = "L") (align = "center") (gap = "L"))
+
+			(element DefaultButton
+				_width = 136
+				_height = 32
+				_name = 'btn_yes'
+				_enabled = true
+				_label = 'IDS_YES'
+				_methods = "[	{	type: 'inputMapping.onAction',
+									name: 'changeAccount',
+									args: {	entityId: availableAccounts[menuItemIndex] }
+								}
+							]"
+			)
+
+			(element DefaultButton
+				_width = 136
+				_height = 32
+				_name = 'btn_cancel'
+				_enabled = true
+				_label = 'IDS_CLOSE_BTN'
+			)
+		)
+	)
+)
+
+(def element AccountListItem (_accountId:str, _isSelected:bool = false) layout=true
+	(scope
+		(var availableAccountEntity:gfx = "_accountId ? $datahub.getEntity(_accountId) : null")
+		(var accountName:str = "availableAccountEntity ? availableAccountEntity.availableAccount.nickname : null")
+		(var accountRealm:str = "availableAccountEntity ? availableAccountEntity.availableAccount.realm : null")
+		(var isCurrentAccount:bool = "availableAccountEntity ? availableAccountEntity.availableAccount.isCurrentAccount : null" (event "availableAccountEntity.availableAccount.evCurrentAccountChanged"))
+
+		(var accountInfo:str = "accountName + ' [' + toUpper(accountRealm) + ']'")
+	)
+
+	(style (width = 100%))
+
+	(controller $Instance renderer='SmallMenuItem'
+		(bind enabled "!isCurrentAccount")
+		(args
+			_height = "70px"
+			_title = "accountInfo"
+			_isSelected = "_isSelected"
+			_dispatchedEv = "'evMenuItemSelected'"
+			_dispatchParams = "{selectedIndex: $index}"
+		)
+	)
+)
