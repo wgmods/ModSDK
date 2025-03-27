@@ -1,0 +1,72 @@
+(def element TooltipMastery (_masteryBadgeEntity:gfx, _isShowUB2Tooltip:bool=true) layout=true dispatch_size_change=true
+	(scope
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE)
+
+		(var masteryBadge:gfx = "_masteryBadgeEntity ? _masteryBadgeEntity.masteryBadge : null")
+		(var masteryLevel:number = "masteryBadge ? masteryBadge.badge : SC.Mastery_badges.MASTERY_BADGES_SIGNS.No_Sign")
+
+		(var masteryLimitationsWatcher:gfx = "$datahub.getFirstWatcher(CC.masteryLimitations)")
+		(var masteryLimitationsEntity:gfx = "masteryLimitationsWatcher.entity" (event "masteryLimitationsWatcher.event"))
+		(var masteryLimitations:gfx = "masteryLimitationsEntity.masteryLimitations")
+		(var isReceived:bool = "masteryLevel > SC.Mastery_badges.MASTERY_BADGES_SIGNS.No_Sign")
+
+		(var unifiedStatus:str = "isReceived	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+												: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+		(var masteryLevelName:str = "SC.Mastery_badges.MASTERY_BADGES_SIGNS.VALUE_TO_NAME[masteryLevel]")
+		(var masteryIconUrl:str = "'url:../mastery_system/' + toLower(masteryLevelName) + '_big.png'")
+		(var nameIDS:str = "'IDS_MASTERY_GRADE_HEADER_' + toUpper(masteryLevelName)")
+		(var iconSize:number = "isReceived ? 80 : 0")
+		(var typeIDS:str = "isReceived ? 'IDS_MASTERY_GRADE_SUBHEADER' : ''")
+	)
+
+	(style (width = 320) (hitTest = false))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = 100%))
+			(controller $Instance
+				(bind renderer "isReceived ? 'TooltipSystemHeaderWithIconAndText' : 'TooltipSystemHeaderSubheaderText'")
+				(args
+					_imageUrl = "masteryIconUrl"
+					_imageWidth = "iconSize"
+					_imageHeight = "iconSize"
+					_headerText = "nameIDS"
+					_unifiedStatus = "unifiedStatus"
+					_headerIconType = "SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.SIMPLE"
+					_subheaderText = "typeIDS"
+				)
+			)
+		)
+		
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+					_unifiedStatus = "unifiedStatus"
+					_text = "isReceived ? 'IDS_MASTERY_STATUS_OBTAINED' : 'IDS_MASTERY_STATUS_NOT_OBTAINED'"
+		)
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine _unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.INFO" _text='IDS_MASTERY_GRADE_BATTLE_CONDITION')
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemDescriptionText _descriptionText='IDS_MASTERY_SYSTEM_DESCRIPTION')
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemInnerHeaderSubheaderText _headerText='IDS_MASTERY_GRADES_GRADATION_HEADER' _subheaderText='IDS_MASTERY_GRADES_GRADATION_SUBHEADER')
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemParamsModifiersList _attributesNeutral="masteryLimitations.gradesConfiguration")
+	)
+)
+
+(def element TooltipMasteryUnavailable (_masteryBadgeEntity:gfx, _isShowUB2Tooltip:bool=true) layout=true dispatch_size_change=true
+	(scope
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE)
+	)
+
+	(style (width = 320) (hitTest = false))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemStatusLine
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+					_text = 'IDS_MASTERY_STATUS_SERVICE_NOT_AVAILABLE'
+		)
+	)
+)

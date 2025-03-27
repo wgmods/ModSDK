@@ -1,0 +1,71 @@
+(def element MasteryIcon (_masteryBadgeEntityId:number=-1, _size:number="null") layout=true dispatch_size_change=true
+	(scope
+		(var masteryServiceWatcher:gfx = "$datahub.getFirstWatcher(CC.masteryService)")
+		(var masteryServiceEntity:gfx = "masteryServiceWatcher.entity" (event "masteryServiceWatcher.event"))
+		(var isMasteryOnline:bool = "masteryServiceEntity ? masteryServiceEntity.masteryService.isOnline : false" (event "masteryServiceEntity.masteryService.evIsOnlineChanged"))
+
+		(var masteryBadgeEntity:gfx = "$datahub.getEntity(_masteryBadgeEntityId)")
+		(var masteryBadge:gfx = "masteryBadgeEntity ? masteryBadgeEntity.masteryBadge : null")
+		(var masteryLevel:number = "isMasteryOnline && masteryBadge ? masteryBadge.badge : SC.Mastery_badges.MASTERY_BADGES_SIGNS.No_Sign")
+
+		(var masteryLevelName:str = "SC.Mastery_badges.MASTERY_BADGES_SIGNS.VALUE_TO_NAME[masteryLevel]")
+		(var masteryIconUrl:str = "'url:../mastery_system/' + toLower(masteryLevelName) + '_medium.png'")
+	)
+	(bind name "'MasteryIcon_' + masteryLevelName") 
+
+	(controller $Animation
+		(bindcall play keyframes="[
+			{percent:0, to:{alpha:1}},
+			{percent:20, to:{alpha:0}},
+			{percent:100, to:{alpha:1}}
+			]"
+			duration=0.3
+			(event "masteryServiceEntity.masteryService.evIsOnlineChanged")
+		)
+	)
+	(style
+		(align = "middle|center")
+		(bind width "_size ? _size : 60px")
+		(bind height "_size ? _size : 60px")
+	)
+	(block
+		(style
+			(bind alpha "isMasteryOnline ? 1 : 0.5")
+			(backgroundSize = "fill")
+			(position = "absolute")
+			(bind backgroundImage "masteryIconUrl")
+			(bind width "_size ? _size : 60px")
+			(bind height "_size ? _size : 60px")
+		)
+	)
+
+	(block
+		(bind visible "!isMasteryOnline")
+		(style
+			(backgroundSize = "autosize")
+			(bind backgroundImage "'url:../service_kit/icons/icon_status_attention.png'")
+		)
+	)
+
+
+	(controller $Tooltip
+		(bind renderer "isMasteryOnline ? 'TooltipMastery' : 'TooltipMasteryUnavailable'")
+		(args _masteryBadgeEntity = "masteryBadgeEntity")
+		(updateCachedBindings = true)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element MasteryIconSimple (_masteryLevel:number=-1, _size:number="null") layout=true dispatch_size_change=true
+	(scope
+		(var masteryLevelName:str = "SC.Mastery_badges.MASTERY_BADGES_SIGNS.VALUE_TO_NAME[_masteryLevel]")
+		(var masteryIconUrl:str = "'url:../mastery_system/' + toLower(masteryLevelName) + '_medium.png'")
+	)
+	(bind name "'MasteryIconSimple_' + masteryLevelName") 
+	(style
+		(backgroundSize = "fill")
+		(bind width "_size ? _size : 60px")
+		(bind height "_size ? _size : 60px")
+		(bind backgroundImage "masteryIconUrl")
+	)
+)
