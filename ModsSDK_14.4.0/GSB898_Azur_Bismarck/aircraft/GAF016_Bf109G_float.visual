@@ -1,0 +1,265 @@
+<GAF016_Bf109G_float.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	hull	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_Air_gunfire_1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	-0.0125 0.1745 0.1009 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_Air_gunfire_2	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0125 0.1745 0.1009 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	hull_wire	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	mod	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	propeller_mod	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.1436 0.1894 1.0000	</row3>
+					</transform>
+					<node>
+						<identifier>	disc	</identifier>
+						<transform>
+							<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+							<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+							<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+							<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+						</transform>
+						<node>
+							<identifier>	disc_cap	</identifier>
+							<transform>
+								<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+								<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+								<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+								<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+							</transform>
+						</node>
+					</node>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.3297 -0.0295 -0.3757	</min>
+		<max>	0.3297 0.2528 0.2704	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	discShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	disc	</node>
+			</nodes>
+			<material>
+				<identifier>	PROPELLERMAT_propeller	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSB898_Azur_Bismarck/aircraft/German_Disk_3Blade_02_alpha.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	disc_capShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	disc_cap	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSB898_Azur_Bismarck/aircraft/GAF016_Bf109G_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	disc_cap_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	disc_cap	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSB898_Azur_Bismarck/aircraft/GAF016_Bf109G_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	disc_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	disc	</node>
+			</nodes>
+			<material>
+				<identifier>	PROPELLERMAT_propeller	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSB898_Azur_Bismarck/aircraft/German_Disk_3Blade_02_alpha.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hullShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSB898_Azur_Bismarck/aircraft/GAF016_Bf109G_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_lodShape1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSB898_Azur_Bismarck/aircraft/GAF016_Bf109G_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_lodShape2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSB898_Azur_Bismarck/aircraft/GAF016_Bf109G_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_lodShape3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSB898_Azur_Bismarck/aircraft/GAF016_Bf109G_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_wireShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSB898_Azur_Bismarck/aircraft/GAF016_Bf109G_float_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	hull_wire_lodShape1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	hull_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSB898_Azur_Bismarck/aircraft/GAF016_Bf109G_float_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	modShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	mod	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSB898_Azur_Bismarck/aircraft/GAF016_Bf109G_float.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	mod_lodShape1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	mod	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSB898_Azur_Bismarck/aircraft/GAF016_Bf109G_float.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	5.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	discShape	</renderSet>
+				<renderSet>	disc_capShape	</renderSet>
+				<renderSet>	hullShape	</renderSet>
+				<renderSet>	hull_wireShape	</renderSet>
+				<renderSet>	modShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	20.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	disc_cap_lod1Shape	</renderSet>
+				<renderSet>	disc_lod1Shape	</renderSet>
+				<renderSet>	hull_lodShape1	</renderSet>
+				<renderSet>	hull_wire_lodShape1	</renderSet>
+				<renderSet>	mod_lodShape1	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	40.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	hull_lodShape2	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	200.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	hull_lodShape3	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</GAF016_Bf109G_float.visual>

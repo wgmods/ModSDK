@@ -1,0 +1,287 @@
+(def constant BATTLE_CARD_SELECTOR_WIDTH 1100)
+
+(def constant BATTLE_CARD_SELECTOR_COLUMN_WIDTH 340)
+(def constant BATTLE_CARD_SELECTOR_COLUMN_GAP 40)
+
+(def constant BATTLE_CARD_SELECTOR_MAX_CARD_COUNT 12)
+
+(def constant ACTIVE_CARD_LIST_RENDERERS {
+	"SC.Battle.BATTLE_CARD_SELECTOR_TYPE.CARD_LIST": 'BattleCardsSelectorActiveCardsList',
+	"SC.Battle.BATTLE_CARD_SELECTOR_TYPE.ENEMY_SHIP_LIST": 'BattleCardsSelectorEnemyShipList'
+})
+
+(def element ModalWindowBattleCardsSelector () layout=true
+	(macro MODAL_WINDOW_INIT)
+	(scope
+		(var battleCardSelectorWatcher:gfx = "$datahub.getFirstWatcher(CC.battleCardSelector)")
+		(var battleCardSelectorEntity:gfx = "battleCardSelectorWatcher ? battleCardSelectorWatcher.entity : null" (event "battleCardSelectorWatcher.event"))
+		(var isAutoShow:bool = "battleCardSelectorEntity.battleCardSelector.isAutoShow" (event "battleCardSelectorEntity.battleCardSelector.evIsAutoShowChanged"))
+		(var isAutoShow_forStats:bool = "isAutoShow" init=true watch=false)
+		(var selectorType:number = "battleCardSelectorEntity.battleCardSelector.selectorType")
+	)
+	
+	(bindcall externalCall "!isAutoShow_forStats ? 'direct.action' : ''" "[SC.Common.STATISTICS_EVENTS.LOG, [SC.Common.BATTLE_CARD_STATISTICS.NO_AUTO_SHOW_OPENED]]" init=false watch=false (event "startShow"))
+	(bindcall externalCall "!isAutoShow_forStats ? 'direct.action' : ''" "[SC.Common.STATISTICS_EVENTS.LOG, [SC.Common.BATTLE_CARD_STATISTICS.NO_AUTO_SHOW_CLOSED]]" init=false watch=false (event "startHide"))
+	
+	(bindcall externalCall "isAutoShow ? 'direct.action' : ''" "[SC.Common.STATISTICS_EVENTS.LOG, [SC.Common.BATTLE_CARD_STATISTICS.BATTLE_AUTO_SHOW_TURN_ON]]" init=false watch=false (event "battleCardSelectorEntity.battleCardSelector.evIsAutoShowChanged"))
+	(bindcall externalCall "!isAutoShow ? 'direct.action' : ''" "[SC.Common.STATISTICS_EVENTS.LOG, [SC.Common.BATTLE_CARD_STATISTICS.BATTLE_AUTO_SHOW_TURN_OFF]]" init=false watch=false (event "battleCardSelectorEntity.battleCardSelector.evIsAutoShowChanged"))
+
+	(macro MODAL_WINDOW_BACKGROUND_BATTLE)
+	(style (align = "center"))
+	(block 
+		(style (marginTop = "{720:10%, 2160:40%}") (width = "BATTLE_CARD_SELECTOR_WIDTH") (align = "center"))
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+			(style (align = "center") (width = 100%) (marginBottom = "40px"))
+			(element BattleCardsSelectorTimer
+				_selectorEntity="battleCardSelectorEntity"
+			)
+		)
+		(block
+			(style (flow = "horizontal") (width = 100%) (marginBottom = "40px") (hgap = "BATTLE_CARD_SELECTOR_COLUMN_GAP"))
+			
+			
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+				(style (width = "BATTLE_CARD_SELECTOR_COLUMN_WIDTH"))
+				(tf
+					(class $TextDefaultBold21NM)
+					(style
+						(marginBottom = "MS")
+						(alpha = "TA")
+					)
+					(bind text "'IDS_CARD_SELECTOR_COLUMN_INSTALLED_' + SC.Battle.BATTLE_CARD_SELECTOR_TYPE.VALUE_TO_NAME[selectorType] + '_HEADER'")
+				)
+				(element BattleCardsSelectorSelectedCardsList
+					_selectorEntity="battleCardSelectorEntity"
+					(style (width = 100%))
+				)
+			)
+			
+			
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 3)
+				(style (width = "BATTLE_CARD_SELECTOR_COLUMN_WIDTH"))
+				(controller $Instance
+					(bind renderer "ACTIVE_CARD_LIST_RENDERERS[selectorType]")
+					(args _selectorEntity="battleCardSelectorEntity")
+				)
+			)
+
+			
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 4)
+				(style (width = "BATTLE_CARD_SELECTOR_COLUMN_WIDTH"))
+				(tf
+					(class $TextDefaultBold21NM)
+					(style
+						(marginBottom = "MS")
+						(alpha = "TA")
+					)
+					(text = 'IDS_CARD_SELECTOR_COLUMN_MANAGEMENT_HEADER')
+				)
+				(tf
+					(style (width = 100%))
+					(class $TextDefault17NM)
+					(style
+						(width = 100%)
+						(marginBottom = "MS")
+						(alpha = "TC")
+					)
+					(bind text "'IDS_CARD_SELECTOR_COLUMN_MANAGEMENT_' + SC.Battle.BATTLE_CARD_SELECTOR_TYPE.VALUE_TO_NAME[selectorType] + '_DESCRIPTION'")
+				)
+				(tf
+					(class $TextDefault17NM)
+					(style
+						(width = 100%)
+						(marginBottom = "MS")
+						(alpha = "TC")
+					)
+					(text = 'IDS_CARD_SELECTOR_COLUMN_MANAGEMENT_LIMITED_TIME_DESCRIPTION')
+				)
+				(tf
+					(class $TextDefault17NM)
+					(style
+						(width = 100%)
+						(marginBottom = "MS")
+						(alpha = "TC")
+					)
+					(bindcall substitute imageOffset=5 sourceText="tr('IDS_CARD_SELECTOR_COLUMN_MANAGEMENT_ACCESS_DESCRIPTION')" postfix='' toggle=false init=true)
+				)
+				(element SwitchWithRightLabel
+					_label = 'IDS_CARD_SELECTOR_AUTO_SHOW_AT_BATTLE_START'
+					_textClass = '$TextDefault17NM'
+					_textWidth = 240px
+					_state = "isAutoShow"
+					_methods = "[ { type: 'direct.action', name: 'setAutoShowSelectorWindow', args: [!isAutoShow] } ]"
+				)
+			)
+		)
+	
+		(element DefaultButton
+				_width = 256
+				_name = 'btn_confirm_selection'
+				_enabled = true
+				_isTransactionBtn = true
+				_label = 'IDS_CARD_SELECTOR_CONFIRM_SELECTION'
+				_focusIndex = 1
+				_defaultFocused = false
+				_methods = "[]"
+				_clickInterval = 2000
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 5)
+		)
+	)
+)
+
+(def element BattleCardsSelectorTimer (_selectorEntity:gfx)
+	(scope
+		(var countDownComponent:gfx = "_selectorEntity.countDown" (event "_selectorEntity.evAdded") (event "_selectorEntity.evRemoved"))
+		(var endTime:number = "countDownComponent ? countDownComponent.endTime : 0" (event "countDownComponent.evEndTimeChanged"))
+
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+		(var currentTime:number = "timerEntity.timer.currentTime" (event "timerEntity.timer.evFrequent"))
+
+		(var remainTime:number = "countDownComponent ? endTime - currentTime : 0" )
+		(var countdownText:str = "countdownFormat(max(remainTime, 0), 2, true)")
+	)
+
+	(style (align = "center|middle") (width = 100%) (alpha = "countDownComponent ? 1 : 0"))
+	
+	(controller $Animation
+		(bindcall play 	duration=0.2
+						from="{alpha: 0}" 
+						to="{alpha: 1}"
+						action="killAll"
+						reverse="countDownComponent == null"
+						(bind trigger "countDownComponent != null")
+		)
+	)
+
+	(tf
+		(class $TextDefaultBold50NM)
+		(style
+			(marginBottom = "-S")
+			(bind textColor "remainTime > 10 ? SC.Ui_styles.SERVICE_COLORS.WHITE : SC.Ui_styles.SERVICE_COLORS.ORANGE")
+		)
+		(bind text "countdownText")
+	)
+)
+
+(def element BattleCardsSelectorSelectedCardsList (_selectorEntity:gfx)
+	(scope
+		(var battleCardsCollection:gfx = "$datahub.getCollection(CC.battleCard)")
+		(var selectedCardsCollection:gfx = "battleCardsCollection.child('installed').child('sorted')")
+
+		(var selectedCardsCollectionLength:number = "selectedCardsCollection.items.length" (event "selectedCardsCollection.evAdded") (event "selectedCardsCollection.evRemoved"))
+
+		(var isAvailable:bool =			"_selectorEntity.battleCardSelector.isAvailable" (event "_selectorEntity.battleCardSelector.evIsAvailableChanged"))
+		(var selectorMaxCount:number =	"_selectorEntity.battleCardSelector.maxCards" (event "_selectorEntity.battleCardSelector.evMaxCardsChanged"))
+		(var selectorType:number =		"_selectorEntity.battleCardSelector.selectorType")
+
+		
+		(var stateCollection:gfx = "$datahub.getCollection(CC.state)")
+		(var flagshipsCollection:gfx = "stateCollection.getChildByPath('flagships.specialization')" (event "stateCollection.evChildAdded") (event "stateCollection.evChildRemoved"))
+		(var flagshipsCollectionLength:number = "flagshipsCollection ? flagshipsCollection.items.length : 0" (event "flagshipsCollection.evAdded") (event "flagshipsCollection.evRemoved"))
+
+		(var isFlagshipBattle:bool = "flagshipsCollectionLength > 0")
+	) 
+	(style
+		(width = 100%)
+	)
+	(block
+		(style (align = "center|middle") (vgap="S") (marginBottom = "S"))
+		(controller $Repeat renderer='BattleCardItemLargeSlot'
+			(bind count "isAvailable ? selectorMaxCount : selectedCardsCollectionLength") 
+			(args
+				_cardCollection="selectedCardsCollection"
+				_clickActionPrefix="BATTLE_CARD_CLICK_PREFIX_BATTLE"
+				_selectorType="selectorType"
+				_isAvailable="isAvailable"
+			)
+		)
+	)
+	(block
+		(style
+			(width = 100%)
+			(bind marginTop "isFlagshipBattle ? 40 : 0")
+		)
+		(controller $Instance renderer='FlagshipsCardSelectorInfo'
+			(bind enabled "isFlagshipBattle")
+		)
+	)
+)
+
+(def element BattleCardsSelectorActiveCardsList (_selectorEntity:gfx)
+	(scope
+		(var battleCardsCollection:gfx = "$datahub.getCollection(CC.battleCard)")
+		(var activeCardsCollection:gfx = "battleCardsCollection.getChildByPath('activeInEvent.available.sorted')")
+
+		(var activeCardsCollectionLength:number = "min(activeCardsCollection.items.length, BATTLE_CARD_SELECTOR_MAX_CARD_COUNT)")
+
+		(var installedBattleCardCollection:gfx = "battleCardsCollection ? battleCardsCollection.child('installed') : null" (event "battleCardsCollection.evUpdated") (event "battleCardsCollection.evChildAdded") (event "battleCardsCollection.evChildRemoved"))
+		(var installedCardsCount:number = "installedBattleCardCollection ? installedBattleCardCollection.items.length : 0" (event "installedBattleCardCollection.evAdded") (event "installedBattleCardCollection.evRemoved"))
+
+		(var maxCardsToInstall:number = "_selectorEntity ? _selectorEntity.battleCardSelector.maxCards : BATTLE_CARD_MAX_SELECTED_COUNT" (event "_selectorEntity.battleCardSelector.evMaxCardsChanged"))
+
+		(var isMaxCardsInstalled:bool = "installedCardsCount >= maxCardsToInstall")
+	)
+	(style (width = 100%))
+	(tf
+		(class $TextDefaultBold21NM)
+		(style
+			(marginLeft = "M")
+			(marginBottom = "MS")
+			(alpha = "TA")
+		)
+		(text = 'IDS_CARD_SELECTOR_COLUMN_CARD_LIST_HEADER')
+	)
+	(block
+		(style (width = 100%))
+		(controller $Repeat renderer='BattleCardItemLine'
+			(bind count "activeCardsCollectionLength")
+			(args
+				_battleCardItem="activeCardsCollection.items[$index]"
+				_clickActionPrefix="BATTLE_CARD_CLICK_PREFIX_BATTLE"
+				_isMaxCardsInstalled="isMaxCardsInstalled"
+			)
+		)
+	)
+	(element HorizontalDividerTwoPx)
+)
+
+(def element BattleCardsSelectorEnemyShipList (_selectorEntity:gfx)
+	(scope
+		(var collection:gfx = "$datahub.getCollection(CC.avatar)")
+		(var enemyTeamsCollection:gfx = "collection.getChildByPath('team.enemy.byTeamsSortedAlive')" (event "collection.evChildAdded") (event "collection.evChildRemoved"))
+		(var enemyTeamsCount:number = "enemyTeamsCollection ? enemyTeamsCollection.childrenCount : 0" (event "enemyTeamsCollection.evChildrenCountChanged"))
+		(var enemyFirstTeam:gfx = "enemyTeamsCount ? enemyTeamsCollection.child(0) : null")
+		(var enemyFirstTeamMemberCount:number = "enemyFirstTeam ? enemyFirstTeam.items.length : 0")
+		
+		(var battleCardsCollection:gfx = "$datahub.getCollection(CC.battleCard)")
+		(var activeCardsCollection:gfx = "battleCardsCollection.getChildByPath('activeInEvent.available.sorted')")
+		(var installedBattleCardCollection:gfx = "battleCardsCollection ? battleCardsCollection.child('installed') : null" (event "battleCardsCollection.evUpdated") (event "battleCardsCollection.evChildAdded") (event "battleCardsCollection.evChildRemoved"))
+		(var installedCardsCount:number = "installedBattleCardCollection ? installedBattleCardCollection.items.length : 0" (event "installedBattleCardCollection.evAdded") (event "installedBattleCardCollection.evRemoved"))
+
+		(var maxCardsToInstall:number = "_selectorEntity ? _selectorEntity.battleCardSelector.maxCards : BATTLE_CARD_MAX_SELECTED_COUNT" (event "_selectorEntity.battleCardSelector.evMaxCardsChanged"))
+
+		(var isMaxCardsInstalled:bool = "installedCardsCount >= maxCardsToInstall")
+	)
+	(style (width = 100%))
+	(tf
+		(class $TextDefaultBold21NM)
+		(style
+			(marginLeft = "M")
+			(marginBottom = "MS")
+			(alpha = "TA")
+		)
+		(text = 'IDS_CARD_SELECTOR_COLUMN_ENEMY_SHIP_LIST_HEADER')
+	)
+	(block
+		(style (width = 100%))
+		(controller $Repeat renderer='EnemyShipItemLine'
+			(bind count "enemyFirstTeamMemberCount")
+			(args _avatarEntity="enemyFirstTeam.items[$index]" _isMaxCardsInstalled="isMaxCardsInstalled")
+		)
+	)
+	(element HorizontalDividerTwoPx)
+)

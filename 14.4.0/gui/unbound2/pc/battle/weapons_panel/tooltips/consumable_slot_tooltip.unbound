@@ -1,0 +1,90 @@
+(def element BattleConsumableTooltip (_viewData:gfx, _battleConsumable:gfx=null, _parameterOwnerId:number=0, _isOwn:bool=false, _isPlaneConsumable:bool=false) layout=true
+	(scope
+		(var iconPath:str = "'url:' + _viewData.iconPath")
+		(var title:str = "_viewData.title")
+		(var subHeader:str = "_viewData.subheader")
+		(var description:str = "_viewData.description")
+		(var isDescriptionProvided:bool = "description != ' '")
+
+		(var isTimeBased:bool = "_viewData.lifecycleType == SC.Battle.CONSUMABLE_LIFECYCLE_TYPE.TIME_BASED")
+
+		(var usageAttributes:gfx = "_viewData.usageAttributes")
+		(var usageNegative:array = "usageAttributes.negative")
+		(var usagePositive:array = "usageAttributes.positive")
+		(var usageNeutral:array = "usageAttributes.neutral" (event "_battleConsumable.evMaxChargeChanged") (event "_battleConsumable.evReloadTimeCoeffChanged") (event "_battleConsumable.evWorkTimeCoeffChanged"))
+
+		(var activeAttributes:gfx = "_viewData.activeAttributes")
+		(var activeNegative:array = "activeAttributes ? activeAttributes.negative : []")
+		(var activeNeutral:array = "activeAttributes ? activeAttributes.neutral : []")
+		(var activePositive:array = "activeAttributes ? activeAttributes.positive : []")
+
+		(var hasActiveAttributes:bool = "activeNegative.length + activeNeutral.length + activePositive.length != 0")
+
+		(var avatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var isAircarrier:bool = "avatarEntity.avatar ? (avatarEntity.avatar.ship.ref.ship.subtype == ShipTypes.AIRCARRIER) : false")
+		(var isShowHotkey:bool = "_isOwn && (!isAircarrier || _isPlaneConsumable)")
+
+		(var commandName:str = "_viewData.cmdName")
+		(var usageText:str = "isShowHotkey && commandName != -1	? subst(tr(isTimeBased ? 'IDS_CONSUMABLE_TIME_USAGE' : 'IDS_CONSUMABLE_COUNT_USAGE'), [], {_cmd: '[' + commandName + ']'})
+																: isTimeBased ? 'IDS_CONSUMABLE_TIME_USAGE_SHORT' : 'IDS_CONSUMABLE_COUNT_USAGE_SHORT'")
+	)
+	(style (width = 340) (hitTest = false))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHeaderWithIconAndText'
+				(args
+					_imageUrl = "iconPath"
+					_imageWidth = 60
+					_imageHeight = 60
+					_unifiedStatus = ''
+					_headerText = "title"
+					_subheaderText = "subHeader"
+				)
+			)
+		)
+
+		(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isDescriptionProvided"))
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemDescriptionText' (bind enabled "isDescriptionProvided")
+				(args
+					_descriptionText="description"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(block
+			(bind visible "hasActiveAttributes")
+			(style (width = 100%))
+			
+			(element TooltipSystemParamsModifiersList
+				_attributesPositive =	"activePositive"
+				_attributesNeutral =	"activeNeutral"
+				_attributesNegative =	"activeNegative"
+				_ownerId = "_parameterOwnerId"
+			)
+
+			(element TooltipSystemHorizontalDivider)
+		)
+
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "isTimeBased ? SC.Ui_styles.UNIFIED_STATUS.TIME_BASED : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			_text = "usageText"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemParamsModifiersList
+			_attributesPositive =	"usagePositive"
+			_attributesNeutral =	"usageNeutral"
+			_attributesNegative =	"usageNegative"
+			_ownerId = "_parameterOwnerId"
+		)
+	)
+)

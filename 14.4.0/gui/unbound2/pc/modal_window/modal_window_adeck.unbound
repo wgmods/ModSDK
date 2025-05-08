@@ -1,0 +1,46 @@
+(def element ModalWindowAdmiralsDeck () layout=true dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+
+	(scope
+		(var gfStateWatcher:gfx = "$datahub.getFirstWatcher(CC.gamefaceGlobalState)")
+		(var gfStateEntity:gfx = "gfStateWatcher.entity" (event "gfStateWatcher.event"))
+		(var gfStateComponent:gfx = "gfStateEntity ? gfStateEntity.gamefaceGlobalState : null")
+		(var gfStateHasControl:bool = "gfStateComponent ? gfStateComponent.gamefaceHasControl : false"	(event "gfStateComponent.evChanged")
+																										(event "gfStateComponent.evGamefaceHasControlChanged"))
+
+		(event evAddedToStage)
+	)
+	(dispatch evAddedToStage on='addedToStage')
+
+	(name = "'window_ModalWindowAdmiralsDeck'")
+
+	(class $FullsizeAbsolute)
+	(style (align = "center"))
+
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(class $Fullsize)
+		(style (align = "center"))
+
+		(block
+			(class $FullsizeAbsolute)
+			(element GamefaceWidget
+				_gfName = 'gf_ub2_port_adeck'
+				_gfPath = 'gui/gameface/build/adeck/index.html'
+			)
+		)
+
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+			(style (width = 100%))
+			(element ModalWindowCloseIcon
+				(style
+					(position = "absolute")
+					(right = "MS")
+					(top = "MS")
+					(marginTop = "-XXS")
+				)
+			)
+		)
+	)
+)

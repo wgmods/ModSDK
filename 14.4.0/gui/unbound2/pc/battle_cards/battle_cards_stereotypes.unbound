@@ -1,0 +1,880 @@
+
+(def constant BATTLE_CARD_ITEM_LARGE_WIDTH 340)
+(def constant BATTLE_CARD_ITEM_LARGE_HEIGHT 100)
+
+(def constant BATTLE_CARD_ITEM_SLOT_SIZE 64)
+(def constant BATTLE_CARD_ITEM_SIZE 60)
+
+(def constant BATTLE_CARD_LINE_WIDTH 340)
+(def constant BATTLE_CARD_LINE_SHIP_INFO_WIDTH 60)
+(def constant BATTLE_CARD_LINE_CARD_INFO_WIDTH "BATTLE_CARD_LINE_WIDTH - BATTLE_CARD_LINE_SHIP_INFO_WIDTH")
+(def constant BATTLE_CARD_LINE_HEIGHT 35)
+
+(def css $BattleCardItemLargeSize ()
+	(width = "BATTLE_CARD_ITEM_LARGE_WIDTH") (height = "BATTLE_CARD_ITEM_LARGE_HEIGHT")
+)
+
+(def css $BattleCardItemSlotSize ()
+	(width = "BATTLE_CARD_ITEM_SLOT_SIZE") (height = "BATTLE_CARD_ITEM_SLOT_SIZE")
+)
+
+(def css $BattleCardItemSize ()
+	(width = "BATTLE_CARD_ITEM_SIZE") (height = "BATTLE_CARD_ITEM_SIZE")
+)
+
+(def css $BattleCardItemLineSize ()
+	(width = "BATTLE_CARD_LINE_WIDTH") (height = "BATTLE_CARD_LINE_HEIGHT")
+)
+
+
+
+
+(def element BattleCardItemLarge (_battleCardItem:gfx, _clickActionPrefix:str, _isInstallEnabled:bool=true)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE
+			_prefix = "'battleCardLargeItem_'"
+		)
+
+		(var name:str =				"_battleCardItem ? _battleCardItem.battleCard.name: ''" (event "_battleCardItem.battleCard.evChanged"))
+		(var currentLevel:number =	"_battleCardItem ? _battleCardItem.battleCard.currentLevel : 0" (event "_battleCardItem.battleCard.evChanged"))
+		(var cardType:str =			"_battleCardItem ? _battleCardItem.battleCard.cardType : ''" (event "_battleCardItem.battleCard.evChanged"))
+		(var iconPath:str =			"_battleCardItem ? _battleCardItem.battleCard.iconPath : ''" (event "_battleCardItem.battleCard.evChanged"))
+		(var isActiveInEvent:bool =	"_battleCardItem ? _battleCardItem.battleCard.isActiveInEvent : false" (event "_battleCardItem.battleCard.evChanged"))
+		(var gameParamId:number =	"_battleCardItem ? _battleCardItem.battleCard.gameParamId : null" (event "_battleCardItem.battleCard.evChanged"))
+		(var isAutoPicked:bool =	"_battleCardItem ? _battleCardItem.battleCard.isAutoPicked : false" (event "_battleCardItem.battleCard.evChanged"))
+		
+		(var isAvailable:bool = "currentLevel > 0")
+		(var isLevelVisible:bool = "currentLevel > 1 && cardType == SC.Common.BATTLE_CARD_TYPES.PVE")
+		(var levelArtPath:str = "isLevelVisible ? ('url:../battle_cards/cards/layers/card_large_level_' + currentLevel + '.png') : ''")
+
+		(var battleCardSpecificShips:gfx = "_battleCardItem && _battleCardItem.hasComponent(CC.specificShipsList) ? _battleCardItem.specificShipsList : null" (event "_battleCardItem.evAdded") (event "_battleCardItem.evRemoved"))
+		(var shipIdsFilters:array = "battleCardSpecificShips ? battleCardSpecificShips.includedShips : []" (event "battleCardSpecificShips.evUpdated"))
+		(var isShipIdsFilterVisible:bool = "shipIdsFilters && shipIdsFilters.length > 0")
+
+		(var cardBackgroundImagePostfix:str = "cardType + (shipIdsFilters.length > 1 ? '_with_clones' : '')")
+		(var cardBackgroundImage:str = "'url:../battle_cards/cards/layers/card_large_bg_' + cardBackgroundImagePostfix + '.png'")
+		(var cardIconImage:str = "'url:' + iconPath + '_large.png'")
+
+		(macro COLOR_TO_COLOR_TRANSFORM "'cardTextColorTransform'" "BATTLE_CARD_TEXT_COLOR")
+	)
+
+	(bindcall externalCall "isAvailable && isActiveInEvent && _isInstallEnabled ? 'direct.action' : ''" "['onBattleCardClicked.' + _clickActionPrefix, [gameParamId]]" init=false watch=false on=click)
+
+	(class $BattleCardItemLargeSize)
+	(style (align = "center|middle"))
+
+	(block
+		
+		(class $BattleCardItemLargeSize)
+		(style
+			(flow = "horizontal")
+			(backgroundSize = "fill")
+			(bind backgroundImage "cardBackgroundImage")
+		)
+		
+		(block
+			(style
+				(width = 100px)
+				(height = "BATTLE_CARD_ITEM_LARGE_HEIGHT")
+				(backgroundSize = "cover")
+				(bind backgroundImage "cardIconImage")
+			)
+		)
+		
+		(block
+			(style
+				(width = 100%) (height = 100%)
+				(paddingTop = "26") (paddingLeft = "M")
+			)
+			(block
+				(bind visible "isShipIdsFilterVisible")
+				(bind colorTransform "cardTextColorTransform")
+				(controller $Instance renderer='BattleCardNameFromShip'
+					(bind enabled "isShipIdsFilterVisible")
+					(args
+						_shipId = "shipIdsFilters[0]"
+						_fontClass = '$BattleCardText'
+						_shipIconRenderer = 'BattleCardShipIcon'
+					)
+				)
+			)
+			(block
+				(bind visible "!isShipIdsFilterVisible")
+				(bind colorTransform "cardTextColorTransform")
+				(controller $Instance renderer='BattleCardNameFromCard'
+					(bind enabled "!isShipIdsFilterVisible")
+					(args
+						_battleCardItem = "_battleCardItem"
+						_fontClass = '$BattleCardText'
+						_maxTextWidth = 200px
+						_shipIconRenderer = 'BattleCardShipIcon'
+					)
+				)
+			)
+		)
+		
+		
+		(block
+			(bind visible "isLevelVisible")
+			(class $BattleCardItemLargeSize)
+			(style
+				(position = "absolute")
+				(backgroundSize = "fill")
+				(bind backgroundImage "levelArtPath")
+			)
+		)
+		
+		(block
+			(class $BattleCardItemLargeSize)
+			(style
+				(position = "absolute")
+				(backgroundSize = "fill")
+				(backgroundImage = 'url:../battle_cards/cards/layers/card_large_overlay.png')
+			)
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "top|left") (top = 3) (left = 32))
+		(controller $Instance renderer='BattleCardLabelAutopicked'
+			(bind enabled "isAutoPicked")
+			(args _isSmallSize = false)
+		)
+	)
+
+	(controller $Tooltip
+		(bind enabled "isAvailable")
+		(renderer = 'BattleCardComponentTooltip')
+		(updateCachedBindings = true)
+		(args _battleCardItem = "_battleCardItem")
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "isAvailable && isActiveInEvent && _isInstallEnabled"
+		_prefix = "'battleCardLargeItem_'"
+		_soundSet = "'button_card'"
+	)
+)
+
+(def element BattleCardItemLargeUssAdapter (_battleCardEntityId:number) dispatch_size_change=true
+	(scope
+		(var battleCardItem:gfx = "$datahub.getEntity(_battleCardEntityId)") 
+	)
+	(element BattleCardItemLarge
+		_battleCardItem="battleCardItem"
+		_clickActionPrefix="BATTLE_CARD_CLICK_PREFIX_DOCK"
+		_isInstallEnabled=false
+	)
+)
+
+(def element BattleCardItemLargeSlot (_cardCollection:gfx, _clickActionPrefix:str, _isAvailable:bool, _selectorType:number)
+	(scope
+		(var battleCardItem:gfx = "_cardCollection.items[$index]" (event "_cardCollection.evAdded") (event "_cardCollection.evRemoved"))
+		(var hasBattleCardItem:bool = "battleCardItem != null")
+	)
+
+	(class $BattleCardItemLargeSize)
+	(style
+		(backgroundColor = 0x33000000)
+		(align = "center|middle")
+	)
+
+	(block
+		(visible = "!hasBattleCardItem")
+		(alpha = "!hasBattleCardItem ? 1 : 0")
+		(controller $Animation
+			(bindcall play 	duration=0.2
+							from="{alpha: 0, visible: false}" 
+							to="{alpha: 1, visible: true}"
+							action="killAll"
+							reverse="hasBattleCardItem"
+							(bind trigger "hasBattleCardItem")
+			)
+		)
+		(class $BattleCardItemLargeSize)
+		(style
+			(position = "absolute")
+			(backgroundSize = "fill")
+			(backgroundImage = 'url:../battle_cards/cards/layers/card_large_slot.png')
+		)
+		
+		(controller $Tooltip
+			(renderer = 'SimpleStatusTooltip')
+			(args _text = "'IDS_CARD_SELECTOR_SELECT_CARD_FROM_' + SC.Battle.BATTLE_CARD_SELECTOR_TYPE.VALUE_TO_NAME[_selectorType] + '_TOOLTIP'")
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+	)
+
+	(block
+		(class $BattleCardItemLargeSize)
+		(style
+			(position = "absolute")
+			(align = "center|middle")
+		)
+		(visible = "hasBattleCardItem")
+		(alpha = "hasBattleCardItem ? 1 : 0")
+		(controller $Animation
+			(bindcall play 	duration=0.2
+							from="{alpha: 0, visible: false}" 
+							to="{alpha: 1, visible: true}"
+							action="killAll"
+							reverse="!hasBattleCardItem"
+							(bind trigger "hasBattleCardItem")
+			)
+		)
+		(controller $Instance renderer='BattleCardItemLarge'
+			(bind enabled "hasBattleCardItem")
+			(args _battleCardItem="battleCardItem" _clickActionPrefix="_clickActionPrefix")
+		)
+	)
+)
+
+
+
+
+(def element BattleCardItem (_battleCardItem:gfx, _isAvailable:bool)
+	(scope
+		(var currentLevel:number =	"_battleCardItem ? _battleCardItem.battleCard.currentLevel : 0" (event "_battleCardItem.battleCard.evChanged"))
+		(var isAutoPicked:bool =	"_battleCardItem ? _battleCardItem.battleCard.isAutoPicked : false" (event "_battleCardItem.battleCard.evChanged"))
+		(var iconPath:str =			"_battleCardItem ? _battleCardItem.battleCard.iconPath : ''" (event "_battleCardItem.battleCard.evChanged"))
+		(var cardType:str =			"_battleCardItem ? _battleCardItem.battleCard.cardType : false" (event "_battleCardItem.battleCard.evChanged"))
+
+		(var isLevelVisible:bool =	"cardType == SC.Common.BATTLE_CARD_TYPES.PVE && currentLevel > 1")
+		(var levelArtPath:str = "isLevelVisible ? ('url:../battle_cards/cards/layers/card_level_' + currentLevel + '.png') : ''")
+	)
+
+	(class $BattleCardItemSlotSize)
+	(style
+		(align = "center|middle")
+		(backgroundSize = "fill")
+		(bind backgroundImage "'url:' + iconPath + '.png'")
+	)
+	
+	(block
+		(bind visible "isLevelVisible")
+		(class $BattleCardItemSlotSize)
+		(style
+			(position = "absolute")
+			(backgroundSize = "fill")
+			(bind backgroundImage "levelArtPath")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(align = "top|left") (top = -1) (left = 8)
+		)
+		(controller $Instance renderer='BattleCardLabelAutopicked'
+			(bind enabled "isAutoPicked")
+			(args _isSmallSize = true)
+		)
+	)
+
+	(controller $Tooltip
+		(renderer = 'BattleCardComponentTooltip')
+		(args
+			_battleCardItem = "_battleCardItem"
+			_isManagementPreview = true
+			_isManagementAvailable = "_isAvailable"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element BattleCardItemSlotDock (_cardCollection:gfx, _isAvailable:bool, _mouseInstruction:dict, _isLevelUpAvailable:bool, _isNew:bool)
+	(scope
+		(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM_SCOPE)
+
+		(var battleCardItem:gfx = "_cardCollection.items[$index]" (event "_cardCollection.evAdded") (event "_cardCollection.evRemoved"))
+		(var hasBattleCardItem:bool = "battleCardItem != null")
+	
+		(var isNewMarker:bool = "_isAvailable && _isNew")
+		(var isLevelUpAvailableMarker:bool = "_isAvailable && _isLevelUpAvailable && !_isNew")
+	)
+	(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM "_isAvailable")
+	(macro MOUSE_LMB_EXTERNAL_CALL 'direct.action' "['showCardSelector.' + BATTLE_CARD_CLICK_PREFIX_DOCK, []]" "_isAvailable")
+
+	(class $BattleCardItemSlotSize)
+	(style
+		(marginLeft = "{1280:XS, 1920:MS}")
+		(marginRight = "{1280:XS, 1920:MS}")
+	)
+	(block
+		(bind visible "!hasBattleCardItem")
+		(class $BattleCardItemSlotSize)
+		(style
+			(position = "absolute")
+			(backgroundSize = "cover")
+			(backgroundImage = 'url:../service_kit/frames/64px_empty_field.png')
+		)
+		(controller $Tooltip
+			(renderer='SimpleStatusTooltip')
+			(args
+				_text = "_mouseInstruction.text"
+				_unifiedStatus = "_mouseInstruction.unifiedStatus"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+	)
+
+	(block
+		(class $BattleCardItemSlotSize)
+		(style
+			(position = "absolute")
+			(align = "center|middle")
+		)
+		(visible = "hasBattleCardItem")
+		(alpha = "hasBattleCardItem ? 1 : 0")
+		(controller $Animation
+			(bindcall play 	duration=0.2
+							from="{alpha: 0, visible: false}" 
+							to="{alpha: 1, visible: true}"
+							action="killAll"
+							reverse="!hasBattleCardItem"
+							init=false
+							watch=false
+							(bind trigger "hasBattleCardItem")
+			)
+		)
+		(controller $Instance renderer='BattleCardItem'
+			(bind enabled "hasBattleCardItem")
+			(args _battleCardItem="battleCardItem" _isAvailable="_isAvailable")
+		)
+	)
+
+	
+	(block
+		(style (position = "absolute") (right = -11px) (top = -11px))
+		(element MarkerLevelUp
+			(macro DEFAULT_CONTROL_MARKER_ANIMATION "isLevelUpAvailableMarker")
+		)
+	)
+
+	
+	(block
+		(style (position = "absolute") (right = -11px) (top = -11px))
+		(element MarkerNew
+			(macro DEFAULT_CONTROL_MARKER_ANIMATION "isNewMarker")
+		)
+	)
+)
+
+(def element BattleCardItemSlotBattle (_cardCollection:gfx, _isAvailable:bool)
+	(scope
+		(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM_SCOPE)
+
+		(var battleCardItem:gfx = "_cardCollection.items[$index]" (event "_cardCollection.evAdded") (event "_cardCollection.evRemoved"))
+		(var hasBattleCardItem:bool = "battleCardItem != null")
+	)
+	(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM "_isAvailable")
+	(macro MOUSE_LMB_EXTERNAL_CALL 'direct.action' "['showCardSelector.' + BATTLE_CARD_CLICK_PREFIX_BATTLE, []]" "_isAvailable")
+
+	(class $BattleCardItemSlotSize)
+	(block
+		(bind visible "!hasBattleCardItem")
+		(class $BattleCardItemSlotSize)
+		(style
+			(position = "absolute")
+			(backgroundSize = "cover")
+			(backgroundImage = 'url:../service_kit/frames/64px_empty_field.png')
+		)
+		(controller $Tooltip
+			(bind enabled "_isAvailable")
+			(renderer='SimpleStatusTooltip')
+			(args
+				_text = 'IDS_MOUSE_INSTRUCTION_CHANGE_BATTLE_CARD'
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+	)
+
+	(block
+		(class $BattleCardItemSlotSize)
+		(style
+			(position = "absolute")
+			(align = "center|middle")
+		)
+		(visible = "hasBattleCardItem")
+		(alpha = "hasBattleCardItem ? 1 : 0")
+		(controller $Animation
+			(bindcall play 	duration=0.2
+							from="{alpha: 0, visible: false}" 
+							to="{alpha: 1, visible: true}"
+							action="killAll"
+							reverse="!hasBattleCardItem"
+							init=false
+							watch=false
+							(bind trigger "hasBattleCardItem")
+			)
+		)
+		(controller $Instance renderer='BattleCardItem'
+			(bind enabled "hasBattleCardItem")
+			(args _battleCardItem="battleCardItem" _isAvailable="_isAvailable")
+		)
+	)
+)
+
+
+
+
+(def element BattleCardItemLine (_battleCardItem:gfx, _clickActionPrefix:str, _isMaxCardsInstalled:bool=false)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE
+			_prefix = "'battleCardItemLine_'"
+		)
+		(var currentLevel:number = "_battleCardItem ? _battleCardItem.battleCard.currentLevel : 0" (event "_battleCardItem.battleCard.evChanged"))
+		(var gameParamId:number = "_battleCardItem ? _battleCardItem.battleCard.gameParamId : null" (event "_battleCardItem.battleCard.evChanged"))
+		(var isInstalled:bool = "_battleCardItem ? _battleCardItem.battleCard.isInstalled : false" (event "_battleCardItem.battleCard.evChanged"))
+		(var cardType:str = "_battleCardItem ? _battleCardItem.battleCard.cardType : ''" (event "_battleCardItem.battleCard.evChanged"))
+		(var isAvailable:bool = "currentLevel > 0")
+		(var isLevelVisible:bool = "cardType == SC.Common.BATTLE_CARD_TYPES.PVE")
+
+		(var battleCardSpecificShips:gfx = "_battleCardItem && _battleCardItem.hasComponent(CC.specificShipsList) ? _battleCardItem.specificShipsList : null" (event "_battleCardItem.evAdded") (event "_battleCardItem.evRemoved"))
+		(var shipIdsFilters:array =		"battleCardSpecificShips ? battleCardSpecificShips.includedShips : []" (event "battleCardSpecificShips.evUpdated"))
+		(var isShipIdsFilterVisible:bool =	"shipIdsFilters && shipIdsFilters.length > 0")
+
+		(var isAccentedAlpha:bool = "isInstalled || (isAvailable && !_isMaxCardsInstalled && battleCardItemLine_rollOver)")
+
+		(var interactionAlpha:number = "isAccentedAlpha ? 1 : 0" watch=false)
+		(controller $Animation
+			(bindcall play  init=false
+							duration=0.15
+							to="{ interactionAlpha: battleCardItemLine_mouseDown ? 0.5 : isAccentedAlpha ? 1 : 0 }"
+			)
+		)
+	)
+
+	(bindcall externalCall
+				methodName = "isAvailable ? 'direct.action' : ''"
+				params = "['onBattleCardClicked.' + _clickActionPrefix, [gameParamId]]" 
+				init=false watch=false (event "battleCardItemLine_evClicked")
+	)
+
+	(macro MOUSE_HANDLER_NESTED
+		_enabled = "(!_isMaxCardsInstalled || isInstalled) && isAvailable"
+		_prefix = "'battleCardItemLine_'"
+		_soundSet = "'button_card'"
+	)
+
+	(class $BattleCardItemLineSize)
+	(style (align = "middle"))
+
+	(element HorizontalDividerTwoPx)
+
+	
+	(block
+		(style
+			(position = "absolute")
+			(top = 2px)
+			(width = "BATTLE_CARD_LINE_WIDTH")
+			(height = "BATTLE_CARD_LINE_HEIGHT-2")
+			(hitTest = false)
+			(bind alpha "interactionAlpha")
+			(backgroundImage = 'url:../service_kit/buttons/dock_submenu_over.png')
+			(scale9grid = [1, 2, 122, 12])
+		)
+	)
+	
+	(hblock
+		(class $Fullsize)
+		(style
+			(paddingLeft = "M")
+			(align = "middle")
+			(hitTest = false)
+		)
+		(bind alpha "!isInstalled && (_isMaxCardsInstalled || !isAvailable) ? 0.5 : 1")
+		(controller $Instance renderer='BattleCardNameFromShip'
+			(bind enabled "isShipIdsFilterVisible")
+			(args
+				_shipId = "shipIdsFilters[0]"
+			)
+		)
+		(controller $Instance renderer='BattleCardNameFromCard'
+			(bind enabled "!isShipIdsFilterVisible")
+			(args
+				_battleCardItem = "_battleCardItem"
+			)
+		)
+
+		(tf
+			(class $TextDefaultBoldNM)
+			(style
+				(marginLeft = "XXS")
+			)
+			(bind text "isLevelVisible ? (tr('IDS_SPACE') + currentLevel) : ''")
+		)
+	)
+
+	(controller $Tooltip
+		(renderer = 'BattleCardComponentTooltip')
+		(args _battleCardItem = "_battleCardItem" _isMaxCardsInstalled="_isMaxCardsInstalled")
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element BattleCardItemLineUpgradeable (_battleCardItem:gfx, _clickActionPrefix:str, _isMaxCardsInstalled:bool=false) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE
+			_prefix = "'battleCardItemLine_'"
+		)
+		(macro MOUSE_HANDLER_SCOPE
+			_prefix = "'buttonUpgradeItem_'"
+		)
+		(var currentLevel:number = "_battleCardItem ? _battleCardItem.battleCard.currentLevel : 0" (event "_battleCardItem.battleCard.evChanged"))
+		(var maxLevel:number = "_battleCardItem ? _battleCardItem.battleCard.maxLevel : 0" (event "_battleCardItem.battleCard.evChanged"))
+		(var gameParamId:number = "_battleCardItem ? _battleCardItem.battleCard.gameParamId : null" (event "_battleCardItem.battleCard.evChanged"))
+		(var isInstalled:bool = "_battleCardItem ? _battleCardItem.battleCard.isInstalled : false" (event "_battleCardItem.battleCard.evChanged"))
+		(var cardType:str = "_battleCardItem ? _battleCardItem.battleCard.cardType : ''" (event "_battleCardItem.battleCard.evChanged"))
+		(var isAvailable:bool = "currentLevel > 0")
+		(var isLevelVisible:bool = "cardType == SC.Common.BATTLE_CARD_TYPES.PVE")
+
+		(var battleCardSpecificShips:gfx = "_battleCardItem && _battleCardItem.hasComponent(CC.specificShipsList) ? _battleCardItem.specificShipsList : null" (event "_battleCardItem.evAdded") (event "_battleCardItem.evRemoved"))
+		(var shipIdsFilters:array =		"battleCardSpecificShips ? battleCardSpecificShips.includedShips : []" (event "battleCardSpecificShips.evUpdated"))
+		(var isShipIdsFilterVisible:bool =	"shipIdsFilters && shipIdsFilters.length > 0")
+
+		(var isAccentedAlpha:bool = "isInstalled || (isAvailable && !_isMaxCardsInstalled && battleCardItemLine_rollOver)")
+
+		(var cardUpgradePriceKey:str = "toString(gameParamId) + '_' + toString(currentLevel + 1)")
+		(var cardUpgradePricesEntity:gfx = "$datahub.getPrimaryEntity(CC.prices, cardUpgradePriceKey + '_' + toString(SC.Common.PRICE_ACTION.CARD_LEVELING))" (event "_battleCardItem.battleCard.evChanged"))
+		(var cardUpgradePricesIds:array = "cardUpgradePricesEntity ? cardUpgradePricesEntity.prices.pricesInCurrencies : null" (event "cardUpgradePricesEntity.prices.evChanged"))
+		(var cardUpgradePriceEntity:gfx = "cardUpgradePricesIds && cardUpgradePricesIds.length > 0 ? $datahub.getEntity(toString(cardUpgradePricesIds[0])) : null")
+		(var cardUpgradePriceInfo:gfx = "cardUpgradePriceEntity ? cardUpgradePriceEntity.itemPrice : null" (event "cardUpgradePriceEntity.itemPrice.evChanged"))
+		
+		(var resourceEntity:gfx = "$datahub.getSingleEntity(CC.accountResource)")
+		(var accountResource:gfx = "resourceEntity.accountResource"	(event "resourceEntity.accountResource.evChangedBattlecardum"))
+
+		(var currency:str = "cardUpgradePriceInfo.currency")
+		(var priceDeficit:number = "cardUpgradePriceInfo ? cardUpgradePriceInfo.finalPrice - accountResource[currency] : 0"
+										(event "_battleCardItem.battleCard.evChanged")
+										(event "resourceEntity.accountResource.evChangedBattlecardum"))
+		(var isUpgradeAvailable:bool = "cardType == SC.Common.BATTLE_CARD_TYPES.PVE && priceDeficit <= 0 && currentLevel < maxLevel")
+
+		(var interactionAlpha:number = "isAccentedAlpha ? 1 : 0" watch=false)
+		(controller $Animation
+			(bindcall play  init=false
+							duration=0.15
+							to="{ interactionAlpha: battleCardItemLine_mouseDown && !buttonUpgradeItem_rollOver	? 0.5
+																												: isAccentedAlpha ? 1 : 0 }"
+			)
+		)
+	)
+
+	(bindcall externalCall "isUpgradeAvailable ? 'inputMapping.onRequest' : ''" "['cardLevelUp', {entityId: _battleCardItem.id}]" init=false watch=false (event "buttonUpgradeItem_evClicked"))
+	(bindcall externalCall
+				methodName = "isAvailable ? 'direct.action' : ''"
+				params = "['onBattleCardClicked.' + _clickActionPrefix, [gameParamId]]" 
+				init=false watch=false (event "battleCardItemLine_evClicked")
+	)
+
+	(class $BattleCardItemLineSize)
+	(style (align = "middle"))
+	(macro MOUSE_HANDLER_NESTED
+		_enabled = "(!_isMaxCardsInstalled || isInstalled) && isAvailable && !buttonUpgradeItem_rollOver"
+		_prefix = "'battleCardItemLine_'"
+		_soundSet = "'button_card'"
+	)
+
+	(element HorizontalDividerTwoPx)
+	
+	(block
+		(style
+			(position = "absolute")
+			(top = 2px)
+			(width = "BATTLE_CARD_LINE_WIDTH")
+			(height = "BATTLE_CARD_LINE_HEIGHT-2")
+			(hitTest = false)
+			(bind alpha "interactionAlpha")
+			(backgroundImage = 'url:../service_kit/buttons/dock_submenu_over.png')
+			(scale9grid = [1, 2, 122, 12])
+		)
+	)
+	
+	(hblock
+		(class $Fullsize)
+		(style
+			(paddingLeft = "M")
+			(align = "middle")
+			(hitTest = false)
+		)
+		(bind alpha "!isInstalled && (_isMaxCardsInstalled || !isAvailable) ? 0.5 : 1")
+		(controller $Instance renderer='BattleCardNameFromShip'
+			(bind enabled "isShipIdsFilterVisible")
+			(args
+				_shipId = "shipIdsFilters[0]"
+			)
+		)
+		(controller $Instance renderer='BattleCardNameFromCard'
+			(bind enabled "!isShipIdsFilterVisible")
+			(args
+				_battleCardItem = "_battleCardItem"
+			)
+		)
+
+		(tf
+			(class $TextDefaultBoldNM)
+			(style
+				(marginLeft = "XXS")
+			)
+			(bind text "isLevelVisible ? (tr('IDS_SPACE') + currentLevel) : ''")
+		)
+	)
+
+	
+	(block
+		(bind visible "isUpgradeAvailable")
+		(style
+			(position = "absolute")
+			(right = 0)
+			(top = 1)
+			(height = 100%)
+			(width = "BATTLE_CARD_LINE_SHIP_INFO_WIDTH")
+			(align = "middle | center")
+		)
+		(macro MOUSE_HANDLER_NESTED
+			_enabled = "!battleCardItemLine_mouseDown"
+			_prefix = "'buttonUpgradeItem_'"
+			_soundSet = "'button_icon'"
+		)
+		(block
+			(style
+				(alpha = "battleCardItemLine_rollOver ? 1 : 0")
+			)
+			(element DefaultButton
+						_type = "SC.Ui_styles.BUTTON_TYPE.ICON"
+						_icon = "SC.Ui_styles.BUTTON_ICON.ADD"
+						_name = 'ButtonUpgrade'
+				(style (hitTest = false))
+				(scope
+					(bind rollOver "buttonUpgradeItem_rollOver")
+					(bind mouseDown "buttonUpgradeItem_mouseDown")
+				)
+			)
+			(controller $Animation
+				(bindcall play  duration=0.15
+								to="{
+									alpha: battleCardItemLine_rollOver ? 1 : 0
+								}"
+				)
+			)
+		)
+		(controller $Tooltip
+			(renderer='SimpleStatusTooltip')
+			(args
+				_text = 'IDS_MOUSE_INSTRUCTION_UPGRADE_BATTLE_CARD'
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+	)
+	
+	(block
+		(bind visible "isUpgradeAvailable")
+		(style
+			(position = "absolute")
+			(right = 0)
+			(top = 1)
+			(height = 100%)
+			(width = "BATTLE_CARD_LINE_SHIP_INFO_WIDTH")
+			(align = "middle | center")
+			(hitTest = false)
+		)
+		(element MarkerLevelUp
+			(style (alpha = "!battleCardItemLine_rollOver ? 1 : 0"))
+			(controller $Animation
+				(bindcall play
+					duration=0.15
+					to="{ alpha: !battleCardItemLine_rollOver ? 1 : 0}"
+				)
+			)
+		)
+	)
+	(block
+		(style
+			(position = "absolute")
+			(height = 100%)
+			(bind width "isUpgradeAvailable ? BATTLE_CARD_LINE_CARD_INFO_WIDTH : BATTLE_CARD_LINE_WIDTH")
+			(backgroundColor = "0x01000000")
+		)
+		(controller $Tooltip
+			(renderer = 'BattleCardComponentTooltip')
+			(updateCachedBindings = true)
+			(args _battleCardItem = "_battleCardItem" _isMaxCardsInstalled="_isMaxCardsInstalled")
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+	)
+)
+
+
+(def element EnemyShipItemLine (_avatarEntity:gfx, _isMaxCardsInstalled:bool=false)
+	(scope
+		(event evShipInfoInfotipShown)
+		(event evShipInfoInfotipHidden)
+		(macro MOUSE_HANDLER_SCOPE
+			_prefix = "'battleCardItemLine_'"
+		)
+		(macro MOUSE_HANDLER_SCOPE
+			_prefix = "'buttonShipInfoItem_'"
+		)
+		(var battleCardAgainstShip:gfx = "_avatarEntity.hasComponent(CC.battleCardAgainstShip) ? _avatarEntity.battleCardAgainstShip : null" (event "_avatarEntity.evAdded") (event "_avatarEntity.evRemoved"))
+		(var battleCardItem:gfx = "battleCardAgainstShip ? $datahub.getEntity(battleCardAgainstShip.cardEntityId) : null")
+		(var currentLevel:number = "battleCardItem ? battleCardItem.battleCard.currentLevel : 0" (event "battleCardItem.battleCard.evChanged"))
+		(var gameParamId:number = "battleCardItem ? battleCardItem.battleCard.gameParamId : null" (event "battleCardItem.battleCard.evChanged"))
+		(var isInstalled:bool = "battleCardItem ? battleCardItem.battleCard.isInstalled : false" (event "battleCardItem.battleCard.evChanged"))
+		(var isAvailable:bool = "currentLevel > 0")
+
+		(var infoEntity:gfx = "$datahub.getPrimaryEntity(CC.shipBattleInfo, _avatarEntity.avatar.id)" (event "infoEntity.shipBattleInfo.evChanged"))
+
+		(var shipInfoInfotipVisible:bool = false)
+
+		(var isAccentedAlpha:bool = "isInstalled || (isAvailable && !_isMaxCardsInstalled && battleCardItemLine_rollOver)")
+
+		
+		(var interactionAlpha:number = "isAccentedAlpha ? 1 : 0" watch=false)
+		(controller $Animation
+			(bindcall play  init=false
+							duration=0.15
+							to="{ interactionAlpha: battleCardItemLine_mouseDown && !buttonShipInfoItem_rollOver	? 0.5
+																												: isAccentedAlpha	? 1
+																																	: 0 }"
+			)
+		)
+	)
+	(bindcall externalCall
+				methodName = "isAvailable ? 'direct.action' : ''"
+				params = "['onBattleCardClicked.' + BATTLE_CARD_CLICK_PREFIX_BATTLE, [gameParamId]]" 
+				init=false watch=false (event "battleCardItemLine_evClicked")
+	)
+	(macro MOUSE_HANDLER_NESTED
+		_enabled = "(!_isMaxCardsInstalled || isInstalled) && isAvailable && !buttonShipInfoItem_rollOver"
+		_prefix = "'battleCardItemLine_'"
+		_soundSet = "'button_card'"
+	)
+	
+	(class $BattleCardItemLineSize)
+	(style (align = "middle"))
+
+	
+	(block
+		(style
+			(position = "absolute")
+			(top = 2px)
+			(width = "BATTLE_CARD_LINE_WIDTH")
+			(height = "BATTLE_CARD_LINE_HEIGHT-2")
+			(hitTest = false)
+			(bind alpha "interactionAlpha")
+			(backgroundImage = 'url:../service_kit/buttons/dock_submenu_over.png')
+			(scale9grid = [1, 2, 122, 12])
+		)
+	)
+
+	(element HorizontalDividerTwoPx
+		(style (hitTest = false))
+	)
+	
+	(block
+		(style
+			(position = "absolute")
+			(right = 0)
+			(height = 100%)
+			(width = "BATTLE_CARD_LINE_SHIP_INFO_WIDTH")
+			(align = "middle | center")
+			(alpha = "battleCardItemLine_rollOver || shipInfoInfotipVisible ? 1 : 0")
+		) 
+		(controller $Animation
+			(bindcall play  duration=0.15
+							to="{
+								alpha: battleCardItemLine_rollOver || shipInfoInfotipVisible ? 1 : 0,
+								visualOffsetY: battleCardItemLine_rollOver || shipInfoInfotipVisible ? 0 : 4
+							}"
+			)
+		)
+		(macro MOUSE_HANDLER_NESTED
+			_enabled = "!battleCardItemLine_mouseDown"
+			_prefix = "'buttonShipInfoItem_'"
+			_soundSet = "'button_icon'"
+		)
+		(element DefaultButton
+					_type = "SC.Ui_styles.BUTTON_TYPE.ICON"
+					_icon = "SC.Ui_styles.BUTTON_ICON.INFO"
+					_name = 'ButtonShipInfo'
+			(style (hitTest = false))
+			(scope
+				(bind rollOver "buttonShipInfoItem_rollOver")
+				(bind mouseDown "buttonShipInfoItem_mouseDown")
+			)
+		)
+		(controller $Tooltip
+			(bind enabled "buttonShipInfoItem_rollOver")
+			(renderer = 'ShipInfoTooltip')
+			(args
+				_infoEntity = "infoEntity"
+				_playerEntity = "_avatarEntity"
+				_hasContextMenuTip = false
+			)
+			(updateCachedBindings = true)
+			(macro EXTERNAL_EVENTS_TOOLTIP_BEHAVIOUR "0" "evShipInfoInfotipHidden" "evShipInfoInfotipShown")
+			(offset = {	x: 20, y: 26 })
+
+			(macro STATS_LOG_TOOLTIP_DURATION "SC.Common.SHIPINFO_STATISTICS.TOOLTIP_ENEMY")
+		)
+
+		(controller $Tooltip
+			(renderer = 'ShipInfoInfotip')
+			(args
+				_infoEntity = "infoEntity"
+				_playerEntity = "_avatarEntity"
+			)
+			(updateCachedBindings = true)
+
+			(macro DEFAULT_INFOTIP_BEHAVIOUR "1")
+			(position = "borderNoTrack")
+			(offset = {	x:16, y: 0})
+			(dispatch evShipInfoInfotipShown on='evStartShow')
+			(dispatch evShipInfoInfotipHidden on='evHide')
+			(bind shipInfoInfotipVisible "true" init=false on='evStartShow')
+			(bind shipInfoInfotipVisible "false" init=false on='evStartHide')
+
+			(macro STATS_LOG_TOOLTIP_DURATION "SC.Common.SHIPINFO_STATISTICS.INFOTIP_ENEMY")
+		)
+	)
+	
+	(block
+		(style
+			(position = "absolute")
+			(width = "BATTLE_CARD_LINE_CARD_INFO_WIDTH")
+			(height	= 100%)
+			(backgroundColor = 0x01000000)
+		)
+		(controller $Tooltip
+			(bind enabled "battleCardItem != null")
+			(renderer = 'BattleCardComponentTooltip')
+			(args _battleCardItem = "battleCardItem" _isMaxCardsInstalled="_isMaxCardsInstalled")
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "3")
+		)
+		(controller $Tooltip
+			(bind enabled "battleCardItem == null")
+			(renderer = 'SimpleStatusTooltip')
+			(args _text = 'IDS_CARD_SELECTOR_NO_CARD_FOR_THIS_SHIP_TOOLTIP')
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "3")
+		)
+	)
+	
+	
+	(block
+		(class $BattleCardItemLineSize)
+		(style
+			(paddingLeft = "M")
+			(align = "middle")
+			(hitTest = false)
+		)
+		(bind alpha "!isInstalled && (_isMaxCardsInstalled || !isAvailable) ? 0.5 : 1")
+		(element BattleCardNameFromShip
+				_shipId = "_avatarEntity.avatar.ship.ref.ship.id"
+				_fontClass = '$TextDefaultBoldNM'
+		)
+	)
+)

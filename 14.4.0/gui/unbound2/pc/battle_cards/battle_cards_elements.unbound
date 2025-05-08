@@ -1,0 +1,119 @@
+(def constant BATTLE_CARD_MAX_SELECTED_COUNT 4)
+
+(def constant BATTLE_CARD_CLICK_PREFIX_DOCK "'dock'")
+(def constant BATTLE_CARD_CLICK_PREFIX_BATTLE "'battle'")
+
+(def constant BATTLE_CARD_TEXT_COLOR 0xFF2f3c59)
+
+(def css $BattleCardText ()
+	(extends $TextDefaultBold17NM)
+	(extends $DropShadowDisabler)
+	(leading = -1)
+)
+
+(def element BattleCardShipIcon (_shipType:str)
+	(scope
+		(var iconPath:str = "_shipType ? 'url:../battle_cards/service/ship_classes/' + toLower(_shipType) + '.png' : ''")
+	)
+
+	(style (width = 28px) (height = 28px))
+	(block
+		(style (marginTop = -1px) (bind backgroundImage "iconPath"))
+	)
+)
+
+(def element BattleCardNameFromShip (_shipId:number, _fontClass:str='$TextDefaultBoldNM', _shipIconRenderer:str='ShipIcon') layout=true
+	(scope
+		(var shipEntity:gfx = "_shipId ? $datahub.getPrimaryEntity(CC.ship, _shipId) : null")
+		(var shipInfo:gfx =	 "shipEntity ? shipEntity.ship : null"	(event "shipEntity.ship.evUpdate")
+																	(event "shipEntity.ship.evCurrentSkinChanged"))
+
+		(var nameIDS:str = "shipInfo ? toUpper(tr(shipInfo.nameIDS)) : ''")
+		(var shipType:str = "shipInfo ? shipInfo.subtype : ''" (event "shipInfo.evUpdate"))
+	)
+	(style
+		(flow = "horizontal")
+		(align = "middle")
+	)
+	
+	(hblock
+		(style
+			(marginTop = "-S")
+			(marginBottom = -10px)
+			(marginLeft = -5px)
+			(marginRight = "XS")
+		)
+		(controller $Instance (bind renderer "_shipIconRenderer")
+			(args _shipType = "shipType")
+		)
+	)
+
+	(block
+		(style
+			(bind marginLeft "shipInfo && shipInfo.levelIcon.length > 0 ? -4 : 0")
+			(bind marginRight "shipInfo && shipInfo.levelIcon.length > 0 ? -1 : 0")
+		)
+		(element ShipLevelNM
+				_levelIcon = "shipInfo.levelIcon"
+				_levelRome = "shipInfo.levelRome"
+				_alpha = "TA"
+				_fontClass = "_fontClass"
+		)
+	)
+	(tf
+		(bind class "_fontClass")
+		(style
+			(marginLeft = 2px)
+		)
+		(alpha = "TA")
+		(bind text "nameIDS")
+	)
+)
+
+(def element BattleCardNameFromCard (_battleCardItem:gfx, _fontClass:str='$TextDefaultBoldNM', _maxTextWidth:number = "null", _shipIconRenderer:str='ShipIcon') layout=true
+	(scope
+		(var displayName:str = "_battleCardItem ? _battleCardItem.battleCard.displayName: ''" (event "_battleCardItem.battleCard.evChanged"))
+		(var battleCardRestrictions:gfx = "_battleCardItem && _battleCardItem.hasComponent(CC.filteringGroup) ? _battleCardItem.filteringGroup : null" (event "_battleCardItem.evAdded") (event "_battleCardItem.evRemoved"))
+		(var shipTypeFilters:array =	"battleCardRestrictions	? battleCardRestrictions.selectedFilters[SC.Common.SHIP_FILTER_TYPE.SHIP_TYPE]			: []" (event "battleCardRestrictions.evUpdated"))
+		
+		(var isShipTypeFilterVisible:bool =		"shipTypeFilters && shipTypeFilters.length > 0")
+		(var filterEntity:gfx =		"isShipTypeFilterVisible ? $datahub.getEntity(shipTypeFilters[0]) : null")
+		(var shipFilterItem:gfx =	"filterEntity ? filterEntity.shipFilterItem : null")
+		(var shipType:str =			"shipFilterItem ? shipFilterItem.field : ''")
+	)
+	(style
+		(flow = "horizontal")
+		(bind align "_maxTextWidth ? top : middle")
+	)
+	(hblock
+		(bind visible "isShipTypeFilterVisible")
+		(style
+			(bind marginTop "_maxTextWidth ? -(S - 1) : -S") 
+			(marginBottom = -10px)
+			(marginLeft = -5px)
+			(marginRight = "XS")
+		)
+		(controller $Instance (bind renderer "_shipIconRenderer")
+			(bind enabled "isShipTypeFilterVisible")
+			(args _shipType = "shipType")
+		)
+	)
+
+	(tf
+		(bind class "_fontClass")
+		(style
+			(marginLeft = 2px)
+			(bind wordWrap "true" (bind enabled "_maxTextWidth"))
+			(bind width "_maxTextWidth" (bind enabled "_maxTextWidth"))
+		)
+		(alpha = "TA")
+		(bind text "displayName")
+	)
+)
+
+(def element BattleCardLabelAutopicked (_isSmallSize:bool)
+	(style 
+		(backgroundSize = "autosize")
+		(bind backgroundImage "'url:../battle_cards/service/label_autopick' + (_isSmallSize ? '_small' : '') + '.png'")
+	)
+)

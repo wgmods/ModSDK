@@ -1,0 +1,200 @@
+(def element ConsumableTooltip (_abilityEntityId:number, _noMouseInstructions:bool=false, _isAircarrierConsumable:bool=false, _hasAlternatives:bool=false, _isShowUB2Tooltip:bool=false) layout=true dispatch_size_change=true
+	(scope
+		(macro PULL_SHIP_ID)
+		(var ownShipEntity:gfx = "$datahub.getPrimaryEntity(CC.ownShip, shipIdForModuleInset)")
+		(var ownShipInfo:gfx = "ownShipEntity ? ownShipEntity.ship : null" (event "ownShipEntity.ship.evUpdate") (event "ownShipEntity.ship.evCurrentSkinChanged"))
+
+		(var isShipLocked:bool = "ownShipInfo ? ownShipInfo.isLocked : false" (event "ownShipInfo.evUpdateLock"))
+		(var isInFormation:bool = "ownShipInfo ? ownShipInfo.isInFormation : false" (event "ownShipInfo.evUpdateLock"))
+		(var isOwned:bool = "ownShipEntity != null")
+
+		(var abilityEntity:gfx = "$datahub.getEntity(_abilityEntityId)")
+		(var abilityComponent:gfx = "abilityEntity ? abilityEntity.ability : null")
+
+		(var isTimeBased:bool = "abilityComponent ? abilityComponent.lifecycleType == SC.Battle.CONSUMABLE_LIFECYCLE_TYPE.TIME_BASED : false" (event "abilityComponent.evLifecycleTypeChanged"))
+
+		(var isInstalled:bool = "abilityComponent ? abilityComponent.isInstalled : false" (event "abilityComponent.evIsInstalledChanged"))
+
+		(var usageAttributes:gfx = "abilityEntity ? abilityComponent.viewData.usageAttributes : null" (event "abilityComponent.evChanged"))
+		(var usageNegative:array = "usageAttributes ? usageAttributes.negative : []"	(event "abilityComponent.evChanged"))
+		(var usageNeutral:array = "usageAttributes ? usageAttributes.neutral : []"		(event "abilityComponent.evChanged"))
+		(var usagePositive:array = "usageAttributes ? usageAttributes.positive : []"	(event "abilityComponent.evChanged"))
+
+		(var activeAttributes:gfx = "abilityEntity ? abilityComponent.viewData.activeAttributes : null" (event "abilityComponent.evChanged"))
+		(var activeNegative:array = "activeAttributes ? activeAttributes.negative : []"	(event "abilityComponent.evChanged"))
+		(var activeNeutral:array = "activeAttributes ? activeAttributes.neutral : []"		(event "abilityComponent.evChanged"))
+		(var activePositive:array = "activeAttributes ? activeAttributes.positive : []"	(event "abilityComponent.evChanged"))
+
+		(var hasActiveAttributes:bool = "activeNegative.length + activeNeutral.length + activePositive.length != 0")
+
+		(var slotId:str = "abilityComponent ? abilityComponent.slotId : 0")
+		(var isSquadronAbility:bool = "abilityComponent ? abilityComponent.isSquadronAbility : false")
+		(var toggle:bool = "abilityComponent ? abilityComponent.toggle : false")
+
+		(var commandName:str = "abilityComponent ? abilityComponent.commandName : ''" (event "abilityComponent.evCommandNameChanged"))
+
+		(var abilitiesBySlotCollection:gfx = "$datahub.getCollection(CC.ability).getChildByPath('shipAbilsBySlotId.' + slotId)")
+		(var hasAlternatives:bool = "abilitiesBySlotCollection && abilitiesBySlotCollection.items.length > 1 && !isShipLocked && !isInFormation")
+
+		(var subheaderText:str = "abilityComponent ? abilityComponent.viewData.subheader : ''" (event "abilityComponent.evChanged"))
+
+		(var descriptionText:str = "abilityComponent ? abilityComponent.viewData.description : ''" (event "abilityComponent.evChanged"))
+		(var airCarrierConsumabletext:str = "_isAircarrierConsumable ? 'IDS_HINT_RESTRICTION_AUTO_DAMAGE' : ''")
+
+		(var isMountedVisible:bool = "isInstalled && isOwned")
+		(var unifiedStatus:str = "isMountedVisible ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+		(var noMouseInstructionConditions:bool = "_noMouseInstructions || isSquadronAbility || _isAircarrierConsumable")
+
+		(var mouseInstruction:dict = "	noMouseInstructionConditions	? null :
+										isOwned && isInFormation		? {	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																			text: 'IDS_SET_UNREADY_DIVISION_FIRST_TO_CHANGE_CONSUMABLES' } :
+										isOwned && isShipLocked			? {	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																			text: 'IDS_LEAVE_BATTLE_FIRST_TO_CHANGE_CONSUMABLES' } :
+										isOwned && !isInstalled			? {	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																			text: 'IDS_INSTALL' } :
+										_hasAlternatives				? {	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																			text: 'IDS_INSTRUCTION_OPEN_CONSUMABLES' }
+																		: null")
+
+		(var consumableIconUrl:str = "abilityComponent ? 'url:' + abilityComponent.viewData.iconPath : ''" (event "abilityComponent.evChanged"))
+		(var consumableHeaderText:str = "abilityComponent ? abilityComponent.viewData.title : ''" (event "abilityComponent.evChanged"))
+	)
+
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (hitTest = false) (width = 340px))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_imageUrl =			"consumableIconUrl"
+			_imageWidth =		"60"
+			_imageHeight =		"60"
+			_unifiedStatus =	"unifiedStatus"
+			_headerText =		"consumableHeaderText"
+			_subheaderText =	"subheaderText"
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isMountedVisible"))
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isMountedVisible")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+					_text = 'IDS_COMMON_MOUNTED'
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_isAircarrierConsumable"))
+		)
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "_isAircarrierConsumable")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.INFO"
+					_text = "airCarrierConsumabletext"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "descriptionText != ' '"))
+
+			(controller $Instance renderer='TooltipSystemDescriptionText' (bind enabled "descriptionText != ' '")
+				(args
+					_descriptionText = "descriptionText"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "toggle"))
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "toggle")
+				(args
+					_descriptionText = 'IDS_DOCK_CONSUME_DESCRIPTION_BUFFSSHIFTS'
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(block
+			(bind visible "hasActiveAttributes")
+			(style (width = "100%"))
+			(element TooltipSystemParamsModifiersList
+				_attributesPositive =	"activePositive"
+				_attributesNeutral =	"activeNeutral"
+				_attributesNegative =	"activeNegative"
+			)
+
+			(element TooltipSystemHorizontalDivider)
+		)
+
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "isTimeBased ? SC.Ui_styles.UNIFIED_STATUS.TIME_BASED : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			_text = "_isAircarrierConsumable	? isTimeBased ? 'IDS_CONSUMABLE_TIME_USAGE_SHORT' : 'IDS_CONSUMABLE_COUNT_USAGE_SHORT'
+												: subst(tr(isTimeBased ? 'IDS_CONSUMABLE_TIME_USAGE' : 'IDS_CONSUMABLE_COUNT_USAGE'), [], {_cmd: '[' + commandName + ']'})"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemParamsModifiersList
+			_attributesPositive =	"usagePositive"
+			_attributesNeutral =	"usageNeutral"
+			_attributesNegative =	"usageNegative"
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "mouseInstruction"))
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "mouseInstruction")
+				(args
+					_unifiedStatus = "mouseInstruction.unifiedStatus"
+					_text = "mouseInstruction.text"
+				)
+			)
+		)
+	)
+)
+
+(def element SseProgress (_sseConditions:gfx) layout=true
+	(scope
+		
+		(var countablesIds:gfx = "_sseConditions ? _sseConditions.sseConditions.countablesIds : []" (event "_sseConditions.ssedConditions.evConditionSetChanged"))
+		(var currentProgress:number = " countablesIds.length > 0 ? countablesIds[0].currentProgress : 0")
+		(var maxProgress:number = "countablesIds.length > 0 ? countablesIds[0].maxProgress : 0")
+
+		
+		(var taskText:str = "countablesIds.length > 0 ? countablesIds[0].ids : ''")
+	)
+
+	(style (width = 100%))
+
+	(element TooltipSystemProgressBarBlock
+				_title = "taskText"
+				_currentValue = "currentProgress"
+				_maxValue = "maxProgress"
+				_showPercent = false
+	)
+)

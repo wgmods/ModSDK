@@ -1,0 +1,160 @@
+<WGB2007_Depth_charge_Roller.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	WGB2007_Depth_Charge_Roller_Track	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_Track_1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0164 0.0214 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_Track_2	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 -0.0076 0.0423 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.9971 -0.0765 0.0000	</row1>
+						<row2>	0.0000 0.0765 0.9971 0.0000	</row2>
+						<row3>	0.0000 0.0315 -0.0391 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire2	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.9971 -0.0765 0.0000	</row1>
+						<row2>	0.0000 0.0765 0.9971 0.0000	</row2>
+						<row3>	0.0000 0.0362 -0.0667 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire3	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.9971 -0.0765 0.0000	</row1>
+						<row2>	0.0000 0.0765 0.9971 0.0000	</row2>
+						<row3>	0.0000 0.0410 -0.0942 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire4	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.9971 -0.0765 0.0000	</row1>
+						<row2>	0.0000 0.0765 0.9971 0.0000	</row2>
+						<row3>	0.0000 0.0437 -0.1221 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire5	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.9971 -0.0765 0.0000	</row1>
+						<row2>	0.0000 0.0765 0.9971 0.0000	</row2>
+						<row3>	0.0000 0.0437 -0.1506 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire6	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.9971 -0.0765 0.0000	</row1>
+						<row2>	0.0000 0.0765 0.9971 0.0000	</row2>
+						<row3>	0.0000 0.0437 -0.1790 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0667 -0.0742 -0.2506	</min>
+		<max>	0.0667 0.1152 0.1089	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	WGB2007_Depth_Charge_Roller_TrackShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WGB2007_Depth_Charge_Roller_Track	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSD708_Blyskawica_1944/gun/WGB2007_Depth_charge_Roller.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	WGB2007_Depth_Charge_Roller_Track_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WGB2007_Depth_Charge_Roller_Track	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSD708_Blyskawica_1944/gun/WGB2007_Depth_charge_Roller.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	WGB2007_Depth_Charge_Roller_Track_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WGB2007_Depth_Charge_Roller_Track	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSD708_Blyskawica_1944/gun/WGB2007_Depth_charge_Roller.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	12.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	WGB2007_Depth_Charge_Roller_TrackShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	WGB2007_Depth_Charge_Roller_Track_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	40.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	WGB2007_Depth_Charge_Roller_Track_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</WGB2007_Depth_charge_Roller.visual>
