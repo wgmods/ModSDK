@@ -1,0 +1,208 @@
+(def element ArmamentCardSlots () dispatch_size_change=true
+	(scope
+		(var battleCardsCollection:gfx = "$datahub.getCollection(CC.battleCard)")
+		(var selectedCardsCollection:gfx = "battleCardsCollection.child('installed')")
+
+		(var selectedCardsCollectionLength:number = "selectedCardsCollection.items.length" (event "selectedCardsCollection.evAdded") (event "selectedCardsCollection.evRemoved"))
+
+		(var dockCardSelectorWatcher:gfx = "$datahub.getFirstWatcher(CC.dockCardSelector)")
+		(var dockCardSelectorEntity:gfx = "dockCardSelectorWatcher ? dockCardSelectorWatcher.entity : null" (event "dockCardSelectorWatcher.event"))
+		(var selectorMaxCount:number = "dockCardSelectorEntity ? dockCardSelectorEntity.dockCardSelector.maxCards : 0" (event "dockCardSelectorEntity.dockCardSelector.evMaxCardsChanged"))
+		(var isLevelUpAvailable:bool = "dockCardSelectorEntity ? dockCardSelectorEntity.dockCardSelector.isLevelUpAvailable : 0" (event "dockCardSelectorEntity.dockCardSelector.evIsLevelUpAvailableChanged"))
+
+		(var newContentEntity:gfx = "$datahub.getPrimaryEntity(CC.newContent, SC.Common.CONTENT_CATEGORY.BATTLE_CARD)")
+		(var newContentCounter:number = "newContentEntity ? newContentEntity.newContent.count : 0" (event "newContentEntity.newContent.evCountChanged"))
+		(var isNew:bool = "newContentCounter > 0")
+
+		(macro PULL_SHIP_ID)
+		(macro PULL_SHIP "shipIdForModuleInset")  
+		(var ownShipComponent:gfx = "shipEntity ? shipEntity.ownShip : null" (event "shipEntity.evAdded") (event "shipEntity.evRemoved"))
+		(var isOwned:bool = "ownShipComponent != null")
+		(var isExcluded:bool =		"!shipSelectionComponent.isFitForBattleType"				(event "shipSelectionComponent.evShipUpdate"))
+		(var isInFormation:bool =	"ownShipComponent ? ownShipComponent.isInFormation : false"	(event "ownShipComponent.evUpdateLock"))
+		(var isNeedRepair:bool =	"ownShipComponent ? ownShipComponent.isNeedRepair : false"	(event "ownShipComponent.evUpdateDockState"))
+		(var isNeedShell:bool =		"ownShipComponent ? ownShipComponent.isNeedShell : false"	(event "ownShipComponent.evUpdateDockState"))
+
+		(var isAvailable:bool = "!(!isOwned || isExcluded || isInFormation || isNeedRepair || isNeedShell)")
+
+		(var mouseInstruction:dict =	"!isOwned								?	{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																						text: 'IDS_BATTLE_CARDS_OWN_SHIP_FOR_USE_MANAGEMENT' } :
+										isExcluded								?	{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																						text: 'IDS_BATTLE_CARDS_ARE_UNAVAILABLE_FOR_CURRENT_SHIP' } :
+										isInFormation							?	{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																						text: 'IDS_SET_UNREADY_DIVISION_FIRST_TO_OPERATE_BATTLE_CARDS' } :
+										isNeedRepair || isNeedShell				?	{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.ATTENTION,
+																						text: 'IDS_SERVICE_SHIP_TO_OPERATE_BATTLE_CARDS' }
+																				:	{	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																						text: 'IDS_MOUSE_INSTRUCTION_CHANGE_BATTLE_CARD' }")
+	)
+	(style
+		(width = 100%)
+		(flow = "horizontal")
+		(align = "center")
+	)
+
+	(bind alpha "isOwned ? 1 : 0.5") 
+
+	(controller $Repeat renderer='BattleCardItemSlotDock'
+		(bind count "selectorMaxCount")
+		(args
+			_cardCollection="selectedCardsCollection"
+			_isAvailable="isAvailable"
+			_mouseInstruction="mouseInstruction"
+			_isLevelUpAvailable="isLevelUpAvailable"
+			_isNew="isNew"
+		)
+	)
+)
+
+(def constant INFO_BLOCK_IMAGE_SIZE 60px)
+
+(def element ArmamentCardInfoblock () dispatch_size_change=true
+	(scope
+		(var dockCardSelectorWatcher:gfx = "$datahub.getFirstWatcher(CC.dockCardSelector)")
+		(var dockCardSelectorEntity:gfx = "dockCardSelectorWatcher ? dockCardSelectorWatcher.entity : null" (event "dockCardSelectorWatcher.event"))
+		(var cardIDAgainstSelectedShip:number = "dockCardSelectorEntity ? dockCardSelectorEntity.dockCardSelector.cardIDAgainstSelectedShip : -1" (event "dockCardSelectorEntity.dockCardSelector.evCardIDAgainstSelectedShipChanged"))
+		
+		(macro PULL_SHIP_ID)
+		(macro PULL_SHIP "shipIdForModuleInset")  
+		(var ownShipComponent:gfx = "shipEntity ? shipEntity.ownShip : null" (event "shipEntity.evAdded") (event "shipEntity.evRemoved"))
+		(var isOwned:bool = "ownShipComponent != null")
+	)
+	(style
+		(width = 100%)
+		(flow = "horizontal")
+		(align = "center")
+	)
+
+	(bind alpha "isOwned ? 1 : 0.5")
+
+	(block
+		(style
+			(marginLeft = "{1280:XS, 1920:MS}")
+			(marginRight = "{1280:XS, 1920:MS}")
+			(width = "INFO_BLOCK_IMAGE_SIZE") (height = "INFO_BLOCK_IMAGE_SIZE")
+			(backgroundImage = 'url:../battle_cards/service/info_block/cards_available_in_battle.png')
+		)
+		(controller $Tooltip
+			(bind enabled "dockCardSelectorEntity")
+			(renderer = 'CardsAvailableInBattleTooltip')
+			(args
+				_dockCardSelectorEntity = "dockCardSelectorEntity"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+	)
+
+	(block
+		(bind visible "cardIDAgainstSelectedShip > 0")
+		(style
+			(marginLeft = "{1280:XS, 1920:MS}")
+			(marginRight = "{1280:XS, 1920:MS}")
+			(width = "INFO_BLOCK_IMAGE_SIZE") (height = "INFO_BLOCK_IMAGE_SIZE")
+			(backgroundImage = 'url:../battle_cards/service/info_block/cards_effect_against_ship.png')
+		)
+		(controller $Tooltip
+			(bind enabled "cardIDAgainstSelectedShip > 0")
+			(renderer = 'CardsEffectAgainstShipTooltip')
+			(args
+				_cardIDAgainstSelectedShip = "cardIDAgainstSelectedShip"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+	)
+)
+
+(def element CardsAvailableInBattleTooltip (_dockCardSelectorEntity:gfx)
+	(scope
+		(var maxCards:number = "_dockCardSelectorEntity.dockCardSelector.maxCards" (event "_dockCardSelectorEntity.dockCardSelector.evMaxCardsChanged"))
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE)
+	)
+	(style (width = 320px) (hitTest = false))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP)
+	
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+				_imageUrl='url:../battle_cards/service/info_block/cards_available_in_battle.png'
+				_imageWidth="INFO_BLOCK_IMAGE_SIZE"
+				_imageHeight="INFO_BLOCK_IMAGE_SIZE"
+				_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				_headerText='IDS_DOCK_CARD_SELECTOR_CARDS_AVAILABLE_IN_BATTLE_HEADER'
+				_subheaderText='IDS_BATTLE_CARD_SUBHEADER'
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemCounterLineAdjoined
+					_title = 'IDS_DOCK_CARD_SELECTOR_CARDS_AVAILABLE_IN_BATTLE_STATUS'
+					_count = "maxCards"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemDescriptionText _descriptionText='IDS_DOCK_CARD_SELECTOR_CARDS_AVAILABLE_IN_BATTLE_DESCRIPTION')
+	)
+)
+
+(def element CardsEffectAgainstShipTooltip (_cardIDAgainstSelectedShip:number)
+	(scope
+		(var battleCardEntity:gfx = "$datahub.getEntity(_cardIDAgainstSelectedShip)")
+
+		(var battleCardBonusCurrentLevel:number = "1")
+		
+		(var commonCardBonusEntityID:number = "battleCardEntity ? battleCardEntity.battleCard.activeCommonCardBonusEntityID : null"
+												(event "battleCardEntity.battleCard.evChanged")
+		)
+		(var commonBattleCardBonusEntity:gfx = "$datahub.getEntity(commonCardBonusEntityID)")
+
+		(var personalCardBonusEntityID:number = "battleCardEntity ? battleCardEntity.battleCard.activePersonalCardBonusEntityID : null"
+												(event "battleCardEntity.battleCard.evChanged")
+		)
+		(var personalBattleCardBonusEntity:gfx = "$datahub.getEntity(personalCardBonusEntityID)")
+
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE)
+	)
+	(style (width = 320px) (hitTest = false))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP)
+	
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+				_imageUrl='url:../battle_cards/service/info_block/cards_effect_against_ship.png'
+				_imageWidth="INFO_BLOCK_IMAGE_SIZE"
+				_imageHeight="INFO_BLOCK_IMAGE_SIZE"
+				_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				_headerText='IDS_DOCK_CARD_SELECTOR_CARDS_EFFECT_AGAINST_SHIP_HEADER'
+				_subheaderText='IDS_BATTLE_CARD_SUBHEADER'
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemDescriptionText _descriptionText='IDS_DOCK_CARD_SELECTOR_CARDS_EFFECT_AGAINST_SHIP_DESCRIPTION')
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider'
+				(bind enabled "personalBattleCardBonusEntity || commonBattleCardBonusEntity")
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemBattleCardBonuses'
+				(bind enabled "personalBattleCardBonusEntity")
+				(args
+					_battleCardBonusEntity = "personalBattleCardBonusEntity"
+					_battleCardLevel = "battleCardBonusCurrentLevel"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemBattleCardBonuses'
+				(bind enabled "commonBattleCardBonusEntity")
+				(args
+					_battleCardBonusEntity = "commonBattleCardBonusEntity"
+					_battleCardLevel = "battleCardBonusCurrentLevel"
+				)
+			)
+		)
+	)
+)
