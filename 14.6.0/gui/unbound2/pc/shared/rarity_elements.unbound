@@ -1,0 +1,10 @@
+(def layout RarityPattern (_rarity:str="SC.Common.RARITY_CATEGORY_NAMES.COMMON", _width:number=13px)
+	(style
+		(height = 100%)
+		(position = "absolute")
+		(scale9grid = [1, 1, 10, 1])
+		(bind width "_width")
+		(bind backgroundImage "'url:../service_kit/panel_backgrounds/rarity_' + toLower(_rarity) + '_panel.png'")
+		(hitTest = false)
+	)
+)
