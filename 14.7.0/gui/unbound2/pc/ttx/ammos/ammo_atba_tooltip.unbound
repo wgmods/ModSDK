@@ -1,0 +1,164 @@
+
+
+
+(def layout ATBA_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(class $ParametersPanel)
+	(controller $Instance
+		(bind renderer "_shipTTX.artillery.controlledATBA.length == 1
+							? 'ATBA_ParametersSingleGun'
+							: 'ATBA_ParametersMultipleGuns'"
+		)
+		(args
+			_shipTTX="_shipTTX"
+			_ownerEntityId="_ownerEntityId"
+		)
+	)
+)
+
+(def layout ATBA_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(class $ParametersPanel)
+	(controller $Instance
+		(bind renderer "_shipTTX.artillery.controlledATBA.length == 1
+							? 'ATBA_ParametersSingleGun'
+							: 'ATBA_ParametersMultipleGuns'"
+		)
+		(args
+			_shipTTX="_shipTTX"
+		)
+	)
+)
+
+
+
+
+
+(def constant PER_GUN_RELOAD_TIMES [
+	"SC.Battle.PARAMETER.atbaReloadTimeGun0",
+	"SC.Battle.PARAMETER.atbaReloadTimeGun1",
+	"SC.Battle.PARAMETER.atbaReloadTimeGun2",
+	"SC.Battle.PARAMETER.atbaReloadTimeGun3"
+])
+
+(def macro GET_ATBA_PARAMS_SCOPE ()
+	(var gunsTTX:gfx = "_shipTTX.artillery.controlledATBA")
+	(var manualMaxDist:gfx = "_shipTTX.artillery.controlledAtbaMaxDist")
+	(var autoMaxDist:gfx = "_shipTTX.artillery.atbaMaxDist")
+	(var isSplitMaxDist:bool = "(manualMaxDist != null && autoMaxDist != null) && (manualMaxDist.value != autoMaxDist.value)")
+)
+
+(def macro GET_ATBA_GUN_PARAMS_SCOPE ()
+	(var ammoTTX:gfx = "_gunTTX.ammoList[0]")
+)
+
+(def macro ATBA_GUN_PARAMETERS ()
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+									_value = "_gunTTX.reloadTime"
+									_alternativeValueKey="_ownerEntityId + '_' + PER_GUN_RELOAD_TIMES[_index]"
+									_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+									_value = "ammoTTX.damage"
+	)
+	(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_ARTILLERY_BURN_PROB'
+									_value = "ammoTTX.burnChance"
+									_zeroValueHidden = true
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_ALPHA_PIERCING'
+									_value = "ammoTTX.piercing"
+									_valueConfig = "VALUE_CONFIG.MILLIMETER"
+	)
+)
+
+(def macro ATBA_PARAMETERS_COMMON ()
+	(element ShipParameter_Number	_title = "isSplitMaxDist ? 'IDS_SHIP_PARAM_ATBA_MANUAL_MAX_DIST' : 'IDS_SHIP_PARAM_MAX_DIST'"
+											_value = "isSplitMaxDist ? manualMaxDist : autoMaxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+	)
+	(controller $Instance
+		(bind enabled "isSplitMaxDist")
+		(bind renderer "'ShipParameter_Number'")
+		(args
+			_title = "'IDS_SHIP_PARAM_ATBA_AUTO_MAX_DIST'"
+			_value = "autoMaxDist"
+			_valueConfig = "VALUE_CONFIG.KILOMETER"
+		)
+	)
+)
+
+
+
+
+
+(def element ATBA_ParametersSingleGun (_shipTTX:gfx, _ownerEntityId:str='')
+	(scope
+		(macro GET_ATBA_PARAMS_SCOPE)
+		(var _gunTTX:gfx = "gunsTTX[0]")
+		(var _index:number = "0")
+		(macro GET_ATBA_GUN_PARAMS_SCOPE)
+	)
+	(class $ParametersPanel)
+	(element TooltipSystemInnerHeaderText
+		_headerText="'IDS_' + toUpper(ammoTTX.name)"
+	)
+	(element TooltipSystemHorizontalDivider)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro ATBA_GUN_PARAMETERS)
+			(macro ATBA_PARAMETERS_COMMON)
+		)
+	)
+)
+
+
+
+
+
+(def element AtbaGunListParameters (_gunTTX:gfx, _ownerEntityId:str='')
+	(scope
+		(macro GET_ATBA_GUN_PARAMS_SCOPE)
+		(var _index:number = "$index")
+	)
+	(class $ParametersPanel)
+	(block
+		(class $ParametersPanel)	
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "$index != 0")
+		)
+	)
+	(element TooltipSystemInnerHeaderText
+		_headerText="'IDS_' + toUpper(ammoTTX.name)"
+	)
+	(element TooltipSystemHorizontalDivider)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro ATBA_GUN_PARAMETERS)
+		)
+	)
+)
+
+(def element ATBA_ParametersMultipleGuns (_shipTTX:gfx, _ownerEntityId:str='')
+	(scope
+		(macro GET_ATBA_PARAMS_SCOPE)
+	)
+	(class $ParametersPanel)
+	(block
+		(class $ParametersPanel)
+		(controller $Repeat renderer='AtbaGunListParameters'
+			(bind count "gunsTTX.length")
+			(args
+				_gunTTX="gunsTTX[$index]"
+				_ownerEntityId="_ownerEntityId"
+			)
+		)
+	)
+
+	(element TooltipSystemHorizontalDivider)
+	(element TooltipSystemInnerHeaderText _headerText='IDS_SHIP_PARAM_COMMON_PARAMETERS')
+	(element TooltipSystemHorizontalDivider)
+	
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro ATBA_PARAMETERS_COMMON)
+		)
+	)
+)

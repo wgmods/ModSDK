@@ -1,0 +1,51 @@
+(def constant END_OF_WAR_VIDEOS
+	{
+		1: 'INTRO',
+		2: 'STAGE_1',
+		3: 'STAGE_2',
+		4: 'STAGE_3',
+		5: 'STAGE_4',
+		6: 'OUTRO'
+	}
+)
+
+(def layout ModalWindowEndOfWarVideo (videoNumber:number, isFromInfoChapter:bool=false)
+	(macro MODAL_WINDOW_INIT)
+
+	(scope
+		(var aspectRatio:number = "16 / 9")
+		(var heightByWidth:number = "stageWidth / aspectRatio")
+		(var widthByHeight:number = "stageHeight * aspectRatio")
+
+		(var containerHeight:number	= "heightByWidth <= stageHeight ? heightByWidth : stageHeight")
+		(var containerWidth:number	= "heightByWidth <= stageHeight ? stageWidth : widthByHeight")
+
+		(var videoName:str = "END_OF_WAR_VIDEOS[videoNumber]")
+	)
+
+	(bindcall externalCall 'inputMapping.onAction' "['initVideoPlayer',	{videoName: videoName}]" init=false watch=false on=addedToStage)
+
+	(bindcall externalCall 'sound.playSetSoundDirect' "['state_port_video', 'start']" init=false watch=false (event "startShow"))
+	(bindcall externalCall 'sound.playSetSoundDirect' "['state_port_video', 'end']" init=false watch=false (event "startHide"))
+
+	(macro END_OF_WAR_LOG_MODAL_WINDOW_DURATION "END_OF_WAR_STATISTICS.VIDEO + '_' + videoNumber + (isFromInfoChapter ? '_info_chapter' : '')")
+
+	(style
+		(align = "middle|center")
+		(backgroundColor = 0xFF000000)
+	)
+
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+
+		(style
+			(bind height "containerHeight")
+			(bind width "containerWidth")
+		)
+
+		(element GamefaceWidget
+			_gfName = "SC.Gameface.DATA_PROVIDER_NAME.END_OF_WAR_VIDEO + videoNumber"
+			_gfPath = 'gui/gameface/build/end_of_war_video/index.html'
+		)
+	)
+)

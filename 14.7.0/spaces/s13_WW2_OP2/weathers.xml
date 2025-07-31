@@ -1,0 +1,43 @@
+<weathers.xml>
+	<!-- Весь бой -->
+	<scheme>
+		<startWeight> 50 </startWeight>
+		<step>
+			<param>PCOW001_Sunny</param>
+			<duration>
+				<min> 0 </min>
+				<max> 0 </max>
+			</duration>
+			<transition> 1200 </transition>
+		</step>
+		<step>
+			<param>PCOW005_Evening</param>
+			<duration>
+				<min> 1200 </min>
+				<max> 1200 </max>
+			</duration>
+			<transition> 1200 </transition>
+		</step>
+	</scheme>
+
+	<!-- Весь бой -->
+	<scheme>
+		<startWeight> 50 </startWeight>
+		<step>
+			<param>PCOW005_Evening</param>
+			<duration>
+				<min> 0 </min>
+				<max> 0 </max>
+			</duration>
+			<transition> 1200 </transition>
+		</step>
+		<step>
+			<param>PCOW001_Sunny</param>
+			<duration>
+				<min> 1200 </min>
+				<max> 1200 </max>
+			</duration>
+			<transition> 1200 </transition>
+		</step>
+	</scheme>
+</weathers.xml>

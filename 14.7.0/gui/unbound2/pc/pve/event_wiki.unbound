@@ -1,0 +1,1054 @@
+
+
+
+
+
+
+
+
+(def constant framesPath "'url:../service_kit/frames/wiki_element'")
+
+(def element ModalWindowEventWiki (topicName: str) layout=true
+	(macro MODAL_WINDOW_INIT)
+
+	(scope
+		(macro PULL_EVENT_HUB_SEASON_SCOPE) 
+
+		(var bgImagePath:str = "EVENT_WIKI_CONTENT[topicName].backgroundImagePath")
+		(var bgEffectPath:str = "'backgroundEffectPath' in EVENT_WIKI_CONTENT[topicName]	? EVENT_WIKI_CONTENT[topicName].backgroundEffectPath
+																							: ''")
+
+		(var modalHeaderText:str = "'IDS_' + toUpper(topicName) + '_MODAL_TITLE'")
+		(var isCustomRenderer:bool = "'renderer' in EVENT_WIKI_CONTENT[topicName]")
+
+		(var contentRenderer:str = "isCustomRenderer	? EVENT_WIKI_CONTENT[topicName].renderer
+														: 'EventWikiModalContent'")
+
+		(var initialTab:number = "'initialTab' in EVENT_WIKI_CONTENT[topicName] ? EVENT_WIKI_CONTENT[topicName].initialTab
+																				: 0")
+
+		(var contentSource:str = "'contentId' in EVENT_WIKI_CONTENT[topicName]	? EVENT_WIKI_CONTENT[topicName].contentId 
+																				: topicName")
+
+		(var tabsCount:number = "'tabsCount' in EVENT_WIKI_CONTENT[topicName]	? EVENT_WIKI_CONTENT[topicName].tabsCount
+																				: 0")
+
+		(var isConnectedToEventHub:bool = "'isConnectedToEventHub' in EVENT_WIKI_CONTENT[topicName] ? EVENT_WIKI_CONTENT[topicName].isConnectedToEventHub
+																									: false")
+	)
+
+	(dispatch evModalWindowClosed delay=0.01 init=false watch=false (bind enabled "isConnectedToEventHub") (event "eventHubSeasonWatcher.event"))
+	(dispatch evModalWindowClosed (bind enabled "isConnectedToEventHub && eventFinishTime != null && serverTime > eventFinishTime"))
+
+	(bindcall externalCall "!eventHubSeasonEntity ? 'inputMapping.onRequest' : ''" "['closeEventWikiModal', {}]" init=false watch=false (event "evModalWindowClosed"))
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(bind backgroundImage "'url:../event_wiki/' + bgImagePath")
+			(backgroundSize = "cover")
+		)
+	)
+
+	(macro ABSOLUTE_MODAL_WINDOW_ANIMATION 1)
+
+	
+	(block
+		(bind visible "!isCustomRenderer")
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+		(style (width = 100%) (align = "center"))
+
+		
+		(block
+			(style
+				(width = 100%)
+				(marginTop = "SXS")
+			)
+
+			(element ModalWindowHeaderFullSize
+				_windowName = "isCustomRenderer ? null : modalHeaderText"
+				_hideDivider = "isCustomRenderer"
+				_hideBackButton = true
+				_paddingRight = "M"
+				_paddingLeft = "M"
+				_paddingTop = "MS"
+			)
+		)
+	)
+
+	(controller $Instance layout = true
+		(bind renderer "contentRenderer")
+		(args
+			_topicName = "contentSource"
+			_initialTab = "initialTab"
+			_tabsCount = "tabsCount"
+		)
+	)
+
+	(block
+		(bind visible "bgEffectPath != ''")
+
+		(class $FullsizeAbsolute)
+		(style
+			(bind backgroundImage "'url:../event_wiki/' + bgEffectPath")
+			(backgroundSize = "cover")
+			(hitTest = false)
+		)
+	)
+
+	
+	(hblock
+		(bind visible "!isCustomRenderer")
+
+		(macro ABSOLUTE_MODAL_WINDOW_ANIMATION 3)
+		(style
+			(height = "{720: L, 1080: XLL}")
+			(width = 100%)
+			(marginBottom = "LS")
+			(marginTop = "S")
+			(align = "center|top")
+		)
+		(element DefaultButton
+			_label = 'IDS_CLOSE_UPPER_CASE'
+			_name = 'btn_cancel'
+			_dispatchedEv = 'evClose'
+		)
+	)
+
+	(block
+		(bind visible "isCustomRenderer")
+
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+
+		(style
+			(position = "absolute")
+			(top = 0)
+			(right = 0)
+			(paddingRight = "L")
+			(paddingLeft = "M")
+			(paddingTop = "LS")
+		)
+
+		(element ModalWindowCloseIcon)
+	)
+)
+
+(def element EventWikiModalContent (_topicName:str, _initialTab:number, _tabsCount:number) layout=true
+	(scope
+		(event evTabSelected)
+
+		(var selectedTab:number = "_initialTab")
+		(var topicContent:array = "EVENT_WIKI_CONTENT[_topicName].content")
+		(var contentLength:number = "topicContent.length")
+		(var isWithTabs:bool = "contentLength > 1")
+		(bind selectedTab "$event['index']" init=false (event "evTabSelected"))
+	)
+
+	(class $Fullsize)
+
+	(style
+		(align = "left")
+		(paddingTop = "XL")
+		(flow = "horizontal")
+		(marginTop = "-S")
+	)
+	
+	(block
+		(style
+			(width = 240px)
+			(marginTop = "S")
+		)
+
+		
+		(controller $Repeat renderer='SideTabButton' count="contentLength"
+			(bind enabled "isWithTabs")
+			(args
+				_label = "'IDS_EVENT_WIKI_TAB_' + toUpper(_topicName) + '_' + topicContent[$index].CategoryName"
+				_isSelected = "selectedTab == $index"
+				_dispatchedEv = "'evTabSelected'"
+				_dispatchParams = "{index: $index}"
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			)
+		)
+	)
+
+	(block
+		(class $Fullsize)
+		(style
+			(align = "center")
+		)
+		(element WikiContent _content="topicContent[selectedTab]" _topicName="_topicName"
+			(dispatch evTabChanged args="{'index': $event.index}" dir="EventDirection.DOWN" (event "evTabSelected"))
+		)
+	)
+)
+
+(def element WikiContent (_content:gfx, _topicName:str) layout=true
+	(scope
+		(event evCategoryChanged)
+		(event evTabChanged)
+
+		(var elementCount:number = "_content['ElementList'].length" (event "evTabChanged"))
+		(var categoryName:str = "_content['CategoryName']")
+		(var elementList:gfx = "_content['ElementList']")
+
+		(var selectedElement:number = 0)
+
+		(bind selectedElement "$event.index" init=false (event "evCategoryChanged"))
+		(bind selectedElement "0" init=false (event "evTabChanged"))
+
+		(var selectedElementObject:gfx = "elementList && selectedElement < elementList.length ? elementList[selectedElement] : null")
+		(var selectedElementName:str = "selectedElementObject ? selectedElementObject.name : ''")
+		(var withPicture:bool = "selectedElementObject ? selectedElementObject.picture : false")
+
+		(var nestedBlocks:array = "selectedElementObject != null && 'blocks' in selectedElementObject ? selectedElementObject.blocks : []")
+		(var nestedBlocksCount:number = "nestedBlocks.length")
+
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+		(var isSmall:bool = "stageWidth < 1920")
+		(var textWidth:number = "withPicture	?	isSmall ? 300px : 500px
+												:	isSmall ? 600px : 900px")
+	)
+
+	(style
+		(bind width "isSmall ? 1050 : 1290")
+		(height = 100%)
+		(flow = "horizontal")
+		(align = "center")
+		
+	)
+
+	
+	(scrollArea
+		(style
+			(bind width "elementCount > 1 ? 340 : 0")
+			(height = 100%)
+			(marginTop = "S")
+		)
+		(verticalSlider = 'ScrollBarVLight')
+		(topShadow = 'ScrollAreaShadowTop')
+		(bottomShadow = 'ScrollAreaShadowBottom')
+
+		(hscrollPolicy = 'off')
+		(vscrollPolicy = 'auto')
+
+		(content
+			(controller $Repeat renderer='CategoryElement'
+				(bind count "elementCount")
+				(bind enabled "elementCount > 1")
+				(args
+					_topicName = "_topicName"
+					_category = "categoryName"
+					_elementName = "elementList[$index].name"
+					_isHeader = "'isHeader' in elementList[$index] && elementList[$index].isHeader"
+					_dispatchedEv = "'evCategoryChanged'"
+					_dispatchParams = "{index: $index}"
+					_evSelected = "selectedElement == $index"
+				)
+			)
+		)
+	)
+
+	
+	(scrollArea
+		(style
+			(bind width "textWidth")
+			(marginLeft = "XS")
+			(backgroundColor = 0x00FF0000)
+			(height = 100%)
+		)
+		(verticalSlider = 'ScrollBarVLight')
+		(topShadow = 'ScrollAreaShadowTop')
+		(bottomShadow = 'ScrollAreaShadowBottom')
+
+		(hscrollPolicy = 'off')
+		(vscrollPolicy = 'auto')
+
+		(content
+			(style
+				(marginTop = "S")
+				(width = 100%)
+			)
+
+			(controller $Repeat renderer='EventWikiPageBlockWrapper'
+				(bind count "nestedBlocksCount")
+				(args
+					_index = "$index"
+					_blockType = "toString('type' in nestedBlocks[$index] ? nestedBlocks[$index].type : '')"
+					_textIndex = "$index + 1"
+					_textId = "'IDS_EVENT_WIKI_' + toUpper(_topicName) + '_' + toUpper(categoryName) + '_' + toUpper(selectedElementName)"
+					_textWidth = "textWidth"
+					_additionalArguments = "'params' in nestedBlocks[$index] ? nestedBlocks[$index].params : {}"
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "withPicture")
+		(style
+			(marginTop = "S")
+			(backgroundSize = "cover")
+			(bind width "!withPicture ? 0 : isSmall ? 300 : 400")
+			(bind marginLeft "isSmall ? 20px : 30px")
+			(bind height "isSmall ? 300 : 400")
+			(bind backgroundImage "'url:../event_wiki/' + toLower(_topicName) + '/' + toLower(categoryName) + '/' + toLower(selectedElementName) + '.png'")
+		)
+	)
+)
+
+(def element CategoryElement (	_topicName:str,
+								_category:str,
+								_elementName:str,
+								_isHeader:bool,
+								_dispatchedEv:str='',
+								_dispatchParams:gfx={},
+								_evSelected:bool=false) layout=true
+	(scope
+		(var elementName:str = "_isHeader ? '_HEADER' : '_' + toUpper(_elementName)")
+		(var captionText:str = "'IDS_EVENT_WIKI_' + toUpper(_topicName) + '_' + toUpper(_category) + elementName")
+
+		(macro MOUSE_HANDLER_SCOPE)
+		(var backgroundImgPath:str = "framesPath + (_evSelected ? '_selected.png' : rollOver ? '_hover.png' : '.png')")
+		(var imgPath:str = "'url:../event_wiki/' + toLower(_topicName) + '/' + toLower(_category) + '/button' + toLower(elementName) + '.png'")
+	)
+
+	(style
+		(width = 320px)
+		(height = 88px)
+		(bind marginBottom "_isHeader ? M : XS")
+		(flow = "horizontal")
+		(align = "middle")
+		(bind backgroundImage "backgroundImgPath")
+		(scale9grid = 3)
+	)
+
+	
+	(block
+		(style
+			(width = 60px)
+			(height = 60px)
+			(marginLeft = "M")
+			(marginRight = "M")
+			(bind backgroundImage "imgPath")
+		)
+	)
+	(tf
+		(style
+			(width = 100%)
+			(wordWrap = true)
+		)
+		(class $TextDefaultBold19NM)
+		(bind text "captionText")
+	)
+
+	(macro MOUSE_HANDLER
+		_dispatchedEv = "_dispatchedEv"
+		_dispatchParams = "_dispatchParams"
+		_soundSet = "'button_secondary'"
+	)
+)
+
+(def element EventWikiPageBlockWrapper(	_index:number,
+										_blockType:str,
+										_textId:str,
+										_textIndex:number,
+										_textWidth:number,
+										_additionalArguments:dict="{}") layout=true
+	(scope
+		(event evCategoryChanged)
+
+		(var rendererDict:dict = "{
+									SC.Ui_common.WIKI_PAGE_BLOCKS.HEADER:		'EventWikiHeaderElement',
+									SC.Ui_common.WIKI_PAGE_BLOCKS.PARAGRAPH:	'EventWikiParagraphElement',
+									SC.Ui_common.WIKI_PAGE_BLOCKS.BULLET:		'EventWikiBulletElement',
+									SC.Ui_common.WIKI_PAGE_BLOCKS.IMAGE:		'EventWikiImageElement'}"
+		)
+
+		(var textDict:dict = "{
+									SC.Ui_common.WIKI_PAGE_BLOCKS.HEADER:		'_HEADER_',
+									SC.Ui_common.WIKI_PAGE_BLOCKS.PARAGRAPH:	'_PARAGRAPH_',
+									SC.Ui_common.WIKI_PAGE_BLOCKS.BULLET:		'_BULLET_',
+									SC.Ui_common.WIKI_PAGE_BLOCKS.IMAGE:		'_IMAGE_'}"
+		)
+
+		(var currentRenderer:str = "_blockType in rendererDict ? rendererDict[_blockType] : ''")
+		(var elementTextId:str = "_textId + textDict[_blockType] + toString(_textIndex)")
+
+		(var pageBlockWidth:number = "_textWidth - EVENT_WIKI.SCROLL_BAR_WIDTH")
+	)
+
+	(style
+		(bind width "pageBlockWidth")
+	)
+
+	(controller $Instance layout = true
+		(bind renderer "currentRenderer" (event "evCategoryChanged"))
+		(args
+			_textId = "elementTextId"
+			_textWidth = "pageBlockWidth"
+			_index = "_index"
+			_additionalArguments = "_additionalArguments"
+		)
+	)
+)
+
+(def element EventWikiHeaderElement(_index:number, _textId:str, _textWidth:number, _additionalArguments:dict="{}") layout=true
+	(scope
+		(var textClass:str = "'headerTextClass' in _additionalArguments ? _additionalArguments.headerTextClass : '$TextDefaultBold19NM'")
+	)
+
+	(style
+		(marginLeft = "S")
+
+		(bind width "_textWidth")
+		(bind marginTop "_index == 0 ? 0px : EVENT_WIKI.HEADER_VERTICAL_MARGIN") 
+	)
+
+	(tf
+		(bind class "textClass")
+
+		(style
+			(width = 100%)
+			(wordWrap = true)
+			(alpha = "TA")
+			(marginBottom = "SXS")
+		)
+
+		(bind text "_textId")
+	)
+)
+
+(def element EventWikiParagraphElement(_index:number, _textId:str, _textWidth:number, _additionalArguments:dict="{}") layout=true
+	(scope
+		(var textClass:str = "'paragraphTextClass' in _additionalArguments ? _additionalArguments.paragraphTextClass : '$TextDefault17NM'")
+		(var textColorClass:str = "'textColorClass' in _additionalArguments ? _additionalArguments.textColorClass : '$None'")
+		(var textShadowClass:str = "'hasShadow' in _additionalArguments && _additionalArguments.hasShadow ? '$None' : '$DropShadowDisabler'")
+		(var marginLeft:number = "'marginLeft' in _additionalArguments ? _additionalArguments.marginLeft : S")
+		(var marginBottom:number = "'marginBottom' in _additionalArguments ? _additionalArguments.marginBottom : EVENT_WIKI.PARAGRAPH_VERTICAL_MARGIN")
+	)
+
+	(style
+		(marginLeft = "marginLeft")
+
+		(bind width "_textWidth")
+	)
+
+	(tf
+		(bind class "[textClass, textColorClass, textShadowClass]")
+
+		(style
+			(width = 100%)
+			(bind marginBottom "marginBottom")
+			(wordWrap = true)
+			(alpha = "TA")
+		)
+
+		(bind text "_textId")
+	)
+)
+
+(def element EventWikiBulletElement(_index:number, _textId:str, _textWidth:number, _additionalArguments:dict="{}") layout=true
+	(scope
+		(var bulletSymbol:str = "'bulletType' in _additionalArguments ? _additionalArguments.bulletType : '•'")
+		(var offset:number = "'bulletOffset' in _additionalArguments ? _additionalArguments.bulletOffset : 0")
+	)
+
+	(hblock
+		(style
+			(marginLeft = "S")
+			(marginBottom = "EVENT_WIKI.PARAGRAPH_VERTICAL_MARGIN")
+
+			(bind width "_textWidth")
+			(bind marginLeft "offset")
+		)
+		(tf
+			(class $TextDefault17NM)
+
+			(style
+				(wordWrap = true)
+				(alpha = "TA")
+				(marginRight = "EVENT_WIKI.BULLET_HORIZONTAL_MARGIN")
+			)
+
+			(bind text "bulletSymbol")
+		)
+
+		(tf
+			(class $TextDefault17NM)
+
+			(style
+				(width = 100%)
+				(wordWrap = true)
+				(alpha = "TA")
+				(leading = -3)
+			)
+
+			(bind text "_textId")
+		)
+	)
+)
+
+(def element EventWikiImageElement(_index:number, _textId:str, _textWidth:number, _additionalArguments:dict="{}") layout=true
+	(scope
+		(var imageUrl:str = "'url' in _additionalArguments ? ('url:../' + _additionalArguments.url) : ''")
+	)
+
+	(style
+		(bind width "_textWidth")
+		(align = "center|middle")
+		(marginLeft = "S")
+	)
+
+	(block
+		(style
+			(marginBottom = "EVENT_WIKI.PARAGRAPH_VERTICAL_MARGIN")
+			(backgroundSize = "autosize")
+
+			(bind backgroundImage "imageUrl")
+		)
+	)
+)
+
+(def element EventWikiModalCustomPageContent (_topicName:str, _initialTab:number, _tabsCount:number) layout=true
+	(scope
+		(event evTabSelected)
+		(event evMouseIn)
+		(event evMouseOut)
+		(event evRollOver)
+		(event evRollOut)
+
+		(var topicContent:array = "EVENT_WIKI_CONTENT[_topicName].content")
+
+		(var selectedTab:number = "_initialTab")
+		(bind selectedTab "$event['index']" init=false (event "evTabSelected"))
+
+		(var isNarrativePassHovered:bool = false)
+		(bind isNarrativePassHovered "false" init=false (event "evMouseOut"))
+		(bind isNarrativePassHovered "true" init=false (event "evMouseIn"))
+
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var isSmall:bool = "stageWidth < 1920")
+
+		(var letterMarginLeft:number = "isSmall ? 1500px : 2000px")
+		(var letterVisualOffsetX:number = "isSmall ? -25px : -45px")
+
+		(var eventPassSoundSet:str = 'object_eoww2_battle_event_pass')
+	)
+
+	(class $Fullsize)
+	(style
+		(align = "center|middle")
+	)
+
+	
+	(block
+		(style
+			(flow = "horizontal")
+		)
+
+		(controller $Repeat renderer='CustomPageWikiContent' count="_tabsCount" layout=true
+			(args
+				_content = "topicContent[$index]"
+				_topicName = "_topicName"
+				_isSelected = "selectedTab == $index"
+				_isCompleted = "selectedTab < _initialTab"
+			)
+
+			(dispatch evTabChanged args="{'index': $event.index}" dir="EventDirection.DOWN" (event "evTabSelected"))
+		)
+
+		(block
+			(bindcall externalCall "'inputMapping.onRequest'" "['openEndOfWarModal', {}]" init=false watch=false  on='click')
+
+			(style
+				(width = "EVENT_WIKI.END_OF_WAR.NARRATIVE_PASS_WIDTH")
+				(height = "EVENT_WIKI.END_OF_WAR.NARRATIVE_PASS_HEIGHT")
+				(marginTop = "EVENT_WIKI.END_OF_WAR.NARRATIVE_PASS_MARGIN_TOP")
+				(bind marginLeft "letterMarginLeft")
+				(bind zindex "ZIndex.BACKGROUND" (event "evMouseOut"))
+				(bind zindex "ZIndex.FOREGROUND" init=false (event "evMouseIn"))
+				(backgroundSize = "fill")
+
+				(backgroundImage = 'url:../event_wiki/pcve043/narrative_pass.png')
+			)
+
+			(bind colorTransform "isNarrativePassHovered ? END_OF_WAR_COLOR_TRANSFORM : {}")
+
+			(controller $Animation
+				(bindcall play	duration = 0.15
+								delay = 0.0
+								from = "{visualOffsetX: 0.0}"
+								to = "{visualOffsetX: letterVisualOffsetX}"
+								reverse = "!isNarrativePassHovered"
+								(bind trigger "isNarrativePassHovered")
+				)
+			)
+
+			(controller $Tooltip
+				(renderer='HeaderDescriptionInstructionTooltip')
+
+				(args
+					_headerText = 'IDS_EVENT_WIKI_WW2OPERATIONS_GO_TO_EVENT_PASS_HEADER'
+					_mouseInstructionText = 'IDS_EVENT_WIKI_WW2OPERATIONS_GO_TO_EVENT_PASS_MOUSE_INSTRUCTION'
+				)
+
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+			)
+
+			(dispatch 'evMouseIn' on='mouseOver')
+			(dispatch 'evMouseOut' on='mouseOut')
+			(dispatch 'evRollOver' on='rollOver')
+			(dispatch 'evRollOut' on='rollOut')
+
+			(bindcall externalCall 'sound.playSetSoundDirect' "[eventPassSoundSet, 'over']" init=false watch=false (event "evRollOver"))
+			(bindcall externalCall 'sound.playSetSoundDirect' "[eventPassSoundSet, 'end']" init=false watch=false (event "evRollOut"))
+			(bindcall externalCall 'sound.playSetSoundDirect' "[eventPassSoundSet, 'click']" init=false watch=false on='click')
+		)
+	)
+
+	(block
+		(class $MiddleVHAbsolutely)
+
+		(style
+			(position = "absolute")
+			(width = "EVENT_WIKI.END_OF_WAR.BATTLE_FEATURES_WIDTH")
+			(height = "EVENT_WIKI.END_OF_WAR.BATTLE_FEATURES_HEIGHT")
+			(zindex = "ZIndex.BACKGROUND")
+			(marginTop = "EVENT_WIKI.END_OF_WAR.BACKGROUND_IMAGE_MARGIN_TOP")
+			(marginLeft = "EVENT_WIKI.END_OF_WAR.BACKGROUND_IMAGE_MARGIN_LEFT")
+
+			(backgroundImage = 'url:../event_wiki/pcve043/battle_features_background.png')
+			(backgroundSize = "fill")
+		)
+
+		(block
+			(style
+				(position = "absolute")
+				(width = 625px)
+				(height = 175px)
+				(bottom = 50px)
+				(left = 80px)
+				(rotation = -85)
+				(padding = "[L, L, L, LS]")
+				(align = "middle|center")
+			)
+
+			(tf
+				(bind class "['$TextDefaultBold57NM', '$DropShadowDisabler']")
+
+				(style
+					(width = 100%)
+					(textAlign = "center")
+					(textColor = "EVENT_WIKI.END_OF_WAR.COLORS.BATTLE_FEATURES_TITLE")
+				)
+
+				(text = 'IDS_END_OF_WAR_BATTLE_FEATURES_TITLE')
+			)
+		)
+	)
+
+	(block
+		(class $MiddleVHAbsolutely)
+
+		(style
+			(position = "absolute")
+			(width = "EVENT_WIKI.END_OF_WAR.BATTLE_FEATURES_WIDTH")
+			(height = "EVENT_WIKI.END_OF_WAR.BATTLE_FEATURES_HEIGHT")
+			(zindex = "ZIndex.BACKGROUND + 1")
+			(marginTop = "EVENT_WIKI.END_OF_WAR.BACKGROUND_IMAGE_MARGIN_TOP")
+			(marginLeft = "EVENT_WIKI.END_OF_WAR.BACKGROUND_IMAGE_MARGIN_LEFT")
+
+			(backgroundImage = 'url:../event_wiki/pcve043/battle_features_background_grunge.png')
+			(backgroundSize = "fill")
+		)
+	)
+)
+
+(def element CustomPageWikiContent (_content:gfx, _topicName:str, _isSelected:bool, _isCompleted:bool) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(event evTabChanged)
+		(event evMouseIn)
+		(event evMouseOut)
+
+		(var pageType:number = "_content.pageType")
+		(var pageId:str = "_content.pageId")
+
+		(var pageHovered:bool = false)
+		(bind pageHovered "false" init=false (event "evMouseOut"))
+		(bind pageHovered "true" init=false (event "evMouseIn"))
+
+		(var tabSoundSet:str = 'object_eoww2_battle_features_tab')
+
+		(var pageRenderersMap:dict = "{
+			SC.Ui_common.CUSTOM_PAGE_TYPES.DOUBLE_IMAGE: 'CustomDoubleImagePageWikiRenderer',
+			SC.Ui_common.CUSTOM_PAGE_TYPES.SINGLE_IMAGE: 'CustomSingleImagePageWikiRenderer'}")
+
+		(var currentRenderer:str = "toString(pageType) in pageRenderersMap ? pageRenderersMap[toString(pageType)] : ''")
+		(var pageBlocks:array = "_content.blocks")
+		(var imageUrls:array = "_content.images")
+
+		(var tabOffset:number = "$index == 0	? EVENT_WIKI.END_OF_WAR.TAB_OFFSET_Y + 5px
+												: EVENT_WIKI.END_OF_WAR.TAB_OFFSET_Y")
+	)
+
+	(class $MiddleVHAbsolutely)
+
+	(style
+		(width = "EVENT_WIKI.END_OF_WAR.CONTENT_WIDTH")
+		(height = "EVENT_WIKI.END_OF_WAR.CONTENT_HEIGHT")
+		(bind zindex "_isSelected ? ZIndex.FOREGROUND : ZIndex.BACKGROUND")
+		(bind marginTop "_isSelected ? -58% : -56%")
+		(bind visualOffsetY "_isSelected ? 0px : EVENT_WIKI.END_OF_WAR.ANIMATION_SHIFT")
+	)
+
+	(block
+		(style
+			(width = "EVENT_WIKI.END_OF_WAR.TAB_WIDTH")
+			(height = "EVENT_WIKI.END_OF_WAR.TAB_HEIGHT")
+			(bind marginLeft "$index * EVENT_WIKI.END_OF_WAR.TAB_MARGIN")
+			(bind visualOffsetY "_isSelected ? 0px : tabOffset")
+
+			(bind backgroundImage "'url:../event_wiki/pcve043/page_' + toString($index + 1) + '_active.png'")
+			(backgroundSize = "fill")
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(width = "EVENT_WIKI.END_OF_WAR.TAB_WIDTH")
+				(height = "EVENT_WIKI.END_OF_WAR.TAB_HEIGHT")
+				(bind visualOffsetY "_isSelected ? 0px : tabOffset")
+
+				(bind backgroundImage "'url:../event_wiki/pcve043/page_' + toString($index + 1) + '_active_grunge.png'")
+				(backgroundSize = "fill")
+				(hitTest = false)
+			)
+		)
+
+		(tf
+			(bind class "['$TextDefaultBold21NMWithoutShadow', '$FontColorBlack']")
+
+			(style
+				(width = 100%)
+				(height = 100%)
+				(marginTop = "EVENT_WIKI.END_OF_WAR.TAB_TEXT_MARGIN")
+				(textAlign = "center")
+			)
+
+			(bind text "tr('IDS_EVENT_WIKI_TAB_' + toUpper(_topicName) + '_' + toUpper(pageId))")
+		)
+
+		(macro MOUSE_EVENTS_DISPATCHER)
+
+		(macro CLICK_HANDLER
+			_prefix = "''"
+			_dispatchedEv = "'evTabSelected'"
+			_dispatchParams = "{index: $index}"
+			_methods = "[]"
+		)
+
+		(dispatch 'evMouseIn' on='mouseOver' (bind enabled "!_isSelected"))
+		(dispatch 'evMouseOut' on='mouseOut')
+		(dispatch 'evRollOver' on='rollOver')
+		(dispatch 'evRollOut' on='rollOut')
+
+		(bindcall externalCall 'sound.playSetSoundDirect' "[tabSoundSet, 'over']" init=false watch=false (event "evRollOver"))
+		(bindcall externalCall 'sound.playSetSoundDirect' "[tabSoundSet, 'end']" init=false watch=false (event "evRollOut"))
+		(bindcall externalCall 'sound.playSetSoundDirect' "[tabSoundSet, 'click']" init=false watch=false on='click')
+	)
+
+	(block
+		(bind visible "_isSelected")
+
+		(block
+			(style
+				(position = "absolute")
+				(width = "EVENT_WIKI.END_OF_WAR.BACKGROUND_WIDTH")
+				(height = "EVENT_WIKI.END_OF_WAR.BACKGROUND_HEIGHT")
+				(marginLeft = "EVENT_WIKI.END_OF_WAR.BACKGROUND_MARGIN_LEFT")
+				(marginTop = "EVENT_WIKI.END_OF_WAR.BACKGROUND_MARGIN_TOP")
+
+				(backgroundImage = 'url:../event_wiki/pcve043/common_page.png')
+				(backgroundSize = "fill")
+				(hitTest = false)
+			)
+		)
+
+		(block
+			(style
+				(position = "absolute")
+				(width = "EVENT_WIKI.END_OF_WAR.BACKGROUND_WIDTH")
+				(height = "EVENT_WIKI.END_OF_WAR.BACKGROUND_HEIGHT")
+				(marginLeft = "EVENT_WIKI.END_OF_WAR.BACKGROUND_MARGIN_LEFT")
+				(marginTop = "EVENT_WIKI.END_OF_WAR.BACKGROUND_MARGIN_TOP")
+
+				(backgroundImage = 'url:../event_wiki/pcve043/common_page_grunge.png')
+				(backgroundSize = "fill")
+				(hitTest = false)
+			)
+		)
+	)
+
+	(block
+		(bind visible "_isSelected")
+
+		(style
+			(width = "EVENT_WIKI.END_OF_WAR.CONTENT_WIDTH")
+			(height = "EVENT_WIKI.END_OF_WAR.CONTENT_HEIGHT")
+		)
+
+		(controller $Instance layout = true
+			(bind renderer "currentRenderer")
+			(args
+				_topicName = "_topicName"
+				_pageId = "pageId"
+				_pageBlocks = "pageBlocks"
+				_images = "imageUrls"
+				_isCompleted = "_isCompleted"
+			)
+		)
+	)
+
+	(controller $Animation
+		(bindcall play	id = 'pageMoveAnimation'
+						duration = 0.15
+						delay = 0.0
+						from = "{visualOffsetY: 0.0}"
+						to = "{visualOffsetY: -EVENT_WIKI.END_OF_WAR.ANIMATION_SHIFT}"
+						reverse = "!pageHovered"
+						(bind enabled "!_isSelected")
+						(bind trigger "pageHovered")
+		)
+	)
+)
+
+(def element CustomDoubleImagePageWikiRenderer(	_topicName:str,
+												_pageId:str,
+												_pageBlocks:array,
+												_images:array,
+												_isCompleted:bool) layout=true
+	(scope
+		(event evCategoryChanged)
+
+		(var leftPageBlocks:array = "_pageBlocks[0]")
+		(var leftPageBlocksCount:number = "leftPageBlocks.length")
+
+		(var rightPageBlocks:array = "_pageBlocks[1]")
+		(var rightPageBlocksCount:number = "rightPageBlocks.length")
+	)
+
+	(style
+		(width = 100%)
+		(height = 100%)
+		(marginTop = "MS")
+		(flow = "horizontal")
+	)
+
+	(block
+		(style
+			(marginLeft = "MS")
+		)
+
+		(tf
+			(bind class "['$TextDefaultBold23NM', '$FontColorBlack', '$DropShadowDisabler']")
+
+			(style
+				(width = "EVENT_WIKI.END_OF_WAR.DOUBLE_IMAGE_PAGE.TEXT_WIDTH")
+				(wordWrap = true)
+				(alpha = "TA")
+				(textColor = "EVENT_WIKI.END_OF_WAR.COLORS.HEADER")
+			)
+
+			(bind text "tr('IDS_EVENT_WIKI_' + toUpper(_topicName) + '_' + toUpper(_pageId) + '_PAGE_1_TITLE_1')")
+		)
+
+		(block
+			(style
+				(marginTop = 10px)
+			)
+
+			(controller $Repeat renderer='EventWikiPageBlockWrapper'
+				(bind count "leftPageBlocksCount")
+				(args
+					_index = "$index"
+					_blockType = "toString('type' in leftPageBlocks[$index] ? leftPageBlocks[$index].type : '')"
+					_textIndex = "$index + 1"
+					_textId = "'IDS_EVENT_WIKI_' + toUpper(_topicName) + '_' + toUpper(_pageId) + '_PAGE_1'"
+					_textWidth = "EVENT_WIKI.END_OF_WAR.DOUBLE_IMAGE_PAGE.TEXT_WIDTH"
+					_additionalArguments = "{	paragraphTextClass: '$TextDefaultBold17NM',
+												headerTextClass: '$TextDefaultBold19NM',
+												marginLeft: 0px,
+												marginBottom: 10px,
+												textColorClass: '$FontColorBlack',
+												hasShadow: false}"
+				)
+			)
+		)
+
+		(block
+			(style
+				(width = "EVENT_WIKI.END_OF_WAR.DOUBLE_IMAGE_PAGE.IMAGE_WIDTH")
+				(height = "EVENT_WIKI.END_OF_WAR.DOUBLE_IMAGE_PAGE.IMAGE_HEIGHT")
+				(marginTop = 20px)
+
+				(bind backgroundImage "'url:../event_wiki/' + _images[0]")
+				(backgroundSize = "fill")
+			)
+		)
+	)
+
+	(block
+		(style
+			(marginLeft = 22px)
+		)
+
+		(block
+			(style
+				(width = "EVENT_WIKI.END_OF_WAR.DOUBLE_IMAGE_PAGE.IMAGE_WIDTH")
+				(height = "EVENT_WIKI.END_OF_WAR.DOUBLE_IMAGE_PAGE.IMAGE_HEIGHT")
+
+				(bind backgroundImage "'url:../event_wiki/' + _images[1]")
+				(backgroundSize = "fill")
+			)
+		)
+
+		(tf
+			(bind class "['$TextDefaultBold23NM', '$FontColorBlack', '$DropShadowDisabler']")
+
+			(style
+				(width = "EVENT_WIKI.END_OF_WAR.DOUBLE_IMAGE_PAGE.TEXT_WIDTH")
+				(marginTop = 30px)
+				(wordWrap = true)
+				(alpha = "TA")
+				(textColor = "EVENT_WIKI.END_OF_WAR.COLORS.HEADER")
+			)
+
+			(bind text "tr('IDS_EVENT_WIKI_' + toUpper(_topicName) + '_' + toUpper(_pageId) + '_PAGE_2_TITLE_1')")
+		)
+
+		(block
+			(style
+				(marginTop = 10px)
+			)
+
+			(controller $Repeat renderer='EventWikiPageBlockWrapper'
+				(bind count "rightPageBlocksCount")
+				(args
+					_index = "$index"
+					_blockType = "toString('type' in rightPageBlocks[$index] ? rightPageBlocks[$index].type : '')"
+					_textIndex = "$index + 1"
+					_textId = "'IDS_EVENT_WIKI_' + toUpper(_topicName) + '_' + toUpper(_pageId) + '_PAGE_2'"
+					_textWidth = "EVENT_WIKI.END_OF_WAR.DOUBLE_IMAGE_PAGE.TEXT_WIDTH"
+					_additionalArguments = "{	paragraphTextClass: '$TextDefaultBold17NM',
+												headerTextClass: '$TextDefaultBold19NM',
+												marginLeft: 0px,
+												marginBottom: 10px,
+												textColorClass: '$FontColorBlack',
+												hasShadow: false}"
+				)
+			)
+		)
+	)
+
+	(block
+		(bind visible "_isCompleted")
+
+		(class $MiddleVHAbsolutely)
+		(style
+			(width = 205px)
+			(height = 205px)
+			(zindex = "ZIndex.FOREGROUND")
+			(pivotX = 50%)
+			(pivotY = 50%)
+			(rotation = -30)
+			(visualOffsetX = -70%)
+			(visualOffsetY = -100%)
+
+			(backgroundImage = 'url:../event_wiki/pcve043/not_available.png')
+			(backgroundSize = "fill")
+		)
+	)
+)
+
+(def element CustomSingleImagePageWikiRenderer(	_topicName:str,
+												_pageId:str,
+												_pageBlocks:array,
+												_images:array,
+												_isCompleted:bool) layout=true
+	(scope
+		(event evCategoryChanged)
+
+		(var leftPageBlocks:array = "_pageBlocks[0]")
+		(var leftPageBlocksCount:number = "leftPageBlocks.length")
+	)
+
+	(style
+		(width = 100%)
+		(height = 100%)
+		(marginTop = "MS")
+		(flow = "horizontal")
+	)
+
+	(block
+		(style
+			(marginLeft = "MS")
+			(height = 275px)
+		)
+
+		(tf
+			(bind class "['$TextDefaultBold23NM', '$FontColorBlack', '$DropShadowDisabler']")
+
+			(style
+				(width = "EVENT_WIKI.END_OF_WAR.SINGLE_IMAGE_PAGE.TEXT_WIDTH")
+				(wordWrap = true)
+				(alpha = "TA")
+				(textColor = "EVENT_WIKI.END_OF_WAR.COLORS.HEADER")
+			)
+
+			(bind text "tr('IDS_EVENT_WIKI_' + toUpper(_topicName) + '_' + toUpper(_pageId) + '_PAGE_1_TITLE_1')")
+		)
+
+		(block
+			(style
+				(marginTop = 10px)
+			)
+
+			(controller $Repeat renderer='EventWikiPageBlockWrapper'
+				(bind count "leftPageBlocksCount")
+				(args
+					_index = "$index"
+					_blockType = "toString('type' in leftPageBlocks[$index] ? leftPageBlocks[$index].type : '')"
+					_textIndex = "$index + 1"
+					_textId = "'IDS_EVENT_WIKI_' + toUpper(_topicName) + '_' + toUpper(_pageId) + '_PAGE_1'"
+					_textWidth = "EVENT_WIKI.END_OF_WAR.SINGLE_IMAGE_PAGE.TEXT_WIDTH"
+					_additionalArguments = "{	paragraphTextClass: '$TextDefaultBold17NM',
+												headerTextClass: '$TextDefaultBold19NM',
+												marginLeft: 0px,
+												marginBottom: 10px,
+												textColorClass: '$FontColorBlack',
+												hasShadow: false}"
+				)
+			)
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(width = "EVENT_WIKI.END_OF_WAR.SINGLE_IMAGE_PAGE.IMAGE_WIDTH")
+			(height = "EVENT_WIKI.END_OF_WAR.SINGLE_IMAGE_PAGE.IMAGE_HEIGHT")
+			(marginLeft = "MS")
+			(zindex = "ZIndex.BACKGROUND")
+
+			(bind backgroundImage "'url:../event_wiki/' + _images[0]")
+			(backgroundSize = "fill")
+		)
+	)
+)

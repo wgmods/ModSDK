@@ -1,0 +1,901 @@
+(def constant END_OF_WAR_DEFAULT_TEXT_COLOR "0xFF33312E")
+(def constant END_OF_WAR_PAPER_TEXT_COLOR "0xFFD4CEC4")
+(def constant END_OF_WAR_BATTLE_FEATURES_TEXT_COLOR "0xFF2E2A29")
+
+(def constant END_OF_WAR_COLOR_TRANSFORM
+	{
+		redMultiplier: 1,
+		greenMultiplier: 1,
+		blueMultiplier: 1,
+		alphaMultiplier: 1,
+		redOffset: 15,
+		greenOffset: 15,
+		blueOffset: 15,
+		alphaOffset: 0
+	}
+)
+
+(def layout EndofWarFadeScreen ()
+	(scope
+		(event evFadeScreen)
+		(event evFadeHide)
+	)
+	(visible = false)
+	(style
+		(position = "absolute")
+		(left = "{1080:-M, 1920:-L}")
+		(top = "{720:-M, 1280:-LM}")
+		(alpha = 0)
+		(zindex = "ZIndex.FOREGROUND")
+	)
+	(controller $Animation
+		(bindcall play  duration=0.5
+						from="{visible:true, alpha: 1, backgroundColor: 0xFF000000}"
+						to="{visible:false, alpha: 0}"
+						action="killAll"
+						(event "evFadeScreen")
+		)
+		(bindcall play  duration=0.3
+						from="{visible:true, alpha: 0, backgroundColor: 0xFF000000}"
+						to="{visible:false, alpha: 1}"
+						action="killAll"
+						(event "evFadeHide")
+		)
+	)
+)
+
+(def layout EndofWarInfoChapterProgressBlock (_rewards:array=[], _isEventCompleted:bool=false)
+	(style
+		(flow = "horizontal")
+		(width = 100%) (height = 48px)
+		(marginTop = "M")
+		(hgap = "S")
+		(align = "middle")
+	)
+
+	(element EventSystemDescriptionBlock
+		_text = "_isEventCompleted ? 'IDS_END_OF_WAR_EVENT_PROGRESS_COMPLETED_DESCRIPTION' : 'IDS_END_OF_WAR_EVENT_PROGRESS_DESCRIPTION'"
+		_textColor = "_isEventCompleted ? SC.Ui_styles.SERVICE_COLORS.YELLOW : SC.Ui_styles.SERVICE_COLORS.WHITE"
+
+		(style (marginTop = -2px))
+	)
+
+	(element EndOfWarRewardsItem
+		_rewards = "_rewards"
+		_tooltipHeader = 'IDS_END_OF_WAR_TOOLTIP_HEADER_EVENT_REWARDS'
+		_isReceived = "_isEventCompleted"
+
+		(style (height = 100%))
+	)
+)
+
+(def layout EndofWarStageProgressBlock (_currentValue:number, _maxValue:number, _rewards:array=[], _isExtraStage:bool=false)
+	(scope
+		(var progress:number = "_currentValue && _maxValue	?  _currentValue / _maxValue : 0")
+		(var isCompleted:bool = "progress == 1")
+	)
+
+	(style
+		(flow = "horizontal")
+		(width = 100%) (height = 48px)
+		(marginTop = "M")
+		(hgap = "S")
+		(bind align "isCompleted ? top : middle")
+	)
+
+	(block
+		(style (width = "100%") (height = 48px))
+
+		(tf
+			(class $TextDefaultNM)
+			(style
+				(width = "100%") (marginTextBottom = "XS")
+				(bind alpha "isCompleted ? 1 : TA")
+				(bind textColor "isCompleted ? SC.Ui_styles.SERVICE_COLORS.YELLOW : SC.Ui_styles.SERVICE_COLORS.WHITE")
+			)
+			(bind text "isCompleted ? 'IDS_END_OF_WAR_STAGE_COMPLETED' : 'IDS_END_OF_WAR_PROGRESS_POINTS'")
+		)
+
+		(element DefaultProgressBar
+			_progress = "progress"
+			_color = "SC.Ui_styles.SERVICE_COLORS.YELLOW"
+
+			(style (width = "100%") (marginRight = "-1px") (marginLeft = "-1px"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='DefaultDividedCounter'
+				(bind enabled "!isCompleted")
+				(args
+					_curValue = "_currentValue"
+					_maxValue = "_maxValue"
+				)
+				(exprs
+					(style (marginTop = "XS"))
+				)
+			)
+		)
+	)
+
+	(element EndOfWarRewardsItem
+		_rewards = "_rewards"
+		_tooltipHeader = "_isExtraStage	? 'IDS_END_OF_WAR_EXTRA_REWARDS_TITLE' : 'IDS_END_OF_WAR_STAGE_REWARDS_TITLE'"
+		_isReceived = "isCompleted"
+
+		(style (bind align "isCompleted ? top : middle"))
+	)
+)
+
+(def element EndOfWarRewardsItem (_tooltipHeader:str, _rewards:array=[], _isReceived:bool=false)
+	(scope
+		(var firstRewardId:gfx = "_rewards && _rewards.length > 0 ? _rewards[0] : null")
+
+		(var rewardEntity:gfx = "$datahub.getEntity(firstRewardId)")
+		(var reward:gfx = "rewardEntity ? rewardEntity.rewardComponent : null")
+
+		(var rewardType:str = "reward ? reward.type : null")
+		(var rewardSubtype:str = "reward ? reward.subtype : null")
+
+		(var rewardPath:str = "	rewardType == SC.Common.REWARD_TYPE.LOOTBOX		?	rewardSubtype == SC.Common.REWARD_SUBTYPE.LOOTBOX_LUCKY		? SC.Sse.SSE_REWARD_CATEGORY.LOOTBOX_UNLUCKY
+																				:	rewardSubtype == SC.Common.REWARD_SUBTYPE.LOOTBOX_SUPER		? SC.Sse.SSE_REWARD_CATEGORY.LOOTBOX_SUPER
+																				:	rewardSubtype == SC.Common.REWARD_SUBTYPE.LOOTBOX_SIGNALS	? SC.Sse.SSE_REWARD_CATEGORY.LOOTBOX_SIGNALS
+																				:	rewardSubtype == SC.Common.REWARD_SUBTYPE.LOOTBOX_RESOURCES	? SC.Sse.SSE_REWARD_CATEGORY.LOOTBOX_RESOURCES
+																				:	rewardSubtype == SC.Common.REWARD_SUBTYPE.LOOTBOX_CREDITS	? SC.Sse.SSE_REWARD_CATEGORY.LOOTBOX_CREDITS
+																																				: SC.Sse.SSE_REWARD_CATEGORY.LOOTBOX :
+								rewardType == SC.Common.REWARD_TYPE.RESOURCE	?	rewardSubtype == SC.Common.REWARD_SUBTYPE.WOWS_PREMIUM		? SC.Sse.SSE_REWARD_CATEGORY.PREMIUM :
+																					rewardSubtype == SC.Common.CURRENCIES.FREE_XP				? SC.Sse.SSE_REWARD_CATEGORY.FREE_XP :
+																					rewardSubtype == SC.Common.CURRENCIES.ELITE_XP				? SC.Sse.SSE_REWARD_CATEGORY.XP :
+																					isIn(rewardSubtype, SC.Common.CURRENCIES.IS_EVENT_CURRENCY)	? SC.Sse.SSE_REWARD_CATEGORY.META_CURRENCY :
+																					rewardSubtype == SC.Common.REWARD_SUBTYPE.SLOTS				? SC.Sse.SSE_REWARD_CATEGORY.OTHER
+																																				: rewardSubtype :
+								rewardType == SC.Common.REWARD_TYPE.EXTERIOR	?	rewardSubtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.CAMOUFLAGE		||
+																					rewardSubtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.PERMOFLAGE		||
+																					rewardSubtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.SKIN				||
+																					rewardSubtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.MSKIN			? SC.Sse.SSE_REWARD_CATEGORY.CAMO :
+																					rewardSubtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.SHIP_DESTRUCTION	? SC.Sse.SSE_REWARD_CATEGORY.SHIP_DESTRUCTION :
+																					rewardSubtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.CAMOBOOST		? SC.Sse.SSE_REWARD_CATEGORY.ECOBOOST :
+																					rewardSubtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.ENSIGN			? SC.Sse.SSE_REWARD_CATEGORY.ENSIGN :
+																					rewardSubtype == SC.Ui_common.REWARD_EXTERIOR_TYPE.FLAGS			? SC.Sse.SSE_REWARD_CATEGORY.ENSIGN
+																																						: rewardSubtype :
+								rewardType == SC.Common.REWARD_TYPE.CREW		?	SC.Sse.SSE_REWARD_CATEGORY.CREW :
+								rewardType == SC.Common.REWARD_TYPE.SHIP		?	SC.Sse.SSE_REWARD_CATEGORY.SHIP :
+								rewardType == SC.Common.REWARD_TYPE.COLLECTION	?	SC.Sse.SSE_REWARD_CATEGORY.COLLECTION_CARD
+																				:	SC.Sse.SSE_REWARD_CATEGORY.OTHER")
+		(var rewardImage:str = "_isReceived	? 'url:../reward_categories/' + toLower(tr(rewardPath)) + '_received.png'
+											: 'url:../reward_categories/' + toLower(tr(rewardPath)) + '.png'")
+	)
+
+	(bindcall externalCall 'sound.playSetSoundDirect' "['button_banner', SoundEvent.OVER]" init=false watch=false on='rollOver')
+
+	(style
+		(width = 48px) (height = 48px)
+		(bind backgroundImage "rewardImage")
+	)
+
+	(controller $Tooltip
+		(bind renderer "'EndOfWarRewardsTooltip'")
+		(args
+			_rewards = "_rewards"
+			_tooltipHeader = "_tooltipHeader"
+			_unifiedStatus = "_isReceived ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			_isRewardClaimed = "_isReceived"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+
+		(macro STATS_LOG_TOOLTIP_DURATION "END_OF_WAR_STATISTICS.TOOLTIP_REWARDS")
+	)
+)
+
+(def element EndOfWarRewardsTooltip (_rewards:gfx, _tooltipHeader:str, _unifiedStatus:str="SC.Ui_styles.UNIFIED_STATUS.DEFAULT",
+										_isRewardClaimed:bool=false) layout=true dispatch_size_change=true
+	(style (hitTest = "false") (width = "320px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "_tooltipHeader"
+			_unifiedStatus = "_unifiedStatus"
+		)
+
+		(block
+			(bind visible "_isRewardClaimed")
+			(style (width = 100%))
+
+			(element TooltipSystemHorizontalDivider)
+			(element TooltipSystemStatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+				_text = 'IDS_TOOLTIP_REWARD_TAKEN'
+			)
+		)
+
+		(block
+			(bind visible "_rewards.length > 0")
+			(style (width = 100%))
+
+			(element TooltipSystemHorizontalDivider)
+			(element TooltipSystemDHRewards
+				_rewards = "_rewards"
+			)
+		)
+	)
+)
+
+(def layout EndOfWarBattleTypeInlineSelector (_battleTypeEntity:gfx, _isBattleTypeSelected:bool=false, _eventFinishTime:number=null)
+	(scope
+		(var battleType:gfx = "_battleTypeEntity ? _battleTypeEntity.battleType : null")
+		(var eventBattleName:str = "_battleTypeEntity ? _battleTypeEntity.eventBattleState.name : null" (event "_battleTypeEntity.eventBattleState.evChanged"))
+	)
+
+	(bindcall externalCall "!_isBattleTypeSelected ? 'direct.action' : ''" "[SC.Common.STATISTICS_EVENTS.LOG, [END_OF_WAR_STATISTICS.BATTLE_TYPE_SELECTOR]]"	init=false
+																																								watch=false
+																																								on=click)
+	(bindcall externalCall "!_isBattleTypeSelected ? 'sound.playSetSoundDirect' : ''" "['button_banner', SoundEvent.CLICK]" init=false watch=false on=click)
+	(bindcall externalCall 'sound.playSetSoundDirect' "['button_banner', SoundEvent.OVER]" init=false watch=false on='rollOver')
+	(bindcall externalCall "battleType ? 'inputMapping.onAction' : ''" "['setBattleType',	{	battleType: battleType.type,
+																								battleTypeGameParamId: battleType.battleTypeGameParamId
+																							}]" init=false watch=false on=click)
+
+	(style (flow = "horizontal") (width = 100%) (marginTop = "M") (hgap = "S"))
+
+	(element BattleTypeIcon _battleType="eventBattleName" _size="SC.Ui_common.BATTLE_TYPES_SIZE.SMALL")
+
+	(block
+		(style
+			(height = 100%)
+			(vgap = 6px)
+			(align = "middle")
+		)
+		(hblock
+			(style (width = 100%) (hgap = "S"))
+			(tf
+				(class $TextDefaultBold19NM)
+				(style
+					(bind alpha "_isBattleTypeSelected ? 1 : TA")
+					(bind textColor "_isBattleTypeSelected ? SC.Ui_styles.SERVICE_COLORS.YELLOW : SC.Ui_styles.SERVICE_COLORS.WHITE")
+				)
+				(bind text "'IDS_' + eventBattleName")
+			)
+			(block
+				(bind visible "!_isBattleTypeSelected")
+				(style
+					(width = 19px) (height = 19px)
+					(marginTop = -3px)
+					(backgroundSize = "cover")
+					(bind backgroundImage "'url:../service_kit/unified_status_icons/icon_attention.png'")
+				)
+			)
+		)
+		(tf
+			(class $TextDefaultNM)
+			(alpha = "TS")
+			(bind text "_isBattleTypeSelected ? 'IDS_END_OF_WAR_BATTLE_TYPE_SELECTED' : 'IDS_END_OF_WAR_SELECT_BATTLE_TYPE'")
+		)
+	)
+
+	(controller $Tooltip
+		(bind enabled "_battleTypeEntity")
+		(bind renderer "'EndOfWarBattleTypeTooltip'")
+		(args
+			_battleTypeEntity = "_battleTypeEntity"
+			_eventBattleName = "eventBattleName"
+			_eventFinishTime = "_eventFinishTime"
+			_isSelected = "_isBattleTypeSelected"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+
+		(macro STATS_LOG_TOOLTIP_DURATION "END_OF_WAR_STATISTICS.TOOLTIP_BATTLE_TYPE")
+	)
+)
+
+(def layout EndOfWarBattleTypeTooltip (_battleTypeEntity:gfx, _eventBattleName:str, _eventFinishTime:number, _isSelected:bool=false)
+	(scope
+		
+		(macro SERVER_TIME_SCOPE)
+
+		(var eventTimeLeft:number = "_eventFinishTime - serverTime")
+		(macro COUNTDOWN_SCOPE "'eventFormattedFinishTime'" "_eventFinishTime" "'HIGHESTDAYS'")
+
+		(var eventTimeUnifiedStatus:str = "eventTimeLeft < DAY_IN_SEC	? SC.Ui_styles.UNIFIED_STATUS.CALENDAR_ATTENTION
+																		: SC.Ui_styles.UNIFIED_STATUS.CALENDAR")
+
+		(var timeOfBattleEvent:gfx = "_battleTypeEntity ? _battleTypeEntity.timeOfBattleEvent : null")
+		(var operationFinishTime:number = "timeOfBattleEvent ? timeOfBattleEvent.finishTime : 0")
+		(var operationTimeLeft:number = "operationFinishTime - serverTime")
+		(macro COUNTDOWN_SCOPE "'operationFormattedFinishTime'" "operationFinishTime" "'HIGHESTDAYS'")
+
+		(var operationTimeUnifiedStatus:str = "operationTimeLeft < DAY_IN_SEC	? SC.Ui_styles.UNIFIED_STATUS.DATE_ATTENTION
+																				: SC.Ui_styles.UNIFIED_STATUS.DATE")
+
+		
+		(macro BATTLE_TYPE_HAS_RESTRICTIONS_SCOPE "_battleTypeEntity.battleType")
+
+		
+		(var eventBattleStateComponent:gfx = "_battleTypeEntity ? _battleTypeEntity.eventBattleState : null")
+		(var eventBattleName:str = "eventBattleStateComponent ? eventBattleStateComponent.name : ''" (event "eventBattleStateComponent.evChanged"))
+
+		(var currentEventId:number = "eventBattleStateComponent ? eventBattleStateComponent.eventId : 0" (event "eventBattleStateComponent.evChanged"))
+		(var eventBattleParamsEntity:gfx = "$datahub.getPrimaryEntity(CC.eventBattleParams, currentEventId)")
+		(var eventBattleParamsComponent:gfx = "eventBattleParamsEntity ? eventBattleParamsEntity.eventBattleParams : null" (event "eventBattleParamsEntity.evAdded"))
+
+		(var enemyType:number = "eventBattleParamsComponent ? eventBattleParamsComponent.enemyType : 0")
+		(var isEnenyTypeUndefiend:bool = "enemyType == SC.Ui_common.EVENT_ENEMY_TYPE.UNDEFINED")
+		(var subheaderText:str = "!isEnenyTypeUndefiend	? 'IDS_TOOLTIP_HEADER_DESCRIPTION_EVENTBATTLE_' + toUpper(SC.Ui_common.EVENT_ENEMY_TYPE.VALUE_TO_NAME[enemyType])
+														: ''")
+
+		(var unifiedStatus:str = "_isSelected ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+	)
+
+	(style (hitTest = "false") (width = 360px))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_imageWidth = 80
+			_imageHeight = 80
+			_imageUrl = "'url:../service_kit/battle_types/' + _eventBattleName + '.png'"
+			_headerText = "'IDS_' + _eventBattleName"
+			_subheaderText = "subheaderText"
+			_unifiedStatus = "unifiedStatus"
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_isSelected"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "_isSelected")
+				(args
+					_text = 'IDS_END_OF_WAR_SELECTED'
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(args
+					_unifiedStatus = "operationTimeUnifiedStatus"
+					_text = "subst('IDS_END_OF_WAR_OPERATION_STATUS_TIME', [], {_timeLeft: operationFormattedFinishTime})"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%) (marginTop = "S"))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(args
+					_unifiedStatus = "eventTimeUnifiedStatus"
+					_text = "subst('IDS_END_OF_WAR_EVENT_STATUS_TIME', [], {_timeLeft: eventFormattedFinishTime})"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_eventBattleName"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "_eventBattleName")
+				(args
+					_descriptionText = "'IDS_' + _eventBattleName + '_DESCRIPTION'"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "hasRestrictions"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='ShipRestrictions'
+				(bind enabled "hasRestrictions")
+				(args
+					_restrictionsEntityId = "restrictionEntity.id"
+					_isFromTooltip = true
+					_width = 360px
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "!_isSelected"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "!_isSelected")
+				(args
+					_text = "'IDS_CHOOSE_EVENTBATTLE_' + _eventBattleName"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+				)
+			)
+		)
+	)
+)
+
+(def layout EndOfWarHoverArea (_soundSet:str=null, _isClickDisabled:bool=false)
+	(scope
+		(event evRollOver)
+		(event evRollOut)
+	)
+
+	(macro END_OF_WAR_SOUND_HANDLER
+		_enabled = "_soundSet != null"
+		_soundSet = "_soundSet"
+		_isClickDisabled= "_isClickDisabled"
+	)
+
+	(style
+		(position = "absolute")
+		(backgroundColor = 0x00000001) 
+	)
+
+	(dispatch evRollOver args="{isOver: true}" dir="EventDirection.UP" on='rollOver')
+	(dispatch evRollOut args="{isOver: false}" dir="EventDirection.UP" on='rollOut')
+)
+
+(def layout EndOfWarNarrativeHeader (_chapterIdx:number)
+	(style
+		(width = 100%)
+		(height = 95px)
+		(bind backgroundImage "'url:../events/end_of_war/narratives/elements/header_images/header_image_' + _chapterIdx + '.png'")
+	)
+)
+
+(def layout EndOfWarNarrativeTextContainer (_chapterIdx:number, _stageIdx:number=-1, _date:dict=null)
+	(style (position = "absolute") (width = "END_OF_WAR_TEXT_CONTAINER_WIDTH"))
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='EndOfWarNarrativeHeader'
+			(bind enabled "_chapterIdx")
+			(args
+				_chapterIdx = "_chapterIdx"
+			)
+		)
+	)
+
+	(hblock
+		(bind visible "_chapterIdx")
+		(style
+			(width = 100%)
+			(marginTop = "S")
+			(marginBottom = "S")
+			(hgap = "M")
+		)
+		(hblock
+			(style (hgap = "M"))
+			(tf
+				(class $TextDefaultBold17NMWithoutShadow)
+				(style (textColor = "END_OF_WAR_DEFAULT_TEXT_COLOR"))
+				(bind text "subst('IDS_END_OF_WAR_LETTER_VOLUME', [], {_number: _chapterIdx})")
+			)
+			(tf
+				(class $TextDefaultBold17NMWithoutShadow)
+				(style (textColor = "END_OF_WAR_DEFAULT_TEXT_COLOR"))
+				(bind text "_stageIdx > 0 ? subst('IDS_END_OF_WAR_LETTER_NUMBER', [], {_number: _stageIdx}) : ''")
+			)
+		)
+
+		(block
+			(bind visible "_date")
+			(style (position = "absolute") (left = 6px) (width = 100%))
+			(tf
+				(class $TextDefaultBold17NMWithoutShadow)
+				(style
+					(width = 100%)
+					(textAlign = "right")
+					(textColor = "END_OF_WAR_DEFAULT_TEXT_COLOR")
+				)
+				(bind text "subst('IDS_END_OF_WAR_STAGE_TEXT_DATE', [], {	_weekDay: tr('IDS_' + _date.weekDay + '_FULL'),
+																			_day: _date.day,
+																			_month: tr('IDS_END_OF_WAR_MONTH_' + _date.month),
+																			_year: _date.year	})	")
+			)
+		)
+	)
+
+	(block
+		(style
+			(width = 100%)
+			(height = 57px)
+			(marginBottom = "M")
+			(backgroundSize = "cover")
+			(backgroundImage = 'url:../events/end_of_war/narratives/elements/header_images/header_text_background.png')
+			(align = "center|middle")
+		)
+
+		(tf
+			(class $TextDefaultBold30NMWithoutShadow)
+			(style
+				(width = 100%)
+				(textAlign = "center")
+				(textColor = "END_OF_WAR_PAPER_TEXT_COLOR")
+			)
+			(bind text "'IDS_END_OF_WAR_TITLE_CHAPTER_' + _chapterIdx")
+		)
+	)
+
+	(tf
+		(bind visible "_chapterIdx")
+		(class $TextDefaultBold25NMWithoutShadow)
+		(style
+			(width = 100%)
+			(bind marginBottom "M")
+			(textColor = "END_OF_WAR_DEFAULT_TEXT_COLOR")
+		)
+		(bind text "_stageIdx == -1	? 'IDS_END_OF_WAR_NARRATIVE_TITLE_ADDITIONAL'
+									: 'IDS_END_OF_WAR_NARRATIVE_TITLE_' + _chapterIdx + '_' + _stageIdx")
+	)
+
+	(tf
+		(class $TextDefaultBold17NMWithoutShadow)
+		(style (width = 100%) (textColor = "END_OF_WAR_DEFAULT_TEXT_COLOR"))
+		(bind text "_stageIdx == -1	? 'IDS_END_OF_WAR_NARRATIVE_TEXT_ADDITIONAL'
+									: 'IDS_END_OF_WAR_NARRATIVE_TEXT_' + _chapterIdx + '_' + _stageIdx")
+	)
+)
+
+(def layout EndOfWarNarrativeItemTooltip (_isShowUB2Tooltip:bool, _headerText:str, _unifiedStatus:str="SC.Ui_styles.UNIFIED_STATUS.DEFAULT",
+											_rewardText:str=null, _selectText:str=null, _lockText:str=null)
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(style (width = 320px))
+
+	(name = 'EndOfWarNarrativeItemTooltip')
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "_headerText"
+			_unifiedStatus = "_unifiedStatus"
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "!_lockText && _rewardText"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "!_lockText && _rewardText")
+				(args
+					_text = "_rewardText"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "!_lockText && _selectText"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "!_lockText && _selectText")
+				(args
+					_text = "_selectText"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_lockText"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "_lockText")
+				(args
+					_text = "_lockText"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.LOCK"
+				)
+			)
+		)
+	)
+)
+
+(def layout EndOfWarPaginatorChapterRenderer (_eventHubSeasonEntity:gfx, _currentLevelEntity:gfx, _isEventCompleted:bool=false)
+	(scope
+		(event evPhaseSelected)
+		(event evLevelSelected)
+
+		(var selectedPhaseIdx:number = 0)
+		(var selectedLevelIdx:number = 0)
+
+		(var currentLevel:number = "_currentLevelEntity ? _currentLevelEntity.progressionLevel.level : null")
+
+		(var levelsCollectionByConfigPhase:gfx = "$index > 0	? $datahub.getCollection(CC.progressionLevel).getChildByPath('eventHub.byConfigPhase.' + ($index - 1))
+																: null")
+		(var phaseLevels:array = "levelsCollectionByConfigPhase ? levelsCollectionByConfigPhase.items : []"	(event "levelsCollectionByConfigPhase.evAdded")
+																											(event "levelsCollectionByConfigPhase.evRemoved"))
+		(var phaseLevelsAmount:number = "phaseLevels.length")
+
+		(var phaseData:dict = "END_OF_WAR_EVENT_DATA[$index]")
+		(var phaseIdx:str = "$index")
+		(var isInfoPhase:bool = "$index == 0")
+		(var isFinalPhase:bool = "$index == END_OF_WAR_EVENT_DATA.length - 1")
+
+		(var isPhaseSelected:bool = "(isInfoPhase || phaseLevelsAmount > 0) && $index == selectedPhaseIdx")
+
+		(var firstPhaseLevelEntity:gfx = "phaseLevelsAmount > 0 ? phaseLevels[0] : null")
+		(var eventHubLevel:gfx = "firstPhaseLevelEntity ? firstPhaseLevelEntity.eventHubLevel : null")
+		(var lastLevelEntity:gfx = "phaseLevelsAmount > 0 ? phaseLevels[0] : null")
+
+		(var isPhaseLockedByTime:bool = "eventHubLevel && eventHubLevel.phaseIndex > 0")
+		(var isPhaseLockedByProgress:bool = "eventHubLevel && eventHubLevel.configPhaseIndex > _currentLevelEntity.eventHubLevel.configPhaseIndex")
+		(var isPhaseLocked:bool = "isInfoPhase ? false : (isPhaseLockedByTime || isPhaseLockedByProgress)")
+
+		(var eventHubPhase:gfx = "eventHubLevel ? $datahub.getPrimaryEntity(CC.eventHubPhase, eventHubLevel.phaseIndex).eventHubPhase : null" (event "eventHubLevel.evUpdated"))
+
+		(macro SERVER_TIME_SCOPE)
+		(macro COUNTDOWN_SCOPE "'formattedStartTime'" "eventHubPhase.startTime" "'HIGHESTDAYS'")
+
+		(var unseenPhaseIdxList:gfx = "_eventHubSeasonEntity	? _eventHubSeasonEntity.eventHubSeason.unseenPhaseConfigIdxList
+																: []" (event "_eventHubSeasonEntity.eventHubSeason.evChanged"))
+		(var isNarrativeAvailable:bool = "!isPhaseLocked && !isInfoPhase && ($index - 1) in unseenPhaseIdxList")
+
+		(var isPhaseCompleted:bool = "eventHubLevel && _currentLevelEntity	?	eventHubLevel.configPhaseIndex < _currentLevelEntity.eventHubLevel.configPhaseIndex		||
+																				eventHubLevel.configPhaseIndex == _currentLevelEntity.eventHubLevel.configPhaseIndex	&&
+																				_currentLevelEntity.hasComponent(CC.postProgressionLevel)
+																			:	false")
+
+		(var scrollAreaDefaultHeight:number = "phaseLevelsAmount * 34 - S")
+	)
+
+	(style (width = 100%) (bind align "!isInfoPhase && isPhaseSelected ? left : right"))
+
+	(controller $Instance renderer='EventSystemPaginatorPhaseItem'
+		(args
+			_icon = "isInfoPhase ? 'info' : null"
+			_text = "phaseData.text ? phaseData.text : null"
+			_isActive = "isPhaseSelected"
+			_isLocked = "isPhaseLocked"
+			_isCompleted = "isInfoPhase || isFinalPhase ? _isEventCompleted : isPhaseCompleted"
+			_isRewardAvailable = "isNarrativeAvailable"
+			_soundSet = "isPhaseLocked ? 'button_eoww2_stage_locked' : 'button_eoww2_stage_unlocked'"
+		)
+		(exprs
+			(scope
+				(bind tooltipData "{	header: isInfoPhase ? 'IDS_END_OF_WAR_TITLE' : 'IDS_END_OF_WAR_TOOLTIP_HEADER_CHAPTER_' + $index,
+										complete: isInfoPhase ? 'IDS_END_OF_WAR_EVENT_COMPLETED' : 'IDS_END_OF_WAR_CHAPTER_COMPLETED',
+										reward: 'IDS_END_OF_WAR_NARRATIVE_AVAILABLE',
+										select: 'IDS_END_OF_WAR_SELECT_CHAPTER',
+										lock: isPhaseLockedByTime	? subst('IDS_END_OF_WAR_CHAPTER_LOCKED_TIME', [], {_timeStart: formattedStartTime})
+																	: 'IDS_END_OF_WAR_COMPLETE_PREVIOUS_CHAPTER' }"
+				)
+			)
+			(style (bind marginBottom "!isInfoPhase && isPhaseSelected ? S : 0"))
+
+			(bindcall externalCall 'direct.action' "[SC.Common.STATISTICS_EVENTS.LOG_END, [END_OF_WAR_STATISTICS.PAGINATOR + '_' + selectedPhaseIdx + '_' + selectedLevelIdx]]"	init=false
+																																												watch=false
+																																												on=click)
+			(bindcall externalCall 'direct.action' "[SC.Common.STATISTICS_EVENTS.LOG_START, [END_OF_WAR_STATISTICS.PAGINATOR + '_' + $index + '_0']]"	init=false
+																																						watch=false
+																																						on=click)
+			(dispatch evLevelSelected args="{index:0}" dir="EventDirection.UP" init=false on=click (bind enabled "!isPhaseLocked && !isPhaseSelected"))
+			(dispatch evPhaseSelected args="{index:$index}" dir="EventDirection.UP" init=false on=click (bind enabled "!isPhaseLocked && !isPhaseSelected"))
+		)
+	)
+
+	(scrollArea
+		(bind visible "!isInfoPhase && isPhaseSelected")
+		(style
+			(width = 100%)
+			(marginRight = "-XXS")
+			(bind height "{720: 344, 1080: scrollAreaDefaultHeight}")
+		)
+
+		(verticalSlider = 'ScrollBarVLight')
+		(hscrollPolicy = 'off')
+		(vscrollPolicy = 'auto')
+
+		(repeatController = 'PaginatorStage')
+
+		(content
+			(style (vgap = "S"))
+
+			(controller $Repeat renderer='EndOfWarPaginatorStageRenderer' name='PaginatorStage'
+				(bind enabled "!isInfoPhase")
+				(bind count "phaseLevelsAmount")
+				(bindcall removeChildAt "$event[1]" (event "levelsCollectionByConfigPhase.evRemoved"))
+				(args
+					_entity = "phaseLevels[$index]"
+					_currentLevel = "currentLevel"
+					_phaseIdx = "phaseIdx"
+					_data = "phaseData.levels[$index]"
+					_isActive = "$index == selectedLevelIdx"
+				)
+
+				(exprs
+					(bindcall externalCall 'direct.action' "[SC.Common.STATISTICS_EVENTS.LOG_END, [END_OF_WAR_STATISTICS.PAGINATOR + '_' + phaseIdx + '_' + selectedLevelIdx]]" init=false watch=false on=click)
+					(bindcall externalCall 'direct.action' "[SC.Common.STATISTICS_EVENTS.LOG_START, [END_OF_WAR_STATISTICS.PAGINATOR + '_' + phaseIdx + '_' + $index]]" init=false watch=false on=click)
+					(dispatch evLevelSelected args="{index:$index}" dir="EventDirection.UP" init=false on=click (bind enabled "currentLevel >= phaseLevels[$index].progressionLevel.level"))
+				)
+			)
+		)
+
+		(bindcall scrollTo index="selectedLevelIdx" (bind enabled "!isInfoPhase"))
+	)
+)
+
+(def layout EndOfWarPaginatorStageRenderer (_entity:gfx, _currentLevel:number, _phaseIdx:number, _data:dict={}, _isActive:bool=false)
+	(scope
+		(var currentPoints:number = "_entity.progressionLevelProgress	? _entity.progressionLevelProgress.currentPoints
+																		: 0" (event "_entity.progressionLevelProgress.evChanged"))
+		(var levelPoints:number = "_entity.progressionLevel.points")
+
+		(var type:str = "_data && _data.type ? _data.type : null")
+		(var isExtra:bool = "type == END_OF_WAR_STAGE_TYPES.EXTRA")
+		(var isVideo:bool = "type == END_OF_WAR_STAGE_TYPES.VIDEO")
+
+		(var isLocked:bool = "_entity.progressionLevel.level > _currentLevel")
+		(var isCompleted:bool = "isVideo ? true : currentPoints == levelPoints")
+		(var isNarrativeAvailable:bool = "isLocked	? false : isCompleted && _entity.hasComponent(CC.newItem)" (event "_entity.evRemoved"))
+	)
+
+	(controller $Instance renderer='EventSystemPaginatorLevelItem'
+		(args
+			_icon = "type && type in END_OF_WAR_LEVEL_ICONS ? type : null"
+			_text = "type && !(type in END_OF_WAR_LEVEL_ICONS) ? $index : null"
+			_isActive = "_isActive"
+			_isLocked = "isLocked"
+			_isCompleted = "isExtra ? false : isCompleted"
+			_isRewardAvailable = "isExtra ? false : isNarrativeAvailable"
+			_soundSet = "isLocked ? 'button_eoww2_stage_locked' : 'button_eoww2_stage_unlocked'"
+		)
+
+		(exprs
+			(scope
+				(bind tooltipData "{	header:	isExtra	? 'IDS_END_OF_WAR_NARRATIVE_TITLE_ADDITIONAL' :
+												isVideo	? subst('IDS_END_OF_WAR_ARCHIVAL_FOOTAGE', [], {_video: _data.videoNumber})
+															: 'IDS_END_OF_WAR_NARRATIVE_TITLE_' + _phaseIdx + '_' + $index,
+										complete: 'IDS_END_OF_WAR_STAGE_COMPLETED',
+										reward: 'IDS_END_OF_WAR_NARRATIVE_AVAILABLE',
+										select: 'IDS_END_OF_WAR_SELECT_STAGE',
+										lock: 'IDS_END_OF_WAR_COMPLETE_PREVIOUS_STAGE',
+										progressData: !isCompleted && !isVideo	? {	title: 'IDS_END_OF_WAR_PROGRESS_POINTS',
+																					currentValue: currentPoints,
+																					maxValue: levelPoints }
+																				: null }"
+				)
+			)
+		)
+	)
+)
+
+(def layout EndOfWarBattleFeatures (_battleTypeEntity:gfx=null)
+	(macro DEFAULT_MODAL_WINDOW_SCOPE_EVENTS)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'battle_features_'")
+
+		(var eventBattleName:str = "_battleTypeEntity ? _battleTypeEntity.eventBattleState.name : null" (event "_battleTypeEntity.eventBattleState.evChanged"))
+	)
+
+	(bindcall externalCall 'direct.action' "[SC.Common.STATISTICS_EVENTS.LOG, [END_OF_WAR_STATISTICS.BATTLE_FEATURES]]" init=false watch=false on=click)
+	(bindcall externalCall "eventBattleName ? 'inputMapping.onRequest' : ''" "['openEventWikiPage', {'topicName': eventBattleName}]" init=false watch=false on=click)
+
+	(macro END_OF_WAR_SOUND_HANDLER
+		_soundSet = "'object_eoww2_combat_instructions'"
+		_prefix = "'battle_features_'"
+	)
+
+	(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+
+	(style
+		(position = "absolute")
+		(width = "END_OF_WAR_BATTLE_FEATURES_CONTAINER_WIDTH")
+		(height = "END_OF_WAR_BATTLE_FEATURES_CONTAINER_HEIGHT")
+		(rotation = 30)
+		(bind backgroundImage "'url:../events/end_of_war/narratives/elements/battle_features.png'")
+	)
+	(bind colorTransform "battle_features_rollOver ? END_OF_WAR_COLOR_TRANSFORM : {}")
+	(controller $Animation
+		(bindcall play	duration=0.3
+						from="{visualOffsetX: 0, visualOffsetY: 0}"
+						to="{visualOffsetX: 5, visualOffsetY: -5}"
+						reverse="!battle_features_rollOver"
+						easing="Easing.quint_in"
+						(bind trigger "battle_features_rollOver")
+		)
+	)
+
+	(block 
+		(class $FullsizeAbsolute)
+		(style (backgroundImage = 'url:../events/end_of_war/narratives/elements/battle_features_grunge.png'))
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(top = 20px) (left = 138px)
+			(width = 359px) (height = 100px)
+			(padding = "M")
+			(align = "middle|center")
+		)
+		(tf
+			(class $TextDefaultBold30NMWithoutShadow)
+			(style (width = 100%) (textAlign = "center") (textColor = "END_OF_WAR_BATTLE_FEATURES_TEXT_COLOR"))
+			(text = 'IDS_END_OF_WAR_BATTLE_FEATURES_TITLE')
+		)
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER "'battle_features_'")
+
+	(controller $Tooltip
+		(bind renderer "'EndOfWarNarrativeItemTooltip'")
+		(args
+			_headerText = 'IDS_END_OF_WAR_BATTLE_FEATURES_HEADER'
+			_unifiedStatus = null
+			_rewardText = null
+			_selectText = 'IDS_END_OF_WAR_GO_TO_BATTLE_FEATURES'
+			_lockText = null
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def layout EndOfWarVideoCard (_videoNumber:number)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'video_card_'")
+	)
+
+	(macro END_OF_WAR_SOUND_HANDLER
+		_soundSet = "'object_eoww2_film'"
+		_prefix = "'video_card_'"
+	)
+
+	(bindcall externalCall 'inputMapping.onRequest' "['showEndOfWarVideoItemWindow', {videoNumber: _videoNumber, isFromInfoChapter:true}]"	init=false
+																																			watch=false
+																																			on=click)
+
+	(style
+		(position = "absolute")
+		(width = "END_OF_WAR_VIDEO_CARD_WIDTH")
+		(height = "END_OF_WAR_VIDEO_CARD_HEIGHT")
+		(bind backgroundImage "'url:../events/end_of_war/narratives/video_cards/video_card_' + _videoNumber + '.png'")
+	)
+	(bind colorTransform "video_card_rollOver ? END_OF_WAR_COLOR_TRANSFORM : {}")
+
+	(macro MOUSE_EVENTS_DISPATCHER "'video_card_'")
+
+	(controller $Tooltip
+		(bind renderer "'EndOfWarNarrativeItemTooltip'")
+		(bind enabled "_videoNumber")
+		(args
+			_headerText = "subst('IDS_END_OF_WAR_ARCHIVAL_FOOTAGE', [], {_video: _videoNumber})"
+			_unifiedStatus = null
+			_rewardText = null
+			_selectText = 'IDS_END_OF_WAR_SHOW_ARCHIVAL_FOOTAGE'
+			_lockText = null
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def layout EndOfWarBackgroundFrame ()
+	(style
+		(position = "absolute")
+		(top = "{720:-M, 1280:-LM}")
+		(left = "{1080:-M, 1920:-L}")
+		(bottom = "{720:-M, 1280:-LM}")
+		(right = "{1080:-M, 1920:-L}")
+		(backgroundImage = 'url:../events/end_of_war/bg/frame.png')
+		(backgroundSize = "fill")
+		(hitTest = false)
+	)
+)

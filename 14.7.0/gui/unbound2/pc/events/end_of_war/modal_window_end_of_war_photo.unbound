@@ -1,0 +1,71 @@
+(def constant END_OF_WAR_PHOTO_CONTAINER
+	{
+		MAX_HEIGHT:	848,
+		MIN_HEIGHT:	544,
+		MAX_WIDTH:	1840,
+		MIN_WIDTH:	1180
+	}
+)
+
+(def layout ModalWindowEndOfWarPhoto (chapterIdx:number, stageIdx:number)
+	(macro MODAL_WINDOW_INIT)
+
+	(scope
+		(var isStageSmall:bool = "true")
+		(bind isStageSmall "stageHeight < 1080 || stageWidth < 1920")
+
+		(var containerHeight:number	= "isStageSmall	? END_OF_WAR_PHOTO_CONTAINER.MIN_HEIGHT
+													: END_OF_WAR_PHOTO_CONTAINER.MAX_HEIGHT")
+		(var containerWidth:number	= "isStageSmall	? END_OF_WAR_PHOTO_CONTAINER.MIN_WIDTH
+													: END_OF_WAR_PHOTO_CONTAINER.MAX_WIDTH")
+	)
+
+	(macro END_OF_WAR_LOG_MODAL_WINDOW_DURATION "END_OF_WAR_STATISTICS.PHOTO + '_' + chapterIdx + '_' + stageIdx")
+
+	(macro MODAL_WINDOW_BG)
+
+	(block
+		(style
+			(position = "absolute")
+			(top = "{720:M, 1280:LM}")
+			(right = "{1080:M, 1920:L}")
+		)
+		(element ModalWindowCloseIcon)
+	)
+
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+
+		(class $Fullsize)
+		(style
+			(align = "middle|center")
+			(paddingBottom = "{720:40px, 1080:0px}")
+		)
+		(block
+			(style
+				(backgroundSize = "cover")
+				(bind backgroundImage "'url:../events/end_of_war/narratives/photos/big/photo_' + chapterIdx + '_' + stageIdx + '.png'")
+				(bind height "containerHeight")
+				(bind width "containerWidth")
+			)
+
+			(block
+				(style
+					(position = "absolute")
+					(width = 100%)
+					(align = "center")
+					(height = 52px)
+					(padding = 10px)
+					(bottom = "{720:-68px, 1080:-84px}")
+				)
+
+				(element DefaultButton
+					_label = 'IDS_CLOSE_UPPER_CASE'
+					_focusIndex = 0
+					_name = 'btn_cancel'
+					_defaultFocused = true
+				)
+ 			)
+		)
+	)
+)
