@@ -1,0 +1,22 @@
+(def element ModalWindowGrandStrategyPass() layout=true dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+
+	(name = "'window_ModalWindowGrandStrategyPass'")
+
+	(class $FullsizeAbsolute)
+	(style (align = "center"))
+
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(class $Fullsize)
+		(style (align = "center"))
+
+		(block
+			(class $FullsizeAbsolute)
+			(element GamefaceWidget
+				_gfName = 'gf_ub2_port_grand_strategy_pass'
+				_gfPath = 'gui/gameface/build/grand_strategy_pass/index.html'
+			)
+		)
+	)
+)

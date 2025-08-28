@@ -1,0 +1,115 @@
+(def constant MODAL_WINDOW_SPLASH_SCREEN_DELAY 1.5)
+(def constant MODAL_WINDOW_SPLASH_SCREEN_DURATION 0.35)
+
+(def constant RENDER_SPLASH_SCREENS	{	'success_notification':	'SuccessNotificationSplashRenderer',
+										'gsp_rewards_received': 'GrandStrategyPassRewardsReceivedRenderer' })
+
+(def element ModalWindowSplashScreen(	_rendererElement:str, _rendererArgs:dict={})
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(scope
+		(event evAnimationEnded)
+		(var renderer:str = "RENDER_SPLASH_SCREENS[_rendererElement]")
+	)
+
+	(bindcall externalCall "'inputMapping.onRequest'" "['closeSplashScreenModal', {}]" init=false watch=false (event "evAnimationEnded"))
+	(bindcall externalCall "'inputMapping.onRequest'" "['closeGrandStrategyPassPurchaseModal', {}]" init=false watch=false on='addedToStage')
+	(dispatch evAnimationEnded dir=2 delay=1.5 (event "startShow"))
+
+	(name = "'window_ModalWindowSplashScreen'")
+
+	(class $FullsizeAbsolute)
+	(style (align = "middle"))
+
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+
+		(style (width = 100%))
+
+		(controller $Instance
+			(bind enabled "renderer != null")
+			(bind renderer "renderer")
+
+			(args
+				_rendererArgs = "_rendererArgs"
+			)
+		)
+	)
+)
+
+(def element SuccessNotificationSplashRenderer(_rendererArgs:dict)
+	(scope
+		(event startShow)
+		(event evAnimationEnded)
+
+		(var titleText:str = "_rendererArgs && 'titleText' in _rendererArgs ? _rendererArgs.titleText : ''")
+		(var statusText:str = "_rendererArgs && 'statusText' in _rendererArgs ? _rendererArgs.statusText : ''")
+	)
+
+	(class $Fullsize)
+	(style (align = "center|middle"))
+
+	(block
+		(style (gap = "S"))
+
+		(tf
+			(class $TextDefaultBold50NM)
+			(style (alpha = "TA"))
+			(bind text "titleText")
+		)
+
+		(element StatusLine
+			_text = "statusText"
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+		)
+	)
+)
+
+
+(def element GrandStrategyPassRewardsReceivedRenderer(_rendererArgs:dict)
+	(scope
+		(event startShow)
+		(event evAnimationEnded)
+
+		(var rewardStackId:str = "_rendererArgs && 'stackId' in _rendererArgs ? _rendererArgs.stackId : -1")
+
+		(var rewardStackEntity:gfx = "rewardStackId > 0 ? $datahub.getEntity(rewardStackId) : null")
+		(var rewardStackComponent:gfx = "rewardStackEntity ? rewardStackEntity.rewardsStack : null")
+		(var rewards:array = "rewardStackComponent ? rewardStackComponent.rewards : []" (event "rewardStackComponent.evChanged"))
+	)
+
+	(class $Fullsize)
+	(style (align = "center|middle"))
+
+	(block
+		(style
+			(align = "center|middle")
+			(width = 960px)
+			(gap = "S")
+		)
+
+		(tf
+			(class $TextDefaultBold21NM)
+			(style (alpha = "TA") (textAlign = "center") (marginBottom = "MS"))
+			(text = 'IDS_GRAND_STRATEGY_PASS_PROVINCE_CLAIM_SPLASH_MODAL_TITLE')
+		)
+
+		(block
+			(style (width = 100%))
+			(element HorizontalDividerTwoPx)
+		)
+
+		(element ContainerWithRewards
+			_rewards="rewards"
+			_itemHeight="120"
+		)
+
+		(block
+			(style (width = 100%))
+			(element HorizontalDividerTwoPx)
+
+		)
+	)
+)

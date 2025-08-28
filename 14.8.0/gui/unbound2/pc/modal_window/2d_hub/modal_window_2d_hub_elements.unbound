@@ -1,0 +1,453 @@
+
+
+(def element Hub2DPromotedBannerContent (_featureName:str='', _isActive:bool=true, _iconUrl:str='', _title:str='', _descriptionText:str='',
+										_level:number=0, _isStatus:bool=false, _unifiedStatus:str='', _statusText:str='', _isNew:bool=false,
+										_amountAvailable:number=0, _amountNeeded:number=0, _amountText:str='',
+										_progress:number=-1, _progressBarText:str='', _currencyIcon:str='', _timeLeftToStart:number=0, _formattedTimeLeftToStart:str='')
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var bannerInfo:bool = false)
+		(bind bannerInfo "!bannerInfo" init=false watch=false (event "evRollOver") (event "evRollOut"))
+	)
+
+	(class $FullsizeAbsolute)
+	(bind colorTransform "	_isActive && rollOver	? ITEM_OVER_COLOR_TRANSFORM_PARAMS
+													: {}")
+
+	
+	(block
+		(style
+			(width = 100%)
+			(height = 100%)
+			(bind alpha "!_isActive ? 0.4 : 1")
+			(macro DESATURATION_DEFAULT "_isActive")
+		)
+
+		(element Hub2DBannerItemIcon
+			_featureName = "toLower(_featureName)"
+			_bannerSide = "SC.Hub_2d.BANNER_SIDE.PROMOTED"
+			_iconUrl = "_iconUrl"
+		)
+	)
+
+	
+	(block
+
+		(style
+			(position = "absolute")
+			(width = 100%)
+			(bottom = 0)
+			(padding = "M")
+			(backgroundColor = 0xB3000700)
+			(hitTest = false)
+		)
+
+		(block
+			(style (width = 100%))
+			(element Hub2DBannerItemTitle
+				_featureName = "toLower(_featureName)"
+				_bannerSide = "SC.Hub_2d.BANNER_SIDE.PROMOTED"
+				_title = "_title"
+				_unifiedStatus = "_isStatus ? _unifiedStatus : ''"
+				_isNew = "_isNew"
+			)
+		)
+
+		
+		(block
+			(bind visible "_isActive && bannerInfo")
+			(style (width = 100%) (paddingTop = "SXS"))
+
+			(controller $Animation
+				(bindcall play  duration="0.3"
+								action="kill"
+								from="{alpha: 0}"
+								to="{alpha: 1}"
+								easing="Easing.quad_out"
+								reverse="!(bannerInfo)"
+								(bind trigger "bannerInfo")
+				)
+			)
+
+			(element Hub2DBannerActiveState
+				_bannerSide = "SC.Hub_2d.BANNER_SIDE.PROMOTED"
+				_featureName = "toLower(_featureName)"
+				_isStatus = "_isStatus"
+				_unifiedStatus = "_unifiedStatus"
+				_statusText = "_statusText"
+				_amountAvailable = "_amountAvailable"
+				_amountNeeded = "_amountNeeded"
+				_amountText = "_amountText"
+				_progress = "_progress"
+				_progressBarText = "_progressBarText"
+				_currencyIcon = "_currencyIcon"
+			)
+		)
+
+		
+		(block
+			(bind visible "!_isActive")
+			(style (width = 100%) (paddingTop = "SXS"))
+
+			(element Hub2DBannerInactiveState
+				_bannerSide = "SC.Hub_2d.BANNER_SIDE.PROMOTED"
+				_featureName = "toLower(_featureName)"
+				_level = "_level"
+				_timeLeftToStart = "_timeLeftToStart"
+				_formattedTimeLeftToStart = "_formattedTimeLeftToStart"
+			)
+		)
+
+		(block
+			(bind visible "bannerInfo")
+			(style (width = 100%))
+
+			(controller $Animation
+				(bindcall play  duration="0.3"
+								action="kill"
+								from="{alpha: 0}"
+								to="{alpha: 1}"
+								easing="Easing.quad_out"
+								reverse="!(bannerInfo)"
+								(bind trigger "bannerInfo")
+				)
+			)
+
+			
+			(block
+				(style (width = 100%) (bind marginTop "!_isActive? SXS : 0"))
+				(element Hub2DBannerItemDescription
+					_bannerSide = "SC.Hub_2d.BANNER_SIDE.PROMOTED"
+					_featureName = "toLower(_featureName)"
+					_descriptionText = "_descriptionText"
+				)
+			)
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(bind alpha "!_isActive				? 0.1 :
+						 rollOver && _isActive	? 0.3
+												: 0.2")
+			(backgroundImage = "'url:../service_kit/frames/one_pixel_frame.png'")
+			(scale9grid=2)
+			(hitTest=false)
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "_isActive ? 'button_2D_Hub_Banner_Main' : ''"
+	)
+)
+
+(def element Hub2DSideBannerContent (_featureName:str='', _isActive:bool=true, _iconUrl:str='', _title:str='',_level:number=0,
+									_isStatus:bool=false, _unifiedStatus:str='', _statusText:str='', _isNew:bool=false,
+									_amountAvailable:number=0, _amountNeeded:number=0, _amountText:str='',
+									_progress:number=-1, _progressBarText:str='', _currencyIcon:str='', _timeLeftToStart:number=0, _formattedTimeLeftToStart:str='')
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+
+	(class $FullsizeAbsolute)
+	(style
+		(bind backgroundColor "!_isActive				? HUB2D_BACKGROUNDCOLOR_INACTIVE :
+								rollOver && _isActive	? HUB2D_BACKGROUNDCOLOR_ROLLOVER
+														: HUB2D_BACKGROUNDCOLOR_ACTIVE")
+	)
+	(bind colorTransform "	_isActive && rollOver	? ITEM_OVER_COLOR_TRANSFORM_PARAMS
+													: {}")
+
+	(block
+		(class $Fullsize)
+		(style
+			(align = "center")
+			(padding = "L")
+			(bind paddingTop "_progress == -1 ? LM : MS")
+		)
+
+		
+		(block
+			(style
+				(marginBottom = "M")
+				(bind alpha "!_isActive ? 0.4 : 1")
+			)
+
+			(element Hub2DBannerItemIcon
+				_featureName = "toLower(_featureName)"
+				_bannerSide = "SC.Hub_2d.BANNER_SIDE.SIDE"
+				_iconUrl = "_iconUrl"
+			)
+		)
+
+		
+		(block
+			(style (width = 100%) (marginBottom = "M"))
+			(element Hub2DBannerItemTitle
+				_featureName = "toLower(_featureName)"
+				_bannerSide = "SC.Hub_2d.BANNER_SIDE.SIDE"
+				_title = "_title"
+				_unifiedStatus = "_isStatus ? _unifiedStatus : ''"
+				_isNew = "_isNew"
+			)
+		)
+
+		
+		(block
+			(bind visible "_isActive")
+			(style (width = 100%))
+
+			(element Hub2DBannerActiveState
+				_bannerSide = "SC.Hub_2d.BANNER_SIDE.SIDE"
+				_featureName = "toLower(_featureName)"
+				_isStatus = "_isStatus"
+				_unifiedStatus = "_unifiedStatus"
+				_statusText = "_statusText"
+				_amountAvailable = "_amountAvailable"
+				_amountNeeded = "_amountNeeded"
+				_amountText = "_amountText"
+				_progress = "_progress"
+				_progressBarText = "_progressBarText"
+				_currencyIcon = "_currencyIcon"
+			)
+		)
+
+		
+		(block
+			(bind visible "!_isActive")
+			(style (width = 100%))
+
+			(element Hub2DBannerInactiveState
+				_bannerSide = "SC.Hub_2d.BANNER_SIDE.SIDE"
+				_level = "_level"
+				_timeLeftToStart = "_timeLeftToStart"
+				_formattedTimeLeftToStart = "_formattedTimeLeftToStart"
+			)
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(bind alpha "!_isActive				? 0.1 :
+						 rollOver && _isActive	? 0.3
+												: 0.2")
+			(backgroundImage = "'url:../service_kit/frames/one_pixel_frame.png'")
+			(scale9grid=2)
+			(hitTest=false)
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "_isActive ? 'button_2D_Hub_Banner_Side' : ''"
+	)
+)
+
+(def element Hub2DNewsBannerContent(_title:str, _isActive:bool=true, _isNew:bool=false,
+									_isReward:bool=false, _unifiedStatus:str="SC.Ui_styles.UNIFIED_STATUS.DEFAULT", _statusText:str='')
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "_unifiedStatus" "'textColor'" "'textAlpha'")
+
+	(class $FullsizeAbsolute)
+	(style
+		(align = "middle")
+		(flow = "horizontal")
+		(bind backgroundColor "!_isActive	? HUB2D_BACKGROUNDCOLOR_INACTIVE :
+								rollOver	? HUB2D_BACKGROUNDCOLOR_ROLLOVER
+											: HUB2D_BACKGROUNDCOLOR_ACTIVE")
+	)
+
+	(block
+		(style
+			(paddingLeft="S")
+		)
+
+		(tf
+			(class $TextDefaultBoldNM)
+			(style
+				(bind alpha "_isActive ? textAlpha : 0.5")
+				(bind textColor "textColor")
+			)
+
+			(bind text "_title")
+		)
+	)
+
+	
+	(block
+		(bind visible "_isReward")
+		(style
+			(width = 19px) (height = 19px) (position = "absolute") (right = "S") (top = "S")
+			(bind backgroundImage "'url:../service_kit/unified_status_icons/icon_reward_available.png'")
+		)
+	)
+
+	(block
+		(style
+			(marginLeft = 3px)
+			(marginTop = -9px)
+		)
+
+		(macro DEFAULT_CONTROL_MARKER_ANIMATION "_isNew")
+		(element MarkerNew)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(bind alpha "!_isActive				? 0.1 :
+						 rollOver && _isActive	? 0.3
+												: 0.2")
+			(backgroundImage = "'url:../service_kit/frames/one_pixel_frame.png'")
+			(scale9grid=2)
+			(hitTest=false)
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "_isActive ? 'button_2D_Hub_Banner_Inititives' : ''"
+	)
+)
+
+
+
+(def element Hub2DBannerItemIcon (_iconUrl:str, _featureName:str='', _bannerSide:str='')
+	(style
+		(bind width "_bannerSide == SC.Hub_2d.BANNER_SIDE.SIDE	? 80
+																: 100%")
+		(bind height "_bannerSide == SC.Hub_2d.BANNER_SIDE.SIDE	? 80
+																: 100%")
+		(bind backgroundImage "_iconUrl	? _iconUrl
+										: 'url:../events/2d_hub/'+ _bannerSide + '/' + _featureName + '.png'")
+		(backgroundSize = "fill")
+	)
+)
+
+(def element Hub2DBannerItemTitle (_title:str='', _featureName:str='', _class:str='', _textColor:str=null,
+									_unifiedStatus:str="SC.Ui_styles.UNIFIED_STATUS.DEFAULT", _bannerSide:str='', _isNew:bool=false)
+	(style
+		(width = 100%)
+		(bind align "_bannerSide == SC.Hub_2d.BANNER_SIDE.SIDE ? center : left")
+		(flow = "horizontal")
+	)
+
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "_unifiedStatus" "'textColor'" "'textAlpha'")
+
+	(tf
+		(bind class "_class ? _class : '$TextDefaultBold19NM'")
+		(class $DropShadowDisabler)
+		(bind alpha "textAlpha")
+
+		(style
+			(bind textColor "_textColor ? _textColor : textColor")
+			(bind maxWidth "!_bannerSide ? 220px : 100%")
+			(bind textAlign "_bannerSide == SC.Hub_2d.BANNER_SIDE.SIDE ? center : left")
+		)
+
+		(bind text "_title	? _title
+							: 'IDS_2D_HUB_' + toUpper(tr(_featureName)) + '_BANNER_TITLE'")
+	)
+
+	(block
+		(bind visible "_bannerSide != SC.Hub_2d.BANNER_SIDE.SIDE")
+		(style
+			(marginLeft = 3px)
+			(marginTop = -9px)
+		)
+
+		(macro DEFAULT_CONTROL_MARKER_ANIMATION "_isNew")
+		(element MarkerNew)
+	)
+
+	(block
+		(bind visible "_bannerSide == SC.Hub_2d.BANNER_SIDE.SIDE")
+		(style
+			(position = "absolute")
+	 		(right = -10px)
+	 		(bottom = 30px)
+		)
+
+		(macro DEFAULT_CONTROL_MARKER_ANIMATION "_isNew")
+		(element MarkerNew)
+	)
+)
+
+(def element Hub2DBannerItemDescription (_bannerSide:str='', _featureName:str='',  _descriptionText:str='', _textColor:str=null)
+	(style
+		(width = 100%)
+		(bind align "_bannerSide == SC.Hub_2d.BANNER_SIDE.SIDE	? center
+																: left")
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(class $DropShadowDisabler)
+		(style
+			(width = 100%)
+			(textColor = "_textColor ? _textColor : SC.Ui_styles.SERVICE_COLORS.WHITE")
+			(alpha = "TA")
+		)
+
+		(bind text "_descriptionText	? _descriptionText 
+										:'IDS_2D_HUB_' + toUpper(tr(_featureName)) + '_BANNER_DESCRIPTION'")
+	)
+)
+
+(def element Hub2DBannerAmountAvailable (_bannerSide:str='', _text:str='', _textClass:str='$TextDefaultNM')
+	(style 
+		(width = 100%)
+		(flow = "horizontal")
+		(alpha = "TA")
+		(multiline = false)
+		(bind align "_bannerSide == SC.Hub_2d.BANNER_SIDE.SIDE	? center
+																: left")
+	)
+
+	(tf
+		(bind class "_textClass")
+
+		(bind text "_text")
+	)
+)
+
+(def element Hub2DBannerAmountNeeded (_bannerSide:str='', _amount:number=0, _text:str='', _currencyIcon:str='', _textClass:str='$TextDefaultNM')
+	(style 
+		(width = 100%)
+		(flow = "horizontal")
+		(alpha = "TA")
+		(multiline = false)
+		(bind align "_bannerSide == SC.Hub_2d.BANNER_SIDE.SIDE	? center
+																: left")
+	)
+
+	(hblock
+		(style (align = "middle"))
+
+		(tf
+			(bind class "_textClass")
+			(style (marginRight = "6"))
+			(alpha = "TC")
+
+			(bind text "_text")
+		)
+
+		(tf
+			(bind class "_textClass")
+
+			(bind text "_amount")
+		)
+
+		(block
+			(style 
+				(width = "M")
+				(height = "M")
+				(marginLeft = "XS")
+				(bind backgroundImage "_currencyIcon")
+			)
+		)
+	)
+)

@@ -1,0 +1,146 @@
+(def constant HUB2D_BANNER_SIDE_NEWS_OFFSET "16") 
+(def constant HUB2D_BANNER_OFFSET "8") 
+
+(def constant HUB2D_WINDOW_STATISTICS
+	{
+		ESC:	'ub2:hub2d_window_esc_clicked'
+	}
+)
+
+(def element ModalWindow2DHub() layout=true 
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(scope
+		(var paddingTopValue:number = "stageHeight <= 720 ? -M : 0")
+
+		(event ev2dHubRemoved)
+		(var hub2DWatcher:gfx = "$datahub.getFirstWatcher(CC.hub2D)")
+		(var isHubAvailable:bool = "hub2DWatcher.entity" (event "hub2DWatcher.event"))
+
+		(var bannerCollection:gfx = "$datahub.getCollection(CC.hub2DBanner)")
+		(var promotedBannerCollection:gfx = "bannerCollection ? bannerCollection.getChildByPath('bySide.'+SC.Hub_2d.BANNER_SIDE.PROMOTED) : null"
+			(event "bannerCollection.evAdded")
+			(event "bannerCollection.evRemoved")
+			(event "bannerCollection.evUpdated")
+		)
+		(var sideBannerCollection:gfx = "bannerCollection ? bannerCollection.getChildByPath('bySide.'+SC.Hub_2d.BANNER_SIDE.SIDE) : null"
+			(event "bannerCollection.evAdded")
+			(event "bannerCollection.evRemoved")
+			(event "bannerCollection.evUpdated")
+		)
+		(var newsBannerCollection:gfx = "bannerCollection ? bannerCollection.getChildByPath('bySide.'+SC.Hub_2d.BANNER_SIDE.NEWS) : null"
+			(event "bannerCollection.evAdded")
+			(event "bannerCollection.evRemoved")
+			(event "bannerCollection.evUpdated")
+		)
+		(var numberOfPromotedBanners:number = "promotedBannerCollection ? promotedBannerCollection.items.length : 0")
+		(var numberOfSideBanners:number = "sideBannerCollection ? sideBannerCollection.items.length : 0")
+		(var numberOfNewsBanners:number = "newsBannerCollection ? newsBannerCollection.items.length : 0")
+	)
+	(dispatch ev2dHubRemoved args="{}" init=false (bind enabled "!isHubAvailable") (bind trigger "isHubAvailable"))
+	(bindcall externalCall 'inputMapping.onRequest' "['close', { }]" init=false watch=false (event "ev2dHubRemoved"))
+
+	(style (align = "center|middle"))
+
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(style	(width = 100%)
+				(align = "center|middle")
+				(position = "absolute")
+				(bind paddingTop "paddingTopValue")
+		)
+
+		(element ModalWindowHeaderFullSize
+			_windowName = "'IDS_HUB_2D_WINDOW_HEADER_UPPER'"
+			_paddingRight = "0"
+			_paddingLeft = "0"
+			_paddingTop = "0"
+			_hideBackButton = true
+			_hideDivider = true
+			_escButtonLogEvent = "HUB2D_WINDOW_STATISTICS.ESC"
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "center|middle") (flow = "horizontal"))
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+			(style (marginRight = "HUB2D_BANNER_OFFSET"))
+			(element Hub2DPromotedBannerContainer
+				_numberOfPromotedBanners = "numberOfPromotedBanners"
+			)
+		)
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 1.5)
+			(block
+				(style (marginBottom = "HUB2D_BANNER_SIDE_NEWS_OFFSET"))
+				(element Hub2DSideBannerContainer
+					_numberOfSideBanners = "numberOfSideBanners"
+					_numberOfNewsBanners = "numberOfNewsBanners"
+				)
+			)
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+				(element Hub2DNewsBannerContainer
+					_numberOfNewsBanners = "numberOfNewsBanners"
+				)
+			)
+		)
+	)
+)
+
+(def element Hub2DPromotedBannerContainer(_numberOfPromotedBanners:number) layout=true 
+	(style (flow = "tile_horizontal"))
+
+	(controller $Repeat renderer='Hub2DPromotedBanner' 
+		(bind count "_numberOfPromotedBanners")
+		(args "$index" "_numberOfPromotedBanners")
+	)
+)
+
+(def element Hub2DSideBannerContainer(_numberOfSideBanners:number, _numberOfNewsBanners:number) layout=true
+	(style
+		(width = 460px)
+		(flow = "tile_horizontal")
+	)
+
+	(controller $Repeat renderer='Hub2DSideBanner' 
+		(bind count "_numberOfSideBanners")
+		(args "$index" "_numberOfSideBanners" "_numberOfNewsBanners")
+	)
+)
+
+(def element Hub2DNewsBannerContainer(_numberOfNewsBanners:number) layout=true
+	(style 
+		(width = 460px)
+	)
+
+	(tf
+		(bind visible "_numberOfNewsBanners")
+		(class $TextDefaultBold21NM)
+		(style
+			(width = 100%)
+			(alpha = "TA")
+			(marginBottom = "SXS")
+		)
+
+		(text = "'IDS_HUB_2D_NEWS_BLOCK_HEADER_UPPER'")
+	)
+
+	(block
+		(style
+			(width = 100%)
+			(flow = "tile_horizontal")
+		)
+
+		(controller $Repeat renderer='Hub2DNewsBanner' 
+			(bind count "_numberOfNewsBanners")
+			(args "$index" "_numberOfNewsBanners")
+		)
+	)
+
+	(element Hub2DAllNewsBanner)
+)

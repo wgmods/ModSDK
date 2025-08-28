@@ -1,0 +1,67 @@
+
+
+
+(def element ContainerWithRewards(_rewards:array, _align:str, _itemsInRow:number=6, _itemHeight:number=80) layout=true
+	(scope
+		(var rewardsLength:number = "_rewards.length")
+		(var isRewardsALittel:bool = "rewardsLength < _itemsInRow")
+
+		(var containerRewardsHeight:number = "isRewardsALittel ? _itemHeight : _itemHeight * 2")
+	)
+
+	(style
+		(width = "100%")
+		(bind height "containerRewardsHeight")
+	)
+
+	(block
+		(style
+			(width = "100%")
+			(flow = "tile_horizontal")
+			(bind align "_align ? _align : isRewardsALittel ? center : left")
+		)
+
+		(controller $Repeat renderer='ContainerReward'
+			(bind count "rewardsLength")
+
+			(args
+				_rewardEntityId="_rewards[$index]"
+				_itemHeight="_itemHeight"
+			)
+		)
+	)
+)
+
+(def element ContainerReward(_rewardEntityId:number, _itemHeight:number)
+	(scope
+		(var rewardEntity:gfx = "$datahub.getEntity(_rewardEntityId)")
+		(var rewardComponent:gfx = "rewardEntity ? rewardEntity.rewardComponent : null")
+
+		(var id:number =		"rewardComponent	? rewardComponent.id	: -1" 		(event "rewardComponent.evUpdate"))
+		(var type:str = 		"rewardComponent	? rewardComponent.type	: ''" 		(event "rewardComponent.evUpdate"))
+		(var subtype:str =		"rewardComponent	? rewardComponent.subtype	: ''" 	(event "rewardComponent.evUpdate"))
+		(var name:str =			"rewardComponent	? rewardComponent.name	: null" 	(event "rewardComponent.evUpdate"))
+		(var amount:number =	"rewardComponent	? rewardComponent.amount	: null" (event "rewardComponent.evUpdate"))
+		(var params:dict =	"rewardComponent	? rewardComponent.params	: null" (event "rewardComponent.evUpdate"))
+
+		(var reward:dict = "{	isPRMP: true,
+								params: params,
+								amount: amount,
+								name: name,
+								subtype: subtype,
+								type: type,
+								id: id	}")
+	)
+
+	(style
+		(align = "center|middle") (minWidth = "160px")
+		(bind height "_itemHeight")
+	)
+
+	(controller $Instance renderer='RewardItem'
+		(bind enabled "rewardComponent != null")
+		(args
+			_reward="reward"
+		)
+	)
+)

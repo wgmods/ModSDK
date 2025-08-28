@@ -1,0 +1,209 @@
+(def constant SHIP_RESTRICTIONS_PANEL_NAME 'shipRestrictionsHeight')
+
+(def constant SHIP_RESTICTIONS_INFOTIP_PIN_SETTINGS
+	{
+		'left'		: "DEFAULT_PINS_OFFSETS",
+		'right'		: "DEFAULT_PINS_OFFSETS",
+		'top'		: "DEFAULT_PINS_OFFSETS",
+		'bottom'	: {pinTop: 0, pinBottom: "-139", pinLeft: 0, pinRight: 0}
+	}
+)
+
+(def element SpecificShipsTooltip (_restrictionsEntityId:number, _isShowUB2Tooltip:bool=false) layout=true
+	(scope
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE)
+
+		(var restrictionEntity:gfx = "$datahub.getEntity(_restrictionsEntityId)")
+		(var specificShipsComponent:gfx = "restrictionEntity && restrictionEntity.specificShipsList ? restrictionEntity.specificShipsList : null")
+		(var includedShips:array = "specificShipsComponent ? specificShipsComponent.includedShips : []")
+		(var excludedShips:array = "specificShipsComponent ? specificShipsComponent.excludedShips : []")
+	)
+
+	(style (width = 300px) (hitTest = false))
+
+	(macro PULL_TOOLTIP_UB2_STATE)
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_INFOTIP_SPECIFIC_SHIPS_HEADER'
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_INFOTIP_SPECIFIC_SHIPS_DESCRIPTION'
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element StatusLine
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+			_text = 'IDS_INFOTIP_SPECIFIC_SHIPS_MOUSE'
+		)
+	)
+)
+
+(def element SpecificShipsInfotip (_restrictionsEntityId:number) layout=true
+	(scope
+		(event evAddedToStage)
+		(event evGroupClick)
+		(event evSetActiveGroup)
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE "true")
+
+		(event evPinPositionChanged)
+		(var pinParams:dict = "SHIP_RESTICTIONS_INFOTIP_PIN_SETTINGS['bottom']" watch=false)
+		(bind pinParams "SHIP_RESTICTIONS_INFOTIP_PIN_SETTINGS[$event.pinPosition]" init=false (event "evPinPositionChanged"))
+
+		(var restrictionEntity:gfx = "$datahub.getEntity(_restrictionsEntityId)")
+		(var specificShipsComponent:gfx = "restrictionEntity && restrictionEntity.specificShipsList ? restrictionEntity.specificShipsList : null")
+		(var includedShips:array = "specificShipsComponent ? specificShipsComponent.includedShips : []")
+		(var excludedShips:array = "specificShipsComponent ? specificShipsComponent.excludedShips : []")
+
+		(var verticalDragCollection:gfx = "$datahub.getCollection(CC.verticalDragPanel)")
+		(var verticalDragComponent:gfx = "$datahub.getPrimaryComponent(CC.verticalDragPanel, SHIP_RESTRICTIONS_PANEL_NAME)" (event "verticalDragCollection.evAdded") (event "verticalDragCollection.evRemoved"))
+		(var panelHeight:number = "verticalDragComponent ? verticalDragComponent.panelHeight : 256" (event "verticalDragComponent.evPanelHeightChanged"))
+		(var isPanelDragged:bool = "verticalDragComponent ? verticalDragComponent.isDragging : false" (event "verticalDragComponent.evIsDraggingChanged"))
+
+		(var tabs:array = "	includedShips.length > 0 && excludedShips.length > 0	? ['included', 'excluded']	:
+							includedShips.length > 0								? ['included']				:
+							excludedShips.length > 0								? ['excluded']
+																					: []")
+		(var selectedTab:number = "$event ? $event.groupIndex : 0" (event "evSetActiveGroup"))
+		(var selectedList:array = "tabs[selectedTab] == 'included' ? includedShips : excludedShips")
+	)
+
+	(dispatch evAddedToStage on='addedToStage')
+	(bindcall externalCall 'direct.action' "['verticalDrag.create', [SHIP_RESTRICTIONS_PANEL_NAME, true]]" init=false watch=false (event "evAddedToStage"))
+
+	(dispatch evSetActiveGroup dir="EventDirection.NONE" args="$event" delay=0.01 (event "evGroupClick"))
+
+	(style (width = 300px))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP "true")
+
+	(element INFOTIP_SYSTEM_DEFAULT_CONTAINER
+		(style
+			(bind height "panelHeight")
+		)
+		(block
+			(style (width = 100%) (marginBottom = "SXS"))
+			(element VerticalDragGripper
+				_name = "SHIP_RESTRICTIONS_PANEL_NAME"
+			)
+		)
+
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_INFOTIP_SPECIFIC_SHIPS_HEADER'
+			(style
+				(paddingLeft = "M")
+			)
+		)
+
+		(element HorizontalDividerTwoPx
+			(style (marginTop = "SXS") (marginBottom = "SXS"))
+		)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_INFOTIP_SPECIFIC_SHIPS_DESCRIPTION'
+			(style
+				(paddingLeft = "M")
+				(paddingRight = "M")
+				(marginBottom = "M")
+			)
+		)
+
+		(element HorizontalDividerTwoPx)
+
+		(block
+			(style
+				(width = 100%)
+			)
+			(hblock
+				(style
+					(width = 100%)
+				)
+				(controller $Repeat renderer='TabButton'
+					(bind count "tabs.length")
+					(args
+						_label = "'IDS_INFOTIP_SPECIFIC_SHIPS_' + toUpper(tabs[$index]) + '_TAB'"
+						_isSelected = "selectedTab == $index"
+						_isDisabled = "isPanelDragged"
+						_width = "toString(100/tabs.length) + '%'"
+						_dispatchedEv = 'evGroupClick'
+						_dispatchParams = "{ groupIndex: $index }"
+						_name = "tabs[$index]"
+					)
+				)
+			)
+			(element HorizontalDividerTwoPx
+				(style
+					(position = "absolute")
+					(width = 100%)
+					(bottom = 0)
+				)
+			)
+		)
+
+		(scrollArea
+			(style
+				(width = 100%)
+				(backgroundColor = 0x01000000)
+				(height = 100%)
+			)
+
+			(verticalSlider='SystemMessagesScrollBarV')
+			(hscrollPolicy='off')
+			(vscrollPolicy='auto')
+			(repeatController='shipRestrictionNames')
+			(scrollPerItem = true)
+
+			(wheelScrollSpeed = 1.0)
+			(wheelScrollAcceleration = 0.9)
+			(maxScrollingAnimatedDistance = 150)
+
+			(activeControlsAlpha = 1)
+			(inactiveControlsAlpha = 0.5)
+			(animationDuration = 0.2)
+			(animationEasing = "Easing.cubic_out")
+
+			(content
+				(style
+					(width = 300)
+					(margin = "M")
+				)
+				(element INFOTIP_SYSTEM_DEFAULT_CONTAINER
+					(style
+						(width = 100%)
+						(marginBottom = "M")
+					)
+
+					(controller $Repeat renderer='ShipRestrictionItem' name='shipRestrictionNames'
+						(bind count "selectedList.length")
+						(reuseElements = false)
+						(itemHeight = 30)
+						(itemWidth = 100%)
+						(itemOffset = "SYSTEM_MESSAGES_OFFSET")
+						(args
+							_shipId = "selectedList[$index]"
+						)
+					)
+				)
+			)
+			(bindcall scrollToBegin animated=false (event "evGroupClick") (event "evAddedToStage"))
+		)
+	)
+	(element InfotipPins "pinParams" "false")
+)
+
+(def element ShipRestrictionItem(_shipId:number)
+	(style
+		(height = 30)
+		(width = 100%)
+	)
+	(element ShipLineItemNM
+		_shipId = "_shipId"
+	)
+)

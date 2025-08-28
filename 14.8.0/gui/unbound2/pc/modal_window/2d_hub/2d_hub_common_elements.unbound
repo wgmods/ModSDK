@@ -1,0 +1,111 @@
+(def element Hub2DBannerActiveState (_bannerSide:str='', _featureName:str='', _isStatus:bool=false, _unifiedStatus:str='', _statusText:str='',
+									_amountAvailable:number=0, _amountNeeded:number=0, _amountText:str='',
+									_progress:number=-1, _progressBarText:str='', _currencyIcon:str='')
+	(scope
+		(var amountText:str = "_amountText ? _amountText : 'IDS_2D_HUB_BANNER_AMOUNT_TEXT'")
+	)
+	(style (width = 100%))
+
+	
+	(block
+		(bind visible "_isStatus")
+		(style (width = 100%) (marginBottom = "SXS"))
+
+		(controller $Instance renderer='StatusLine'
+			(args
+				_text = "_statusText"
+				_unifiedStatus = "_unifiedStatus"
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "_amountAvailable")
+		(style (width = 100%) (marginBottom = "SXS"))
+
+		(controller $Instance renderer='Hub2DBannerAmountAvailable'
+			(args
+				_bannerSide = "_bannerSide"
+				_text = "subst(amountText, [], {_amount: _amountAvailable})"
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "_amountNeeded")
+		(style (width = 100%) (marginBottom = "S"))
+
+		(controller $Instance renderer='Hub2DBannerAmountNeeded'
+			(args
+				_bannerSide = "_bannerSide"
+				_amount = "_amountNeeded"
+				_text = "_progressBarText ? _progressBarText : 'IDS_EXP_LEFT'"
+				_currencyIcon = "_currencyIcon ? _currencyIcon : 'url:../service_kit/currencies/icon_exp_small.png'"
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "_progress >= 0")
+		(style (width = 100%) (marginBottom = "SXS"))
+
+		(controller $Instance renderer='DefaultProgressBar'
+			(args
+				_progress = "_progress"
+				_height = "6"
+			)
+		)
+	)
+)
+
+(def element Hub2DBannerInactiveState (_bannerSide:str='', _featureName:str='', _level:number=0, _timeLeftToStart:number=0, _formattedTimeLeftToStart:str='')
+	(scope
+		
+		(var accountLevelEntity:gfx = "$datahub.getSingleEntity(CC.accountLevel)")
+		(var accountLevelComponent:gfx = "accountLevelEntity ? accountLevelEntity.accountLevel : null" (event "accountLevelEntity.accountLevel.evLevelChanged"))
+		(var accountLevel:number = "accountLevelComponent ? accountLevelComponent.level : 0" (event "accountLevelComponent.evLevelChanged"))
+
+		(var isInactiveByAccountLevel:bool = "accountLevel < _level")
+		(var isInactiveByTime:bool = "_timeLeftToStart > 0")
+	)
+	(style (width = 100%))
+
+	
+	(block
+		(bind visible "isInactiveByTime && !isInactiveByAccountLevel")
+		(style
+			(width = 100%)
+			(bind align "_bannerSide == SC.Hub_2d.BANNER_SIDE.SIDE  ? center
+																	: left")
+		)
+
+		(controller $Instance renderer='StatusLine'
+			(args
+				_text = "subst('IDS_HUB_2D_BANNER_STATUS_TIME', [], {_timeLeftToStart: _formattedTimeLeftToStart})"
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DATE"
+				_leading = 0
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "isInactiveByAccountLevel")
+		(style
+			(width = 100%)
+			(bind align "_bannerSide == SC.Hub_2d.BANNER_SIDE.SIDE	? center
+																	: left")
+		)
+
+		(controller $Instance renderer='StatusLine'
+			(args
+				_text = "subst('IDS_REACH_ACCESS_LEVEL', [], {_level: _level})"
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.LOCK"
+				_leading = 0
+			)
+		)
+	)
+)
