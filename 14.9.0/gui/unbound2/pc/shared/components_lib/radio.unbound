@@ -1,0 +1,60 @@
+(def element RadioButton (_selected:bool, _enabled:bool=true, _interactive:bool=true, _rollOver:bool=false, _size:number=25px) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'rb_'")
+
+		(var privRollOver:bool = "rb_rollOver || _rollOver")
+	)
+
+	(style (width = "_size") (height = "_size"))
+
+	
+	(block
+		(bind visible "_interactive")
+
+		(style
+			(width = "_size") (height = "_size")
+			(backgroundImage = 'url:../service_kit/buttons/radio_button/default.png')
+			(backgroundSize = "fill")
+		)
+
+		
+		(block
+			(bind alpha "	_enabled	? (privRollOver ? 0.7 : 0) :
+							_selected	? 0.7
+										: 0")
+			(style
+				(position = "absolute")
+				(width = "_size") (height = "_size")
+				(backgroundImage = 'url:../service_kit/buttons/radio_button/over.png')
+				(backgroundSize = "fill")
+			)
+
+			(controller $Animation
+				(bindcall play
+					duration=0.3
+					from={alpha: 0}
+					to={alpha: 0.7}
+					reverse="!(privRollOver)"
+					easing="Easing.line"
+					(bind trigger "privRollOver")
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "_selected")
+		(style
+			(position = "absolute")
+			(width = "_size") (height = "_size")
+			(backgroundImage = 'url:../service_kit/buttons/radio_button/check.png')
+			(backgroundSize = "fill")
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "_enabled"
+		_prefix = "'rb_'"
+	)
+)

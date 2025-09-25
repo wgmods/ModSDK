@@ -1,0 +1,106 @@
+<APB003_AN_M64_GP500lb.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Bomb	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0118 -0.0242 -0.0587	</min>
+		<max>	0.0118 0.0013 0.0415	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	BombShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bomb	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_NODAMAGE_PBS_Projectile	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASA920_Pinata_Essex/projectile/APB006_AN_M66_GP2000lb_projectile.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bomb_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bomb	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_NODAMAGE_PBS_Projectile	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASA920_Pinata_Essex/projectile/APB006_AN_M66_GP2000lb_projectile.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bomb_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bomb	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_NODAMAGE_PBS_Projectile	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASA920_Pinata_Essex/projectile/APB006_AN_M66_GP2000lb_projectile.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bomb_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bomb	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_NODAMAGE_PBS_Projectile	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASA920_Pinata_Essex/projectile/APB006_AN_M66_GP2000lb_projectile.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	BombShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Bomb_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	10.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Bomb_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	1000.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Bomb_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</APB003_AN_M64_GP500lb.visual>

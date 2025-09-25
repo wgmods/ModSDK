@@ -1,0 +1,94 @@
+(def element NavalBaseEntryPointsContainer ()
+	(scope
+		(event evAddedToStage)
+		(var interactiveObjectsCollection:gfx = "$datahub.getCollection(CC.interactiveNavalBaseEntryPoint)")
+		(var interactiveObjects:array = "interactiveObjectsCollection ? interactiveObjectsCollection.items : []"	(event "interactiveObjectsCollection.evAdded")
+																												(event "interactiveObjectsCollection.evRemoved"))
+	)
+	(dispatch evAddedToStage on='addedToStage')
+	(macro DEFAULT_APPEAR_ANIMATION_BY_EVENT 1 "evAddedToStage")
+	(element PortMarkersContainer
+		_interactiveComponentClass = "CC.interactiveNavalBaseEntryPoint"
+		_interactiveRenderer = 'NavalBaseEntryPointMarker'
+	)
+)
+
+
+
+(def element NavalBaseEntryPointMarker (_markerEntity:gfx, _ioState:number) layout=true
+	(scope
+		(var interactiveObjectComponent:gfx = "_markerEntity ? _markerEntity.interactiveObject : null")
+		(var navalBaseBannerEntity:gfx = "$datahub.getSingleEntity(CC.navalBaseBanner)")
+		(var isLocked:bool = "interactiveObjectComponent ? interactiveObjectComponent.isLocked : false" (event "interactiveObjectComponent.evIsLockedChanged"))
+		(var isInteractionAvailable:bool = "interactiveObjectComponent ? interactiveObjectComponent.isInteractionAvailable : false" (event "interactiveObjectComponent.evIsInteractionAvailableChanged"))
+		(var hasReward:bool = "navalBaseBannerEntity ? navalBaseBannerEntity.navalBaseBanner.hasReward : false" (event "navalBaseBannerEntity.navalBaseBanner.evChanged"))
+
+		(var imageName:str = "(isLocked || !isInteractionAvailable) ? 'icon_lock' : hasReward ? 'entry_point_reward' : 'entry_point'")
+
+		(macro MOUSE_HANDLER_SCOPE "'IO_NavalBaseEntryMarker_'")
+		(macro PULL_INTERACTIVE_OBJECT_STATES "_ioState")
+	)
+
+	
+	(style
+		(bind alpha "isSelected ? 0.5 : 1")
+		(bind hitTest "!isSelected")
+	)
+	
+
+	(controller $Tooltip 
+		(bind renderer "'NavalBaseBannerTooltip'")
+		(bind enabled "navalBaseBannerEntity") 
+		(args
+			_navalBaseBannerEntity = "navalBaseBannerEntity"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(element NavalBaseInteractiveObjectMarker
+		_image = "imageName"
+		_isRollOver = "isRollOver"
+		_isMouseDown = "IO_NavalBaseEntryMarker_mouseDown"
+	)
+
+	(macro MOUSE_HANDLER
+		_prefix = "'IO_NavalBaseEntryMarker_'"
+		_soundSet = "'button_navalbase_marker'"
+	)
+)
+
+
+
+(def element NavalBaseInteractiveObjectMarker (_image:str, _isRollOver:bool = false, _isMouseDown:bool = false) layout=true
+	(block
+		(style
+			(width = 50px)
+			(height = 50px)
+			(backgroundSize = "cover")
+			(hitTest = false)
+
+			(bind backgroundImage "'url:../port_markers/naval_base/icons/' + _image + '.png'")
+		)
+
+		(block
+			(style
+				(width = 100%)
+				(height = 100%)
+				(hitTest = false)
+				(alpha = 0)
+
+				(backgroundColor = "0x10FFFFFF")
+			)
+			(controller $Animation
+				(bindcall play  duration="PORT_MARKER_ANIMATION_DURATION"
+								action="kill"
+								from = "{alpha: 0}"
+								to = "{alpha: 1}"
+								watch=false
+								reverse="!_isRollOver"
+								(bind trigger "_isRollOver")
+				)
+			)
+		)
+	)
+)

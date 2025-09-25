@@ -1,0 +1,35 @@
+(def element ModalWindowNavalBase () layout=true dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+
+	(scope
+		(event evAddedToStage)
+		(macro PULL_ROUTE "SC.Ui_windows.ROUTE.NAVAL_BASE" "'isOnNavalBase'")
+
+		(var gfStateWatcher:gfx = "$datahub.getFirstWatcher(CC.gamefaceGlobalState)")
+		(var gfStateEntity:gfx = "gfStateWatcher.entity" (event "gfStateWatcher.event"))
+		(var gfStateComponent:gfx = "gfStateEntity ? gfStateEntity.gamefaceGlobalState : null")
+		(var gfStateHasControl:bool = "gfStateComponent ? gfStateComponent.gamefaceHasControl : false"	(event "gfStateComponent.evChanged")
+																										(event "gfStateComponent.evGamefaceHasControlChanged"))
+	)
+	(dispatch evAddedToStage on='addedToStage')
+
+	(name = "'window_ModalWindowNavalBase'")
+
+	(class $FullsizeAbsolute)
+	(style (align = "center"))
+	(bind alpha "isOnNavalBase ? 1 : 0")
+
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(class $Fullsize)
+		(style (align = "center"))
+
+		(block
+			(class $FullsizeAbsolute)
+			(element GamefaceWidget
+				_gfName = 'gf_ub2_port_naval_base'
+				_gfPath = 'gui/gameface/build/naval_base/index.html'
+			)
+		)
+	)
+)
