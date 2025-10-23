@@ -1,0 +1,179 @@
+(def element ModalWindow2DHubSelectBattleType (_battleTypeEntityId:number, _isMultipleEventBattles:bool=false) dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(scope
+		
+		(var wowsClassicBattleCollection:gfx = "$datahub.getCollection(CC.battleType).getChildByPath('common.wowsClassicBattles')")
+		(var wowsClassicBattleEntity:gfx = "wowsClassicBattleCollection.items.length ? wowsClassicBattleCollection.items[0] : null" 
+																	(event "wowsClassicBattleCollection.evAdded") 
+																	(event "wowsClassicBattleCollection.evRemoved")) 
+		(var hasWowsClassicBattleEntity:bool = "wowsClassicBattleEntity != null")
+
+		(var multipleEventBattlesCollection:gfx = "$datahub.getCollection(CC.battleType).getChildByPath('common.modernEraBattles')")
+		(var multipleEventBattlesEntity:gfx = "multipleEventBattlesCollection.items.length ? multipleEventBattlesCollection.items[0] : null"
+																		(event "multipleEventBattlesCollection.evAdded") 
+																		(event "multipleEventBattlesCollection.evRemoved")) 
+		(var hasMultipleEventBattlesEntity:bool = "multipleEventBattlesEntity != null")
+
+		(macro PULL_BATTLE_TYPE_SCOPE "_battleTypeEntityId")
+		(var hasBattleEntity:bool = "battleTypeEntity != null")
+
+		(var eventBattleStateComponent:gfx = "battleTypeEntity ? battleTypeEntity.eventBattleState : null" (event "battleTypeEntity.evAdded") (event "battleTypeEntity.evRemoved"))
+		(var hasBattleStateComponent:bool = "eventBattleStateComponent != null")
+		(var eventBattleName:str = "eventBattleStateComponent ? eventBattleStateComponent.name : ''" (event "eventBattleStateComponent.evChanged"))
+		(var eventBattleEventId:number = "eventBattleStateComponent ? eventBattleStateComponent.eventId : null" (event "eventBattleStateComponent.evChanged"))
+
+		(var currentEventId:number = "eventBattleStateComponent ? eventBattleStateComponent.eventId : 0" (event "eventBattleStateComponent.evChanged"))
+		(var eventBattleParamsEntity:gfx = "$datahub.getPrimaryEntity(CC.eventBattleParams, currentEventId)")
+		(var eventBattleParamsComponent:gfx = "eventBattleParamsEntity ? eventBattleParamsEntity.eventBattleParams : null" (event "eventBattleParamsEntity.evAdded"))
+
+		(var enemyType:number = "eventBattleParamsComponent ? eventBattleParamsComponent.enemyType : 0")
+		(var subheaderText:str = "enemyType == SC.Ui_common.EVENT_ENEMY_TYPE.UNDEFINED ? '' : 'IDS_TOOLTIP_HEADER_DESCRIPTION_EVENTBATTLE_'+toUpper(SC.Ui_common.EVENT_ENEMY_TYPE.VALUE_TO_NAME[enemyType])")
+		(var isBattleTypeEnabled:bool = "hasBattleStateComponent && (_isMultipleEventBattles	? hasMultipleEventBattlesEntity
+																								: hasBattleEntity)")
+	)
+	(bindcall externalCall "!isBattleTypeEnabled ? 'inputMapping.onRequest' : ''" "['close', { }]"	init=false watch=false	(event "battleTypeEntity.evAdded") (event "battleTypeEntity.evRemoved")
+																															(event "multipleEventBattlesCollection.evAdded") (event "multipleEventBattlesCollection.evRemoved"))
+
+	(class $Fullsize)
+	(style (align = "center|middle"))
+
+	(block
+		(bind visible "isBattleTypeEnabled")
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(style (width = "DEFAULT_MODAL_WINDOW_WIDTH"))
+
+		
+		(block
+			(style (width = 100%))
+			
+			(block
+				(style (width = 100%))
+
+				(element ModalWindowHeaderFullSize
+					_windowName = "toUpper(tr('IDS_CHOOSE_BATTLETYPE_HINT'))"
+					_hideBackButton = true
+					_hideCloseButton = true
+				)
+			)
+		)
+
+		
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+			(style
+				(width = 100%)
+				(align = "center")
+				(marginTop = "M")
+				(marginBottom = "M")
+				(backgroundColor = "0x00FFFFFF")
+			)
+
+			(hblock
+				(style
+					(width = "320")
+					(align = "center|middle")
+					(gap = "SXS")
+				)
+
+				(block
+					(style
+						(width = "80")
+						(height = "80")
+						(backgroundSize = "cover")
+						(bind backgroundImage "'url:../service_kit/battle_types/' + eventBattleName + '.png'")
+					)
+				)
+
+				(block
+					(style (width = 100%))
+
+					(tf
+						(class $TextDefaultBold19NM)
+						(style (width = 100%) (leading = "-4") (alpha = "TA"))
+						(bind text "'IDS_' + eventBattleName")
+					)
+
+					(tf
+						(class $TextDefaultNM)
+						(style	
+							(width = 100%)
+							(marginTop = "S")
+							(leading = "-2")
+							(alpha = "TC")
+						)
+
+						(bind text "subheaderText")
+					)
+				)
+			)
+
+			(controller $Tooltip
+				(bind renderer "'EventBattleTypeTooltip'")
+				(args
+					_battleTypeEntityId = "_battleTypeEntityId"
+					_isMouseInstructionsHidden = true
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			)
+		)
+
+		(element HorizontalDividerTwoPx
+			(style	(width = 100%))
+		)
+
+		
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 1.5)
+			(style (width = 100%) (marginTop = "L"))
+
+			(block
+
+				(style (width = 100%))
+
+				(tf
+					(class $TextDefault25NM)
+					(style (width = 100%) (textAlign = "center") (alpha = "TA"))
+
+					(text = 'IDS_HUB_2D_SELECT_BATTLE_TYPE')
+				)
+			)
+		)
+
+		
+		(hblock
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 1.5)
+
+			(style (width = 100%) (marginTop = "L") (align = "center") (gap = "L"))
+
+			(element DefaultButton
+				_width = 136
+				_height = 32
+				_name = 'btn_yes'
+				_enabled = "isBattleTypeEnabled"
+				_focusIndex = 1
+				_defaultFocused = true
+				_label = 'IDS_YES'
+				_methods = "[	{	type: 'inputMapping.onAction',
+									name: 'setBattleType',
+									args: {battleType: SC.Common.BATTLE_TYPES.EVENT_BATTLE, battleTypeGameParamId: eventBattleEventId}
+								},
+								{	type: 'inputMapping.onAction',
+									name: 'navigateTo',
+									args: {route: SC.Ui_windows.ROUTE.MAIN}
+								}
+							]"
+			)
+
+			(element DefaultButton
+				_width = 136
+				_height = 32
+				_label = 'IDS_NO'
+				_name = 'btn_cancel'
+				_enabled = true
+				_focusIndex = 2
+			)
+		)
+	)
+)

@@ -1,0 +1,86 @@
+(def element RadioButton(	_isSelected:bool=false, _isDisabled:bool=false, _size:number=25px, _name:str='',
+							_dispatchedEv:str='', _dispatchParams:gfx={}, _methods:array=[])
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'rb_wrapper_'")
+
+		(var enabled:bool = "!_isDisabled && !_isSelected")
+	)
+
+	(bind name "_name")
+
+	(style (width = "_size") (height = "_size"))
+
+	(element RadioButtonView
+		_selected = "_isSelected"
+		_enabled = "enabled"
+		_rollOver="rb_wrapper_rollOver"
+		_size = "_size"
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "enabled"
+		_prefix = "'rb_wrapper_'"
+		_dispatchedEv = "_dispatchedEv"
+		_dispatchParams = "_dispatchParams"
+		_methods = "_methods"
+	)
+)
+
+(def element RadioButtonView (_selected:bool, _enabled:bool=true, _interactive:bool=true, _rollOver:bool=false, _size:number=25px) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'rb_'")
+
+		(var privRollOver:bool = "rb_rollOver || _rollOver")
+	)
+
+	(style (width = "_size") (height = "_size"))
+
+	
+	(block
+		(bind visible "_interactive")
+
+		(style
+			(width = "_size") (height = "_size")
+			(backgroundImage = 'url:../service_kit/buttons/radio_button/default.png')
+			(backgroundSize = "fill")
+		)
+
+		
+		(block
+			(style
+				(position = "absolute")
+				(width = "_size") (height = "_size")
+				(backgroundImage = 'url:../service_kit/buttons/radio_button/over.png')
+				(backgroundSize = "fill")
+				(alpha = 0)
+			)
+
+			(controller $Animation
+				(bindcall play
+					duration=0.3
+					from={alpha: 0}
+					to={alpha: 0.7}
+					reverse="!(privRollOver)"
+					easing="Easing.line"
+					(bind trigger "privRollOver && _enabled")
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "_selected")
+		(style
+			(position = "absolute")
+			(width = "_size") (height = "_size")
+			(backgroundImage = 'url:../service_kit/buttons/radio_button/check.png')
+			(backgroundSize = "fill")
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "_enabled"
+		_prefix = "'rb_'"
+	)
+)

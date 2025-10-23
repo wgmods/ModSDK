@@ -1,0 +1,81 @@
+(def element MapSectorDrawer (_mapScale:number, _itemScale:number, _scaleRatio:number, _markerSettingsMap:array, _isLoading:bool = false)
+	(scope
+		(var sectorsCollection:gfx = "$datahub.getCollection(CC.mapSector)")
+		(var sectorsItems:array = "sectorsCollection ? sectorsCollection.items : []" (event "sectorsCollection.evAdded")(event "sectorsCollection.evRemoved"))
+	)
+
+	(macro BIND_FAIR_SCALE "_scaleRatio / MINIMAP_ASSETS_SIZE")
+
+	(class $FullsizeAbsolute)
+
+	(style
+		(hitTest = false)
+	)
+
+	(controller $Repeat renderer='MapSectorItem'
+		(bind count "sectorsItems.length")
+		(args
+			_items = "sectorsItems"
+		)
+	)
+)
+
+(def element MapSectorItem (_items:array)  
+	(scope
+		(var sectorComponent:gfx = "_items[$index].mapSector")
+		(var pos:array = "sectorComponent ? sectorComponent.position : [0,0]" (event "sectorComponent.evPositionChanged"))
+		(var size:array = "sectorComponent ? sectorComponent.size : [0,0]" (event "sectorComponent.evSizeChanged"))
+		(var borders:array = "sectorComponent ? sectorComponent.visibleBorders : [false, false, false, false]" (event "sectorComponent.evVisibleBordersChanged"))
+
+		(var sideBorderHeight:number = "borders[0] && borders[3] ? size[1] - 4 : borders[3] || borders[0] ? size[1] - 2 : size[1]")
+		(var sideBorderOffset:number = "borders[0] && borders[3] ? 2 : borders[3] ? 0 : borders[0] ? 2 : 0")
+	)
+	
+	(style
+		(position = "absolute")
+		(bind width "size[0]")
+		(bind height "size[1]")
+		(bind left "pos[0]")
+		(bind top "pos[1]")
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundColor = "sectorComponent.color")
+		)
+		(alpha = "sectorComponent.fillAlpha")
+	)
+
+	(block
+		(bind visible "borders[0]")
+		(style
+			(position = "absolute") (bind width "size[0]") (height = 2) (bottom = 0) (left = 0) (backgroundColor = "sectorComponent.color")
+		)
+		(alpha = "sectorComponent.borderAlpha")
+	)
+
+	(block
+		(bind visible "borders[1]")
+		(style
+			(position = "absolute") (width = "2") (bind height "sideBorderHeight") (bind bottom "sideBorderOffset") (left = 0) (backgroundColor = "sectorComponent.color")
+		)
+		(alpha = "sectorComponent.borderAlpha")
+	)
+
+	(block
+		(bind visible "borders[2]")
+		(style
+			(position = "absolute") (width = "2") (bind height "sideBorderHeight") (bind bottom "sideBorderOffset") (right = 0) (backgroundColor = "sectorComponent.color")
+		)
+		(alpha = "sectorComponent.borderAlpha")
+	)
+
+	(block
+		(bind visible "borders[3]")
+		(style
+			(position = "absolute") (bind width "size[0]") (height = 2) (top = 0) (left = 0) (backgroundColor = "sectorComponent.color")
+		)
+		(alpha = "sectorComponent.borderAlpha")
+	)
+)

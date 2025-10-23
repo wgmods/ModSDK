@@ -1,0 +1,181 @@
+<AGR2023_Mk141_Launcher.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	AGR2023_Mk141	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	AGR2023_Mk141_cap	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.8192 -0.5736 0.0000	</row1>
+						<row2>	0.0000 0.5736 0.8192 0.0000	</row2>
+						<row3>	0.0317 0.0292 -0.1203 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire2	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 0.8192 -0.5736 0.0000	</row1>
+						<row2>	0.0000 0.5736 0.8192 0.0000	</row2>
+						<row3>	-0.0317 0.0292 -0.1203 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0983 -0.0637 -0.2131	</min>
+		<max>	0.0983 0.2315 0.1565	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	AGR2023_Mk141Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	AGR2023_Mk141	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/XSB054_Yoshino_modern/gun/AGR2016_Mk141_Launcher.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	AGR2023_Mk141_capShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	AGR2023_Mk141_cap	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/XSB054_Yoshino_modern/gun/AGR2016_Mk141_Launcher.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	AGR2023_Mk141_cap_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	AGR2023_Mk141_cap	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/XSB054_Yoshino_modern/gun/AGR2016_Mk141_Launcher.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	AGR2023_Mk141_cap_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	AGR2023_Mk141_cap	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/XSB054_Yoshino_modern/gun/AGR2016_Mk141_Launcher.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	AGR2023_Mk141_cap_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	AGR2023_Mk141_cap	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/XSB054_Yoshino_modern/gun/AGR2016_Mk141_Launcher.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	AGR2023_Mk141_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	AGR2023_Mk141	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/XSB054_Yoshino_modern/gun/AGR2016_Mk141_Launcher.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	AGR2023_Mk141_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	AGR2023_Mk141	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/XSB054_Yoshino_modern/gun/AGR2016_Mk141_Launcher.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	AGR2023_Mk141_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	AGR2023_Mk141	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/XSB054_Yoshino_modern/gun/AGR2016_Mk141_Launcher.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	AGR2023_Mk141Shape	</renderSet>
+				<renderSet>	AGR2023_Mk141_capShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	AGR2023_Mk141_cap_lod1Shape	</renderSet>
+				<renderSet>	AGR2023_Mk141_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	10.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	AGR2023_Mk141_cap_lod2Shape	</renderSet>
+				<renderSet>	AGR2023_Mk141_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	100.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	AGR2023_Mk141_cap_lod3Shape	</renderSet>
+				<renderSet>	AGR2023_Mk141_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</AGR2023_Mk141_Launcher.visual>

@@ -1,0 +1,269 @@
+(def constant SCALABLE_RECT_BRACKET_WIDTHS [10, 30])
+(def constant SCALABLE_RECT_BRACKET_HEIGHTS [10, 60])
+(def constant SCALABLE_RECT_START_WIDTH 100)
+
+(def constant SCALABLE_RECT_FINAL_HEIGHT 414)
+(def constant SCALABLE_RECT_LINE_WIDTH 2)
+
+(def constant SCALABLE_RECT_DOT_STEP 13)
+(def constant SCALABLE_RECT_DOT_ROTATION_SPEED 2)
+
+(def element ScalableRectGunMarker(_index:number, _markerType:number, _customWidth:number, _isVisible:bool, _progressValue:number)
+	(scope
+		(event evUnfolded)
+
+		(var _azimuth:number = 0)
+		(var _state:number = 0)
+		(var _blocked:bool = false)
+		(var _rotated:bool = true)
+		(var _progress:number = 1)
+
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+
+		(var bracketWidth:number = "SCALABLE_RECT_BRACKET_WIDTHS[0]")
+		(var bracketHeight:number = "SCALABLE_RECT_BRACKET_HEIGHTS[0]")
+		(var totalBracketWidth:number = "SCALABLE_RECT_START_WIDTH * 0.5")
+		(var totalBracketHeight:number = "SCALABLE_RECT_START_WIDTH")
+		(var dotBarHeight:number = "totalBracketHeight - (bracketHeight + SCALABLE_RECT_LINE_WIDTH) * 2")
+
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+		(var cameraComponent:gfx = "$datahub.getSingleComponent(CC.camera)")
+		(var cameraYaw:number = "cameraComponent ? -cameraComponent.yaw : 0" (event "evEnterFrame"))
+
+		(var bracketColor:str = "	_state == SC.Weapons.GUN_STATE.READY	? _rotated ? 0xFF4CE8AA : 0xaaFF9933 :
+									_state == SC.Weapons.GUN_STATE.WORK		? 0xFF4FF8AA
+																			: 0xFFFF9933")
+
+		(var textColor:str = "		_state == SC.Weapons.GUN_STATE.READY	? _rotated ? 0xFF4CE8AA : 0xaaFF9933 :
+									_state == SC.Weapons.GUN_STATE.WORK		? 0xFF4FF8AA
+																			: 0xFFFF9933")
+
+		(macro HUMAN_READABLE_COUNTDOWN_SCOPE "_state != SC.Weapons.GUN_STATE.READY ? _progressValue : 1")
+
+		(var textValue:str = "_state == SC.Weapons.GUN_STATE.READY ? 'IDS_ANTI_MISSILE_OFF' : countdownText")
+
+		(var isUnfolded:bool = false)
+		(bind isUnfolded "true" init=false (event "evUnfolded"))
+		(bind isUnfolded "false" init=false (bind enabled "!_isVisible")(bind trigger "_isVisible"))
+
+		(controller $Animation
+			(bindcall play
+				duration=0.75
+				delay=0.0
+				from="{bracketWidth:SCALABLE_RECT_BRACKET_WIDTHS[0], bracketHeight: SCALABLE_RECT_BRACKET_HEIGHTS[0], totalBracketHeight: SCALABLE_RECT_START_WIDTH, totalBracketWidth: SCALABLE_RECT_START_WIDTH / 2}"
+				to="{bracketWidth:SCALABLE_RECT_BRACKET_WIDTHS[1], bracketHeight: SCALABLE_RECT_BRACKET_HEIGHTS[1], totalBracketHeight: SCALABLE_RECT_FINAL_HEIGHT, totalBracketWidth: _customWidth * stageWidth}"
+				action="killAll"
+				easing="Easing.circ_out"
+				init = true
+				(bind enabled "_isVisible")
+				(bind trigger "_isVisible")
+			)
+			(dispatch evUnfolded on=evAnimEnded)
+		)
+	)
+
+	(style
+		(position = "absolute")
+		(alpha = 0)
+	)
+
+		(controller $Animation
+			(bindcall play
+				duration=0.45
+				delay=0.0
+				from="{alpha:0}"
+				to="{alpha:1}"
+				action="killAll"
+				easing="Easing.circ_out"
+				init = true
+				(bind enabled "_isVisible")
+				(bind trigger "_isVisible")
+			)
+		)
+
+	(element ScalableRectBracket
+		_isRight = false
+		_totalHeight = "totalBracketHeight"
+		_totalWidth = "totalBracketWidth"
+		_bracketHeight = "bracketHeight"
+		_bracketWidth = "bracketWidth"
+		_dotBarHeight = "dotBarHeight"
+		_gunYaw = "_azimuth"
+		_color = "bracketColor"
+	)
+
+	(element ScalableRectBracket
+		_isRight = true
+		_totalHeight = "totalBracketHeight"
+		_totalWidth = "totalBracketWidth"
+		_bracketHeight = "bracketHeight"
+		_bracketWidth = "bracketWidth"
+		_dotBarHeight = "dotBarHeight"
+		_gunYaw = "_azimuth"
+		_color = "bracketColor"
+	)
+
+	(element ScalableCooldown
+		_isUnfolded = "isUnfolded"
+		_bracketColor = "bracketColor"
+		_textColor = "textColor"
+		_text = "textValue"
+		(style
+			(pivotY = 50%)
+			(bind left "bracketWidth * 0.75 - totalBracketWidth")
+		)
+	)
+)
+
+(def element ScalableRectBracket(_isRight:bool, _totalHeight:number, _totalWidth:number, _bracketHeight:number, _bracketWidth:number, _dotBarHeight:number, _gunYaw:number, _color:str)
+	(style
+		(position = "absolute")
+		(pivotY = 50%)
+		(bind rotation "_isRight ? 0 : 180")
+		(bind width "_totalWidth")
+		(bind height "_totalHeight")
+	)
+
+	(block
+		(style
+			(height = "SCALABLE_RECT_LINE_WIDTH")
+			(bind width "_bracketWidth")
+			(position = "absolute")
+			(top = 0)
+			(right = "SCALABLE_RECT_LINE_WIDTH")
+			(bind backgroundColor "_color")
+		)
+	)
+
+	(block
+		(style
+			(bind height "_bracketHeight + SCALABLE_RECT_LINE_WIDTH")
+			(width = "SCALABLE_RECT_LINE_WIDTH")
+			(position = "absolute")
+			(top = 0)
+			(right = 0)
+			(bind backgroundColor "_color")
+		)
+	)
+
+	(block
+		(style
+			(bind height "_dotBarHeight")
+			(width = "SCALABLE_RECT_LINE_WIDTH")
+			(position = "absolute")
+			(bind top "_bracketHeight + SCALABLE_RECT_LINE_WIDTH")
+			(right = 0)
+		)
+
+		(controller $Repeat renderer='ReticleDot'
+			(bind count "max(0, _dotBarHeight / SCALABLE_RECT_DOT_STEP)")
+			(args
+				_top = "($index * SCALABLE_RECT_DOT_STEP + (100 - _gunYaw) * SCALABLE_RECT_DOT_ROTATION_SPEED) % (_dotBarHeight - SCALABLE_RECT_LINE_WIDTH)"
+				_color = "_color"
+			)
+		)
+	)
+
+	(block
+		(style
+			(height = "SCALABLE_RECT_LINE_WIDTH")
+			(bind width "_bracketWidth * 0.4")
+			(position = "absolute")
+			(bind top "(_totalHeight - SCALABLE_RECT_LINE_WIDTH) * 0.5")
+			(right = "SCALABLE_RECT_LINE_WIDTH")
+			(bind backgroundColor "_color")
+		)
+	)
+
+	(block
+		(style
+			(bind height "_bracketHeight + SCALABLE_RECT_LINE_WIDTH")
+			(width = "SCALABLE_RECT_LINE_WIDTH")
+			(position = "absolute")
+			(bottom = 0)
+			(right = 0)
+			(bind backgroundColor "_color")
+		)
+	)
+
+	(block
+		(style
+			(height = "SCALABLE_RECT_LINE_WIDTH")
+			(bind width "_bracketWidth")
+			(position = "absolute")
+			(bottom = 0)
+			(right = "SCALABLE_RECT_LINE_WIDTH")
+			(bind backgroundColor "_color")
+		)
+	)
+)
+
+(def element ReticleDot(_top:number, _color:str)
+	(style
+		(position = "absolute")
+		(width = "SCALABLE_RECT_LINE_WIDTH")
+		(height = "SCALABLE_RECT_LINE_WIDTH")
+		(bind backgroundColor "_color")
+		(bind top "_top")
+	)
+)
+
+(def element ScalableCooldown(_isUnfolded:bool, _bracketColor:str, _textColor:str, _text:str)
+
+	(style
+		(position = "absolute")
+		(width = 60)
+		(height = 30)
+		(align = "middle|center")
+		(alpha = 0)
+	)
+
+	(controller $Animation
+		(bindcall play
+			duration=0.45
+			delay=0.0
+			from="{alpha:0}"
+			to="{alpha:1}"
+			action="killAll"
+			easing="Easing.circ_out"
+			init = true
+			reverse = "!_isUnfolded"
+			(bind trigger "_isUnfolded")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute") (top = 0) (width = 100%) (height = "SCALABLE_RECT_LINE_WIDTH") (bind backgroundColor "_bracketColor")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute") (bottom = 0) (width = 100%) (height = "SCALABLE_RECT_LINE_WIDTH") (bind backgroundColor "_bracketColor")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute") (left = 0) (width = "SCALABLE_RECT_LINE_WIDTH") (height = 100%) (bind backgroundColor "_bracketColor")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute") (right = 0) (width = "SCALABLE_RECT_LINE_WIDTH") (height = 100%) (bind backgroundColor "_bracketColor")
+		)
+	)
+
+	(tf
+		(class $TextDefaultBold17NMWithoutShadow)
+		(style
+			(width = 100%)
+			(textAlign = "center")
+			(bind textColor "_textColor")
+		)
+		(bind text "_text")
+	)
+)

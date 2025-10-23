@@ -1,0 +1,202 @@
+(def constant MIN_SECTOR_UI_ALPHA 0.4)
+
+(def element RespawnHud ()
+	(scope
+		(event evAddedToStage)
+		(event evRevived)
+
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.battleTimer)")
+		(var avatar:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var timeToRespawn:number = "avatar ? avatar.playerAvatar.timeToRespawn : 0" (event "avatar.playerAvatar.evTimeToRespawnChanged") (event "timerEntity.battleTimer.evBattleTimeChanged"))
+	)
+
+	(class $FullsizeAbsolute)
+	(style
+		(hitTest = false)
+	)
+	(alpha = 0)
+
+	(dispatch evAddedToStage on='addedToStage')
+	(dispatch evRevived delay="timeToRespawn - 4" on='addedToStage')
+
+	(controller $Animation
+		(bindcall play
+			duration	= 0.25
+			easing		= "Easing.quad_out"
+			from		= {alpha:1}
+			to			= {alpha:0}
+			action = "killAll"
+			(event "evRevived")
+		)
+		(bindcall play
+			duration	= 0.5
+			delay		= 0.25
+			easing		= "Easing.quad_in"
+			from		= {alpha:0}
+			to			= {alpha:1}
+			action = "killAll"
+			(event "evAddedToStage")
+		)
+	)
+
+	(element LeftRespawnBar)
+
+	(element RightRespawnBar)
+
+	(element BottomRespawnBar)
+
+)
+
+(def element BottomRespawnBar ()
+	(style
+		(position = "absolute")
+		(width = 100%)
+		(height = 200)
+		(bottom = 0)
+	)
+
+	(tf
+		(class $TextDefaultBold21NM)
+		(style
+			(position = "absolute")
+			(bottom = 44)
+			(width = 100%)
+			(textAlign = "center")
+		)
+		(bind text "'IDS_RESPAWN_MAP_BOTTOM_HEADER'")
+	)
+)
+
+(def element LeftRespawnBar ()
+	(style
+		(position = "absolute")
+		(height = 100%)
+		(width = 388)
+		(left = 0)
+		(align = "right|middle")
+	)
+
+	(block
+		(style
+			(width = 278)
+		)
+
+		(tf
+			(class $TextDefaultBold19NM)
+			(style (width = 100%))
+			(bind text "'IDS_RESPAWN_MAP_LEFT_HEADER'")
+		)
+
+		(tf
+			(class $TextDefaultNM)
+			(style (width = 100%) (marginTop = "SXS"))
+			(bind text "'IDS_RESPAWN_MAP_LEFT_DESCRIPTION'")
+		)
+	)
+)
+
+(def element RightRespawnBar ()
+	(scope
+		(var statesCollection:gfx = "$datahub.getCollection(CC.mapSectorState)")
+		(var stateItems:array = "statesCollection ? statesCollection.items : []" (event "statesCollection.evAdded")(event "statesCollection.evRemoved"))
+	)
+
+	(style
+		(position = "absolute")
+		(height = 100%)
+		(width = 388)
+		(right = 0)
+		(align = "left|middle")
+	)
+
+	(block
+		(style
+			(width = 278)
+		)
+
+		(tf
+			(class $TextDefaultBold19NM)
+			(style (width = 100%))
+			(bind text "'IDS_RESPAWN_MAP_SECTOR_HEADER'")
+		)
+
+		(controller $Repeat count="stateItems.length" renderer='SectorState'
+			(args
+				_state = "stateItems[$index].mapSectorState"
+			)
+		)
+	)
+)
+
+(def element SectorState (_state:gfx)
+	(scope
+		(var stateName:str = "_state ? SC.Battle.MAP_SECTOR_STATES.VALUE_TO_NAME[_state.type] : ''")
+		(var borderAlpha:number = "_state ? max(MIN_SECTOR_UI_ALPHA, _state.alphas[1]) : MIN_SECTOR_UI_ALPHA")
+		(var sectorColor:number = "_state ? _state.color : 0x00000000")
+	)
+	
+	(style
+		(width = 100%)
+		(marginTop = "SXS")
+	)
+
+	(hblock
+		(style
+			(align = "top|center")
+		)
+
+		(block
+			(style
+				(width = 26)
+				(height = 26)
+				(marginRight = "S")
+				(align = "middle|center")
+			)
+
+			(block
+				(class $FullsizeAbsolute)
+				(style
+					(bind backgroundColor "sectorColor")
+				)
+				(bind alpha "max(MIN_SECTOR_UI_ALPHA, _state.alphas[1])")
+			)
+
+			(block
+				(style 
+					(width = 2) (height = 100%) (position = "absolute") (left = 0)
+					(bind alpha "borderAlpha")
+					(bind backgroundColor "sectorColor")
+				)
+			)
+
+			(block
+				(style 
+					(width = 2) (height = 100%) (position = "absolute") (right = 0)
+					(bind alpha "borderAlpha")
+					(bind backgroundColor "sectorColor")
+				)
+			)
+
+			(block
+				(style 
+					(width = 22) (height = 2) (position = "absolute") (right = 2) (top = 0)
+					(bind alpha "borderAlpha")
+					(bind backgroundColor "sectorColor")
+				)
+			)
+
+			(block
+				(style 
+					(width = 22) (height = 2) (position = "absolute") (right = 2) (bottom = 0)
+					(bind alpha "borderAlpha")
+					(bind backgroundColor "sectorColor")
+				)
+			)
+		)
+
+		(element TooltipSystemDescriptionTextAutoStretch
+			_descriptionText = "'IDS_RESPAWN_MAP_STATE_' + stateName"
+			_maxWidth = 244
+		)
+	)
+)

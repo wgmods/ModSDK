@@ -1,0 +1,106 @@
+<AGR2023_Mk141_Launcher_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	AGR2023_Mk141_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0608 0.0000 -0.1320	</min>
+		<max>	0.0608 0.2315 0.1565	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	AGR2023_Mk141_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	AGR2023_Mk141_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/XSB053_Aegir_modern/gun/AGR2016_Mk141_Launcher.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	AGR2023_Mk141_dead_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	AGR2023_Mk141_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/XSB053_Aegir_modern/gun/AGR2016_Mk141_Launcher.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	AGR2023_Mk141_dead_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	AGR2023_Mk141_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/XSB053_Aegir_modern/gun/AGR2016_Mk141_Launcher.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	AGR2023_Mk141_dead_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	AGR2023_Mk141_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/XSB053_Aegir_modern/gun/AGR2016_Mk141_Launcher.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	AGR2023_Mk141_deadShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	AGR2023_Mk141_dead_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	10.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	AGR2023_Mk141_dead_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	100.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	AGR2023_Mk141_dead_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</AGR2023_Mk141_Launcher_dead.visual>

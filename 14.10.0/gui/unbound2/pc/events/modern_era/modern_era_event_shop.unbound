@@ -1,0 +1,989 @@
+(def constant MODERN_ERA_SHIP_ITEM_WIDTH 248)
+(def constant MODERN_ERA_SHIP_ITEM_HEIGHT 64)
+
+(def constant MODERN_ERA_SHIP_PREVIEW_LEFT_CONTENT_WIDTH 285)
+(def constant MODERN_ERA_SHIP_PREVIEW_RIGHT_CONTENT_WIDTH 483)
+
+(def constant MODERN_ERA_SHIP_PREVIEW_IMAGE_HEIGHT 256)
+
+(def constant MODERN_ERA_UPGRADE_CONTAINER_HEIGHT 104)
+(def constant MODERN_ERA_UPGRADE_ITEM_HEIGHT 84)
+(def constant MODERN_ERA_UPGRADE_ITEM_WIDTH 74)
+
+(def macro PULL_MODERN_ERA_EVENT_ITEM_INFO (_entityId:expression)
+	(var modernEraEventItemEntity:gfx = "$datahub.getEntity(_entityId)")
+	(var modernEraEventItemComponent:gfx = "modernEraEventItemEntity ? modernEraEventItemEntity.eventShopItem : null")
+
+	(var id:str =					"modernEraEventItemComponent ? modernEraEventItemComponent.id : null"				(event "modernEraEventItemComponent.evChanged"))
+	(var eventShopId:str =			"modernEraEventItemComponent ? modernEraEventItemComponent.eventShopId : null"		(event "modernEraEventItemComponent.evChanged"))
+
+	(var type:str =					"modernEraEventItemComponent ? modernEraEventItemComponent.type : null" 			(event "modernEraEventItemComponent.evChanged"))
+	(var group:str =				"modernEraEventItemComponent ? modernEraEventItemComponent.group : null"			(event "modernEraEventItemComponent.evChanged"))
+	(var sortOrder:number =			"modernEraEventItemComponent ? modernEraEventItemComponent.sortOrder : -1"			(event "modernEraEventItemComponent.evChanged"))
+
+	(var rewardsStackId:number =	"modernEraEventItemComponent ? modernEraEventItemComponent.rewardsStackId : -1"		(event "modernEraEventItemComponent.evChanged"))
+	(var rewardStackEntity:gfx = 	"rewardsStackId > 0 ? $datahub.getEntity(rewardsStackId) : null")
+	(var rewards:array = 			"rewardStackEntity ? rewardStackEntity.rewardsStack.rewards : []"					(event "rewardStackEntity.rewardsStack.evChanged"))
+
+	(var itemPriceId:number =		"modernEraEventItemComponent ? modernEraEventItemComponent.itemPriceId : -1"		(event "modernEraEventItemComponent.evChanged"))
+	(var itemPriceEntity:gfx =		"itemPriceId > 0 ? $datahub.getEntity(itemPriceId) : null")
+	(var itemPrice:gfx =			"itemPriceEntity ? itemPriceEntity.itemPrice : null")
+
+	(var isPurchased:bool =			"modernEraEventItemComponent ? modernEraEventItemComponent.isPurchased : false"		(event "modernEraEventItemComponent.evChanged"))
+)
+
+(def macro PULL_MODERN_ERA_SHIP ()
+	
+	
+
+	(var _rewardId:number = "rewards.length > 0 ? rewards[0] : 0")
+	(var _rewardEntity:gfx = "$datahub.getEntity(_rewardId)")
+	(var shipId:number = "_rewardEntity ? _rewardEntity.rewardComponent.id : 0")
+
+	(macro PULL_SHIP "shipId")
+)
+
+(def macro PULL_MODERN_ERA_UPGRADE ()
+	
+	
+
+	(var _rewardId:number = "rewards.length > 0 ? rewards[0] : 0")
+	(var _rewardEntity:gfx = "$datahub.getEntity(_rewardId)")
+	(var modernizationId:number = "_rewardEntity ? _rewardEntity.rewardComponent.id : 0")
+	(var modernizationAmount:number = "_rewardEntity ? _rewardEntity.rewardComponent.amount : 0")
+)
+
+(def macro PULL_MODERN_ERA_SHIP_ITEM_INFO_BY_ID (_selectedShipId:expression)
+	(var modernEraEventShipItemEntity:gfx = "$datahub.getPrimaryEntity(CC.eventShopShipItem, _selectedShipId)")
+	(var modernEraEventItemEntityId:number = "modernEraEventShipItemEntity ? modernEraEventShipItemEntity.eventShopShipItem.eventShopItemEntityId : 0")
+	(macro PULL_MODERN_ERA_EVENT_ITEM_INFO "modernEraEventItemEntityId")
+)
+
+(def element ModernEraEventShopInset()
+	(scope
+		(macro STAGE_SIZE)
+		(event startShow)
+		(event startHide)
+
+		(macro PULL_SHIP_ID) 
+	)
+
+	(dispatch startShow on='addedToStage')
+	(dispatch startHide on='removedFromStage')
+
+	(bindcall externalCall 'inputMapping.onRequest' "['eventShopWindowOpened', {}]" init=false on='addedToStage')
+
+	(controller $Animation
+		(bindcall play duration=0.25 delay=0.2 from="{alpha: 0}" to="{alpha: 1}" action="killAll" (event "startShow"))
+		(bindcall play duration=0.35 from="{alpha: 1}" to="{alpha: 0}" action="killAll" (event "startHide"))
+	)
+
+	(style
+		(bind width "stageWidth") (bind height "stageHeight")
+		(align = "center|middle") (alpha = 0)
+		(bind alpha "0" (event "startShow"))
+	)
+
+	(bind name "'ModernEraProgressInset'")
+
+	(hblock
+		(style
+			(align = "center")
+
+			(paddingTop = "{720: 110px, 1080:LS}")
+		)
+
+		
+		(block
+			(style (width = 768px))
+
+			
+			(hblock
+				(style
+					(width = 100%)
+					(height = 356px)
+					(backgroundColor = 0x05FFFFFF)
+				)
+
+				(block
+					(style
+						(height = 100%)
+						(bind width "MODERN_ERA_SHIP_PREVIEW_LEFT_CONTENT_WIDTH")
+
+						(paddingTop = "M")
+						(paddingLeft = "M")
+						(paddingBottom = "M")
+					)
+
+					(element ModernEraSelectedShipInfo
+						_selectedShipId="shipIdForModuleInset"
+					)
+				)
+
+				(block
+					(style
+						(height = 100%)
+						(bind width "MODERN_ERA_SHIP_PREVIEW_RIGHT_CONTENT_WIDTH")
+
+						(paddingLeft = "MS")
+						(paddingRight = "MS")
+						(paddingBottom = "M")
+					)
+
+					(element ModernEraSelectedShipPreview
+						_selectedShipId="shipIdForModuleInset"
+					)
+				)
+			)
+
+			
+			(block
+				(style
+					(width = 100%)
+					(marginTop = "MS")
+				)
+
+				(element ModernEraShipSelector
+					_selectedShipId="shipIdForModuleInset"
+				)
+			)
+		)
+
+		
+		(block
+			(style
+				(width = 400px)
+				(marginLeft = "XL")
+			)
+
+			(block
+				(style
+					(gap = "MS")
+					(width = 100%)
+				)
+
+				(controller $Repeat renderer='ModernEraUpgradesContainer'
+					(bind count "SC.Common.MODERN_ERA_UPGRADE_GROUPS.ALL.length")
+
+					(args
+						_group="SC.Common.MODERN_ERA_UPGRADE_GROUPS.ALL[$index]"
+					)
+				)
+
+				(tf
+
+					(class $TextDefaultNM)
+					(style
+						(width = 100%)
+						(alpha = "TC")
+					)
+					(text = 'IDS_MODERN_ERA_UPGRADES_DESCRIPTION')
+				)
+			)
+		)
+	)
+)
+
+
+(def element ModernEraShipSelector (_selectedShipId:number)
+	(scope
+		(var modernEraShipsCollectionChild:str = "'byType.' + SC.Common.MODERN_ERA_EVENT_ITEM_TYPES.SHIP")
+		(var modernEraShipsCollection:gfx = "$datahub.getCollection(CC.eventShopItem)")
+		(var modernEraShipsSubcollection:gfx = "modernEraShipsCollection ? modernEraShipsCollection.getChildByPath(modernEraShipsCollectionChild) : null"
+			(event "modernEraShipsCollection.evAdded")
+			(event "modernEraShipsCollection.evRemoved")
+		)
+		(var selectorShips:array = "modernEraShipsSubcollection ? modernEraShipsSubcollection.items : []")
+	)
+
+	(style
+		(width = 100%)
+		(flow = "tile_horizontal")
+	)
+
+	(controller $Repeat renderer='ModernEraShipSelectorItem'
+		(bind count "selectorShips.length")
+
+		(args
+			_modernEraShipEntityId="selectorShips[$index].id"
+			_selectedShipId="_selectedShipId"
+		)
+
+		(exprs
+			(style
+				(marginBottom = "SXS")
+				(bind marginRight "($index + 1) % 3 == 0 ? 0 : SXS")
+			)
+		)
+	)
+)
+
+(def element ModernEraShipSelectorItem (_modernEraShipEntityId:number, _selectedShipId:number)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(macro PULL_MODERN_ERA_EVENT_ITEM_INFO "_modernEraShipEntityId") 
+		(macro PULL_MODERN_ERA_SHIP) 
+
+		(var pathTinyIcon:str = "shipComponent ? 'url:' + shipComponent.pathTinyIcon : ''" (event "shipComponent.evCurrentSkinChanged") (event "shipComponent.evUpdate"))
+
+		(var isSelected:bool = "_selectedShipId == shipId")
+	)
+
+	
+	(macro MOUSE_LMB_EXTERNAL_CALL 'inputMapping.onAction' "['onSelectedShip', { shipId: shipId }]")
+
+	
+	(bindcall externalCall "'direct.action'" "[SC.Common.STATISTICS_EVENTS.LOG, [SC.Common.MODERN_ERA_STATISTICS.SELECT_SHIP + '_' + shipId]]"	init=false
+																																				watch=false
+																																				on='click')
+	
+
+	(style
+		(width = "MODERN_ERA_SHIP_ITEM_WIDTH")
+		(height = "MODERN_ERA_SHIP_ITEM_HEIGHT")
+	)
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundColor = "0x50FFFFFF")
+			(bind alpha "	isSelected	? rollOver	? 0.3
+													: 0.2
+										: rollOver	? 0.2
+													: 0.1")
+		)
+	)
+
+	
+	(element TwoPixelFrameBorder
+		_enabled = "isSelected"
+		_alpha = "rollOver ? 0.7 : 0.5"
+	)
+
+	(element OnePixelFrameBorder
+		_enabled = "!isSelected"
+		_alpha = "rollOver ? 0.2 : 0.1"
+	)
+
+	
+	(block
+		(style
+			(marginTop = "S") (marginBottom = "S")
+			(marginLeft = "S")
+		)
+
+		(controller $Instance renderer='ShipLineItemNM'
+			(args
+				_shipId = "shipId"
+				_withFlag = "true"
+				_fontClass = "'$TextDefaultBoldNM'"
+			)
+		)
+	)
+
+	
+	(hblock
+		(style
+			(width = 100%)
+
+			(position = "absolute")
+			(left = "0") (bottom = "0")
+
+			(paddingLeft = "S")
+			(paddingRight = "S")
+			(paddingBottom = "S")
+		)
+
+		
+		(block
+			(bind visible "!isPurchased")
+			(controller $Instance renderer='PriceTag'
+				(bind enabled "itemPrice != null")
+				(args
+					_priceInfo="itemPrice"
+				)
+			)
+		)
+
+		
+		(block
+			(bind visible "isPurchased")
+
+			(element StatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+				_text = "'IDS_MODERN_ERA_SHIP_OBTAINED'"
+			)
+		)
+
+		
+		(block
+			(style
+				(width = 122px) (height = 22px)
+				(position = "absolute")
+				(right = 0) (bottom = 0)
+				(hitTest = false)
+			)
+
+			(block
+				(class $FullsizeAbsolute)
+				(style
+					(backgroundSize = "fill")
+					(bind backgroundImage "pathTinyIcon")
+				)
+			)
+		)
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER)
+	(macro SOUND_HANDLER "'button_ship'")
+
+	(controller $Tooltip
+		(renderer='ShipExtendedTooltip')
+		(args
+			_shipId = "shipId"
+		)
+		(macro SHIP_TREE_TOOLTIP_BEHAVIOUR "shipId" "0")
+		(offset = {	x: 10, y: 0 })
+		(align="innerBottom|right")
+		(macro STATS_LOG_TOOLTIP_DURATION "SC.Common.MODERN_ERA_STATISTICS.SHIP_TOOLTIP  + '_' + shipId")
+	)
+)
+
+(def element ModernEraSelectedShipInfo (_selectedShipId:str)
+	(scope
+		(macro PULL_MODERN_ERA_SHIP_ITEM_INFO_BY_ID "_selectedShipId") 
+		(macro PULL_MODERN_ERA_SHIP) 
+
+		
+		(macro PULL_ACCOUNT_RESOURCES)
+		(macro IS_ENOUGH_RESOURCES_FOR_BUYING "[itemPrice]") 
+
+		(var costDiff:number = "firstCurrencyAmount - itemPrice.finalPrice")
+	)
+
+	(class $Fullsize)
+
+	(block
+		(controller $Instance renderer='ShipLineItemNM'
+			(args
+				_shipId = "shipId"
+				_withFlag = "true"
+				_fontClass = "'$TextDefaultBold21NM'"
+			)
+		)
+	)
+
+	(block
+		(style
+			(marginTop = "SXS")
+		)
+
+		(controller $Instance renderer='ShipClassLineItemNM'
+			(args
+				_shipId = "shipId"
+				_fontClass = "'$TextDefault17NM'"
+			)
+		)
+	)
+
+	(block
+		(style
+			(width = 100%)
+			(marginTop = "MS")
+		)
+
+		(tf
+			(bind visible "!isPurchased")
+
+			(class $TextDefaultNM)
+			(style
+				(width = 100%)
+				(alpha = "TA")
+			)
+			(text = 'IDS_MODERN_ERA_SHIP_PREVIEW_DESCRIPTION')
+		)
+
+		(controller $Instance renderer='StatusLine'
+			(bind enabled "isPurchased")
+
+			(args
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+				_text = "'IDS_MODERN_ERA_SHIP_PREVIEW_SHIP_OBTAINED'"
+			)
+		)
+	)
+
+
+	
+	(block
+		(class $FullsizeAbsolute)
+
+		(style
+			(align = "bottom")
+		)
+
+		
+		(block
+			(bind visible "!isPurchased")
+
+			(style
+				(bind marginBottom "isEnough ? S : SXS")
+				(bind width "MODERN_ERA_SHIP_PREVIEW_LEFT_CONTENT_WIDTH - M")
+			)
+
+			
+			(hblock
+				(style
+					(width = 100%)
+				)
+
+				(tf
+					(class $TextDefault17NM)
+					(style
+						(width = 100%)
+						(marginRight = "SXS")
+						(alpha = "TA")
+					)
+					(text = 'IDS_MODERN_ERA_SHIP_PREVIEW_BUY_PRICE')
+				)
+
+				(block
+					(controller $Instance renderer='PriceTag'
+						(bind enabled "itemPrice != null")
+						(args
+							_priceInfo="itemPrice"
+							_size="SIZE.MEDIUM"
+						)
+					)
+				)
+			)
+
+			(block
+				(style (width = 100%))
+
+				
+				(hblock
+					(bind visible "!isEnough")
+
+					(style
+						(width = 100%)
+						(marginTop = "S")
+					)
+
+					(tf
+						(class $TextDefaultNM)
+						(style
+							(width = 100%)
+							(alpha = "TA")
+							(marginRight = "XS")
+							(textColor = "SC.Ui_styles.SERVICE_COLORS.RED")
+						)
+						(text = 'IDS_NOT_ENOUGH')
+					)
+
+					(block
+						(controller $Instance renderer='PriceTag'
+							(bind enabled "itemPrice != null && !isEnough")
+							(args
+								_priceInfo="{ currency: itemPrice.currency, finalPrice: -costDiff }"
+								_isDeficit	= "true"
+							)
+						)
+					)
+				)
+
+				
+				(controller $Instance renderer='DefaultButton'
+					(bind enabled "isEnough")
+
+					(args
+						_label='IDS_MODERN_ERA_SHIP_PREVIEW_BUY_BUTTON'
+						_width="MODERN_ERA_SHIP_PREVIEW_LEFT_CONTENT_WIDTH - M"
+						_enabled = true
+						_methods = "[	{	type: 'inputMapping.onRequest',
+											name: 'openModernEraPuchaseShipWindow',
+											args: { _shipEntityId: modernEraEventItemEntity.id }
+										},
+										{	type: 'direct.action',
+											name: SC.Common.STATISTICS_EVENTS.LOG,
+											args: [SC.Common.MODERN_ERA_STATISTICS.GO_TO_BUY_SHIP]
+										}]"
+					)
+
+					(exprs
+						(style (marginTop = "SXS"))
+					)
+				)
+			)
+
+		)
+
+		
+		(block
+			(style
+				(gap = "XS")
+			)
+
+			(element DefaultButton
+				_label='IDS_MODERN_ERA_SHIP_PREVIEW_OPEN_EQUIPMENT_BUTTON'
+				_width="MODERN_ERA_SHIP_PREVIEW_LEFT_CONTENT_WIDTH - M"
+				_type="SC.Ui_styles.BUTTON_TYPE.SECONDARY"
+				_enabled = true
+				_methods = "[	{	type: 'inputMapping.onAction',
+									name: 'selectShipForManagement',
+									args: {shipId: shipId}
+								},
+								{	type: 'direct.action',
+									name: SC.Common.STATISTICS_EVENTS.LOG,
+									args: [SC.Common.MODERN_ERA_STATISTICS.GO_TO_EQUIPMENT_SHIP]
+								}]"
+			)
+
+			(element DefaultButton
+				_label='IDS_MODERN_ERA_SHIP_PREVIEW_SHOW_PREVIEW_SHIP_BUTTON'
+				_width="MODERN_ERA_SHIP_PREVIEW_LEFT_CONTENT_WIDTH - M"
+				_type="SC.Ui_styles.BUTTON_TYPE.SECONDARY"
+				_enabled = true
+				_dispatchParams="{ buttonStatName: SC.Common.MODERN_ERA_STATISTICS.GO_TO_PREVIEW_SHIP }"
+				_methods = "[	{	type: 'inputMapping.onAction',
+									name: 'selectShipForPreview',
+									args: { shipId: shipId }
+								},
+								{	type: 'inputMapping.onAction',
+									name: 'navigateTo',
+									args: {
+										route: SC.Ui_windows.ROUTE.SHIP_PREVIEW,
+										data: {	isRewardShipPreview: true }
+									}
+								},
+								{	type: 'direct.action',
+									name: SC.Common.STATISTICS_EVENTS.LOG,
+									args: [SC.Common.MODERN_ERA_STATISTICS.GO_TO_PREVIEW_SHIP]
+								}]"
+			)
+		)
+	)
+)
+
+(def element ModernEraSelectedShipPreview (_selectedShipId:str)
+	(scope
+		(macro PULL_MODERN_ERA_SHIP_ITEM_INFO_BY_ID "_selectedShipId") 
+		(macro PULL_MODERN_ERA_SHIP) 
+
+		(var shipShortName:str = "shipComponent ? shipComponent.shortName : ''" (event "shipComponent.evUpdate"))
+
+		(var shipImageUrl:str = "'url:../ship_previews/medium/' + toUpper(shipShortName) + '.png'")
+		(var shipFeatureText:str = "'IDS_MODERN_ERA_SHIP_FEATURE_DESCRIPTION_FOR_' + toUpper(shipShortName)")
+	)
+
+	(class $Fullsize)
+
+	
+	(block
+		(style
+			(width = 100%)
+			(height = "MODERN_ERA_SHIP_PREVIEW_IMAGE_HEIGHT")
+
+			(marginBottom = "SXS")
+
+			(backgroundSize = "fill")
+			(bind backgroundImage "shipImageUrl")
+		)
+	)
+
+	(block
+		(style (width = 100%) (marginBottom = "SXS"))
+
+		(element HorizontalDividerTwoPx)
+	)
+
+	
+	(block
+		(style
+			(width = 100%)
+			(height = 60px)
+			(align = "middle")
+		)
+
+		(tf
+			(class $TextDefault17NM)
+			(style
+				(width = 100%)
+				(alpha = "TA")
+			)
+			(bind text "shipFeatureText")
+		)
+	)
+)
+
+(def element ModernEraUpgradesContainer(_group:str)
+	(scope
+		(var modernEraUpgradesCollectionChild:str = "'byType.' + SC.Common.MODERN_ERA_EVENT_ITEM_TYPES.UPGRADE + '.byGroup.' + _group")
+		(var modernEraUpgradesCollection:gfx = "$datahub.getCollection(CC.eventShopItem)")
+		(var modernEraUpgradesSubcollection:gfx = "modernEraUpgradesCollection ? modernEraUpgradesCollection.getChildByPath(modernEraUpgradesCollectionChild) : null"
+			(event "modernEraUpgradesCollection.evAdded")
+			(event "modernEraUpgradesCollection.evRemoved")
+		)
+		(var availableUpgrades:array = "modernEraUpgradesSubcollection ? modernEraUpgradesSubcollection.items : []"	)
+
+		
+
+		(var title:str = "'IDS_MODERN_ERA_UPGRADES_TITLE_' + toUpper(_group)")
+	)
+
+	(bind visible "availableUpgrades.length > 0")
+
+	(style
+		(width = 100%)
+	)
+
+	
+	(tf
+		(class $TextDefaultBold17NM)
+		(style
+			(width = 100%)
+			(marginBottom = "SXS")
+			(alpha = "TA")
+		)
+		(bind text "title")
+	)
+
+	
+	(block
+		(style
+			(width = 100%)
+			(bind height "MODERN_ERA_UPGRADE_CONTAINER_HEIGHT")
+			(backgroundColor = 0x30000000)
+		)
+
+		
+		(block
+			(class $FullsizeAbsolute)
+
+			(element OnePixelFrameBorder
+				_alpha = "0.1"
+			)
+		)
+
+		
+		(block
+			(class $Fullsize)
+
+			(style
+				(paddingLeft = "M") (paddingRight = "M")
+				(paddingTop = "SXS") (paddingBottom = "SXS")
+			)
+
+			(scrollArea
+				(style
+					(width = 100%)
+					(bind height "MODERN_ERA_UPGRADE_ITEM_HEIGHT")
+					(backgroundColor = "0x01000000")
+				)
+
+				(horizontalSlider = 'CarouselScroll')
+				(hscrollPolicy = 'auto')
+				(vscrollPolicy = 'off')
+				(drag = true)
+
+				(repeatController = 'modernEraUpgradeItemRenderer')
+
+				(content
+					(style
+						(width = 100%) (height = 100%)
+						(flow = "horizontal") (gap = "24")
+					)
+
+					(controller $Repeat renderer = 'ModernEraUpgradeItem' name='modernEraUpgradeItemRenderer'
+						(bind count "availableUpgrades.length")
+						(args
+							_upgradeItemEntityId = "availableUpgrades[$index].id"
+						)
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element ModernEraUpgradeItem(_upgradeItemEntityId:number)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(macro PULL_MODERN_ERA_EVENT_ITEM_INFO "_upgradeItemEntityId") 
+		(macro PULL_MODERN_ERA_UPGRADE) 
+
+		
+		(macro PULL_ACCOUNT_RESOURCES)
+		(macro IS_ENOUGH_RESOURCES_FOR_BUYING "[itemPrice]") 
+
+		(var modernizationCollection:gfx = "$datahub.getCollection(CC.modernization)")
+
+		(var modernizationEntity:gfx = "$datahub.getPrimaryEntity(CC.modernization, modernizationId)"	(event "modernizationCollection.evAdded")
+																										(event "modernizationCollection.evRemoved"))
+	)
+
+	(style
+		(bind width "MODERN_ERA_UPGRADE_ITEM_WIDTH")
+		(bind height "MODERN_ERA_UPGRADE_ITEM_HEIGHT")
+
+		(align = "center")
+	)
+
+	
+	(block
+		(style
+			(width = 60px)
+			(height = 60px)
+			(marginBottom = "XS")
+		)
+
+		(block
+			(class $Fullsize)
+			(style
+				(bind alpha "(!isEnough || isPurchased) ? 0.5 : 1")
+			)
+
+			(element ModernEraModernizationItem
+				_id="modernizationId"
+			)
+		)
+
+		(controller $Tooltip
+			(bind renderer "'ModernEraModernizationTooltip'")
+			(args
+				_priceInfo="itemPrice"
+				_modernizationEntityId = "modernizationEntity.id"
+				_isPurchased = "isPurchased"
+				_isEnough = "isEnough"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			(macro STATS_LOG_TOOLTIP_DURATION "SC.Common.MODERN_ERA_STATISTICS.MODERNIZATION_TOOLTIP + '_' + modernizationId")
+		)
+
+		
+		(block
+			(bind visible "isPurchased")
+
+			(class $FullsizeAbsolute)
+			(style (align = "middle|center"))
+
+			(block
+				(style
+					(width = 48px) (height = 48px)
+					(hitTest = false)
+					(backgroundImage = "'url:../reward_categories/icon_check.png'")
+					(backgroundSize = "fill")
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "!isPurchased")
+
+		(element PriceTag
+			_priceInfo="itemPrice"
+		)
+	)
+
+	
+	(block
+		(bind visible "isEnough && !isPurchased")
+
+		(class $FullsizeAbsolute)
+
+		(style
+			(alpha = 0)
+			(align = "center|bottom")
+		)
+
+		
+		(controller $Animation
+			(bindcall play  duration=0.1
+							from = "{ alpha: 0 }"
+							to = "{ alpha: 1 }"
+							reverse="!rollOver"
+							(bind trigger "rollOver")
+			)
+		)
+
+		(element DefaultButton
+			_label = 'IDS_BUY_UPPER_CASE'
+			_size = "SIZE.SMALL"
+			_width = "MODERN_ERA_UPGRADE_ITEM_WIDTH"
+			_enabled = true
+			_isTransactionBtn = true
+			_methods = "[	{	type: 'inputMapping.onRequest',
+								name: 'openModernEraPuchaseShipUpgradeWindow',
+								args: { _shipUpgradeEntityId: _upgradeItemEntityId }
+							},
+							{	type: 'direct.action',
+								name: SC.Common.STATISTICS_EVENTS.LOG,
+								args: [SC.Common.MODERN_ERA_STATISTICS.GO_TO_BUY_MODERNIZATION + '_' + modernizationId]
+							}]"
+		)
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER)
+)
+
+(def element ModernEraModernizationTooltip (_priceInfo:gfx, _isPurchased:bool, _isEnough:bool, _modernizationEntityId:number=0, _isSlotTooltip:bool=false) layout=true
+	(scope
+		(macro PULL_SHIP_ID)
+		(macro PULL_OWN_SHIP
+			_shipId			= "shipIdForModuleInset"
+			_entityField	= "'ownShipEntity'"
+			_scopeFieldShip	= "'ownShipInfo'"
+		)
+
+		(var ownShipComponent:gfx = "ownShipEntity ? ownShipEntity.ownShip : null")
+
+		(var modernizationEntity:gfx = "$datahub.getEntity(_modernizationEntityId)")
+		(var modernizationComponent:gfx = "modernizationEntity ? modernizationEntity.modernization : null")
+		(var modernizationAttributes:gfx = "modernizationEntity ? modernizationEntity.attributes : null")
+
+		(var id:number = "modernizationComponent ? modernizationComponent.modId : null")
+		(var name:str = "modernizationComponent ? modernizationComponent.name : null")
+		(var type:str = "modernizationComponent ? modernizationComponent.type : null")
+		(var numInStorage:number = "modernizationComponent ? modernizationComponent.numInStorage : null" (event "modernizationComponent.evNumInStorageChanged"))
+		(var isRecommended:bool = "modernizationComponent ? modernizationComponent.isRecommended : null" (event "modernizationComponent.evIsRecommendedChanged"))
+
+		(var attributesNegative:array = "modernizationAttributes ? modernizationAttributes.negative : null" (event "modernizationAttributes.evChanged"))
+		(var attributesNeutral:array = "modernizationAttributes ? modernizationAttributes.neutral : null" (event "modernizationAttributes.evChanged"))
+		(var attributesPositive:array = "modernizationAttributes ? modernizationAttributes.positive : null" (event "modernizationAttributes.evChanged"))
+
+		(var isOwned:bool = "ownShipEntity != null")
+		(var isShipLocked:bool = "ownShipComponent ? ownShipComponent.isLocked : null" (event "ownShipComponent.evUpdateLock"))
+		(var isInFormation:bool = "ownShipComponent ? ownShipComponent.isInFormation : null" (event "ownShipComponent.evUpdateLock"))
+
+		(var headerText:str = "tr('IDS_TITLE_' + toUpper(name))")
+		(var subheaderText:str = "tr('IDS_MODERNIZATION_' + toUpper(type))")
+		(var descriptionText:str = "tr('IDS_DESC_' + toUpper(name))")
+		(var descriptionVisible:str = "descriptionText != ' '")
+
+		(var unifiedStatus:str = "_isPurchased ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+		(var iconPath:str = "'url:../modernization_icons/icon_modernization_' + name + '.png'")
+	)
+
+	(name = 'modern_era_modernization_tooltip')
+
+	(style (hitTest = "false") (width = "340px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_imageUrl =			"iconPath"
+			_headerText =		"headerText"
+			_imageWidth = 		60
+			_imageHeight = 		60
+			_subheaderText =	"subheaderText"
+			_unifiedStatus =	"unifiedStatus"
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider')
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "!_isPurchased")
+				(args
+					_descriptionText = "'IDS_EVENT_SHOP_TOOLTIP_DESCRIPTION'"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "_isPurchased")
+				(args
+					_text = 'IDS_EVENT_SHOP_TOOLTIP_PURCHASED'
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "!_isPurchased"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemAlterablePriceTagLine'
+				(bind enabled "!_isPurchased")
+				(args
+					_title = 'IDS_PURCHASE_COST'
+					_priceInfo = "_priceInfo"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "!_isEnough && !_isPurchased"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "!_isEnough && !_isPurchased")
+				(args
+					_text = 'IDS_EVENT_SHOP_TOOLTIP_INSUFFICIENT_RESOURCES_DESCRIPTION'
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.NEGATIVE"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "descriptionVisible"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemDescriptionText'
+				(bind enabled "descriptionVisible")
+				(args
+					_descriptionText = "descriptionText"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemParamsModifiersList'
+				(args
+					_attributesNegative = "attributesNegative"
+					_attributesPositive = "attributesPositive"
+					_attributesNeutral = "attributesNeutral"
+				)
+			)
+		)
+	)
+)
+
+(def element ModernEraModernizationItem (_id:number, _withTooltip:bool=true)
+	(scope
+		(var modernizationCollection:gfx = "$datahub.getCollection(CC.modernization)")
+
+		(var modernizationEntity:gfx = "$datahub.getPrimaryEntity(CC.modernization, _id)"	(event "modernizationCollection.evAdded")
+																							(event "modernizationCollection.evRemoved"))
+		(var modernizationComponent:gfx = "	modernizationEntity ? modernizationEntity.modernization : null")
+
+		(var name:str = "modernizationComponent ? modernizationComponent.name : null")
+	)
+
+	(element ModernizationItemView
+		_name = "name"
+	)
+)

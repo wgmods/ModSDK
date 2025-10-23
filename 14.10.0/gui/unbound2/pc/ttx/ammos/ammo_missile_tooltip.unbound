@@ -1,0 +1,116 @@
+(def layout Missiles_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(class $ParametersPanel)
+	(scope
+		(var ammoTTX:gfx = "_shipTTX.missile.missileAmmo")
+	)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_ALPHA_DAMAGE'
+											_value = "ammoTTX.alphaDamage"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_VISIBILITY'
+											_value = "ammoTTX.visibilityFactor"
+											_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+											_zeroValueHidden = true
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_SPEED'
+											_value = "ammoTTX.maxSpeedCruise"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_SEARCH_ANGLE'
+											_value = "ammoTTX.searchAngle"
+											_valueConfig = "VALUE_CONFIG.DEGREES"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_SEARCH_RADIUS'
+											_value = "ammoTTX.searchRadius"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_MAX_DIST'
+											_value = "_shipTTX.missile.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_MIN_DIST'
+											_value = "_shipTTX.missile.minDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_TIME_BETWEEN_SHOTS'
+											_value = "_shipTTX.missile.timeBetweenShots"
+											_valueConfig = "VALUE_CONFIG.SECONDS"
+			)
+		)
+	)
+)
+
+(def layout Missiles_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(class $ParametersPanel)
+	(scope
+		(var ammoTTX:gfx = "_shipTTX.missile.missileAmmo")
+	)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_ALPHA_DAMAGE'
+											_value = "ammoTTX.alphaDamage"
+			)
+
+			
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_VISIBILITY'
+											_value = "ammoTTX.visibilityFactor"
+											_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+											_zeroValueHidden = true
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_SPEED'
+											_value = "ammoTTX.maxSpeedCruise"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_SEARCH_ANGLE'
+											_value = "ammoTTX.searchAngle"
+											_valueConfig = "VALUE_CONFIG.DEGREES"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_SEARCH_RADIUS'
+											_value = "ammoTTX.searchRadius"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_MAX_DIST'
+											_value = "_shipTTX.missile.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_MIN_DIST'
+											_value = "_shipTTX.missile.minDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_TIME_BETWEEN_SHOTS'
+											_value = "_shipTTX.missile.timeBetweenShots"
+											_valueConfig = "VALUE_CONFIG.SECONDS"
+			)
+		)
+	)
+)

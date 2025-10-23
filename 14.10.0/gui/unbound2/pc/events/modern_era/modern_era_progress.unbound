@@ -1,0 +1,877 @@
+(def constant MODERN_ERA_COLOR_DARK_BLUE "0xFF192a3a")
+
+
+(def element ModernEraProgressionInset()
+	(scope
+		(macro STAGE_SIZE)
+		(event evChangedSelectedLevel)
+		(event startShow)
+		(event startHide)
+
+		(var currentLevelCollection:gfx = "$datahub.getCollection(CC.eventHubCurrentLevel)")
+		(var currentLevelEntity:gfx = "currentLevelCollection ? currentLevelCollection.items[0] : null" (event "currentLevelCollection.evAdded")
+																										(event "currentLevelCollection.evRemoved"))
+		(var selectedLevelId:number = "currentLevelEntity ? currentLevelEntity.id : null")
+		(bind selectedLevelId "$event.selectedLevelId" init=false (event "evChangedSelectedLevel"))
+		
+		(bind selectedLevelId "currentLevelEntity ? currentLevelEntity.id : null" init=false (event "startShow"))
+
+		(var selectedLevelEntity:gfx = "selectedLevelId ? $datahub.getEntity(selectedLevelId) : null")
+		(var eventHubLevel:gfx = "selectedLevelEntity ? selectedLevelEntity.eventHubLevel : null")
+		(var eventHubPhase:gfx = "eventHubLevel ? $datahub.getPrimaryEntity(CC.eventHubPhase, eventHubLevel.phaseIndex).eventHubPhase : null" (event "eventHubLevel.evUpdated"))
+		(var progressionLevel:gfx = "selectedLevelEntity ? selectedLevelEntity.progressionLevel : null")
+		(var level:number = "progressionLevel ? progressionLevel.level : 0" (event "progressionLevel.evChanged"))
+		(var maxPoints:number = "progressionLevel ? progressionLevel.points : 0" (event "progressionLevel.evChanged"))
+		(var progressionLevelProgress:gfx = "selectedLevelEntity ? selectedLevelEntity.progressionLevelProgress : null")
+		(var currentPoints:number = "progressionLevelProgress ? progressionLevelProgress.currentPoints : 0" (event "progressionLevelProgress.evChanged"))
+		(var isPostProgressionLevel:bool = "selectedLevelEntity ? selectedLevelEntity.hasComponent(CC.postProgressionLevel) : false")
+		(var isLevelCompleted:bool = "currentPoints == maxPoints")
+
+		(macro SERVER_TIME_SCOPE)
+		(var phaseStartTime:number = "eventHubPhase ? eventHubPhase.startTime : 0")
+		(var phaseStartsIn:number = "phaseStartTime - serverTime")
+		(var formattedPhaseStartTime:str = "formatTime(phaseStartsIn, 'HIGHESTDAYS', '', true)")
+		(var isPhaseStarted:bool = "serverTime >= phaseStartTime")
+		(var phaseLabel:str = "isPhaseStarted	? 'IDS_EVENT_HUB_PROGRESS_ACTIVE_PHASE'
+												: subst('IDS_SUBST_EVENT_HUB_PROGRESS_NEXT_PHASE_IN', [], {_timeLeft: formattedPhaseStartTime})")
+
+		(macro EVENT_HUB_SEASON_ENTITY_SCOPE "'eventHubSeasonEntity'")
+		(var eventHubSeason:gfx = "eventHubSeasonEntity ? eventHubSeasonEntity.eventHubSeason : null")
+
+		(var newContentEntity:gfx = "$datahub.getPrimaryEntity(CC.newContent, SC.Common.CONTENT_CATEGORY.EVENT_HUB_PROGRESS)")
+		(var newContentCounter:gfx = "newContentEntity ? newContentEntity.newContent.count : 0" (event "newContentEntity.newContent.evCountChanged"))
+		(var isNew:bool = "newContentCounter > 0")
+
+		(var eventHubFinishTime:number = "eventHubSeason ? eventHubSeason.finishTime : null")
+		(macro COUNTDOWN_SCOPE "'eventHubTimeLeft'" "eventHubFinishTime" "'HIGHEST,WITH_DAYS'")
+	)
+
+	(bindcall externalCall 'sound.playSetSoundDirect' "['dock_inset', 'eventhub_progress']" init=false watch=false on='addedToStage')
+	(bindcall externalCall "isNew ? 'inputMapping.onAction' : ''" "['setEventHubFlag', {flag: SC.Common.EVENT_HUB_FLAGS.PROGRESS_TAB_SEEN}]" init=false watch=false on='addedToStage')
+
+	(dispatch startShow on='addedToStage')
+	(dispatch startHide on='removedFromStage')
+
+	(controller $Animation
+		(bindcall play duration=0.25 delay=0.2 from="{alpha: 0}" to="{alpha: 1}" action="killAll" (event "startShow"))
+		(bindcall play duration=0.35 from="{alpha: 1}" to="{alpha: 0}" action="killAll" (event "startHide"))
+	)
+
+	(style
+		(bind width "stageWidth") (bind height "stageHeight")
+		(align = "center|middle") (alpha = 0)
+		(bind alpha "0" (event "startShow"))
+	)
+
+	(bind name "'ModernEraProgressInset'")
+
+	
+	(block
+		(style (width = 1200px) (height = 236px))
+		(block
+			(style
+				(width = 100%) (marginTop = "XXS")
+			)
+
+			(element ModernEraProgressContainer
+				_selectedLevelId = "selectedLevelId"
+			)
+		)
+	)
+
+	(hblock
+		(style (width = 100%) (align = "center") (paddingTop = "MS"))
+
+		
+		(hblock
+			(style (align = "center|middle"))
+
+			(tf
+				(bind visible "!isPostProgressionLevel")
+
+				(class $TextDefaultBold21NM)
+				(style (alpha = "TA") (marginRight = "SXS"))
+
+				(bind text "subst('IDS_SUBST_MODERN_ERA_PROGRESS_LEVEL', [], {_level: level})")
+			)
+
+			(tf
+				(bind visible "isPostProgressionLevel")
+
+				(class $TextDefaultBold21NM)
+				(style (alpha = "TA") (marginRight = "SXS"))
+
+				(text = "'IDS_MODERN_ERA_POST_PROGRESS_LEVEL'")
+			)
+
+			(block
+				(bind visible "!isPhaseStarted")
+				(style
+					(width = 20px) (height = 20px)
+					(marginLeft = "-XS") (marginRight = "6")
+					(backgroundImage = 'url:../service_kit/icons/icon_status_lock.png')
+				)
+			)
+			(block
+				(element VerticalDivider
+					(style
+						(height = 25px) (marginRight = "SXS")
+					)
+				)
+			)
+		)
+
+		
+		(block
+			(bind visible "!isLevelCompleted")
+			(hblock
+				(style (align = "center|middle"))
+				(controller $Instance renderer='DefaultDividedCounter'
+					(args
+						_curValueTextClass = '$TextDefaultBold21NM'
+						_curValue = "currentPoints"
+						_maxValue = "maxPoints"
+						_doNotAlphaOnZeroCurValue = true
+					)
+				)
+
+				(block
+					(style
+						(width = 24px) (height = 24px) (marginLeft = "XXS")
+						(backgroundImage = 'url:../service_kit/icons/star_24.png')
+					)
+				)
+			)
+		)
+
+		(block
+			(style (height = 100%) (align = "center|middle"))
+			(bind visible "isLevelCompleted")
+			(element StatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+				_text = "'IDS_SUBST_MODERN_ERA_LEVEL_COMPLETED'"
+				_textClass = '$TextDefaultNM'
+			)
+		)
+	)
+
+	(tf
+		(bind visible "isPhaseStarted")
+		(class $TextDefaultNM)
+		(style (alpha = "TA") (marginTop = "SXS"))
+		(text = "'IDS_MODERN_ERA_PROGRESSION_DESCRIPTION'")
+	)
+
+	(block
+		(bind visible "!isPhaseStarted")
+		(style (marginTop = "SXS"))
+
+		(element StatusLine
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DATE"
+			_text = "subst('IDS_SUBST_MODERN_ERA_PROGRESS_NEXT_PHASE_IN', [], {_timeLeft: formattedPhaseStartTime})"
+			_textClass = '$TextDefaultNM'
+		)
+	)
+)
+
+(def element ModernEraProgressContainer (_selectedLevelId:number) layout=true
+	(scope
+		(event evAddedToStage)
+		(event evScrollToIndex)
+		(event evStartAnimationSequence)
+		(event evAnimatedLevelsChanged)
+
+		(macro PULL_ACTIVE_CHILD_ROUTE
+			_nodeId = "SC.Ui_windows.ROUTE.EVENT_HUB"
+			_fieldActiveChild = "'currentRoute'"
+		)
+
+		(var isInEventHubProgress:bool = "currentRoute == SC.Ui_windows.ROUTE.EVENT_HUB_PROGRESS")
+
+		(macro EVENT_HUB_SEASON_ENTITY_SCOPE "'eventHubEntity'")
+
+		(var currentLevelEntity:gfx = "$datahub.getEntity(_selectedLevelId)")
+		(var progressionLevel:gfx = "currentLevelEntity ? currentLevelEntity.progressionLevel : null")
+		(var progressionLevelProgress:gfx = "currentLevelEntity ? currentLevelEntity.progressionLevelProgress : null")
+		(var currentLevel:number = "progressionLevel ? progressionLevel.level : 0" (event "progressionLevel.evChanged"))
+
+		(var carouselColumnsOnScreen:number = "7")
+		(var halfTheColumns:number = "round(carouselColumnsOnScreen / 2)")
+		(var carouselScrollIndex:number = "currentLevel < halfTheColumns ? 0 : (currentLevel + 1 - halfTheColumns)")
+
+		(var progressionAnimations:gfx = "eventHubEntity ? eventHubEntity.progressionAnimations : null" (event "eventHubEntity.evAdded"))
+		(var animatedLevels:array = "progressionAnimations ? progressionAnimations.animatedLevels : []" (event "progressionAnimations.evChanged"))
+
+		(var needToShowAnimation:bool = "animatedLevels.length > 0")
+		(var isAnimEnb:bool = "needToShowAnimation && isInEventHubProgress" init=false watch=false (event "evAddedToStage") (event "evAnimatedLevelsChanged"))
+	)
+
+	(dispatch evStartAnimationSequence
+		delay=0.01 dir="EventDirection.DOWN"
+		(bind enabled "isAnimEnb")
+	)
+
+	(dispatch evAddedToStage delay=0.1 on='addedToStage')
+	(dispatch evAnimatedLevelsChanged delay=0.01 (bind trigger "animatedLevels"))
+
+	(dispatch evScrollToIndex args="{index: carouselScrollIndex}" delay=0.1 dir="EventDirection.DOWN" (event "evAddedToStage") (event "evStartAnimationSequence"))
+
+	(style (width = 100%))
+
+	
+	(block
+		(style (width = 100%))
+
+		(element ModernEraProgressScrollContainer
+			_selectedLevelId = "_selectedLevelId"
+		)
+	)
+)
+
+(def element ModernEraProgressScrollContainer (_selectedLevelId:number)
+	(scope
+		(event CarouselCanScrollChanged)
+		(event evScrollPrev)
+		(event evScrollNext)
+		(event evScrollToIndex)
+
+		(var canScrollLeft:bool =	"$event ? $event.down	: false"			(event "CarouselCanScrollChanged"))
+		(var canScrollRight:bool =	"$event ? $event.up		: false"			(event "CarouselCanScrollChanged"))
+		(var isScrollEnabled:bool =	"$event ? $event.down || $event.up : true"	(event "CarouselCanScrollChanged"))
+
+		(var levelsCollection:gfx = "$datahub.getCollection(CC.progressionLevel).getChildByPath('eventHub.sorted')")
+		(var levelsArray:array = "levelsCollection ? levelsCollection.items : []"	(event "levelsCollection.evAdded")
+																					(event "levelsCollection.evRemoved"))
+	)
+
+	(style
+		(width = 100%) (flow = "horizontal")
+	)
+
+	
+	(block
+		(style (width = "EH_VERTICAL_BACKGROUND_ELEMENT_WIDTH"))
+
+
+		(element ModernEraLeftCarouselArrow
+			_isScrollEnabled = "isScrollEnabled"
+			_canScroll = "canScrollLeft"
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "center"))
+
+		(scrollArea
+			(style
+				(height = "236") (width = "REWARD_CONTAINER_WIDTH")
+				(backgroundColor = "0x29000000")
+			)
+
+			(horizontalSlider = 'EventHubCarouselScroll')
+			(hscrollPolicy = 'auto')
+			(vscrollPolicy = 'off')
+			(drag = true)
+
+			(repeatController = 'phaseCarouselContainer')
+
+			(content
+				(style
+					(width = 100%) (height = 100%) (top = 12px)
+					(backgroundColor = "0x21ffffff")
+				)
+
+				(hblock
+					(controller $Repeat renderer='ModernEraLevelContainerWrapper'
+						(bind count "levelsArray.length")
+
+						(args
+							_entityId = "levelsArray[$index].id"
+							_selectedLevelId = "_selectedLevelId"
+						)
+					)
+				)
+			)
+
+			(bindcall scrollLeft	(event "evScrollPrev"))
+			(bindcall scrollRight	(event "evScrollNext"))
+			(bindcall scrollTo	index="$event.index" maxAnimatedDistance=350 (event "evScrollToIndex"))
+		)
+	)
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "right"))
+
+		(block
+			(element ModernEraRightCarouselArrow
+				_isScrollEnabled = "isScrollEnabled"
+				_canScroll = "canScrollRight"
+			)
+		)
+	)
+)
+
+(def element ModernEraLevelSeparator () layout=true
+	(style
+		(alpha = "TC") (width = 50px) (height = 212px)
+		(align = "center|bottom")
+	)
+
+	(element VerticalDivider)
+)
+
+(def element ModernEraCarouselArrowBase(_isRollOver:bool, _canScroll:bool)
+	(style
+		(height = 236px)
+		(width = "48px")
+		(bind alpha "!_canScroll || _isRollOver ? 0.5 : 1")
+	)
+
+	(element EventHubBackgroundElementItem
+		_color = "MODERN_ERA_COLOR_DARK_BLUE"
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (backgroundImage = 'url:../service_kit/frames/one_pixel_frame.png') (scale9grid = 2) (alpha = 0.1))
+	)
+)
+
+(def element ModernEraLeftCarouselArrow(_isScrollEnabled:bool, _canScroll:bool)
+	(scope
+		(event evScrollPrev)
+		(macro MOUSE_HANDLER_SCOPE
+			_prefix = "'carouselLeftArrow_'"
+		)
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER
+		_prefix = "'carouselLeftArrow_'"
+	)
+	(dispatch evScrollPrev dir="EventDirection.UP" (event "carouselLeftArrow_evClicked") (bind enabled "_canScroll"))
+
+	(bind name "'eventHubCarouselLeft'")
+
+	(element ModernEraCarouselArrowBase
+		_isRollOver = "_canScroll && carouselLeftArrow_rollOver && !carouselLeftArrow_mouseDown"
+		_canScroll = "_canScroll"
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "center|middle"))
+
+		(block
+			(style
+				(width = 16px) (height = 32px)
+				(backgroundImage = "'url:../modern_era/progress/level/arrows/arrow_left_enabled.png'")
+			)
+		)
+	)
+)
+
+(def element ModernEraRightCarouselArrow(_isScrollEnabled:bool, _canScroll:bool)
+	(scope
+		(event evScrollNext)
+		(macro MOUSE_HANDLER_SCOPE
+			_prefix = "'carouselRightArrow_'"
+		)
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER
+		_prefix = "'carouselRightArrow_'"
+	)
+	(dispatch evScrollNext dir="EventDirection.UP" (event "carouselRightArrow_evClicked") (bind enabled "_canScroll"))
+
+	(bind name "'eventHubCarouselRight'")
+
+	(element ModernEraCarouselArrowBase
+		_isRollOver = "_canScroll && carouselRightArrow_rollOver && !carouselRightArrow_mouseDown"
+		_canScroll = "_canScroll"
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (align = "center|middle"))
+
+		(block
+			(style
+				(width = 16px) (height = 32px)
+			)
+
+			(block
+				(style
+					(scaleX = -1) (position = "absolute") (right = 0)
+					(backgroundImage = "'url:../modern_era/progress/level/arrows/arrow_left_enabled.png'")
+				)
+			)
+		)
+	)
+)
+
+(def element ModernEraLevelContainerWrapper (_entityId:gfx, _selectedLevelId:number) layout=true
+	(scope
+		(var levelEntity:gfx = "$datahub.getEntity(_entityId)")
+		(var isPostProgressionLevel:bool = "levelEntity ? levelEntity.hasComponent(CC.postProgressionLevel) : false")
+		(var eventHubLevel:gfx = "levelEntity ? levelEntity.eventHubLevel : null")
+
+		(var eventHubPhasesCollection:gfx = "$datahub.getCollection(CC.eventHubPhase)")
+		(var eventHubPhases:array = "eventHubPhasesCollection ? eventHubPhasesCollection.items : []"	(event "eventHubPhasesCollection.evAdded")
+																										(event "eventHubPhasesCollection.evRemoved"))
+		(var eventHubPhase:gfx = "$datahub.getPrimaryEntity(CC.eventHubPhase, eventHubLevel.phaseIndex).eventHubPhase" (event "eventHubLevel.evUpdated"))
+
+		(var levelsCollection:gfx = "$datahub.getCollection(CC.progressionLevel)")
+		(var levelsCollectionByPhase:gfx = "$datahub.getCollection(CC.progressionLevel).getChildByPath('eventHub.byPhase.' + eventHubLevel.phaseIndex)"
+																														(event "levelsCollection.evChildAdded")
+																														(event "levelsCollection.evChildRemoved")
+																														(event "levelsCollection.evUpdated"))
+		(var levelsArray:array = "levelsCollectionByPhase ? levelsCollectionByPhase.items : []" (event "levelsCollectionByPhase.evUpdated"))
+		(macro SERVER_TIME_SCOPE)
+		(var phaseStartTime:number = "eventHubPhase.startTime")
+		(var phaseStartsIn:number = "phaseStartTime - serverTime")
+		(var formattedPhaseStartTime:str = "formatTime(phaseStartsIn, 'HIGHESTDAYS', '', true)")
+		(var isPhaseStarted:bool = "serverTime >= phaseStartTime")
+
+		(var activePhase:number = "(TOTAL_NUMBER_OF_PHASES - eventHubPhases.length) + 1") 
+		(var activePhaseTitle:str = "'IDS_MODERN_ERA_PHASE_' + activePhase + '_TITLE'")
+
+		(var phaseStartLabel:str = "isPhaseStarted	? activePhaseTitle
+													: subst('IDS_SUBST_MODERN_ERA_PHASE_WILL_OPEN_IN', [], {_startTime: formattedPhaseStartTime})")
+
+		(var isInLastPhase:bool = "eventHubPhase.index == eventHubPhases.length - 1" (event "levelsCollectionByPhase.evUpdated"))
+		(var isFirstLevelInPhase:bool = "levelsArray.length > 0 ? levelsArray[0].id == _entityId : false" (event "levelsCollectionByPhase.evUpdated"))
+	)
+
+	(style
+		(minWidth = "MIN_LEVEL_WIDTH") (flow = "horizontal")
+		(bind marginLeft "isPostProgressionLevel ? MS : 0")
+	)
+
+	(block
+		(controller $Instance renderer='ModernEraLevelContainer'
+			(args
+				_entityId = "_entityId"
+				_isSelected = "_entityId == _selectedLevelId"
+			)
+		)
+	)
+
+	
+	(controller $Instance renderer='ModernEraLevelSeparator'
+		(bind enabled "isPostProgressionLevel && !isInLastPhase")
+	)
+
+	
+	(block
+		(bind visible "isFirstLevelInPhase")
+
+		(style
+				(position = "absolute") (bottom = "0") (marginTop = "XL")
+				(width = "100%") (height = "20px") (marginLeft = "S")
+				(backgroundColor = "0x00000000")
+		)
+
+		(block
+			(style (width = 100%) (marginTop = "L"))
+			(tf
+				(class $TextDefaultBold17NM)
+				(class $FontColorBlueish)
+				(style (alpha = "TS") (align = "center"))
+				(bind text "phaseStartLabel")
+			)
+		)
+	)
+)
+
+
+(def element ModernEraLevelContainer (_entityId:gfx, _isSelected:bool=false) layout=true
+	(scope
+		(event evProgressRise)
+		(event evStartAnimationSequence)
+		(event evHighlightReward)
+		(event evReceivedReward)
+		(event evCleanUpAnimationSequence)
+		(event evSelectLevel)
+
+		(macro MOUSE_HANDLER_SCOPE
+			_prefix = "'eventHubLevel_'"
+		)
+		(macro SERVER_TIME_SCOPE)
+
+		(var levelEntity:gfx = "$datahub.getEntity(_entityId)")
+		(var progressionLevel:gfx = "levelEntity ? levelEntity.progressionLevel : null")
+		(var progressionLevelProgress:gfx = "levelEntity ? levelEntity.progressionLevelProgress : null")
+
+		(var eventHubLevel:gfx = "levelEntity ? levelEntity.eventHubLevel : null")
+		(var eventHubPhase:gfx = "$datahub.getPrimaryEntity(CC.eventHubPhase, eventHubLevel.phaseIndex).eventHubPhase")
+		(var isLevelInActivePhase:bool = "serverTime >= eventHubPhase.startTime")
+
+		(var level:number = "progressionLevel.level" (event "progressionLevel.evChanged"))
+		(var maxPoints:number = "progressionLevel.points" (event "progressionLevel.evChanged"))
+		(var currentPoints:number = "progressionLevelProgress.currentPoints" (event "progressionLevelProgress.evChanged"))
+		(var previousPoints:number = "progressionLevelProgress.previousPoints" (event "progressionLevelProgress.evChanged"))
+
+		(var rewardsStack:gfx = "levelEntity ? levelEntity.rewardsStack : null" (event "levelEntity.evAdded"))
+		(var rewards:array = "rewardsStack ? rewardsStack.rewards : []")
+
+		(var isHighlightedLevel:bool = "levelEntity ? levelEntity.hasComponent(CC.eventHubSpotlightLevel) : false")
+		(var isPostProgressionLevel:bool = "levelEntity ? levelEntity.hasComponent(CC.postProgressionLevel) : false")
+		(var isLevelCompleted:bool = "currentPoints == maxPoints")
+
+		(macro EVENT_HUB_SEASON_ENTITY_SCOPE "'eventHubEntity'")
+		(var progressionAnimations:gfx = "eventHubEntity ? eventHubEntity.progressionAnimations : null")
+		(var animatedLevels:array = "progressionAnimations ? progressionAnimations.animatedLevels : []" (event "progressionAnimations.evChanged"))
+
+		(var isLevelNeedToBeAnimated:bool = "level in animatedLevels")
+		(var indexInAnimationsArray:number = "indexOf(level, animatedLevels)")
+		(var isLastAnimatedLevel:bool = "indexInAnimationsArray != -1 ? indexInAnimationsArray == (animatedLevels.length - 1) : false")
+		
+		(var dynamicProgress:number = "(isLevelCompleted ? 1 : currentPoints/maxPoints)")
+		(var previousProgress:number = "100% * (previousPoints/maxPoints)")
+
+		(var progressRiseDelay:number = "(indexInAnimationsArray + 1) * DELAY_FOR_LEVEL_ANIMATION")
+
+		(var isRewardReceived:bool = "	!isLevelCompleted || isPostProgressionLevel	? false
+																					: isLevelCompleted")
+		(var highlightRewardEnabled:bool = "isLevelInActivePhase && isLevelCompleted && isLevelNeedToBeAnimated" init=false watch=false (event "evStartAnimationSequence"))
+		(var clearAnimationSequenceEnabled:bool = "isLevelInActivePhase && isLevelNeedToBeAnimated && isLastAnimatedLevel" init=false watch=false (event "evStartAnimationSequence"))
+		(bind highlightRewardEnabled "false" (event "evReceivedReward"))
+		(bind clearAnimationSequenceEnabled "false" (event "evCleanUpAnimationSequence"))
+	)
+
+	
+	(dispatch evHighlightReward delay=0.1 (bind enabled "highlightRewardEnabled"))
+	(dispatch evReceivedReward delay=0.45 (event "evHighlightReward"))
+	(dispatch evCleanUpAnimationSequence delay=0.15 (bind enabled "clearAnimationSequenceEnabled"))
+
+	
+	(bindcall externalCall 'sound.playSetSoundDirect' "['battlepass_reward', 'start']" init=false watch=false (event "evHighlightReward"))
+	(bindcall externalCall
+		"'inputMapping.onAction'" "['cleanupEventHubAnimationSequence', {}]"
+		init=false watch=false
+		(event "evCleanUpAnimationSequence")
+	)
+
+	(dispatch evChangedSelectedLevel args="{selectedLevelId: _entityId}" dir="EventDirection.UP" (event "eventHubLevel_evClicked"))
+	(dispatch evSelectLevel args="{level: progressionLevel.level}" dir="EventDirection.DOWN" (event "eventHubLevel_evClicked"))
+
+	(macro MOUSE_EVENTS_DISPATCHER
+		_prefix = "'eventHubLevel_'"
+	)
+	(macro SOUND_HANDLER
+		_prefix = "'eventHubLevel_'"
+		_soundSet = "'button_strk_progression'"
+	)
+
+	(style
+		(minWidth = "MIN_LEVEL_WIDTH") (align = "center")
+		(backgroundColor = "0x01000000")
+	)
+
+	
+	(block
+		(style (width = 100%))
+
+		
+		(block
+			(bind alpha "	_isSelected				? TA :
+							eventHubLevel_rollOver	? TC
+													: 0.5")
+			(style (width = 100%) (minHeight = 19px) (align = "center|middle"))
+
+			(tf
+				(bind visible "!isPostProgressionLevel")
+
+				(class $TextDefaultBoldNM)
+				(style
+					(bind textColor "isLevelCompleted	? SC.Ui_styles.SERVICE_COLORS.YELLOW
+														: SC.Ui_styles.SERVICE_COLORS.WHITE")
+				)
+
+				(bind text "progressionLevel.level")
+			)
+
+			(block
+				(bind visible "isPostProgressionLevel")
+
+				(style
+					(width = 19px) (height = 19px)
+					(backgroundImage = "'url:../service_kit/unified_status_icons/icon_infinite.png'")
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%) (marginTop = "XS"))
+
+			
+			
+			
+			
+			
+			
+			
+
+			(element DefaultProgressBar
+				_progress = "dynamicProgress"
+				_width = 100%
+				_height = 12
+			)
+		)
+	)
+
+	
+	(block
+		(style (marginTop = "SXS"))
+
+		(hblock
+			(controller $Instance renderer='ModernEraRewardContainer'
+				(args
+					_rewards = "rewards"
+					_isReceived = "isRewardReceived"
+					_isLevelAvailable = "isLevelInActivePhase"
+					_isSelected = "_isSelected"
+					_rollOver = "eventHubLevel_rollOver"
+				)
+			)
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(alpha = 0) (hitTest = false)
+				(backgroundColor = "SC.Ui_styles.SERVICE_COLORS.WHITE")
+			)
+
+			(controller $Animation
+				(bindcall play
+					keyframes="[
+						{
+							time:0,
+							to:{alpha: 0}
+						},
+						{
+							time:0.2,
+							to:{alpha: 0.2}
+						},
+						{
+							time:0.4,
+							to:{alpha: 0}
+						}
+					]"
+					action="killAll"
+					(event "evHighlightReward")
+				)
+			)
+		)
+	)
+)
+
+(def element ModernEraReward (_rewardEntityId:gfx, _isReceived:bool=false, _rollOver:bool=false, _isLevelAvailable:bool=false) layout=true
+	(scope
+		(event evSelectLevel)
+		(macro PULL_REWARD_INFO_BY_ENTITY_ID "_rewardEntityId") 
+		(var rewardItemId:gfx = "rewardEntity ? rewardEntity.rewardComponent.name : null" (event "rewardComponent.evUpdate"))
+
+		(macro PULL_SHIP "rewardItemId")
+		(macro PULL_EXTERIOR "rewardItemId")
+
+		
+		(var shipPreviewData:array = "[		{	type: 'inputMapping.onAction',
+												name: 'selectShipForPreview',
+												args: {
+													shipId: shipComponent.id
+												}},
+											{	type: 'inputMapping.onAction',
+												name: 'navigateTo',
+												args: {
+													route: SC.Ui_windows.ROUTE.SHIP_PREVIEW,
+													data: {	isRewardShipPreview: true}
+												}}]")
+		(var exteriorPreviewData:array = "rewardEntity	?	[	{	type: 'inputMapping.onAction',
+																	name: 'selectExteriorForPreview',
+																	args: {
+																		exteriorId:	exteriorConfig.id,
+																		shipId:		rewardEntity.rewardComponent.params.shipId
+																	}},
+																{	type: 'inputMapping.onAction',
+																	name: 'navigateTo',
+																	args: {
+																		route: SC.Ui_windows.ROUTE.SHIP_PREVIEW,
+																		data: {	hideTTXPanel:	true,
+																				exteriorId:		exteriorConfig.id,
+																				rewardEntityId:	rewardEntity.id}
+																	}}]
+														: null" (event "rewardComponent.evUpdate"))
+		(var previewButtonMethods:array = "	shipEntity		? shipPreviewData :
+											exteriorEntity	? exteriorPreviewData
+															: null")
+	)
+
+	
+	(bindcall externalCall "'direct.action'" "[SC.Common.STATISTICS_EVENTS.LOG, [SC.Common.MODERN_ERA_STATISTICS.SELECT_REWARD + '_' + $event.level + '_' + rewardItem.name]]"	init=false
+																																										watch=false
+																																										(event "evSelectLevel"))
+	
+
+	(block
+		(controller $Instance renderer='RewardItem'
+			(args
+				_reward="rewardItem"
+				_isReceived="_isReceived"
+				_isBattlePassSmallShipView="true"
+				_isClickDisabled="true"
+			)
+		)
+
+		
+		(block
+			(bind visible "!_isLevelAvailable")
+			(class $FullsizeAbsolute)
+
+			(element ModernEraRewardLockedState)
+		)
+
+		(block
+			(style (width = 100%) (bottom = -10px))
+
+			(controller $Instance renderer='EventHubPreviewButtonContainer'
+				(bind enabled "previewButtonMethods")
+
+				(args
+					_rollOver = "_rollOver"
+					_methods = "previewButtonMethods"
+				)
+			)
+		)
+	)
+)
+
+(def element ModernEraRewardContainer (	_rewards:gfx, _isReceived:bool=false, _isLevelAvailable:bool=false,
+										_isSelected:bool=false, _rollOver:bool=false) layout=true
+	(scope
+		(var hasSeveralRewards:bool = "_rewards.length > 1")
+	)
+
+	(style
+		(width = "REWARD_WIDTH") (height = "REWARD_HEIGHT")
+		(align = "center|middle")
+	)
+
+	(bind alpha "!_isLevelAvailable ? 0.5 : 1")
+
+	(block
+		(class $FullsizeAbsolute)
+		(bind alpha "	_rollOver	? 0.85
+									: 1")
+		(style
+			(backgroundSize = "cover")
+			(bind backgroundImage "'url:../modern_era/progress/level/frame/default.png'")
+		)
+	)
+
+	(block
+		(bind alpha "	_isSelected	? TC :
+						_rollOver	? TS : 0.1")
+
+		(class $FullsizeAbsolute)
+
+		(style
+			(backgroundSize = "cover")
+			(bind backgroundImage "'url:../service_kit/frames/' + (_isSelected ? 'two_pixel_frame' : 'one_pixel_frame') +'.png'")
+			(bind scale9grid "_isSelected ? 3 : 2")
+		)
+	)
+
+	(block
+		(controller $Instance renderer='ModernEraReward'
+			(bind enabled "!hasSeveralRewards")
+			(args
+				_rewardEntityId = "_rewards[0]"
+				_isReceived = "_isReceived"
+				_rollOver = "_rollOver"
+				_isLevelAvailable = "_isLevelAvailable"
+			)
+		)
+
+		(controller $Instance renderer='ModernEraMultiRewardItem'
+			(bind enabled "hasSeveralRewards")
+			(args
+				_rewards = "_rewards"
+				_isReceived = "_isReceived"
+				_rollOver = "_rollOver"
+				_isLevelAvailable = "_isLevelAvailable"
+			)
+		)
+	)
+)
+
+(def element ModernEraMultiRewardItem (_rewards:array, _isReceived:bool=false, _rollOver:bool=false, _isLevelAvailable:bool=false) layout=true
+
+	(scope
+		(event evSelectLevel)
+	)
+
+	
+	(bindcall externalCall "'direct.action'" "[SC.Common.STATISTICS_EVENTS.LOG, [SC.Common.MODERN_ERA_STATISTICS.SELECT_REWARD + '_' + $event.level + '_package']]"	init=false
+																																							watch=false
+																																							(event "evSelectLevel"))
+	
+
+	(block
+		(bind alpha "_isReceived || !_isLevelAvailable ? 0.5 : 1")
+
+		(element IconWithAmount
+			_iconPath = "'url:../reward_icons/module_package.png'"
+			_width = 80
+			_height = 80
+		)
+	)
+
+	
+	(block
+		(bind visible "!_isLevelAvailable")
+		(class $FullsizeAbsolute)
+
+		(element ModernEraRewardLockedState)
+	)
+
+	(block
+		(bind visible "_isReceived")
+		(class $MiddleAlignedAbsolutely)
+		(style
+			(width = 48px) (height = 48px) (top = 16px) (hitTest = false)
+			(backgroundImage = "'url:../reward_categories/icon_check.png'")
+		)
+	)
+
+	(controller $Tooltip
+		(renderer='MultiRewardTooltip')
+		(args
+			_rewards = "_rewards"
+			_header = "'IDS_MODERN_ERA_MULTI_REWARD_HEADER'"
+			_description = "'IDS_MODERN_ERA_MULTI_REWARD_DESCRIPTION'"
+			_descriptionStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		)
+		(cache = false)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR)
+	)
+)
+
+(def element ModernEraRewardLockedState () layout=true
+	
+	(class $FullsizeAbsolute)
+	(style (align = "center|middle"))
+
+	(block
+		(style
+			(width = "REWARD_WIDTH") (height = "REWARD_HEIGHT")
+			(hitTest = "false") (backgroundSize = "cover")
+			(backgroundImage = "'url:../modern_era/progress/level/frame/locked.png'")
+		)
+	)
+)

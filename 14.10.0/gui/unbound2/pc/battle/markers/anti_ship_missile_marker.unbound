@@ -1,0 +1,229 @@
+(def layout WorldAntiShipMissileMarkerContainer (_markerEntity:gfx)
+	(controller $Instance
+		(bind renderer "'WorldAntiShipMissileMarker'")
+		(args "_markerEntity")
+		(bind enabled "_markerEntity != null")
+	)
+)
+
+(def layout WorldMissileMarker (_markerEntity:gfx)
+	(scope
+		(event evMarkerShow)
+		(event evMarkerHide)
+
+		(var timer:gfx = "$datahub.getSingleComponent(CC.timer)")
+		(macro GET_MARKER_ENTITY_COMPONENT 'missile') 
+		(macro GET_MARKER_ENTITY_COMPONENT 'relation') 
+		(macro GET_MARKER_ENTITY_COMPONENT 'distance') 
+		(macro GET_MARKER_ENTITY_COMPONENT 'health') 
+		(macro GET_MARKER_ENTITY_COMPONENT 'mapPosition') 
+
+		(macro ALT_VISION_SCOPE) 
+
+		(var distanceIndex:number = "distanceComponent ? distanceComponent.distanceIndex : DistanceType.NEAR" (event "distanceComponent.evDistanceIndexChanged"))
+		(var ownCarrierEntity:gfx = "$datahub.getSingleEntity(CC.aircarrier)")
+
+		(var isAlive:bool = "healthComponent && healthComponent.isAlive" (event "healthComponent.evIsAliveChanged"))
+
+		(var distanceType:number = "isTactical	? DistanceType.TACTICAL : distanceIndex")
+
+		(var distanceItemVisibility:bool = "!(isIn(distanceType, [DistanceType.TACTICAL, DistanceType.FARTHEST])) || isAdaptiveAltVisionMode")
+		(var ownerNameItemVisibility:bool = "distanceType != DistanceType.TACTICAL")
+		(var ownerShipNameItemVisibility:bool = "((distanceType != DistanceType.TACTICAL) || (distanceType == DistanceType.TACTICAL))")
+
+		(var isIconScaled:bool = "(distanceType >= DistanceType.FAR) || (distanceType == DistanceType.FARTHEST)")
+		(macro SCOPE_HIGHLIGHT_MARKER_ON_WORLD_MOUSE_OVER)
+	)
+
+	(dispatch evMarkerShow args="{}" on='addedToStage')
+
+	(style
+		(width = 0) (height = 0)
+		(bind align "isTactical ? center|middle
+								: center|bottom")
+	)
+
+	(controller $Animation
+		(bindcall play	duration="DEATH_ANIMATION_DURATION"
+						from="{alpha: 0}"
+						to="{alpha: 1}"
+						init=false
+						watch=false
+						action="killAll"
+						reverse="!(isAlive)"
+						(bind trigger "isAlive")
+		)
+	)
+
+	(block
+		(class $MiddleVHAbsolutely)
+
+		(macro EFFECT_HIGHLIGHT_MARKER_ON_MOUSE_OVER)
+
+		(element AntiShipMissileMarkerIconItem "_markerEntity" "distanceType" "relationComponent.value"
+			(macro BIND_SCALE "isIconScaled ? 0.7 : 1")
+		)
+	)
+
+	(block
+		(class $MiddleVHAbsolutely)
+		(style
+			(top = 20px)
+		)
+		(element DistanceItem "_markerEntity"
+			(bind visible "distanceItemVisibility")
+		)
+	)
+)
+
+(def element AntiShipMissileMarkerIconItem (_markerEntity:gfx, _distanceType:number, _relation:number) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'missile') 
+
+		(var relationPostfix:str = "	_relation == SC.Battle.PLAYER_RELATION.ALLY		?	'_ally' :
+										_relation == SC.Battle.PLAYER_RELATION.ENEMY	?	'_enemy'
+																						:	'_own'")
+
+		(var markerIcon:str = "'url:../battle_hud/markers/missile/missile' + relationPostfix + '.png'")
+
+		(var isMissileTargetedByPlayer:bool = "missileComponent ? missileComponent.isTargeted : false" (event "missileComponent.evIsTargetedChanged"))
+		(var shouldShowCaptureMarker:bool = "_relation == SC.Battle.PLAYER_RELATION.ENEMY && isMissileTargetedByPlayer && _distanceType != DistanceType.TACTICAL")
+	)
+
+	(class $WorldMarkerItemMargins)
+
+    (style
+		(align = "center|middle")
+	)
+
+	(block
+		(bind visible "shouldShowCaptureMarker")
+
+		(element MissileCaptureMarker)
+	)
+
+	(block
+		(bind visible "!shouldShowCaptureMarker")
+		(style
+			(width = 0) (height = 0)
+			(align = "center|middle")
+		)
+		(block
+			(style
+				(bind backgroundImage "markerIcon")
+				(backgroundSize = "autosize")
+			)
+		)
+	)
+)
+
+(def constant MISSILE_CAPTURE_MARKER_ANIMATION_DURATION 0.7)
+(def constant MISSILE_CAPTURE_MARKER_ALPHA 1)
+(def constant MISSILE_CAPTURE_MARKER_ROTATION [0, 45])
+(def constant MISSILE_CAPTURE_MARKER_BRACKET_WIDTHS [3, 6])
+(def constant MISSILE_CAPTURE_MARKER_BRACKET_HEIGHTS [3, 6])
+(def constant MISSILE_CAPTURE_MARKER_TOTAL_HEIGHT 16)
+(def constant MISSILE_CAPTURE_MARKER_TOTAL_WIDTH 8)
+(def constant MISSILE_CAPTURE_MARKER_LINE_WIDTH 2)
+
+(def element MissileCaptureMarker()
+	(scope
+		(var bracketWidth:number = "MISSILE_CAPTURE_MARKER_BRACKET_WIDTHS[0]")
+		(var bracketHeight:number = "MISSILE_CAPTURE_MARKER_BRACKET_HEIGHTS[0]")
+		(var rotationAngle:number = "MISSILE_CAPTURE_MARKER_ROTATION[0]")
+
+		(controller $Animation
+			(bindcall play
+				duration="MISSILE_CAPTURE_MARKER_ANIMATION_DURATION"
+				delay=0.0
+				from="{rotationAngle:MISSILE_CAPTURE_MARKER_ROTATION[0], bracketWidth:MISSILE_CAPTURE_MARKER_BRACKET_WIDTHS[0], bracketHeight: MISSILE_CAPTURE_MARKER_BRACKET_HEIGHTS[0]}"
+				to="{rotationAngle:MISSILE_CAPTURE_MARKER_ROTATION[1], bracketWidth:MISSILE_CAPTURE_MARKER_BRACKET_WIDTHS[1], bracketHeight: MISSILE_CAPTURE_MARKER_BRACKET_HEIGHTS[1]}"
+				action="killAll"
+				easing="Easing.cubic_in"
+				init="true"
+			)
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(bind rotation "rotationAngle")
+		)
+
+		(element MissileCaptureBracket
+			_isRight = false
+			_totalHeight = "MISSILE_CAPTURE_MARKER_TOTAL_HEIGHT"
+			_totalWidth = "MISSILE_CAPTURE_MARKER_TOTAL_WIDTH"
+			_bracketHeight = "bracketHeight"
+			_bracketWidth = "bracketWidth"
+			_color = "SC.Ui_styles.SERVICE_COLORS.DARK_RED"
+			_alpha = "MISSILE_CAPTURE_MARKER_ALPHA"
+		)
+
+		(element MissileCaptureBracket
+			_isRight = true
+			_totalHeight = "MISSILE_CAPTURE_MARKER_TOTAL_HEIGHT"
+			_totalWidth = "MISSILE_CAPTURE_MARKER_TOTAL_WIDTH"
+			_bracketHeight = "bracketHeight"
+			_bracketWidth = "bracketWidth"
+			_color = "SC.Ui_styles.SERVICE_COLORS.DARK_RED"
+			_alpha = "MISSILE_CAPTURE_MARKER_ALPHA"
+		)
+	)
+)
+
+(def element MissileCaptureBracket(_isRight:bool, _totalHeight:number, _totalWidth:number, _bracketHeight:number, _bracketWidth:number, _color:str, _alpha:number)
+	(style
+		(position = "absolute")
+		(pivotY = 50%)
+		(bind rotation "_isRight ? 0 : 180")
+		(bind width "_totalWidth")
+		(bind height "_totalHeight")
+		(bind alpha "_alpha")
+	)
+
+	(block
+		(style
+			(height = "MISSILE_CAPTURE_MARKER_LINE_WIDTH")
+			(right = "MISSILE_CAPTURE_MARKER_LINE_WIDTH")
+			(bind width "_bracketWidth")
+			(position = "absolute")
+			(top = 0)
+			(bind backgroundColor "_color")
+		)
+	)
+
+	(block
+		(style
+			(bind height "_bracketHeight + MISSILE_CAPTURE_MARKER_LINE_WIDTH")
+			(width = "MISSILE_CAPTURE_MARKER_LINE_WIDTH")
+			(position = "absolute")
+			(top = 0)
+			(right = 0)
+			(bind backgroundColor "_color")
+		)
+	)
+
+	(block
+		(style
+			(bind height "_bracketHeight + MISSILE_CAPTURE_MARKER_LINE_WIDTH")
+			(width = "MISSILE_CAPTURE_MARKER_LINE_WIDTH")
+			(position = "absolute")
+			(bottom = 0)
+			(right = 0)
+			(bind backgroundColor "_color")
+		)
+	)
+
+	(block
+		(style
+			(height = "MISSILE_CAPTURE_MARKER_LINE_WIDTH")
+			(right = "MISSILE_CAPTURE_MARKER_LINE_WIDTH")
+			(bind width "_bracketWidth")
+			(position = "absolute")
+			(bottom = 0)
+			(bind backgroundColor "_color")
+		)
+	)
+)

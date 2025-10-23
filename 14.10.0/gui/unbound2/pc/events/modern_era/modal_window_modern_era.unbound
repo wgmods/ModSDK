@@ -1,0 +1,143 @@
+(def constant MODERN_ERA_TAB_INSETS "{
+	SC.Ui_windows.ROUTE.MODERN_ERA_PROGRESSION: 'ModernEraProgressionInset',
+	SC.Ui_windows.ROUTE.MODERN_ERA_EVENT_SHOP: 'ModernEraEventShopInset'
+}")
+
+(def macro PULL_MODERN_ERA_INFO()
+	(var eventShopCollection:gfx = "$datahub.getCollection(CC.eventShop)")
+	(var eventShopEntity:gfx = "eventShopCollection.items[0]	? $datahub.getEntity(eventShopCollection.items[0].id)
+																: null"					(event "eventShopCollection.evAdded")
+																						(event "eventShopCollection.evRemoved")
+																						(event "eventShopCollection.evUpdated"))
+	(var eventShopComponent:gfx = "eventShopEntity	? eventShopEntity.eventShop
+													: null"			(event "eventShopEntity.evAdded") (event "eventShopEntity.evRemoved")
+																	(event "eventShopEntity.evChanged") (event "eventShopEntity.eventShop.evChanged"))
+)
+
+(def layout ModalWindowModernEra ()
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_IMAGE_BG "'url:../modern_era/bg/background.jpg'")
+
+	(scope
+		(macro PULL_ACTIVE_CHILD_ROUTE
+			_nodeId = "SC.Ui_windows.ROUTE.MODERN_ERA_MAIN"
+			_fieldActiveChild = "'currentRoute'"
+		)
+
+		(var insetRenderer:str = "MODERN_ERA_TAB_INSETS[currentRoute]	? MODERN_ERA_TAB_INSETS[currentRoute]
+																		: null")
+
+
+		(macro PULL_MODERN_ERA_INFO) 
+		(var currencies:array = "eventShopComponent ? eventShopComponent.currencies : []" (event "eventShopComponent.evChanged"))
+		(var finishTime:number = "eventShopComponent ? eventShopComponent.finishTime : 0" (event "eventShopComponent.evChanged"))
+
+		(macro SERVER_TIME_SCOPE)
+		(macro COUNTDOWN_SCOPE "'timeLeft'" "finishTime" "'HIGHEST,WITH_DAYS'")
+	)
+
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(style (width = 100%))
+
+		(block
+			(style (width = 100%))
+			(element ModalWindowHeaderFullSize
+				_windowName = 'IDS_MODAL_WINDOW_TITLE_MODERN_ERA'
+				_paddingRight = "M"
+				_paddingLeft = "M"
+			)
+
+			(hblock
+				(style
+					(gap = "MS")
+					(position = "absolute")
+					(bottom = "{720: 10, 1080:18}") (right = 91px)
+				)
+
+				(controller $Repeat renderer='AccountResource' count="currencies.length"
+					(args
+						_currencyId = "currencies[$index]"
+					)
+				)
+			)
+		)
+	)
+
+	(block
+		(style (align = "center") (width = 100%) (marginTop = "M") (marginBottom = "XS"))
+
+		(element StatusLine
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DATE"
+			_text = "subst('IDS_MODERN_ERA_EVENT_STATUS_TIME', [], {_timeLeft: timeLeft})"
+			_textClass = '$TextDefaultNM'
+			_width = 'auto'
+		)
+	)
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='TooltipSystemHorizontalDivider')
+	)
+
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(style
+			(width = 100%)
+			(paddingTop = "S")
+			(align = "center")
+		)
+
+		(element MAIN_TAB_BUTTONS_BLOCK
+			(block
+				(element MainTabButton
+					_label = "'IDS_MODERN_ERA_TAB_PROGRESSION'"
+					_width = "MAIN_TAB_BUTTON_WIDTH.MEDIUM"
+					_isSelected = "currentRoute == SC.Ui_windows.ROUTE.MODERN_ERA_PROGRESSION"
+					_name = "'ModernEra_Progression'"
+					_methods = "[	{	type: 'inputMapping.onAction',
+										name: 'navigateTo',
+										args: { route: SC.Ui_windows.ROUTE.MODERN_ERA_PROGRESSION }
+									},
+									{	type: 'direct.action',
+										name: SC.Common.STATISTICS_EVENTS.LOG,
+										args: [SC.Common.MODERN_ERA_STATISTICS.SELECT_TAB + '_' + SC.Ui_windows.ROUTE.MODERN_ERA_PROGRESSION]
+									}]"
+				)
+			)
+
+			(block
+				(bind visible "eventShopComponent != null")
+
+				(element MainTabButton
+					_label = "'IDS_MODERN_ERA_TAB_EVENT_SHOP'"
+					_width = "MAIN_TAB_BUTTON_WIDTH.MEDIUM"
+					_isSelected = "currentRoute == SC.Ui_windows.ROUTE.MODERN_ERA_EVENT_SHOP"
+					_name = "'ModernEra_EventShop'"
+					_isLast = true
+					_methods = "[	{	type: 'inputMapping.onAction',
+										name: 'navigateTo',
+										args: { route: SC.Ui_windows.ROUTE.MODERN_ERA_EVENT_SHOP }
+									},
+									{	type: 'direct.action',
+										name: SC.Common.STATISTICS_EVENTS.LOG,
+										args: [SC.Common.MODERN_ERA_STATISTICS.SELECT_TAB + '_' + SC.Ui_windows.ROUTE.MODERN_ERA_EVENT_SHOP]
+									}]"
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+
+		(class $FullsizeAbsolute)
+
+		(controller $Instance
+			(bind enabled "insetRenderer != null")
+			(bind renderer "insetRenderer")
+		)
+	)
+)

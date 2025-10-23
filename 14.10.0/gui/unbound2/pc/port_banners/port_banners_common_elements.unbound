@@ -1,0 +1,60 @@
+(def element BannerItemIcon (_iconUrl:str)
+	(style
+		(width = "32") (height = "32")
+		(bind backgroundImage "'url:../' + _iconUrl + '.png'")
+	)
+)
+
+(def element BannerAmount (_amount:number)
+	(scope
+		(var isCompactView:bool = "_amount > 999")
+	)
+
+	(style (width = 100%) (align = "center") (marginTop = "S") (marginBottom = "S"))
+	(tf
+		(style (width = 100%) (alpha = "TA") (textAlign = "center") (multiline = "false") (bind marginTop "isCompactView ? 1px : 0"))
+		(bind class "isCompactView ? '$TextDefaultBoldNM' : '$TextDefaultBold17NM'")
+
+		(bind text "_amount")
+	)
+)
+
+(def element BannerItemTitle (_title:str, _textColor:str = null, _isNew:bool=false, _isDropShadowDisabler:bool = true)
+	(style
+		(width = "100%")
+		(flow = "horizontal")
+	)
+
+	(tf
+		(class $TextDefaultBold17NM)
+		(bind class "_isDropShadowDisabler ? '$DropShadowDisabler' : '$None'")
+		(style
+			(bind alpha "_textColor ? 1 : TA")
+			(bind textColor "_textColor ? _textColor : SC.Ui_styles.SERVICE_COLORS.WHITE")
+		)
+		(bind text "_title")
+	)
+
+	(block
+		(style
+			(marginLeft = 3px)
+			(marginTop = -9px)
+		)
+
+		(macro DEFAULT_CONTROL_MARKER_ANIMATION "_isNew")
+		(element MarkerNew)
+	)
+)
+
+(def element BannerItemDescription (_description:str, _textColor:str = null)
+	(tf
+		(class $TextDefaultNM)
+		(style
+			(bind textColor "_textColor ? _textColor : SC.Ui_styles.SERVICE_COLORS.WHITE")
+			(bind alpha "_textColor ? 1 : TC")
+			(marginTop = "SXS")
+			(leading = "-2")
+		)
+		(bind text "_description")
+	)
+)
