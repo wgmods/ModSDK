@@ -1,0 +1,175 @@
+(def constant CHRISTMAS_TREE_REWARD_ITEM_ICON_SIZE 48)
+
+(def macro PULL_CHRISTMAS_REWARD_ITEM_INFO(_entity:expression)
+	
+	(var rewardInfoComponent:gfx = "_entity ? _entity.newYearDecorationReward : null" (event "_entity.evUpdated"))
+
+	(var rewardId:number = 			"rewardInfoComponent.id"			(event "rewardInfoComponent.evChanged"))
+	(var rewardProgress:number = 	"rewardInfoComponent.progress"		(event "rewardInfoComponent.evChanged"))
+	(var rewardGoal:number = 		"rewardInfoComponent.goal"			(event "rewardInfoComponent.evChanged"))
+	(var rewardTitle:str = 			"rewardInfoComponent.title"			(event "rewardInfoComponent.evChanged"))
+	(var rewardCondition:str = 		"rewardInfoComponent.condition"		(event "rewardInfoComponent.evChanged"))
+	(var isRewardRecieved:bool = 	"rewardProgress >= rewardGoal")
+
+	
+	(var rewards:array = "_entity.rewardsStack != null ? _entity.rewardsStack.rewards : []")
+)
+
+(def element ChristmasTreeRewardsContainer()
+	(scope
+		(macro GET_PREF 'isBlurOptionEnabled' "'graphics.GUI.blur'")
+		(macro GET_PREF 'isUIContrastOptionEnabled' "'graphics.GUI.contrast'")
+
+		(var isHighContrast:bool = "isUIContrastOptionEnabled || !isBlurOptionEnabled")
+
+		(var rewardsCollection:gfx = "$datahub.getCollection(CC.newYearDecorationReward)")
+		(var rewards:array = "rewardsCollection != null ? rewardsCollection.items : []"	(event "rewardsCollection.evAdded")
+																						(event "rewardsCollection.evRemoved"))
+
+		(var availableToEarnRewardsCollection:gfx = "rewardsCollection != null ? rewardsCollection.getChildByPath('available') : null"	(event "rewardsCollection.evAdded")
+																																		(event "rewardsCollection.evRemoved"))
+
+		(var isAllCompleted:bool = "availableToEarnRewardsCollection != null ? availableToEarnRewardsCollection.items.length == 0 : false"	(event "availableToEarnRewardsCollection.evAdded")
+																																			(event "availableToEarnRewardsCollection.evRemoved"))
+
+		(var titleText:str = "isAllCompleted	? 'IDS_CHRISTMAS_TREE_REWARDS_TITLE_COMPLETED'
+												: 'IDS_CHRISTMAS_TREE_REWARDS_TITLE'")
+	)
+
+	(element BlurPanelContainer
+		_alpha = 0.24
+
+		
+		(block
+			(style
+				(width = "LEFT_CONTAINER_WIDTH")
+				(padding = "M")
+				(align = "center")
+			)
+
+			
+			(tf
+				(class $TextDefault17NM)
+				(bind class "isAllCompleted ? '$FontColorGold' : '$FontColorDefault'")
+
+				(style
+					(marginBottom = "SXS")
+					(textAlign = "center")
+					(alpha = "TA")
+				)
+				(bind text "titleText")
+			)
+
+			
+			(block
+				(style
+					(width = 100%)
+					(paddingLeft = "SXS") (paddingRight = "SXS")
+				)
+
+				(block
+					(style
+						(gap = "M")
+						(flow = "tile_horizontal")
+					)
+
+					(controller $Repeat renderer='ChristmasTreeRewardItem'
+						(bind count "rewards.length")
+						(args
+							_entity="rewards[$index]"
+						)
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element ChristmasTreeRewardItem (_entity:gfx)
+	(scope
+		(macro PULL_CHRISTMAS_REWARD_ITEM_INFO "_entity") 
+
+		(var firstRewardEntityId:number = "rewards.length > 0 ? rewards[0] : -1")
+		(var firstRewardEntity:gfx = "$datahub.getEntity(firstRewardEntityId)")
+		(var firstReward:gfx = "firstRewardEntity ? firstRewardEntity.rewardComponent : null")
+
+		(macro PULL_REWARD_CATEGORY_IMAGE "firstReward" "isRewardRecieved") 
+	)
+
+
+	
+	(block
+		(style
+			(width = "CHRISTMAS_TREE_REWARD_ITEM_ICON_SIZE")
+			(height = "CHRISTMAS_TREE_REWARD_ITEM_ICON_SIZE")
+
+			(backgroundSize = "fill")
+			(bind backgroundImage "rewardCategoryImage")
+		)
+	)
+
+	(controller $Tooltip
+		(bind renderer "'ChristmasTreeRewardItemTooltip'")
+		(args
+			_entity = "_entity"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element ChristmasTreeRewardItemTooltip (_entity:gfx)
+	(scope
+		(macro PULL_CHRISTMAS_REWARD_ITEM_INFO "_entity") 
+	)
+
+	(style (hitTest = false))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER _width = "320px"
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "rewardTitle"
+			_unifiedStatus = "isRewardRecieved	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+												: SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		)
+
+		(block
+			(style (width = 100%))
+			(element TooltipSystemHorizontalDivider)
+		)
+
+		
+		(block
+			(bind visible "!isRewardRecieved")
+			(style (width = 100%))
+
+			(element TooltipSystemProgressBarBlock
+				_title = "rewardCondition"
+				_currentValue = "rewardProgress"
+				_maxValue = "rewardGoal"
+			)
+		)
+
+		
+		(block
+			(bind visible "isRewardRecieved")
+			(style (width = 100%))
+
+			(element TooltipSystemStatusLine
+				_text = 'IDS_CHRISTMAS_TREE_REWARD_ITEM_CONDITION_COMPLETED'
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+			)
+		)
+
+		
+		(block
+			(bind visible "rewards.length > 0")
+			(style (width = 100%))
+
+			(element TooltipSystemHorizontalDivider)
+			(element TooltipSystemDHRewards
+				_rewards = "rewards"
+			)
+		)
+	)
+)

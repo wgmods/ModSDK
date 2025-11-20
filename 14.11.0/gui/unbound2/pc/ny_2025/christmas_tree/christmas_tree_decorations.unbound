@@ -1,0 +1,561 @@
+(def constant DEFAULT_DECORATION_ITEM_ALPHA 0.45)
+
+(def constant DECORATION_GROUP_WIDTH 136)
+
+(def constant DECORATION_ITEM_SIZE 64)
+(def constant DECORATION_ITEM_BG_DEFAULT 0xFFFFFFFF)
+
+(def constant DECORATION_PICKER_ITEM_SIZE 60)
+(def constant DECORATION_PICKER_ITEM_ANIMATION 0.1)
+(def constant DECORATION_PICKER_ITEM_BG_DEFAULT 0xFFFFFFFF)
+
+(def constant DECORATION_PICKER_TOOLTIP_SIZE 344)
+
+(def constant DECORATION_SLOT_TYPE_TO_CONTENT_CATEGORY "{	SC.Common.NY_DECORATION_TYPE.TOY:		SC.Common.CONTENT_CATEGORY.NY_DECORATIONS_TOY,
+															SC.Common.NY_DECORATION_TYPE.GARLAND:	SC.Common.CONTENT_CATEGORY.NY_DECORATIONS_GARLAND,
+															SC.Common.NY_DECORATION_TYPE.POMMEL:	SC.Common.CONTENT_CATEGORY.NY_DECORATIONS_POMMEL,
+															SC.Common.NY_DECORATION_TYPE.GIFT:		SC.Common.CONTENT_CATEGORY.NY_DECORATIONS_GIFT }")
+
+(def macro PULL_DECORATION_INFO(_decorationId:expression)
+	(var decorationEntity:gfx = "$datahub.getPrimaryEntity(CC.newYearDecoration, _decorationId)")
+
+	
+	(var decorationComponent:gfx = "decorationEntity ? decorationEntity.newYearDecoration : null" (event "decorationEntity.evUpdated"))
+
+	(var decorationId:number = "decorationComponent ? decorationComponent.id : null" (event "decorationComponent.evChanged"))
+	(var decorationType:str = "decorationComponent ? decorationComponent.type : ''" (event "decorationComponent.evChanged"))
+	(var isDecorationOwned:bool = "decorationComponent ? decorationComponent.isOwned : false" (event "decorationComponent.evChanged"))
+
+	(var decorationTitle:str = "decorationComponent ? decorationComponent.title : null" (event "decorationComponent.evChanged"))
+	(var decorationDescription:str = "decorationComponent ? decorationComponent.description : null" (event "decorationComponent.evChanged"))
+	(var decorationImagePaths:dict = "decorationComponent ? decorationComponent.iconPaths : null" (event "decorationComponent.evChanged"))
+
+	(var decorationSmallImagePath:str = "decorationImagePaths ? decorationImagePaths.small : null" (event "decorationComponent.evChanged"))
+	(var decorationLargeImagePath:str = "decorationImagePaths ? decorationImagePaths.large : null" (event "decorationComponent.evChanged"))
+
+	
+	(var countComponent:gfx = "decorationEntity ? decorationEntity.countComponent : null" (event "decorationEntity.evUpdated"))
+	(var decorationCount:number = "countComponent ? countComponent.value : 0" (event "countComponent.evUpdate"))
+
+	
+	(var isNew:bool = "decorationEntity ? decorationEntity.hasComponent(CC.newItem) : false" (event "decorationEntity.evAdded") (event "decorationEntity.evRemoved"))
+)
+
+(def macro PULL_DECORATION_SLOT_INFO (_slotIndex:expression)
+	(var decorationSlotEntity:gfx = "$datahub.getPrimaryEntity(CC.newYearDecorationSlot, _slotIndex)")
+
+	(var decorationSlotComponent:gfx = "decorationSlotEntity ? decorationSlotEntity.newYearDecorationSlot : null" (event "decorationSlotEntity.evUpdated"))
+
+	(var slotIndex:number = "decorationSlotComponent ? decorationSlotComponent.index : null" (event "decorationSlotComponent.evChanged"))
+	(var slotType:str = "decorationSlotComponent ? decorationSlotComponent.type : ''" (event "decorationSlotComponent.evChanged"))
+	(var installedSlotDecorationId:number = "decorationSlotComponent ? decorationSlotComponent.decorationId : null" (event "decorationSlotComponent.evChanged"))
+	(var slotDecorationImagePath:str = "decorationSlotComponent ? decorationSlotComponent.iconPath : null" (event "decorationSlotComponent.evChanged"))
+)
+
+(def css $DecorationSlotsGroup()
+	(flow = "tile_horizontal")
+	(gap = "S")
+	(width = "DECORATION_GROUP_WIDTH")
+)
+
+(def element DecorationSlotsContainer() layout=true
+	(scope
+		(macro GET_PREF 'isBlurOptionEnabled' "'graphics.GUI.blur'")
+		(macro GET_PREF 'isUIContrastOptionEnabled' "'graphics.GUI.contrast'")
+
+		(var isHighContrast:bool = "isUIContrastOptionEnabled || !isBlurOptionEnabled")
+	)
+
+	(element BlurPanelContainer
+		_alpha = 0.24
+
+		
+		(block
+			(style
+				(width = "LEFT_CONTAINER_WIDTH")
+				(padding = "M")
+				(flow = "vertical") (gap = "M")
+			)
+
+			(controller $Repeat renderer='DecorationSlotsGroup'
+				(bind count "SC.Common.NY_DECORATION_SLOT_POSITION.ALL.length")
+				(args
+					_position = "SC.Common.NY_DECORATION_SLOT_POSITION.ALL[$index]"
+				)
+			)
+		)
+	)
+
+)
+
+(def element DecorationSlotsGroup (_position:str) layout=true
+	(scope
+		(var decorationSlotsCollection:gfx = "$datahub.getCollection(CC.newYearDecorationSlot).getChildByPath('byPositions.' + _position)")
+		(var decorationSlotsArray:array = "decorationSlotsCollection ? decorationSlotsCollection.items : []" (event "decorationSlotsCollection.evUpdated"))
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+	)
+
+	(block
+		(class $DecorationSlotsGroup)
+
+		(controller $Repeat renderer='DecorationSlot'
+			(bind count "decorationSlotsArray.length")
+			(args
+				_decorationSlotEntity = "decorationSlotsArray[$index]"
+				_position = "_position"
+			)
+		)
+	)
+
+	(block
+		(class $DecorationSlotsGroup)
+		(class $FullsizeAbsolute)
+
+		(style (hitTest = false))
+
+		(controller $Repeat renderer='DecorationSlotNewMarkerContainer'
+			(bind count "decorationSlotsArray.length")
+			(args
+				_decorationSlotEntity = "decorationSlotsArray[$index]"
+			)
+		)
+	)
+
+	(block
+		(style (position = "absolute"))
+		(controller $Instance renderer = 'GuidingTipHub'
+			(bind enabled "$index == 0")
+			(args
+				_tipId = "SC.Context_guiding_tip.TIP_TYPE.CHRISTMAS_TREE_DECORATION_INSTALL"
+				_tipPositioning = "TIP_POSITION_TOP"
+				_oppositeDirectionOffset = "120"
+				_offset = "SXS"
+				_pointerOffset = "30"
+				_pinOffset = "stageWidth > 1336 ? 0 : stageWidth < 1310 ?  47.5 : 50"
+			)
+		)
+	)
+)
+
+(def element DecorationSlot(_decorationSlotEntity:gfx, _position:str) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'DecorationSlot_'")
+
+		(macro PULL_DECORATION_SLOT_INFO "_decorationSlotEntity.newYearDecorationSlot.index") 
+		(macro PULL_DECORATION_INFO "installedSlotDecorationId") 
+
+		(var statEvent:str = "'ub2:ny26_tree_slot_' + (slotIndex ? slotIndex : 'null')")
+
+		
+		(var isDecorationSetted:bool = "installedSlotDecorationId != null && installedSlotDecorationId != 0")
+		(var isIdle:bool = "!isDecorationSetted")
+	)
+
+	
+	(controller $Tooltip
+		(bind renderer "'DecorationPickerTooltip'")
+
+		(args
+			_slotIndex="slotIndex"
+		)
+
+		(macro CHRISTMAS_TREE_INFOTIP_BEHAVIOUR "0" "decorationSlotComponent.evChanged")
+
+		(pinOffset=1)
+		(pinLeft='InfotipPinLeft')
+	)
+
+	
+	(block
+		(style
+			(align = "center|middle")
+
+			(width = "DECORATION_ITEM_SIZE")
+			(height = "DECORATION_ITEM_SIZE")
+		)
+
+		
+		(block
+			(class $FullsizeAbsolute)
+
+			(style
+				(alpha = 0.5)
+				(hitTest = false)
+				(backgroundSize = "fill")
+				(backgroundImage = 'url:../service_kit/frames/64px_not_empty_field.png')
+			)
+
+			(controller $Animation
+				(bindcall play  duration="DECORATION_PICKER_ITEM_ANIMATION"
+								action="kill"
+								from="{ alpha: 0.5 }"
+								to="{ alpha: 1 }"
+								watch=false
+								reverse="!DecorationSlot_rollOver"
+								(bind trigger "DecorationSlot_rollOver")
+				)
+				(bindcall play  duration="DECORATION_PICKER_ITEM_ANIMATION"
+								action="kill"
+								from="{ alpha: 1 }"
+								to="{ alpha: 0.5 }"
+								watch=false
+								reverse="!DecorationSlot_mouseDown"
+								(bind trigger "DecorationSlot_mouseDown")
+				)
+			)
+		)
+
+		
+		(block
+			(style
+				(alpha = 1)
+				(hitTest = false)
+
+				(width = "DECORATION_PICKER_ITEM_SIZE")
+				(height = "DECORATION_PICKER_ITEM_SIZE")
+
+				(backgroundSize = "fill")
+				(bind backgroundImage "slotDecorationImagePath")
+			)
+
+			(controller $Animation
+				(bindcall play  duration="DECORATION_PICKER_ITEM_ANIMATION"
+								action="kill"
+								from="{ alpha: 1 }"
+								to="{ alpha: isIdle ? 0.5 : 1 }"
+								watch=false
+								reverse="!DecorationSlot_mouseDown"
+								(bind trigger "DecorationSlot_mouseDown")
+				)
+			)
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_prefix = "'DecorationSlot_'"
+		_soundSet = "toLower('button_ny_tree_'+slotType)"
+	)
+
+	(bindcall externalCall "'inputMapping.onRequest'" "['setCameraPositionFromNYPort', { slotIndex: slotIndex }]"	init=false
+																													watch=false
+																													on='click')
+
+	(bindcall externalCall "'inputMapping.onAction'" "['deactivateTipChain', { tip_chain_id: SC.Context_guiding_tip.TIP_CHAIN_ID.CHRISTMAS_TREE }]"	init=false
+																																					watch=false
+																																					on='click')
+
+	(bindcall externalCall "'direct.action'"	"[SC.Common.STATISTICS_EVENTS.LOG, [statEvent]]"	init=false
+																									watch=false
+																									on='click')
+)
+
+(def element DecorationSlotNewMarkerContainer(_decorationSlotEntity:gfx)
+	(scope
+		(macro PULL_DECORATION_SLOT_INFO "_decorationSlotEntity.newYearDecorationSlot.index") 
+
+		(var newContentEntity:gfx = "$datahub.getPrimaryEntity(CC.newContent, DECORATION_SLOT_TYPE_TO_CONTENT_CATEGORY[slotType])")
+		(var newContentCounter:number = "newContentEntity ? newContentEntity.newContent.count : 0" (event "newContentEntity.newContent.evCountChanged"))
+		(var isNewInSlot:bool = "newContentCounter > 0")
+	)
+
+	(style
+		(width = "DECORATION_ITEM_SIZE")
+		(height = "DECORATION_ITEM_SIZE")
+		(hitTest = false)
+	)
+
+	
+	(block
+		(style
+			(position = "absolute")
+			(right = -15px)
+			(top = -8px)
+		)
+
+		(block
+			(macro DEFAULT_CONTROL_MARKER_ANIMATION "isNewInSlot")
+
+			(style
+				(bind alpha "isNewInSlot ? 1 : 0" watch=false)
+			)
+
+			(element MarkerNew)
+		)
+	)
+)
+
+
+
+(def element DecorationPickerTooltip(_slotIndex:number) layout=true
+	(macro HIDE_UI_ON_SHIPOVERVIEW)
+
+	(style
+		(width = "DECORATION_PICKER_TOOLTIP_SIZE")
+	)
+
+	(element DecorationPickerTooltipContent
+		_slotIndex="_slotIndex"
+	)
+)
+
+(def element DecorationPickerTooltipContent(_slotIndex:number)
+	(macro HIDE_UI_ON_SHIPOVERVIEW)
+
+	(scope
+		(macro PULL_DECORATION_SLOT_INFO "_slotIndex") 
+
+		
+		(var decorationsCollection:gfx = "$datahub.getCollection(CC.newYearDecoration).getChildByPath('allDecorationsByTypes.' + slotType)")
+		(var decorationsByTypeArray:array = "decorationsCollection ? decorationsCollection.items : []" (event "decorationsCollection.evUpdated"))
+
+		
+		(var headerText:str = "'IDS_CHRISTMAS_TREE_DECORATION_PICKER_TITLE_' + toUpper(slotType)")
+	)
+
+	(style
+		(width = "DECORATION_PICKER_TOOLTIP_SIZE")
+	)
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND _isInfotip="true")
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText="headerText"
+		)
+
+		(block
+			(style (width = 100%))
+			(element TooltipSystemHorizontalDivider)
+		)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText='IDS_CHRISTMAS_TREE_DECORATION_PICKER_DESCRIPTION'
+		)
+
+		(block
+			(style (width = 100%))
+			(element TooltipSystemHorizontalDivider)
+		)
+
+		(block
+			(style
+				(width = 100%)
+				(flow = "tile_horizontal")
+				(gap = "MS")
+			)
+
+			(controller $Repeat renderer='DecorationPickerItem'
+				(bind count "decorationsByTypeArray.length")
+				(args
+					_slotIndex = "_slotIndex"
+					_decorationEntity = "decorationsByTypeArray[$index]"
+				)
+			)
+		)
+	)
+)
+
+(def element DecorationPickerItem (_decorationEntity:gfx, _slotIndex:number) layout=true
+	(scope
+		(event evStartShow)
+		(event evStartHide)
+		(event evItemClicked)
+
+		(macro MOUSE_HANDLER_SCOPE "'DecorationPickerItem_'")
+
+		(macro PULL_DECORATION_INFO "_decorationEntity.newYearDecoration.id") 
+		(macro PULL_DECORATION_SLOT_INFO "_slotIndex") 
+
+		(var isOnStage:bool = "true")
+		(bind isOnStage "true" init=false watch=false (event "evStartShow"))
+		(bind isOnStage "false" init=false watch=false (event "evStartHide"))
+
+		(var isInteractionAvailable:bool = "true")
+		(bind isInteractionAvailable "true" init=false watch=false (event "evStartShow"))
+		(bind isInteractionAvailable "false" init=false watch=false (event "evItemClicked"))
+
+		
+		(var isInstalled:bool = "installedSlotDecorationId == decorationId")
+
+		
+		(var decorationAction:str = "isInteractionAvailable && isDecorationOwned ? 'setDecorationToSlot' : ''")
+		(var decorationActionParams:dict = "{ decorationId: isInstalled ? 0 : decorationId, slotIndex: slotIndex }")
+		(var itemSoundSet:str = "decorationAction != '' ? 'button_ny_tree_select' : 'button_ny_tree_toy_empty'")
+	)
+
+	(style
+		(align = "center|middle")
+
+		(width = "DECORATION_PICKER_ITEM_SIZE")
+		(height = "DECORATION_PICKER_ITEM_SIZE")
+	)
+
+	
+	(controller $Tooltip
+		(bind enabled "isOnStage")
+		(bind renderer "'DecorationTooltip'")
+		(args
+			_decorationId = "decorationId"
+			_isOwned = "isDecorationOwned"
+			_isHanged = "isInstalled"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(hitTest = false)
+			(alpha = "0")
+			(backgroundColor = "DECORATION_PICKER_ITEM_BG_DEFAULT")
+		)
+
+		(controller $Animation
+			(bindcall play  duration="DECORATION_PICKER_ITEM_ANIMATION"
+							action="kill"
+							from="{ alpha: 0 }"
+							to="{ alpha: 0.05 }"
+							watch=false
+							reverse="!DecorationPickerItem_rollOver"
+							(bind trigger "DecorationPickerItem_rollOver")
+			)
+			(bindcall play  duration="DECORATION_PICKER_ITEM_ANIMATION"
+							action="kill"
+							from="{ alpha: 0.05 }"
+							to="{ alpha: decorationAction != '' ? 0.1 : 0.05 }"
+							watch=false
+							reverse="!DecorationPickerItem_mouseDown"
+							(bind trigger "DecorationPickerItem_mouseDown")
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "isInstalled")
+
+		(class $FullsizeAbsolute)
+		(style
+			(hitTest = false)
+
+			(backgroundSize = "fill")
+			(backgroundImage = "'url:../service_kit/frames/one_pixel_frame.png'")
+			(scale9grid = 2)
+		)
+
+		(bind colorTransform "COLOR_TRANSFORM_WHITE_TO_YELLOW")
+	)
+
+	
+	(block
+		(style
+			(bind alpha "isDecorationOwned ? 1 : 0.2")
+			(width = 100%) (height = 100%)
+
+			(hitTest = false)
+			(backgroundSize = "fill")
+			(bind backgroundImage "decorationSmallImagePath")
+		)
+	)
+
+	
+	(block
+		(style (position = "absolute") (left = 1px) (top = 1px))
+
+		(block
+			(macro DEFAULT_CONTROL_MARKER_ANIMATION "isNew")
+
+			(style
+				(bind alpha "isNew ? 1 : 0" watch=false)
+			)
+
+			(element MarkerNew)
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_prefix = "'DecorationPickerItem_'"
+	)
+
+	(bindcall externalCall 'sound.playSetSoundDirect' "[itemSoundSet, SoundEvent.OVER]" init=false watch=false (event "DecorationPickerItem_evRollOver"))
+	(bindcall externalCall 'sound.playSetSoundDirect' "[itemSoundSet, SoundEvent.CLICK]" init=false watch=false on='click')
+
+	(macro MOUSE_LMB_EXTERNAL_CALL 'inputMapping.onAction' "[decorationAction, decorationActionParams]")
+
+	(dispatch evStartShow args="{}" init=false on='addedToStage')
+	(dispatch evStartHide args="{}" init=false on='removedFromStage')
+	(dispatch evItemClicked args="{}" delay=0.1 init=false (event "DecorationPickerItem_evClicked"))
+
+	(bindcall externalCall "isNew ? 'inputMapping.onAction' : ''" "['makeSeen', {entityId: decorationEntity.id}]" 	init=false
+																													watch=false
+																				 									on='rollOver')
+
+	(bindcall externalCall "isNew ? 'inputMapping.onAction' : ''" "['makeSeen', {entityId: decorationEntity.id}]" 	init=false
+																													watch=false
+																													on='removedFromStage')
+)
+
+
+
+(def element DecorationTooltip (_decorationId:number, _isOwned:bool=false, _isHanged:bool=false) layout=true dispatch_size_change=true
+	(scope
+		(macro PULL_DECORATION_INFO "_decorationId") 
+
+		(var instructionText:str = "	_isHanged	? 'IDS_CHRISTMAS_TREE_DECORATION_TOOLTIP_INSTRUCTION_REMOVE'
+													: 'IDS_CHRISTMAS_TREE_DECORATION_TOOLTIP_INSTRUCTION_HANG'")
+	)
+
+	(style (hitTest = false))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER _width = "340px"
+		(element TooltipSystemHeaderWithIconAndText
+			_imageUrl="decorationLargeImagePath"
+			_headerIconType="SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.SIMPLE"
+			_imageWidth="60"
+			_imageHeight="60"
+			_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			_headerText="decorationTitle"
+			_subheaderText="decorationDescription"
+		)
+
+		(block
+			(bind visible "!_isOwned")
+			(style (width = 100%))
+
+			(element TooltipSystemHorizontalDivider)
+
+			(element TooltipSystemStatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.LOCK"
+				_text = 'IDS_CHRISTMAS_TREE_DECORATION_TOOLTIP_NOT_OWNED'
+			)
+		)
+
+		(block
+			(bind visible "_isOwned && _isHanged")
+			(style (width = 100%))
+
+			(element TooltipSystemHorizontalDivider)
+
+			(element TooltipSystemStatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+				_text = 'IDS_CHRISTMAS_TREE_DECORATION_TOOLTIP_HANGED'
+			)
+		)
+
+		(block
+			(bind visible "_isOwned")
+			(style (width = 100%))
+
+			(element TooltipSystemHorizontalDivider)
+
+			(element TooltipSystemStatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+				_text = "instructionText"
+			)
+		)
+	)
+)

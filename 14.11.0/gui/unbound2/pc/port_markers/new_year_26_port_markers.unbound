@@ -1,0 +1,77 @@
+(def constant NEW_YEAR_26_MARKERS_BY_TYPE_RENDERERS "{
+	SC.Common.NY_EVENT_TYPE.CHRISTMAS_TREE: 'NewYear26ChristamsTreePortMarkerView'
+}")
+
+(def element NewYear26PortMarkersContainer()
+	(element PortMarkersContainer
+		_interactiveComponentClass = "CC.interactiveNewYearMarker"
+		_interactiveRenderer = "'InteractiveObjectNewYear26RoutePortMarker'"
+	)
+)
+
+(def element InteractiveObjectNewYear26RoutePortMarker(_markerEntity:gfx, _ioState:number)
+	(name = 'InteractiveObjectNewYear26RoutePortMarker')
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'IO_NewYear26RoutePortMarker_'")
+
+		
+		(var newYearMarkerComponent:gfx = "_markerEntity ? _markerEntity.interactiveNewYearMarker : null" (event "_markerEntity.evUpdated"))
+		(var markerType:str = 		"newYearMarkerComponent ? newYearMarkerComponent.type : null" 	(event "newYearMarkerComponent.evChanged"))
+	)
+
+	(style
+		(height = "NY_MARKER_REGION_SIZE") (width = "NY_MARKER_REGION_SIZE")
+	)
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(alpha = 0.001)
+			(backgroundColor = "REGION_BACKGROUND_COLOR")
+		)
+	)
+
+	
+	(controller $Instance
+		(bind enabled "NEW_YEAR_26_MARKERS_BY_TYPE_RENDERERS[markerType]")
+		(bind renderer "NEW_YEAR_26_MARKERS_BY_TYPE_RENDERERS[markerType]")
+
+		(args
+			_isRollOver = "IO_NewYear26RoutePortMarker_rollOver"
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_prefix = "'IO_NewYear26RoutePortMarker_'"
+	)
+)
+
+(def element NewYear26ChristamsTreePortMarkerView(_isRollOver:bool = false, _isMouseDown:bool = false) layout=true
+	(scope
+		(var newContentEntity:gfx = "$datahub.getPrimaryEntity(CC.newContent, SC.Common.CONTENT_CATEGORY.NY_DECORATIONS)")
+		(var newContentCounter:number = "newContentEntity ? newContentEntity.newContent.count : 0" (event "newContentEntity.newContent.evCountChanged"))
+		(var isNew:bool = "newContentCounter > 0")
+
+		(var iconImage:str = "'url:../port_markers/ny_2026/icons/gift' + (isNew ? '_has_reward' : '') + '.png'")
+
+		(var ctRollOver:dict = "{	redMultiplier: 1,	greenMultiplier: 1,	blueMultiplier: 1,	alphaMultiplier: 1,
+									redOffset: 45,	greenOffset: 45,	blueOffset: 45,		alphaOffset: 0 }")
+	)
+
+	(style
+		(width = "NY_MARKER_REGION_SIZE") (height = "NY_MARKER_REGION_SIZE")
+		(align = "center|middle")
+	)
+
+	
+	(block
+		(style
+			(bind width "NY_MARKER_ICON_SIZE") (bind height "NY_MARKER_ICON_SIZE")
+
+			(backgroundSize = "fill")
+			(bind backgroundImage "iconImage")
+		)
+		(bind colorTransform "_isRollOver ? ctRollOver : {}")
+	)
+)
