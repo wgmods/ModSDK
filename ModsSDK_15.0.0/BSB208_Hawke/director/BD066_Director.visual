@@ -1,0 +1,106 @@
+<BD066_Director.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Nelson_Main_Director	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1142 -0.0667 -0.1251	</min>
+		<max>	0.1142 0.2791 0.1142	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	Nelson_Main_DirectorShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Nelson_Main_Director	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB208_Hawke/director/BD066_Director.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Nelson_Main_Director_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Nelson_Main_Director	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB208_Hawke/director/BD066_Director.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Nelson_Main_Director_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Nelson_Main_Director	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB208_Hawke/director/BD066_Director.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Nelson_Main_Director_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Nelson_Main_Director	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB208_Hawke/director/BD066_Director.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	4.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Nelson_Main_DirectorShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Nelson_Main_Director_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	18.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Nelson_Main_Director_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	100.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Nelson_Main_Director_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</BD066_Director.visual>

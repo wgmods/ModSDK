@@ -1,0 +1,106 @@
+<FGT2025_400mm550mm_3tube_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	FGT2025_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0734 0.0000 -0.2525	</min>
+		<max>	0.0734 0.1001 0.2654	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	FGT2025_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FGT2025_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSS710_Surcouf/gun/FGT2023_400mm550mm_3tube_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	FGT2025_dead_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FGT2025_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSS710_Surcouf/gun/FGT2023_400mm550mm_3tube_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	FGT2025_dead_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FGT2025_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSS710_Surcouf/gun/FGT2023_400mm550mm_3tube_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	FGT2025_dead_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FGT2025_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSS710_Surcouf/gun/FGT2023_400mm550mm_3tube_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	12.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	FGT2025_deadShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	FGT2025_dead_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	40.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	FGT2025_dead_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	200.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	FGT2025_dead_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</FGT2025_400mm550mm_3tube_dead.visual>

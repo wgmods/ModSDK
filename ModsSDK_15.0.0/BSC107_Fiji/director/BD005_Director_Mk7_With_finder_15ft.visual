@@ -1,0 +1,139 @@
+<BD005_Director_Mk7_With_finder_15ft.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Radar	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Radar_wire	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.2476 -0.0176 -0.2052	</min>
+		<max>	0.2476 0.3084 0.1162	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	RadarShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Radar	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSC107_Fiji/director/BD005_Director_Mk7_With_finder_15ft.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Radar_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Radar	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSC107_Fiji/director/BD005_Director_Mk7_With_finder_15ft.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Radar_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Radar	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSC107_Fiji/director/BD005_Director_Mk7_With_finder_15ft.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Radar_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Radar	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSC107_Fiji/director/BD005_Director_Mk7_With_finder_15ft.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Radar_wireShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Radar_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPWIRE_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSC107_Fiji/director/BD005_Director_Mk7_With_finder_15ft_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Radar_wire_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Radar_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPWIRE_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSC107_Fiji/director/BD005_Director_Mk7_With_finder_15ft_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	2.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RadarShape	</renderSet>
+				<renderSet>	Radar_wireShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Radar_lod1Shape	</renderSet>
+				<renderSet>	Radar_wire_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Radar_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	120.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Radar_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</BD005_Director_Mk7_With_finder_15ft.visual>

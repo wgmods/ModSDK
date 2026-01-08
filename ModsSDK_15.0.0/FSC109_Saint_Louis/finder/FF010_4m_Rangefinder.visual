@@ -1,0 +1,106 @@
+<FF010_4m_Rangefinder.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	RangeFinder	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1421 -0.0048 -0.1084	</min>
+		<max>	0.1421 0.2286 0.1067	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	RangeFinderShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RangeFinder	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSC109_Saint_Louis/finder/FF010_4m_Rangefinder.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RangeFinder_lodShape1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RangeFinder	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSC109_Saint_Louis/finder/FF010_4m_Rangefinder.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RangeFinder_lodShape2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RangeFinder	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSC109_Saint_Louis/finder/FF010_4m_Rangefinder.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RangeFinder_lodShape3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RangeFinder	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSC109_Saint_Louis/finder/FF010_4m_Rangefinder.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	4.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RangeFinderShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RangeFinder_lodShape1	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	15.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RangeFinder_lodShape2	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	110.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	RangeFinder_lodShape3	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</FF010_4m_Rangefinder.visual>

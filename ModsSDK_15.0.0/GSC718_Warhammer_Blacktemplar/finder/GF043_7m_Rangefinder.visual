@@ -1,0 +1,106 @@
+<GF043_7m_Rangefinder.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	GF043_7m_Rangefinder	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.2561 0.0000 -0.0934	</min>
+		<max>	0.2561 0.1843 0.0934	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	GF043_7m_RangefinderShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GF043_7m_Rangefinder	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSC718_Warhammer_Blacktemplar/finder/GF043_7m_Rangefinder.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	GF043_7m_Rangefinder_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GF043_7m_Rangefinder	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSC718_Warhammer_Blacktemplar/finder/GF043_7m_Rangefinder.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	GF043_7m_Rangefinder_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GF043_7m_Rangefinder	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSC718_Warhammer_Blacktemplar/finder/GF043_7m_Rangefinder.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	GF043_7m_Rangefinder_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	GF043_7m_Rangefinder	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/GSC718_Warhammer_Blacktemplar/finder/GF043_7m_Rangefinder.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	5.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	GF043_7m_RangefinderShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	GF043_7m_Rangefinder_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	20.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	GF043_7m_Rangefinder_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	200.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	GF043_7m_Rangefinder_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</GF043_7m_Rangefinder.visual>

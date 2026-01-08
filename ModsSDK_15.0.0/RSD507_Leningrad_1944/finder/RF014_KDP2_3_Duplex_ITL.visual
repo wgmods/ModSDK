@@ -1,0 +1,151 @@
+<RF014_KDP2_3_Duplex_ITL.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	dardo	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	dardo_wire	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1298 0.0000 -0.1478	</min>
+		<max>	0.1298 0.1975 0.1339	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	dardoShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	dardo	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD507_Leningrad_1944/finder/RF014_KDP2_3_Duplex_ITL.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	dardo_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	dardo	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD507_Leningrad_1944/finder/RF014_KDP2_3_Duplex_ITL.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	dardo_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	dardo	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD507_Leningrad_1944/finder/RF014_KDP2_3_Duplex_ITL.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	dardo_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	dardo	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD507_Leningrad_1944/finder/RF014_KDP2_3_Duplex_ITL.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	dardo_wireShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	dardo_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPWIRE_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD507_Leningrad_1944/finder/RF014_KDP2_3_Duplex_ITL_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	dardo_wire_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	dardo_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPWIRE_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD507_Leningrad_1944/finder/RF014_KDP2_3_Duplex_ITL_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	dardo_wire_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	dardo_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPWIRE_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD507_Leningrad_1944/finder/RF014_KDP2_3_Duplex_ITL_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	dardoShape	</renderSet>
+				<renderSet>	dardo_wireShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	16.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	dardo_lod1Shape	</renderSet>
+				<renderSet>	dardo_wire_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	38.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	dardo_lod2Shape	</renderSet>
+				<renderSet>	dardo_wire_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	180.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	dardo_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</RF014_KDP2_3_Duplex_ITL.visual>

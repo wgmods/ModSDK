@@ -1,0 +1,256 @@
+<HSD001_Friesland_1956_Stern.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Stern	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_HGB_3	</identifier>
+					<transform>
+						<row0>	-0.9989 0.0000 0.0459 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	-0.0459 0.0000 -0.9989 0.0000	</row2>
+						<row3>	-0.0916 0.1684 -3.6509 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_HGB_4	</identifier>
+					<transform>
+						<row0>	-0.9989 0.0000 -0.0458 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0458 0.0000 -0.9989 0.0000	</row2>
+						<row3>	0.0882 0.1684 -3.6519 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_HGM_2	</identifier>
+					<transform>
+						<row0>	-1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 -1.0000 0.0000	</row2>
+						<row3>	0.0000 0.3502 -2.6856 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_Ship_death_3	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 -1.9003 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	Stern_crack_MidBack	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+					<node>
+						<identifier>	Stern_crack_MidBack_in	</identifier>
+						<transform>
+							<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+							<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+							<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+							<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+						</transform>
+					</node>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0003 -0.0003 -1.1698	</min>
+		<max>	0.0003 0.0003 -1.1543	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	SternShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/HSD509_Groningen/ship/HSD001_Friesland_1956.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBackShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/HSD509_Groningen/ship/HSD001_Friesland_1956.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_inShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/HSD509_Groningen/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_in_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/HSD509_Groningen/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_in_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/HSD509_Groningen/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_in_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/HSD509_Groningen/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/HSD509_Groningen/ship/HSD001_Friesland_1956.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/HSD509_Groningen/ship/HSD001_Friesland_1956.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/HSD509_Groningen/ship/HSD001_Friesland_1956.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/HSD509_Groningen/ship/HSD001_Friesland_1956.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/HSD509_Groningen/ship/HSD001_Friesland_1956.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/HSD509_Groningen/ship/HSD001_Friesland_1956.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	SternShape	</renderSet>
+				<renderSet>	Stern_crack_MidBackShape	</renderSet>
+				<renderSet>	Stern_crack_MidBack_inShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	22.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Stern_crack_MidBack_in_lod1Shape	</renderSet>
+				<renderSet>	Stern_crack_MidBack_lod1Shape	</renderSet>
+				<renderSet>	Stern_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	35.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Stern_crack_MidBack_in_lod2Shape	</renderSet>
+				<renderSet>	Stern_crack_MidBack_lod2Shape	</renderSet>
+				<renderSet>	Stern_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	250.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Stern_crack_MidBack_in_lod3Shape	</renderSet>
+				<renderSet>	Stern_crack_MidBack_lod3Shape	</renderSet>
+				<renderSet>	Stern_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</HSD001_Friesland_1956_Stern.visual>

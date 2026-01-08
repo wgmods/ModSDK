@@ -1,0 +1,106 @@
+<RGM148_356mm_54_1938_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Turret_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.4336 -0.0511 -0.5906	</min>
+		<max>	0.4336 0.3179 1.2432	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	Turret_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSB508_Poltava/gun/RGM148_356mm_54_1938_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Turret_dead_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSB508_Poltava/gun/RGM148_356mm_54_1938_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Turret_dead_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSB508_Poltava/gun/RGM148_356mm_54_1938_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Turret_dead_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSB508_Poltava/gun/RGM148_356mm_54_1938_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	4.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Turret_deadShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	12.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Turret_dead_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	43.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Turret_dead_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	200.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Turret_dead_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</RGM148_356mm_54_1938_dead.visual>

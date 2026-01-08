@@ -1,0 +1,271 @@
+<JSD002_Umikaze_1925_Stern.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Stern	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_JGM_3	</identifier>
+					<transform>
+						<row0>	-1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 -1.0000 0.0000	</row2>
+						<row3>	0.0000 0.1766 -2.4119 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_Ship_death_3	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 -1.9002 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	Stern_crack_MidBack	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+					<node>
+						<identifier>	Stern_crack_MidBack_in	</identifier>
+						<transform>
+							<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+							<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+							<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+							<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+						</transform>
+					</node>
+				</node>
+				<node>
+					<identifier>	Stern_wire	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.2796 -0.1855 -3.2421	</min>
+		<max>	0.3001 0.5159 -1.7331	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	SternShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD002_Umikaze_1925/ship/JSD002_Umikaze_1925.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBackShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD002_Umikaze_1925/ship/JSD002_Umikaze_1925.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_inShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD002_Umikaze_1925/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_in_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD002_Umikaze_1925/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_in_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD002_Umikaze_1925/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_in_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD002_Umikaze_1925/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD002_Umikaze_1925/ship/JSD002_Umikaze_1925.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD002_Umikaze_1925/ship/JSD002_Umikaze_1925.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD002_Umikaze_1925/ship/JSD002_Umikaze_1925.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD002_Umikaze_1925/ship/JSD002_Umikaze_1925.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD002_Umikaze_1925/ship/JSD002_Umikaze_1925.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD002_Umikaze_1925/ship/JSD002_Umikaze_1925.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_wireShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD002_Umikaze_1925/ship/JSD002_Umikaze_1925_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_wire_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSD002_Umikaze_1925/ship/JSD002_Umikaze_1925_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	4.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	SternShape	</renderSet>
+				<renderSet>	Stern_crack_MidBackShape	</renderSet>
+				<renderSet>	Stern_crack_MidBack_inShape	</renderSet>
+				<renderSet>	Stern_wireShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	9.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Stern_crack_MidBack_in_lod1Shape	</renderSet>
+				<renderSet>	Stern_crack_MidBack_lod1Shape	</renderSet>
+				<renderSet>	Stern_lod1Shape	</renderSet>
+				<renderSet>	Stern_wire_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	16.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Stern_crack_MidBack_in_lod2Shape	</renderSet>
+				<renderSet>	Stern_crack_MidBack_lod2Shape	</renderSet>
+				<renderSet>	Stern_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	200.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Stern_crack_MidBack_in_lod3Shape	</renderSet>
+				<renderSet>	Stern_crack_MidBack_lod3Shape	</renderSet>
+				<renderSet>	Stern_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JSD002_Umikaze_1925_Stern.visual>

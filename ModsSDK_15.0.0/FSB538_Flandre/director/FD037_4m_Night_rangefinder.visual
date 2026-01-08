@@ -1,0 +1,106 @@
+<FD037_4m_Night_rangefinder.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	FD037_4m_Night_rangefinder	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1433 -0.0667 -0.1099	</min>
+		<max>	0.1433 0.2105 0.1098	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	FD037_4m_Night_rangefinderShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FD037_4m_Night_rangefinder	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSB538_Flandre/director/FD037_4m_Night_rangefinder.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	FD037_4m_Night_rangefinder_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FD037_4m_Night_rangefinder	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSB538_Flandre/director/FD037_4m_Night_rangefinder.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	FD037_4m_Night_rangefinder_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FD037_4m_Night_rangefinder	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSB538_Flandre/director/FD037_4m_Night_rangefinder.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	FD037_4m_Night_rangefinder_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FD037_4m_Night_rangefinder	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSB538_Flandre/director/FD037_4m_Night_rangefinder.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	5.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	FD037_4m_Night_rangefinderShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	10.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	FD037_4m_Night_rangefinder_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	FD037_4m_Night_rangefinder_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	75.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	FD037_4m_Night_rangefinder_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</FD037_4m_Night_rangefinder.visual>

@@ -1,0 +1,139 @@
+<AD044_Director_Mk54.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	DirectorMk54	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	DirectorMk54_wires	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.2488 -0.0665 -0.1255	</min>
+		<max>	0.2488 0.2194 0.0980	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	DirectorMk54Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	DirectorMk54	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASC020_Des_Moines_1948/director/AD044_Director_Mk54.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	DirectorMk54_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	DirectorMk54	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASC020_Des_Moines_1948/director/AD044_Director_Mk54.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	DirectorMk54_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	DirectorMk54	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASC020_Des_Moines_1948/director/AD044_Director_Mk54.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	DirectorMk54_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	DirectorMk54	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASC020_Des_Moines_1948/director/AD044_Director_Mk54.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	DirectorMk54_wiresShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	DirectorMk54_wires	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPWIRE_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASC020_Des_Moines_1948/director/AD044_Director_Mk54_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	DirectorMk54_wires_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	DirectorMk54_wires	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPWIRE_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ASC020_Des_Moines_1948/director/AD044_Director_Mk54_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	DirectorMk54Shape	</renderSet>
+				<renderSet>	DirectorMk54_wiresShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	DirectorMk54_lod1Shape	</renderSet>
+				<renderSet>	DirectorMk54_wires_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	9.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	DirectorMk54_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	80.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	DirectorMk54_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</AD044_Director_Mk54.visual>

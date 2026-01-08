@@ -1,0 +1,512 @@
+(def element TooltipMastery (_shipAchievementEntity:gfx, _isShowUB2Tooltip:bool=true) layout=true dispatch_size_change=true
+	(scope
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE)
+
+		(var masteryBadge:gfx = "_shipAchievementEntity ? _shipAchievementEntity.masteryBadge : null")
+		(var masteryLevel:number = "masteryBadge ? masteryBadge.badge : SC.Mastery_badges.MASTERY_BADGES_SIGNS.No_Sign")
+
+		(var masteryLimitationsWatcher:gfx = "$datahub.getFirstWatcher(CC.masteryLimitations)")
+		(var masteryLimitationsEntity:gfx = "masteryLimitationsWatcher.entity" (event "masteryLimitationsWatcher.event"))
+		(var masteryLimitations:gfx = "masteryLimitationsEntity.masteryLimitations")
+		(var isErrorOccurred:bool = "masteryBadge ? masteryBadge.isErrorOccurred : false" (event "_shipAchievementEntity.masteryBadge.evIsErrorOccurredChanged"))
+		(var isReceived:bool = "masteryLevel > SC.Mastery_badges.MASTERY_BADGES_SIGNS.No_Sign")
+
+		(var unifiedStatus:str = "	isReceived		? SC.Ui_styles.UNIFIED_STATUS.CHECK :
+									isErrorOccurred	? SC.Ui_styles.UNIFIED_STATUS.ATTENTION
+													: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+
+		(var masteryStatusText:str = "	isReceived		? 'IDS_MASTERY_STATUS_OBTAINED' :
+										isErrorOccurred	? 'IDS_MASTERY_STATUS_DATA_NOT_AVAILABLE_FOR_BATTLE'
+														: 'IDS_MASTERY_STATUS_NOT_OBTAINED'")
+		(var masteryLevelName:str = "SC.Mastery_badges.MASTERY_BADGES_SIGNS.VALUE_TO_NAME[masteryLevel]")
+		(var masteryIconUrl:str = "'url:../mastery_system/' + toLower(masteryLevelName) + '_big.png'")
+		(var nameIDS:str = "'IDS_MASTERY_GRADE_HEADER_' + toUpper(masteryLevelName)")
+		(var iconSize:number = "isReceived ? 80 : 0")
+		(var typeIDS:str = "isReceived ? 'IDS_MASTERY_GRADE_SUBHEADER' : ''")
+	)
+
+	(style (width = 320) (hitTest = false))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(block
+			(style (width = 100%))
+			(controller $Instance
+				(bind renderer "isReceived ? 'TooltipSystemHeaderWithIconAndText' : 'TooltipSystemHeaderSubheaderText'")
+				(args
+					_imageUrl = "masteryIconUrl"
+					_imageWidth = "iconSize"
+					_imageHeight = "iconSize"
+					_headerText = "nameIDS"
+					_unifiedStatus = "unifiedStatus"
+					_headerIconType = "SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.SIMPLE"
+					_subheaderText = "typeIDS"
+				)
+			)
+		)
+		
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine
+					_unifiedStatus = "unifiedStatus"
+					_text = "masteryStatusText"
+		)
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine _unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.INFO" _text='IDS_MASTERY_GRADE_BATTLE_CONDITION')
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemDescriptionText _descriptionText='IDS_MASTERY_SYSTEM_DESCRIPTION')
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemInnerHeaderSubheaderText _headerText='IDS_MASTERY_GRADES_GRADATION_HEADER' _subheaderText='IDS_MASTERY_GRADES_GRADATION_SUBHEADER')
+		(element TooltipSystemHorizontalDivider)
+		
+		(element TooltipSystemParamsModifiersList _attributesNeutral="masteryLimitations.gradesConfiguration")
+	)
+)
+
+(def element TooltipMarkOfExcellencePersonal (_shipAchievementEntity:gfx, _shipId:number=-1, _isPostBattleResultsScreen:bool=false, _isCloseToReceive:bool=false, _isShowUB2Tooltip:bool=true) layout=true dispatch_size_change=true
+	(scope
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE)
+
+		(var shipEntity:gfx = "_shipId ? $datahub.getPrimaryEntity(CC.ship, _shipId) : null")
+		(var shipComponent:gfx = "_shipId ? shipEntity.ship : null" (event "shipEntity.ship.evUpdate"))
+		
+		
+		(var shipNation:str = '')
+
+		(var markOfExcellence:gfx = "_shipAchievementEntity ? _shipAchievementEntity.markOfExcellencePersonal : null")
+		(var markOfExcellenceLevel:number = "markOfExcellence	? markOfExcellence.grade
+																: SC.Statist_achievements.MARKS_OF_EXCELLENCE_PERSONAL_EXTRA_CONDITIONS.NONE_GRADE" (event "markOfExcellence.evChanged"))
+		(var qualifierBattlesLeft:number = "markOfExcellence	? markOfExcellence.battlesLeft
+																: SC.Statist_achievements.MARKS_OF_EXCELLENCE_PERSONAL_EXTRA_CONDITIONS.BATTLES_LEFT_DEFAULT" (event "markOfExcellence.evChanged"))
+		(var avgXPPercentile:number = "markOfExcellence	? markOfExcellence.percent
+															: 0" (event "markOfExcellence.evChanged"))
+		(var markReceivedDate:number = "markOfExcellence	? markOfExcellence.receivedDate
+															: 0" (event "markOfExcellence.evChanged"))
+		(var formattedMarkReceivedDate:str = "formatTime(markReceivedDate, 'dd.MM.yy', '', true)")
+
+		(var marksOfExcellenceLimitationsWatcher:gfx = "$datahub.getFirstWatcher(CC.markOfExcellencePersonalLimitations)")
+		(var marksOfExcellenceLimitationsEntity:gfx = "marksOfExcellenceLimitationsWatcher.entity" (event "marksOfExcellenceLimitationsWatcher.event"))
+		(var marksOfExcellenceLimitations:gfx = "marksOfExcellenceLimitationsEntity.markOfExcellencePersonalLimitations") 
+
+		(var marksOfExcellenceReceivedWatcher:gfx = "$datahub.getFirstWatcher(CC.markOfExcellencePersonalReceived)")
+		(var marksOfExcellenceReceivedEntity:gfx = "marksOfExcellenceReceivedWatcher.entity" (event "marksOfExcellenceReceivedWatcher.event"))
+		(var marksOfExcellenceReceivedComponent:gfx = "marksOfExcellenceReceivedEntity.markOfExcellencePersonalReceived")
+		(var numOfReceivedMarksByType:array = "marksOfExcellenceReceivedComponent.numOfMarksByType" (event "marksOfExcellenceReceivedComponent.evChanged"))
+
+		
+		(var isQualificationPeriodCompleted:bool = "qualifierBattlesLeft == 0")
+		(var isQualificationPeriodActive:bool = "qualifierBattlesLeft > 0")
+		(var isNonZeroMark:bool = "markOfExcellenceLevel != SC.Statist_achievements.MARKS_OF_EXCELLENCE_PERSONAL_EXTRA_CONDITIONS.NONE_GRADE")
+		(var isMarkObtainedOnShip:bool = "isNonZeroMark && _shipId")
+		(var isMarksObtainedByPlayer:bool = "numOfReceivedMarksByType.length > 0")
+
+		(var markOfExcellenceLevelName:str = "'Mark_' + markOfExcellenceLevel")
+		(var markOfExcellenceNationName:str = "markOfExcellenceLevel == SC.Statist_achievements.MARKS_OF_EXCELLENCE_PERSONAL_EXTRA_CONDITIONS.MAX_GRADE && shipNation ? '_' + shipNation : ''")
+		(var markOfExcellenceIconUrl:str = "'url:../ship_achievements/excellence_mark/big/' + toLower(markOfExcellenceLevelName) + toLower(markOfExcellenceNationName) + '.png'")
+		(var headerText:str = "isMarkObtainedOnShip	? 'IDS_EXCELLENCE_MARK_HEADER_' + toUpper(markOfExcellenceLevelName)
+													: 'IDS_EXCELLENCE_MARK_HEADER'")
+		(var iconSize:number = "isMarkObtainedOnShip ? 80 : 0")
+		(var subheaderText:str = "isMarkObtainedOnShip ? 'IDS_EXCELLENCE_MARK_SUBHEADER' : ''")
+		(var unifiedStatus:str = "_isCloseToReceive 	? SC.Ui_styles.UNIFIED_STATUS.DEFAULT :
+								 isMarkObtainedOnShip	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+														: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+	)
+
+	(style (width = 320) (hitTest = false))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+
+		(block
+			(style (width = 100%))
+			(controller $Instance
+				(bind renderer "isMarkObtainedOnShip ? 'TooltipSystemHeaderWithIconAndText' : 'TooltipSystemHeaderSubheaderText'")
+				(args
+					_imageUrl = "markOfExcellenceIconUrl"
+					_imageWidth = "iconSize"
+					_imageHeight = "iconSize"
+					_headerText = "headerText"
+					_unifiedStatus = "unifiedStatus"
+					_headerIconType = "SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.SIMPLE"
+					_subheaderText = "subheaderText"
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider'
+				(bind enabled "_shipId || !isMarksObtainedByPlayer")
+			)
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "_shipId || !isMarksObtainedByPlayer")
+				(args
+					_unifiedStatus = "unifiedStatus"
+					_text = "isMarkObtainedOnShip && !_isCloseToReceive ? 'IDS_MARK_OF_EXCELLENCE_STATUS_OBTAINED' : 'IDS_MARK_OF_EXCELLENCE_STATUS_NOT_OBTAINED'"
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' 
+				(bind enabled "isMarkObtainedOnShip && !_isPostBattleResultsScreen"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isMarkObtainedOnShip && !_isPostBattleResultsScreen")
+				(args
+					_text = "subst('IDS_MARK_OF_EXCELLENCE_RECEIVE_DATE', [], {_receivedDate: formattedMarkReceivedDate})"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DATE"
+				)
+			)
+		)
+
+		
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine _unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.INFO" _text='IDS_EXCELLENCE_MARK_RESTRICTIONS')
+
+		
+		(block
+			(style (width = 100%))
+			(block
+				(style (width = 100%))
+				(controller $Instance renderer='TooltipSystemHorizontalDivider'
+					(bind enabled "!_shipId && isMarksObtainedByPlayer")
+				)
+			)
+			(block
+				(style (width = 100%))
+				(controller $Instance renderer='TooltipSystemStatusLine'
+					(bind enabled "!_shipId && isMarksObtainedByPlayer")
+					(args
+						_text = 'IDS_EXCELLENCE_MARK_OBTAINED'
+					)
+				)
+			)
+			(block
+				(style (width = 100%))
+				(controller $Instance renderer='TooltipSystemHorizontalDivider'
+					(bind enabled "!_shipId && isMarksObtainedByPlayer")
+				)
+			)
+			(block
+				(style (width = 100%))
+				(controller $Instance renderer='TooltipSystemParamsModifiersList'
+					(bind enabled "!_shipId && isMarksObtainedByPlayer")
+					(args
+						_attributesNeutral = "marksOfExcellenceReceivedComponent.numOfMarksByType"
+					)
+				)
+			)
+
+			
+			(block
+				(style (width = 100%))
+				(controller $Instance renderer='TooltipSystemHorizontalDivider'
+					(bind enabled "isQualificationPeriodActive")
+				)
+			)
+			(block
+				(style (width = 100%))
+				(controller $Instance renderer='TooltipSystemInnerHeaderSubheaderText'
+					(bind enabled "isQualificationPeriodActive")
+					(args
+						_headerText = 'IDS_MARK_OF_EXCELLENCE_STATUS_QUALIFICATION_HEADER'
+						_subheaderText = 'IDS_MARK_OF_EXCELLENCE_STATUS_QUALIFICATION_SUBHEADER'
+					)
+				)
+			)
+			(block
+				(style (width = 100%))
+				(controller $Instance renderer='TooltipSystemHorizontalDivider'
+					(bind enabled "isQualificationPeriodActive")
+				)
+			)
+			(block
+				(bind visible "isQualificationPeriodActive")
+				(style (width = 100%))
+				(block
+					(class $FullsizeAbsolute)
+					(style (paddingLeft = "-M") (paddingRight = "-M") (paddingTop = "-SXS") (paddingBottom = "-SXS"))
+
+					(block
+						(class $Fullsize)
+						(style (backgroundImage = "'url:../service_kit/panel_backgrounds/inner_panel.png'") (scale9grid = 3))
+					)
+				)
+				(block
+					(style (width = 100%))
+					(controller $Instance renderer='TooltipSystemCounterLine'
+						(bind enabled "isQualificationPeriodActive")
+						(args
+							_title = 'IDS_MARK_OF_EXCELLENCE_STATUS_QUALIFIER_BATTLES_LEFT'
+							_count = "qualifierBattlesLeft"
+						)
+					)
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider'
+				(bind enabled "isQualificationPeriodCompleted && _shipId")
+			)
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isQualificationPeriodCompleted && _shipId")
+				(args
+					_text = "subst('IDS_EXCELLENCE_MARK_SHIP_AVERAGE_XP_PERCENTILE', [], {_avgXPPercentile: toString(avgXPPercentile) + '%'})"
+				)
+			)
+		)
+
+		
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemInnerHeaderSubheaderText _headerText='IDS_EXCELLENCE_MARK_OBTAIN_CONDITIONS_HEADER' _subheaderText='IDS_EXCELLENCE_MARK_OBTAIN_CONDITIONS_SUBHEADER')
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemParamsModifiersList _attributesNeutral="marksOfExcellenceLimitations.gradesConfiguration")
+	)
+)
+
+(def element TooltipMarkOfExcellenceGroup (_shipAchievementEntity:gfx, _shipId:number=-1, _isPostBattleResultsScreen:bool=false, _isCloseToReceive:bool=false, _isShowUB2Tooltip:bool=true) layout=true dispatch_size_change=true
+	(scope
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE)
+
+		(var shipEntity:gfx = "_shipId ? $datahub.getPrimaryEntity(CC.ship, _shipId) : null")
+		(var shipComponent:gfx = "_shipId ? shipEntity.ship : null" (event "shipEntity.ship.evUpdate"))
+		
+		
+		(var shipNation:str = '')
+
+		(var markOfExcellence:gfx = "_shipAchievementEntity ? _shipAchievementEntity.markOfExcellenceGroup : null")
+		(var markOfExcellenceLevel:number = "markOfExcellence	? markOfExcellence.grade
+																: SC.Statist_achievements.MARKS_OF_EXCELLENCE_GROUP_EXTRA_CONDITIONS.NONE_GRADE" (event "markOfExcellence.evChanged"))
+		(var qualifierBattlesLeft:number = "markOfExcellence	? markOfExcellence.battlesLeft
+																: SC.Statist_achievements.MARKS_OF_EXCELLENCE_GROUP_EXTRA_CONDITIONS.BATTLES_LEFT_DEFAULT" (event "markOfExcellence.evChanged"))
+		(var avgXPPercentile:number = "markOfExcellence	? markOfExcellence.percent
+															: 0" (event "markOfExcellence.evChanged"))
+		(var markReceivedDate:number = "markOfExcellence	? markOfExcellence.receivedDate
+															: 0" (event "markOfExcellence.evChanged"))
+		(var formattedMarkReceivedDate:str = "formatTime(markReceivedDate, 'dd.MM.yy', '', true)")
+
+		(var marksOfExcellenceLimitationsWatcher:gfx = "$datahub.getFirstWatcher(CC.markOfExcellenceGroupLimitations)")
+		(var marksOfExcellenceLimitationsEntity:gfx = "marksOfExcellenceLimitationsWatcher.entity" (event "marksOfExcellenceLimitationsWatcher.event"))
+		(var marksOfExcellenceLimitations:gfx = "marksOfExcellenceLimitationsEntity.markOfExcellenceGroupLimitations") 
+
+		(var marksOfExcellenceReceivedWatcher:gfx = "$datahub.getFirstWatcher(CC.markOfExcellenceGroupReceived)")
+		(var marksOfExcellenceReceivedEntity:gfx = "marksOfExcellenceReceivedWatcher.entity" (event "marksOfExcellenceReceivedWatcher.event"))
+		(var marksOfExcellenceReceivedComponent:gfx = "marksOfExcellenceReceivedEntity.markOfExcellenceGroupReceived")
+		(var numOfReceivedMarksByType:array = "marksOfExcellenceReceivedComponent.numOfMarksByType" (event "marksOfExcellenceReceivedComponent.evChanged"))
+
+		
+		(var isQualificationPeriodCompleted:bool = "qualifierBattlesLeft == 0")
+		(var isQualificationPeriodActive:bool = "qualifierBattlesLeft > 0")
+		(var isNonZeroMark:bool = "markOfExcellenceLevel != SC.Statist_achievements.MARKS_OF_EXCELLENCE_GROUP_EXTRA_CONDITIONS.NONE_GRADE")
+		(var isMarkObtainedOnShip:bool = "isNonZeroMark && _shipId")
+		(var isMarksObtainedByPlayer:bool = "numOfReceivedMarksByType.length > 0")
+
+		(var markOfExcellenceLevelName:str = "'Mark_' + markOfExcellenceLevel")
+		(var markOfExcellenceNationName:str = "markOfExcellenceLevel == SC.Statist_achievements.MARKS_OF_EXCELLENCE_GROUP_EXTRA_CONDITIONS.MAX_GRADE && shipNation ? '_' + shipNation : ''")
+		(var markOfExcellenceIconUrl:str = "'url:../ship_achievements/excellence_mark_divisions/big/' + toLower(markOfExcellenceLevelName) + toLower(markOfExcellenceNationName) + '.png'")
+
+		(var headerText:str = "isMarkObtainedOnShip	? 'IDS_EXCELLENCE_MARK_DIVISIONS_HEADER_' + toUpper(markOfExcellenceLevelName)
+													: 'IDS_EXCELLENCE_MARK_DIVISIONS_HEADER'")
+		(var iconSize:number = "isMarkObtainedOnShip ? 80 : 0")
+		(var subheaderText:str = "isMarkObtainedOnShip ? 'IDS_EXCELLENCE_MARK_DIVISIONS_SUBHEADER' : ''")
+		(var unifiedStatus:str = "_isCloseToReceive 	? SC.Ui_styles.UNIFIED_STATUS.DEFAULT :
+								  isMarkObtainedOnShip	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+														: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+	)
+
+	(style (width = 320) (hitTest = false))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+
+		(block
+			(style (width = 100%))
+			(controller $Instance
+				(bind renderer "isMarkObtainedOnShip ? 'TooltipSystemHeaderWithIconAndText' : 'TooltipSystemHeaderSubheaderText'")
+				(args
+					_imageUrl = "markOfExcellenceIconUrl"
+					_imageWidth = "iconSize"
+					_imageHeight = "iconSize"
+					_headerText = "headerText"
+					_unifiedStatus = "unifiedStatus"
+					_headerIconType = "SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.SIMPLE"
+					_subheaderText = "subheaderText"
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider'
+				(bind enabled "_shipId || !isMarksObtainedByPlayer")
+			)
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "_shipId || !isMarksObtainedByPlayer")
+				(args
+					_unifiedStatus = "unifiedStatus"
+					_text = "isMarkObtainedOnShip && !_isCloseToReceive ? 'IDS_MARK_OF_EXCELLENCE_STATUS_OBTAINED' : 'IDS_MARK_OF_EXCELLENCE_STATUS_NOT_OBTAINED'"
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' 
+				(bind enabled "isMarkObtainedOnShip && !_isPostBattleResultsScreen"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isMarkObtainedOnShip && !_isPostBattleResultsScreen")
+				(args
+					_text = "subst('IDS_MARK_OF_EXCELLENCE_RECEIVE_DATE', [], {_receivedDate: formattedMarkReceivedDate})"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DATE"
+				)
+			)
+		)
+
+		
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemStatusLine _unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.INFO" _text='IDS_EXCELLENCE_MARK_DIVISIONS_RESTRICTIONS')
+
+		
+		(block
+			(style (width = 100%))
+			(block
+				(style (width = 100%))
+				(controller $Instance renderer='TooltipSystemHorizontalDivider'
+					(bind enabled "!_shipId && isMarksObtainedByPlayer")
+				)
+			)
+			(block
+				(style (width = 100%))
+				(controller $Instance renderer='TooltipSystemStatusLine'
+					(bind enabled "!_shipId && isMarksObtainedByPlayer")
+					(args
+						_text = 'IDS_EXCELLENCE_MARK_DIVISIONS_OBTAINED'
+					)
+				)
+			)
+			(block
+				(style (width = 100%))
+				(controller $Instance renderer='TooltipSystemHorizontalDivider'
+					(bind enabled "!_shipId && isMarksObtainedByPlayer")
+				)
+			)
+			(block
+				(style (width = 100%))
+				(controller $Instance renderer='TooltipSystemParamsModifiersList'
+					(bind enabled "!_shipId && isMarksObtainedByPlayer")
+					(args
+						_attributesNeutral = "marksOfExcellenceReceivedComponent.numOfMarksByType"
+					)
+				)
+			)
+
+			
+			(block
+				(style (width = 100%))
+				(controller $Instance renderer='TooltipSystemHorizontalDivider'
+					(bind enabled "isQualificationPeriodActive")
+				)
+			)
+			(block
+				(style (width = 100%))
+				(controller $Instance renderer='TooltipSystemInnerHeaderSubheaderText'
+					(bind enabled "isQualificationPeriodActive")
+					(args
+						_headerText = 'IDS_MARK_OF_EXCELLENCE_STATUS_QUALIFICATION_HEADER'
+						_subheaderText = 'IDS_MARK_OF_EXCELLENCE_STATUS_QUALIFICATION_SUBHEADER'
+					)
+				)
+			)
+			(block
+				(style (width = 100%))
+				(controller $Instance renderer='TooltipSystemHorizontalDivider'
+					(bind enabled "isQualificationPeriodActive")
+				)
+			)
+			(block
+				(bind visible "isQualificationPeriodActive")
+				(style (width = 100%))
+				(block
+					(class $FullsizeAbsolute)
+					(style (paddingLeft = "-M") (paddingRight = "-M") (paddingTop = "-SXS") (paddingBottom = "-SXS"))
+
+					(block
+						(class $Fullsize)
+						(style (backgroundImage = "'url:../service_kit/panel_backgrounds/inner_panel.png'") (scale9grid = 3))
+					)
+				)
+				(block
+					(style (width = 100%))
+					(controller $Instance renderer='TooltipSystemCounterLine'
+						(bind enabled "isQualificationPeriodActive")
+						(args
+							_title = 'IDS_MARK_OF_EXCELLENCE_STATUS_QUALIFIER_BATTLES_LEFT'
+							_count = "qualifierBattlesLeft"
+						)
+					)
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider'
+				(bind enabled "isQualificationPeriodCompleted && _shipId")
+			)
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isQualificationPeriodCompleted && _shipId")
+				(args
+					_text = "subst('IDS_EXCELLENCE_MARK_DIVISIONS_SHIP_AVERAGE_XP_PERCENTILE', [], {_avgXPPercentile: toString(avgXPPercentile) + '%'})"
+				)
+			)
+		)
+
+		
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemInnerHeaderSubheaderText _headerText='IDS_EXCELLENCE_MARK_DIVISIONS_OBTAIN_CONDITIONS_HEADER' _subheaderText='IDS_EXCELLENCE_MARK_DIVISIONS_OBTAIN_CONDITIONS_SUBHEADER')
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemParamsModifiersList _attributesNeutral="marksOfExcellenceLimitations.gradesConfiguration")
+	)
+)
+
+(def element TooltipShipAchievementsUnavailable (_shipAchievementEntity:gfx, _isShowUB2Tooltip:bool=true) layout=true dispatch_size_change=true
+	(scope
+		(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_SCOPE)
+	)
+
+	(style (width = 320) (hitTest = false))
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND_MARKUP)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemStatusLine
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.ATTENTION"
+					_text = 'IDS_SHIP_ACHIEVEMENTS_STATUS_SERVICE_NOT_AVAILABLE'
+		)
+	)
+)

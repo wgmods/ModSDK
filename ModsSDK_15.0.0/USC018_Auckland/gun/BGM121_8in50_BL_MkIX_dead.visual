@@ -1,0 +1,106 @@
+<BGM121_8in50_BL_MkIX_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Turret_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.3321 -0.0497 -0.3891	</min>
+		<max>	0.3321 0.2133 0.7492	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	Turret_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/USC018_Auckland/gun/BGM121_8in50_BL_MkIX_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Turret_dead_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/USC018_Auckland/gun/BGM121_8in50_BL_MkIX_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Turret_dead_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/USC018_Auckland/gun/BGM121_8in50_BL_MkIX_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Turret_dead_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/USC018_Auckland/gun/BGM121_8in50_BL_MkIX_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Turret_deadShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Turret_dead_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Turret_dead_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	200.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Turret_dead_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</BGM121_8in50_BL_MkIX_dead.visual>

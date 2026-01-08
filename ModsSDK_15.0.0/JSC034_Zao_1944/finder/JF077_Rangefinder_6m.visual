@@ -1,0 +1,151 @@
+<JF077_Rangefinder_6m.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Rangefinger_6m	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	JM006	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.2184 -0.0174 -0.2604	</min>
+		<max>	0.2184 0.3532 0.1539	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	JM006Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JM006	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director1	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC034_Zao_1944/finder/JM107_Binocular.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JM006_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JM006	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director1	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC034_Zao_1944/finder/JM107_Binocular.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	JM006_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	JM006	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director1	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC034_Zao_1944/finder/JM107_Binocular.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Rangefinger_6mShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Rangefinger_6m	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC034_Zao_1944/finder/JF077_Rangefinder_6m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Rangefinger_6m_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Rangefinger_6m	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC034_Zao_1944/finder/JF077_Rangefinder_6m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Rangefinger_6m_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Rangefinger_6m	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC034_Zao_1944/finder/JF077_Rangefinder_6m.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Rangefinger_6m_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Rangefinger_6m	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC034_Zao_1944/finder/JF077_Rangefinder_6m.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	2.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JM006Shape	</renderSet>
+				<renderSet>	Rangefinger_6mShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	4.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JM006_lod1Shape	</renderSet>
+				<renderSet>	Rangefinger_6m_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	10.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	JM006_lod2Shape	</renderSet>
+				<renderSet>	Rangefinger_6m_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	100.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Rangefinger_6m_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JF077_Rangefinder_6m.visual>

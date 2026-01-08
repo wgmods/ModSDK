@@ -1,0 +1,133 @@
+<FGT2025_400mm550mm_3tube.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	FGT2025	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_gunFire1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0394 0.0676 -0.2047 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire2	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0487 -0.2196 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire3	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	-0.0394 0.0676 -0.2047 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1061 -0.0180 -0.2862	</min>
+		<max>	0.1061 0.1342 0.2654	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	FGT2025Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FGT2025	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSS710_Surcouf/gun/FSS301_Surcouf_1940.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	FGT2025_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FGT2025	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSS710_Surcouf/gun/FSS301_Surcouf_1940.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	FGT2025_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FGT2025	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSS710_Surcouf/gun/FSS301_Surcouf_1940.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	FGT2025_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	FGT2025	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/FSS710_Surcouf/gun/FSS301_Surcouf_1940.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	12.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	FGT2025Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	FGT2025_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	40.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	FGT2025_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	200.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	FGT2025_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</FGT2025_400mm550mm_3tube.visual>

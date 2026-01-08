@@ -1,0 +1,106 @@
+<BGM001_6in50_MK_XXIII_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	gun_Rotate_Y_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.3159 -0.0085 -0.3393	</min>
+		<max>	0.3159 0.2541 0.4886	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	gun_Rotate_Y_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	gun_Rotate_Y_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSC109_Neptune/gun/BGM001_6in50_MK_XXIII_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	gun_Rotate_Y_dead_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	gun_Rotate_Y_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSC109_Neptune/gun/BGM001_6in50_MK_XXIII_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	gun_Rotate_Y_dead_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	gun_Rotate_Y_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSC109_Neptune/gun/BGM001_6in50_MK_XXIII_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	gun_Rotate_Y_dead_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	gun_Rotate_Y_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSC109_Neptune/gun/BGM001_6in50_MK_XXIII_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	gun_Rotate_Y_deadShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	gun_Rotate_Y_dead_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	34.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	gun_Rotate_Y_dead_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	200.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	gun_Rotate_Y_dead_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</BGM001_6in50_MK_XXIII_dead.visual>

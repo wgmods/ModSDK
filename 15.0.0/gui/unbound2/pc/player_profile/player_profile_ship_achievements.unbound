@@ -1,0 +1,255 @@
+(def constant SHIP_ACHIEVEMENTS_BY_TYPES {	'masteryBadge': 'MasteryBadge',
+											'excellence_mark': 'MarkOfExcellencePersonal',
+											'excellence_mark_divisions': 'MarkOfExcellenceGroup' })
+
+(def constant SHIP_ACHIEVEMENTS_SIMPLE_BY_TYPES {	'masteryBadge': 'MasteryIconSimple',
+													'excellence_mark': 'MarkOfExcellenceIconSimple',
+													'excellence_mark_divisions': 'MarkOfExcellenceIconSimple' })
+
+
+(def element ShipAchievement (_entityId:number=-1, _shipId:number=-1, _isPostBattleResultsScreen:bool=false, _isCloseToReceive:bool=false, _size:str='60px', _type:str='') layout=true dispatch_size_change=true
+	(scope
+		(var shipAchievementEntity:gfx = "$datahub.getEntity(_entityId)")
+
+		(var shipAchievementRenderer:str = "SHIP_ACHIEVEMENTS_BY_TYPES[_type] ? SHIP_ACHIEVEMENTS_BY_TYPES[_type] : ''")
+	)
+
+	(style
+		(align = "middle|center")
+		(bind width "_size")
+		(bind height "_size")
+	)
+
+	(controller $Instance renderer="shipAchievementRenderer"
+		(bind enabled "shipAchievementRenderer != '' && shipAchievementEntity")
+		(args
+			_shipAchievementEntity="shipAchievementEntity"
+			_shipId="_shipId"
+			_isPostBattleResultsScreen="_isPostBattleResultsScreen"
+			_isCloseToReceive="_isCloseToReceive"
+			_type="_type"
+		)
+	)
+)
+
+
+(def element ShipAchievementSimple (_grade:number=0, _type:str='', _size:str='60px', _shipId:number=-1) layout=true dispatch_size_change=true
+	(scope
+		(var shipAchievementRenderer:str = "SHIP_ACHIEVEMENTS_SIMPLE_BY_TYPES[_type] ? SHIP_ACHIEVEMENTS_SIMPLE_BY_TYPES[_type] : ''")
+	)
+
+	(style
+		(align = "middle|center")
+		(bind width "_size")
+		(bind height "_size")
+	)
+
+	(controller $Instance renderer="shipAchievementRenderer"
+		(bind enabled "shipAchievementRenderer != ''")
+		(args
+			_type="_type"
+			_grade="_grade"
+			_shipId="_shipId"
+			_size="_size"
+		)
+	)
+)
+
+
+
+(def element MasteryIcon(_entityId:number=-1, _size:number="null") layout=true dispatch_size_change=true
+	(scope
+		(var masteryServiceWatcher:gfx = "$datahub.getFirstWatcher(CC.masteryService)")
+		(var masteryServiceEntity:gfx = "masteryServiceWatcher.entity" (event "masteryServiceWatcher.event"))
+		(var isMasteryOnline:bool = "masteryServiceEntity ? masteryServiceEntity.masteryService.isOnline : false" (event "masteryServiceEntity.masteryService.evIsOnlineChanged"))
+
+		(var masteryBadgeEntity:gfx = "$datahub.getEntity(_entityId)")
+		(var masteryBadge:gfx = "masteryBadgeEntity ? masteryBadgeEntity.masteryBadge : null")
+		(var masteryLevel:number = "isMasteryOnline && masteryBadge ? masteryBadge.badge : SC.Mastery_badges.MASTERY_BADGES_SIGNS.No_Sign")
+		(var isErrorOccurred:bool = "masteryBadge ? masteryBadge.isErrorOccurred : false" (event "masteryBadgeEntity.masteryBadge.evIsErrorOccurredChanged"))
+
+		(var masteryLevelName:str = "SC.Mastery_badges.MASTERY_BADGES_SIGNS.VALUE_TO_NAME[masteryLevel]")
+		(var masteryIconUrl:str = "'url:../mastery_system/' + toLower(masteryLevelName) + '_medium.png'")
+	)
+	(bind name "'MasteryIcon_' + masteryLevelName")
+
+	(controller $Animation
+		(bindcall play keyframes="[
+			{percent:0, to:{alpha:1}},
+			{percent:20, to:{alpha:0}},
+			{percent:100, to:{alpha:1}}
+			]"
+			duration=0.3
+			(event "masteryServiceEntity.masteryService.evIsOnlineChanged")
+		)
+	)
+	(style
+		(align = "middle|center")
+		(bind width "_size ? _size : 60px")
+		(bind height "_size ? _size : 60px")
+	)
+	(block
+		(style
+			(bind alpha "isMasteryOnline ? 1 : 0.5")
+			(backgroundSize = "fill")
+			(position = "absolute")
+			(bind backgroundImage "masteryIconUrl")
+			(bind width "_size ? _size : 60px")
+			(bind height "_size ? _size : 60px")
+		)
+	)
+
+	(block
+		(bind visible "!isMasteryOnline || isErrorOccurred")
+		(style
+			(backgroundSize = "autosize")
+			(bind backgroundImage "'url:../service_kit/icons/icon_status_attention.png'")
+		)
+	)
+
+	(controller $Tooltip
+		(bind renderer "isMasteryOnline ? 'TooltipMastery' : 'TooltipShipAchievementsUnavailable'")
+		(args _shipAchievementEntity = "masteryBadgeEntity")
+		(updateCachedBindings = true)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element MarkOfExcellencePersonal (_shipAchievementEntity:gfx, _shipId:number, _isPostBattleResultsScreen:bool, _isCloseToReceive:bool, _type:str) layout=true dispatch_size_change=true
+	(scope
+		(var masteryServiceWatcher:gfx = "$datahub.getFirstWatcher(CC.masteryService)")
+		(var masteryServiceEntity:gfx = "masteryServiceWatcher.entity" (event "masteryServiceWatcher.event"))
+		(var isMasteryOnline:bool = "masteryServiceEntity ? masteryServiceEntity.masteryService.isOnline : false" (event "masteryServiceEntity.masteryService.evIsOnlineChanged"))
+
+		(var markOfExcellencePersonal:gfx = "_shipAchievementEntity ? _shipAchievementEntity.markOfExcellencePersonal : null")
+	)
+	(class $Fullsize)
+
+	(element MarkOfExcellenceIcon
+		_shipId="_shipId"
+		_type="_type"
+		_markOfExcellenceComponent="markOfExcellencePersonal"
+		_isMasteryOnline="isMasteryOnline"
+		_isPostBattleResultsScreen="_isPostBattleResultsScreen"
+		_isCloseToReceive="_isCloseToReceive"
+	)
+
+	(controller $Tooltip
+		(bind renderer "isMasteryOnline ? 'TooltipMarkOfExcellencePersonal' : 'TooltipShipAchievementsUnavailable'")
+		(args
+			_shipAchievementEntity="_shipAchievementEntity"
+			_shipId="_shipId"
+			_isPostBattleResultsScreen="_isPostBattleResultsScreen"
+			_isCloseToReceive="_isCloseToReceive"
+		)
+		(updateCachedBindings = true)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element MarkOfExcellenceGroup (_shipAchievementEntity:gfx, _shipId:number, _isPostBattleResultsScreen:bool, _isCloseToReceive:bool, _type:str) layout=true dispatch_size_change=true
+	(scope
+		(var masteryServiceWatcher:gfx = "$datahub.getFirstWatcher(CC.masteryService)")
+		(var masteryServiceEntity:gfx = "masteryServiceWatcher.entity" (event "masteryServiceWatcher.event"))
+		(var isMasteryOnline:bool = "masteryServiceEntity ? masteryServiceEntity.masteryService.isOnline : false" (event "masteryServiceEntity.masteryService.evIsOnlineChanged"))
+
+		(var markOfExcellenceGroup:gfx = "_shipAchievementEntity ? _shipAchievementEntity.markOfExcellenceGroup : null")
+	)
+	(class $Fullsize)
+
+	(element MarkOfExcellenceIcon
+		_shipId="_shipId"
+		_type="_type"
+		_markOfExcellenceComponent="markOfExcellenceGroup"
+		_isMasteryOnline="isMasteryOnline"
+		_isPostBattleResultsScreen="_isPostBattleResultsScreen"
+		_isCloseToReceive="_isCloseToReceive"
+	)
+
+	(controller $Tooltip
+		(bind renderer "isMasteryOnline ? 'TooltipMarkOfExcellenceGroup' : 'TooltipShipAchievementsUnavailable'")
+		(args
+			_shipAchievementEntity="_shipAchievementEntity"
+			_shipId="_shipId"
+			_isPostBattleResultsScreen="_isPostBattleResultsScreen"
+			_isCloseToReceive="_isCloseToReceive"
+		)
+		(updateCachedBindings = true)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element MarkOfExcellenceIcon (_shipId:number, _markOfExcellenceComponent:gfx, _type:str, _isMasteryOnline:bool, _isPostBattleResultsScreen:bool, _isCloseToReceive:bool) layout=true dispatch_size_change=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var shipEntity:gfx = "_shipId ? $datahub.getPrimaryEntity(CC.ship, _shipId) : null")
+		(var shipComponent:gfx = "_shipId ? shipEntity.ship : null" (event "shipEntity.ship.evUpdate"))
+		
+		
+		(var shipNation:str = '')
+
+		(var markOfExcellenceLevel:number = "_isMasteryOnline && _markOfExcellenceComponent	? _markOfExcellenceComponent.grade	:
+															_type == SC.Statist_achievements.MARKS_OF_EXCELLENCE_TYPES.GROUP	?	SC.Statist_achievements.MARKS_OF_EXCELLENCE_GROUP_EXTRA_CONDITIONS.NONE_GRADE : SC.Statist_achievements.MARKS_OF_EXCELLENCE_PERSONAL_EXTRA_CONDITIONS.NONE_GRADE" (event "_markOfExcellenceComponent.evChanged"))
+
+		(var markOfExcellenceLevelName:str = "'Mark_' + markOfExcellenceLevel + (_isCloseToReceive ? '_pending' : '')")
+		(var markOfExcellenceNationName:str = "_type == SC.Statist_achievements.MARKS_OF_EXCELLENCE_TYPES.GROUP ? markOfExcellenceLevel == SC.Statist_achievements.MARKS_OF_EXCELLENCE_GROUP_EXTRA_CONDITIONS.MAX_GRADE && shipNation	? '_' + shipNation :
+																												  markOfExcellenceLevel == SC.Statist_achievements.MARKS_OF_EXCELLENCE_PERSONAL_EXTRA_CONDITIONS.MAX_GRADE && shipNation	? '_' + shipNation
+																																																							: ''
+																												: ''")
+		(var markOfExcellenceIconUrl:str = "'url:../ship_achievements/' + _type + '/medium/' + toLower(markOfExcellenceLevelName) + toLower(markOfExcellenceNationName) + '.png'")
+	)
+	(bind name "'MarkOfExcellenceIcon_' + _type + markOfExcellenceLevelName")
+	(macro MOUSE_EVENTS_DISPATCHER)
+
+	(bind colorTransform "rollOver	? ITEM_OVER_COLOR_TRANSFORM_PARAMS
+									: {}")
+
+	(class $FullsizeAbsolute)
+	(style
+		(backgroundSize = "fill")
+		(bind backgroundImage "markOfExcellenceIconUrl")
+	)
+)
+
+
+
+(def element MasteryIconSimple (_masteryLevel:number=-1, _size:number="null") layout=true dispatch_size_change=true
+	(scope
+		(var masteryLevelName:str = "SC.Mastery_badges.MASTERY_BADGES_SIGNS.VALUE_TO_NAME[_masteryLevel]")
+		(var masteryIconUrl:str = "'url:../mastery_system/' + toLower(masteryLevelName) + '_medium.png'")
+	)
+	(bind name "'MasteryIconSimple_' + masteryLevelName")
+	(style
+		(backgroundSize = "fill")
+		(bind width "_size ? _size : 60px")
+		(bind height "_size ? _size : 60px")
+		(bind backgroundImage "masteryIconUrl")
+	)
+)
+
+(def element MarkOfExcellenceIconSimple (_grade:number=0, _type:str='', _shipId:number=-1, _size:str='60px') layout=true dispatch_size_change=true
+	(scope
+		(var shipEntity:gfx = "_shipId ? $datahub.getPrimaryEntity(CC.ship, _shipId) : null")
+		(var shipComponent:gfx = "_shipId ? shipEntity.ship : null" (event "shipEntity.ship.evUpdate"))
+		
+		
+		(var shipNation:str = '')
+
+		(var markOfExcellenceLevelName:str = "'Mark_' + _grade")
+		(var markOfExcellenceNationName:str = "_type == SC.Statist_achievements.MARKS_OF_EXCELLENCE_TYPES.GROUP ? _grade == SC.Statist_achievements.MARKS_OF_EXCELLENCE_GROUP_EXTRA_CONDITIONS.MAX_GRADE && shipNation		? '_' + shipNation :
+																												  _grade == SC.Statist_achievements.MARKS_OF_EXCELLENCE_PERSONAL_EXTRA_CONDITIONS.MAX_GRADE && shipNation	? '_' + shipNation
+																																																				: ''
+																												: ''")
+		(var markOfExcellenceIconFolder:str = " _size == '24px' ? 'small' : 'medium'")
+		(var markOfExcellenceIconUrl:str = "'url:../ship_achievements/' + _type + '/' + markOfExcellenceIconFolder + '/' + toLower(markOfExcellenceLevelName) + toLower(markOfExcellenceNationName) + '.png'")
+	)
+	(bind name "'MarkOfExcellenceIconSimple_' + _type + _grade")
+
+	(style
+		(backgroundSize = "fill")
+		(width = 100%)
+		(height = 100%)
+		(bind backgroundImage "markOfExcellenceIconUrl")
+	)
+)

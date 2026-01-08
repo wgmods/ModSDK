@@ -1,0 +1,146 @@
+<VF008_Rangefinder_9ft.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Root	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Root_BlendBone	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 -1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	Rotate_Y	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0565 0.0000 1.0000	</row3>
+					</transform>
+					<node>
+						<identifier>	Rotate_Y_BlendBone	</identifier>
+						<transform>
+							<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+							<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+							<row2>	0.0000 0.0000 -1.0000 0.0000	</row2>
+							<row3>	0.0000 -0.0565 0.0000 1.0000	</row3>
+						</transform>
+					</node>
+				</node>
+			</node>
+			<node>
+				<identifier>	finder9_ft	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0994 0.0000 -0.0385	</min>
+		<max>	0.0994 0.1032 0.0176	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	finder9_ftShape	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSC104_Cordoba/finder/VF008_Rangefinder_12ft_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	finder9_ft_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSC104_Cordoba/finder/VF008_Rangefinder_12ft_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	finder9_ft_lodShape2	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSC104_Cordoba/finder/VF008_Rangefinder_12ft_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	finder9_ft_lodShape3	</name>
+			<treatAsWorldSpaceObject>	true	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Root_BlendBone	</node>
+				<node>	Rotate_Y_BlendBone	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director_skinned	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSC104_Cordoba/finder/VF008_Rangefinder_12ft_skinned.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	finder9_ftShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	finder9_ft_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	10.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	finder9_ft_lodShape2	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	100.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	finder9_ft_lodShape3	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</VF008_Rangefinder_9ft.visual>

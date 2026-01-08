@@ -1,0 +1,247 @@
+<ISD002_Paolo_Emilio_1942_Stern.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Stern	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_IGB_1	</identifier>
+					<transform>
+						<row0>	-0.9516 0.0000 0.3073 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	-0.3073 0.0000 -0.9516 0.0000	</row2>
+						<row3>	0.0909 0.3133 -4.8870 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_IGB_2	</identifier>
+					<transform>
+						<row0>	0.9557 0.0000 0.2944 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	-0.2944 0.0000 0.9557 0.0000	</row2>
+						<row3>	-0.0923 0.3134 -4.8852 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_IGM_4	</identifier>
+					<transform>
+						<row0>	-1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 -1.0000 0.0000	</row2>
+						<row3>	0.0000 0.3105 -3.3815 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	Stern_crack_MidBack	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+					<node>
+						<identifier>	Stern_crack_MidBack_in	</identifier>
+						<transform>
+							<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+							<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+							<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+							<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+						</transform>
+					</node>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0333 -0.0333 -0.2036	</min>
+		<max>	0.0333 0.0333 -0.1369	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	SternShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD509_Paolo_Emilio/ship/ISD002_Paolo_Emilio_1942.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBackShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD509_Paolo_Emilio/ship/ISD002_Paolo_Emilio_1942.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_inShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD509_Paolo_Emilio/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_in_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD509_Paolo_Emilio/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_in_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD509_Paolo_Emilio/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_in_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD509_Paolo_Emilio/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD509_Paolo_Emilio/ship/ISD002_Paolo_Emilio_1942.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD509_Paolo_Emilio/ship/ISD002_Paolo_Emilio_1942.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD509_Paolo_Emilio/ship/ISD002_Paolo_Emilio_1942.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD509_Paolo_Emilio/ship/ISD002_Paolo_Emilio_1942.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD509_Paolo_Emilio/ship/ISD002_Paolo_Emilio_1942.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISD509_Paolo_Emilio/ship/ISD002_Paolo_Emilio_1942.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	11.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	SternShape	</renderSet>
+				<renderSet>	Stern_crack_MidBackShape	</renderSet>
+				<renderSet>	Stern_crack_MidBack_inShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	21.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Stern_crack_MidBack_in_lod1Shape	</renderSet>
+				<renderSet>	Stern_crack_MidBack_lod1Shape	</renderSet>
+				<renderSet>	Stern_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	38.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Stern_crack_MidBack_in_lod2Shape	</renderSet>
+				<renderSet>	Stern_crack_MidBack_lod2Shape	</renderSet>
+				<renderSet>	Stern_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	300.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Stern_crack_MidBack_in_lod3Shape	</renderSet>
+				<renderSet>	Stern_crack_MidBack_lod3Shape	</renderSet>
+				<renderSet>	Stern_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</ISD002_Paolo_Emilio_1942_Stern.visual>

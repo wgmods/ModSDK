@@ -1,0 +1,361 @@
+<ISC019_Gorizia_1935_Bow.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Bow	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Bow_crack_MidFront	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+					<node>
+						<identifier>	Bow_crack_MidFront_in	</identifier>
+						<transform>
+							<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+							<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+							<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+							<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+						</transform>
+					</node>
+				</node>
+				<node>
+					<identifier>	Bow_patch_MidFront	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	Bow_patch_MidFront_wire	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	Bow_wire	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_IC_1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 -0.0051 0.0000	</row1>
+						<row2>	0.0000 0.0051 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.4594 4.2157 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_Ship_death_1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 2.9182 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.6471 -0.5342 1.4029	</min>
+		<max>	0.6471 0.5586 6.1368	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	BowShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/ISC019_Gorizia_1935_Hull.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFrontShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/ISC019_Gorizia_1935_Hull.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_inShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_in_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_in_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_in_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/ISC019_Gorizia_1935_Hull.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/ISC019_Gorizia_1935_Hull.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/ISC019_Gorizia_1935_Hull.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/ISC019_Gorizia_1935_Hull.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/ISC019_Gorizia_1935_Hull.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/ISC019_Gorizia_1935_Hull.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_patch_MidFrontShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_patch_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/ISC019_Gorizia_1935_Hull.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_patch_MidFront_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_patch_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/ISC019_Gorizia_1935_Hull.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_patch_MidFront_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_patch_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/ISC019_Gorizia_1935_Hull.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_patch_MidFront_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_patch_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/ISC019_Gorizia_1935_Hull.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_patch_MidFront_wireShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_patch_MidFront_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/ISC019_Gorizia_1935_Hull_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_patch_MidFront_wire_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_patch_MidFront_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/ISC019_Gorizia_1935_Hull_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_wireShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/ISC019_Gorizia_1935_Hull_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_wire_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/ISC607_Gorizia/ship/ISC019_Gorizia_1935_Hull_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	8.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	BowShape	</renderSet>
+				<renderSet>	Bow_crack_MidFrontShape	</renderSet>
+				<renderSet>	Bow_crack_MidFront_inShape	</renderSet>
+				<renderSet>	Bow_patch_MidFrontShape	</renderSet>
+				<renderSet>	Bow_patch_MidFront_wireShape	</renderSet>
+				<renderSet>	Bow_wireShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Bow_crack_MidFront_in_lod1Shape	</renderSet>
+				<renderSet>	Bow_crack_MidFront_lod1Shape	</renderSet>
+				<renderSet>	Bow_lod1Shape	</renderSet>
+				<renderSet>	Bow_patch_MidFront_lod1Shape	</renderSet>
+				<renderSet>	Bow_patch_MidFront_wire_lod1Shape	</renderSet>
+				<renderSet>	Bow_wire_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	45.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Bow_crack_MidFront_in_lod2Shape	</renderSet>
+				<renderSet>	Bow_crack_MidFront_lod2Shape	</renderSet>
+				<renderSet>	Bow_lod2Shape	</renderSet>
+				<renderSet>	Bow_patch_MidFront_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	400.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Bow_crack_MidFront_in_lod3Shape	</renderSet>
+				<renderSet>	Bow_crack_MidFront_lod3Shape	</renderSet>
+				<renderSet>	Bow_lod3Shape	</renderSet>
+				<renderSet>	Bow_patch_MidFront_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</ISC019_Gorizia_1935_Bow.visual>

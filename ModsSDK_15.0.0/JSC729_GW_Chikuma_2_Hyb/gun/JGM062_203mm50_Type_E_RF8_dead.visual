@@ -1,0 +1,106 @@
+<JGM062_203mm50_Type_E_RF8_dead.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Turret_dead	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.2908 -0.0407 -0.3861	</min>
+		<max>	0.2908 0.2204 0.6607	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	Turret_deadShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC729_GW_Chikuma_2_Hyb/gun/JGM062_203mm50_Type_E_RF8_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Turret_dead_lodShape1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC729_GW_Chikuma_2_Hyb/gun/JGM062_203mm50_Type_E_RF8_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Turret_dead_lodShape2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC729_GW_Chikuma_2_Hyb/gun/JGM062_203mm50_Type_E_RF8_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Turret_dead_lodShape3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Turret_dead	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_GunDead	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/JSC729_GW_Chikuma_2_Hyb/gun/JGM062_203mm50_Type_E_RF8_dead.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	5.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Turret_deadShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	15.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Turret_dead_lodShape1	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	45.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Turret_dead_lodShape2	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	200.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Turret_dead_lodShape3	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</JGM062_203mm50_Type_E_RF8_dead.visual>

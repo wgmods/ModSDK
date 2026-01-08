@@ -1,0 +1,133 @@
+<WGT2034_533mm_1N_3tubes.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	WGT2034_533mm_1N_3tubes	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_gunFire1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0560 0.0465 -0.2091 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire2	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0465 -0.2091 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_gunFire3	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	-0.0560 0.0465 -0.2091 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1227 -0.0202 -0.2758	</min>
+		<max>	0.1227 0.1454 0.3676	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	WGT2034_533mm_1N_3tubesShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WGT2034_533mm_1N_3tubes	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSD719_Blyskawica_1952/gun/WGT2034_533mm_1N_3tubes.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	WGT2034_533mm_1N_3tubes_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WGT2034_533mm_1N_3tubes	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSD719_Blyskawica_1952/gun/WGT2034_533mm_1N_3tubes.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	WGT2034_533mm_1N_3tubes_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WGT2034_533mm_1N_3tubes	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSD719_Blyskawica_1952/gun/WGT2034_533mm_1N_3tubes.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	WGT2034_533mm_1N_3tubes_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	WGT2034_533mm_1N_3tubes	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Gun	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/WSD719_Blyskawica_1952/gun/WGT2034_533mm_1N_3tubes.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	12.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	WGT2034_533mm_1N_3tubesShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	WGT2034_533mm_1N_3tubes_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	40.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	WGT2034_533mm_1N_3tubes_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	200.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	WGT2034_533mm_1N_3tubes_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</WGT2034_533mm_1N_3tubes.visual>

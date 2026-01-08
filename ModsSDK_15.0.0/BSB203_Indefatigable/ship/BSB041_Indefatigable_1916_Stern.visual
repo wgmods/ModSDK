@@ -1,0 +1,406 @@
+<BSB041_Indefatigable_1916_Stern.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Stern	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Cap1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	Cap2	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_BGM_4	</identifier>
+					<transform>
+						<row0>	-1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 -1.0000 0.0000	</row2>
+						<row3>	0.0000 0.3026 -3.9002 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_BGT_1	</identifier>
+					<transform>
+						<row0>	0.0000 0.0000 1.0000 0.0000	</row0>
+						<row1>	-0.0349 0.9994 0.0000 0.0000	</row1>
+						<row2>	-0.9994 -0.0349 0.0000 0.0000	</row2>
+						<row3>	-0.2801 -0.1961 -4.3233 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_BGT_2	</identifier>
+					<transform>
+						<row0>	0.0000 0.0000 -1.0000 0.0000	</row0>
+						<row1>	0.0349 0.9994 0.0000 0.0000	</row1>
+						<row2>	0.9994 -0.0349 0.0000 0.0000	</row2>
+						<row3>	0.3116 -0.1963 -4.1973 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	Stern_crack_MidBack	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+					<node>
+						<identifier>	Stern_crack_MidBack_in	</identifier>
+						<transform>
+							<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+							<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+							<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+							<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+						</transform>
+					</node>
+				</node>
+				<node>
+					<identifier>	Stern_wire	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.7220 -0.6588 -5.9648	</min>
+		<max>	0.7221 0.8803 -3.0875	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	Cap1_lodShape1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Cap1	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Cap1_lodShape2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Cap1	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Cap1_lodShape3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Cap1	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Cap2_lodShape1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Cap2	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Cap2_lodShape2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Cap2	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Cap2_lodShape3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Cap2	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	CapShape1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Cap1	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	CapShape2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Cap2	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	SternShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBackShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_inShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_in_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_in_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_in_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_wireShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_wire_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_wire_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/BSB203_Indefatigable/ship/BSB041_Indefatigable_1916_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	12.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	CapShape1	</renderSet>
+				<renderSet>	CapShape2	</renderSet>
+				<renderSet>	SternShape	</renderSet>
+				<renderSet>	Stern_crack_MidBackShape	</renderSet>
+				<renderSet>	Stern_crack_MidBack_inShape	</renderSet>
+				<renderSet>	Stern_wireShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	35.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Cap1_lodShape1	</renderSet>
+				<renderSet>	Cap2_lodShape1	</renderSet>
+				<renderSet>	Stern_crack_MidBack_in_lod1Shape	</renderSet>
+				<renderSet>	Stern_crack_MidBack_lod1Shape	</renderSet>
+				<renderSet>	Stern_lod1Shape	</renderSet>
+				<renderSet>	Stern_wire_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	50.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Cap1_lodShape2	</renderSet>
+				<renderSet>	Cap2_lodShape2	</renderSet>
+				<renderSet>	Stern_crack_MidBack_in_lod2Shape	</renderSet>
+				<renderSet>	Stern_crack_MidBack_lod2Shape	</renderSet>
+				<renderSet>	Stern_lod2Shape	</renderSet>
+				<renderSet>	Stern_wire_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	400.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Cap1_lodShape3	</renderSet>
+				<renderSet>	Cap2_lodShape3	</renderSet>
+				<renderSet>	Stern_crack_MidBack_in_lod3Shape	</renderSet>
+				<renderSet>	Stern_crack_MidBack_lod3Shape	</renderSet>
+				<renderSet>	Stern_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</BSB041_Indefatigable_1916_Stern.visual>

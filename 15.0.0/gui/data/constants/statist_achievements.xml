@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<constants>
+	<!--	THESE DATA MATCHES THE DATA FROM THE STATISTICAL SERVICE 	-->
+	<enum name="STATIST_ACHIEVEMENTS_TYPES" type="String">
+		<const name="MARKS_OF_EXCELLENCE_PERSONAL"	value="excellence_mark"/>
+		<const name="MARKS_OF_EXCELLENCE_GROUP"		value="excellence_mark_divisions"/>
+	</enum>
+
+	<enum name="MARKS_OF_EXCELLENCE_TYPES" type="String">
+		<const name="PERSONAL"	value="excellence_mark"/>
+		<const name="GROUP"		value="excellence_mark_divisions"/>
+	</enum>
+
+	<enum name="MARKS_OF_EXCELLENCE_PERSONAL_PERCENTAGE" type="Integer">
+		<!--	NONE GRADE-->
+		<const name="MARK_0"	value="0" />
+		<!--	LEGEND-->
+		<const name="MARK_1"	value="95" />
+		<!--	VETERAN-->
+		<const name="MARK_2"	value="85" />
+		<!--	MASTER-->
+		<const name="MARK_3"	value="65" />
+
+		<range name="MARK_PERCENTAGE_BY_GRADE"	values="MARK_0, MARK_1, MARK_2, MARK_3"/>
+
+		<name_to_value/>
+		<value_to_name/>
+	</enum>
+
+	<enum name="MARKS_OF_EXCELLENCE_PERSONAL_EXTRA_CONDITIONS" type="Integer">
+		<const name="SHIP_LEVEL"			value="5" />
+		<const name="MAX_GRADE"				value="1" />
+		<const name="MIN_GRADE"				value="3" />
+		<const name="NONE_GRADE"			value="0" />
+		<const name="BATTLES_LEFT_DEFAULT"	value="20" />
+
+		<value_to_name/>
+	</enum>
+
+	<enum name="MARKS_OF_EXCELLENCE_GROUP_PERCENTAGE" type="Integer">
+		<!--	NONE GRADE-->
+		<const name="MARK_0"	value="0" />
+		<!--	LEGEND-->
+		<const name="MARK_1"	value="95" />
+		<!--	VETERAN-->
+		<const name="MARK_2"	value="85" />
+		<!--	MASTER-->
+		<const name="MARK_3"	value="65" />
+
+		<range name="MARK_PERCENTAGE_BY_GRADE"	values="MARK_0, MARK_1, MARK_2, MARK_3"/>
+
+		<name_to_value/>
+		<value_to_name/>
+	</enum>
+
+	<enum name="MARKS_OF_EXCELLENCE_GROUP_EXTRA_CONDITIONS" type="Integer">
+		<const name="SHIP_LEVEL"			value="5" />
+		<const name="MAX_GRADE"				value="1" />
+		<const name="MIN_GRADE"				value="3" />
+		<const name="NONE_GRADE"			value="0" />
+		<const name="BATTLES_LEFT_DEFAULT"	value="20" />
+
+		<value_to_name/>
+	</enum>
+
+	<enum name="PERCENTAGE_DISPLAY_NEAREST_ACHIEVEMENT" type="Integer">
+		<const name="PERCENT"	value="5" />
+	</enum>
+
+	<!--BI-->
+	<enum name="MARKS_OF_EXCELLENCE_PERSONAL_GRADES_BI" type="Integer">
+		<!--	NONE GRADE-->
+		<const name="MARK_0"	value="0" />
+		<!--	MASTER-->
+		<const name="MARK_1"	value="1" />
+		<!--	VETERAN-->
+		<const name="MARK_2"	value="2" />
+		<!--	LEGEND-->
+		<const name="MARK_3"	value="3" />
+
+		<name_to_value/>
+		<value_to_name/>
+	</enum>
+
+	<enum name="MARKS_OF_EXCELLENCE_PERSONAL_PERCENTAGE_BI" type="Integer">
+		<!--	NONE GRADE-->
+		<const name="MARK_0"	value="0" />
+		<!--	MASTER-->
+		<const name="MARK_95"	value="1" />
+		<!--	VETERAN-->
+		<const name="MARK_85"	value="2" />
+		<!--	LEGEND-->
+		<const name="MARK_65"	value="3" />
+
+		<name_to_value/>
+		<value_to_name/>
+	</enum>
+
+	<enum name="MARKS_OF_EXCELLENCE_GROUP_GRADES_BI" type="Integer">
+		<!--	NONE GRADE-->
+		<const name="MARK_0"	value="0" />
+		<!--	MASTER-->
+		<const name="MARK_1"	value="1" />
+		<!--	VETERAN-->
+		<const name="MARK_2"	value="2" />
+		<!--	LEGEND-->
+		<const name="MARK_3"	value="3" />
+
+		<name_to_value/>
+		<value_to_name/>
+	</enum>
+
+	<enum name="MARKS_OF_EXCELLENCE_GROUP_PERCENTAGE_BI" type="Integer">
+		<!--	NONE GRADE-->
+		<const name="MARK_0"	value="0" />
+		<!--	MASTER-->
+		<const name="MARK_95"	value="1" />
+		<!--	VETERAN-->
+		<const name="MARK_85"	value="2" />
+		<!--	LEGEND-->
+		<const name="MARK_65"	value="3" />
+
+		<name_to_value/>
+		<value_to_name/>
+	</enum>
+</constants>

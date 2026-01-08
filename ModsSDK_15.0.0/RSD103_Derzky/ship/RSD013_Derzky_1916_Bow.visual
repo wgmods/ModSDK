@@ -1,0 +1,373 @@
+<RSD013_Derzky_1916_Bow.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Bow	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Bow_crack_MidFront	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+					<node>
+						<identifier>	Bow_crack_MidFront_in	</identifier>
+						<transform>
+							<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+							<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+							<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+							<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+						</transform>
+					</node>
+				</node>
+				<node>
+					<identifier>	Bow_patch_MidFront	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+					<node>
+						<identifier>	Bow_patch_MidFront_wire	</identifier>
+						<transform>
+							<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+							<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+							<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+							<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+						</transform>
+					</node>
+				</node>
+				<node>
+					<identifier>	Bow_wire	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_RGM_1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.3936 2.0834 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_Ship_death_1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 2.0410 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.2797 -0.1906 1.8463	</min>
+		<max>	0.2797 0.7060 3.1160	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	BowShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/RSD003_Derzky_1915.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFrontShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/RSD003_Derzky_1915.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_inShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_in_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_in_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_in_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/RSD003_Derzky_1915.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/RSD003_Derzky_1915.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/RSD003_Derzky_1915.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/RSD003_Derzky_1915.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/RSD003_Derzky_1915.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/RSD003_Derzky_1915.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_patch_MidFrontShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_patch_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/RSD003_Derzky_1915.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_patch_MidFront_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_patch_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/RSD003_Derzky_1915.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_patch_MidFront_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_patch_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/RSD003_Derzky_1915.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_patch_MidFront_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_patch_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/RSD003_Derzky_1915.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_patch_MidFront_wireShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_patch_MidFront_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/RSD003_Derzky_1915_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_patch_MidFront_wire_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_patch_MidFront_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/RSD003_Derzky_1915_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_wireShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/RSD003_Derzky_1915_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_wire_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/RSD003_Derzky_1915_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_wire_lod2Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_wire	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPWIRE_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSD103_Derzky/ship/RSD003_Derzky_1915_wire.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	5.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	BowShape	</renderSet>
+				<renderSet>	Bow_crack_MidFrontShape	</renderSet>
+				<renderSet>	Bow_crack_MidFront_inShape	</renderSet>
+				<renderSet>	Bow_patch_MidFrontShape	</renderSet>
+				<renderSet>	Bow_patch_MidFront_wireShape	</renderSet>
+				<renderSet>	Bow_wireShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	10.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Bow_crack_MidFront_in_lod1Shape	</renderSet>
+				<renderSet>	Bow_crack_MidFront_lod1Shape	</renderSet>
+				<renderSet>	Bow_lod1Shape	</renderSet>
+				<renderSet>	Bow_patch_MidFront_lod1Shape	</renderSet>
+				<renderSet>	Bow_patch_MidFront_wire_lod1Shape	</renderSet>
+				<renderSet>	Bow_wire_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	25.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Bow_crack_MidFront_in_lod2Shape	</renderSet>
+				<renderSet>	Bow_crack_MidFront_lod2Shape	</renderSet>
+				<renderSet>	Bow_lod2Shape	</renderSet>
+				<renderSet>	Bow_patch_MidFront_lod2Shape	</renderSet>
+				<renderSet>	Bow_wire_lod2Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	300.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Bow_crack_MidFront_in_lod3Shape	</renderSet>
+				<renderSet>	Bow_crack_MidFront_lod3Shape	</renderSet>
+				<renderSet>	Bow_lod3Shape	</renderSet>
+				<renderSet>	Bow_patch_MidFront_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</RSD013_Derzky_1916_Bow.visual>

@@ -1,0 +1,106 @@
+<RF030_SPN_3m_RF_Hight_Angle.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	RF030_SPN_3m_RF_Hight_Angle	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.1204 -0.0024 -0.1204	</min>
+		<max>	0.1204 0.2077 0.1204	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	RF030_SPN_3m_RF_Hight_AngleShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RF030_SPN_3m_RF_Hight_Angle	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSA106_Serov/finder/RF030_SPN_3m_RF_Hight_Angle.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RF030_SPN_3m_RF_Hight_Angle_lod1Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RF030_SPN_3m_RF_Hight_Angle	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSA106_Serov/finder/RF030_SPN_3m_RF_Hight_Angle.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RF030_SPN_3m_RF_Hight_Angle_lod3Shape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RF030_SPN_3m_RF_Hight_Angle	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSA106_Serov/finder/RF030_SPN_3m_RF_Hight_Angle.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	RF030_SPN_3m_RF_Hight_Angle_lodShape2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	RF030_SPN_3m_RF_Hight_Angle	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/RSA106_Serov/finder/RF030_SPN_3m_RF_Hight_Angle.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	3.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RF030_SPN_3m_RF_Hight_AngleShape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	6.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RF030_SPN_3m_RF_Hight_Angle_lod1Shape	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	10.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	RF030_SPN_3m_RF_Hight_Angle_lodShape2	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	100.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	RF030_SPN_3m_RF_Hight_Angle_lod3Shape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</RF030_SPN_3m_RF_Hight_Angle.visual>
