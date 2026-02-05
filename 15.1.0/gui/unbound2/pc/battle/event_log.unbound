@@ -1,0 +1,219 @@
+(def constant EVENT_LOG_MAX_WIDTH 480)
+(def constant EVENT_LOG_SCROLL_AREA_HEIGHT 110)
+(def constant EVENT_LOG_MESSAGE_MIN_HEIGHT 80)
+(def constant EVENT_LOG_MESSAGE_MARGIN 20)
+
+(def element EventLog() layout=true dispatch_size_change=true
+	(scope
+		(var messagesCollection:gfx = "$datahub.getCollection(CC.eventLogMessage)")
+
+		(var stageComponent:gfx = "$datahub.getSingleComponent(CC.stage)")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+	)
+
+	(style
+		(position = "absolute")
+		(align = "center|top")
+		(bind width "stageWidth")
+		(height = "EVENT_LOG_SCROLL_AREA_HEIGHT")
+		(top = 146px)
+		(hitTest = false)
+	)
+
+	(name = 'EventLog')
+
+	(scrollArea
+		(style
+			(width = 100%)
+			(height = "EVENT_LOG_SCROLL_AREA_HEIGHT")
+			(align = "center")
+		)
+
+		(hscrollPolicy = 'off')
+		(vscrollPolicy = 'off')
+
+		(content
+			(style
+				(bind width "stageWidth")
+				(height = "EVENT_LOG_SCROLL_AREA_HEIGHT")
+				(align = "center")
+			)
+
+			(block
+				(style
+					(width = "EVENT_LOG_MAX_WIDTH")
+					(height = 100%)
+
+					(align = "center|top")
+				)
+
+				(controller $Repeat renderer='EventLogMessage'
+					(bind count "messagesCollection.items.length" watch=false (event "messagesCollection.evAdded"))
+					(bindcall removeChildAt "$event[1]" (event "messagesCollection.evRemoved"))
+				)
+			)
+		)
+	)
+)
+
+(def element EventLogMessage () layout=true
+	(scope
+		(var messagesCollection:gfx = "$datahub.getCollection(CC.eventLogMessage)")
+		(var message:gfx = "messagesCollection.items[$index]" watch=false)
+
+		(var indexTo:number = "message.eventLogMessage.indexTo" (event "messagesCollection.evAdded") (event "messagesCollection.evRemoved") (event "message.eventLogMessage.evMove") (event "message.eventLogMessage.evShow"))
+		(var indexFrom:number = "message.eventLogMessage.indexFrom" (event "message.eventLogMessage.evMove"))
+		(var itemRendererId:number = "message.eventLogMessage.itemRendererId")
+		(var eventLogItemName:str = "itemRendererId == SC.Common.EVENT_LOG_ITEM_RENDERERS.TUTORIAL_MESSAGE ? 'EventLogMultiLineMessage' : 'EventLogSingleLineMessage'")
+	)
+
+	(style
+		(width = 100%)
+		(minHeight = "EVENT_LOG_MESSAGE_MIN_HEIGHT")
+		(position = "absolute")
+		(align = "center|middle")
+	)
+
+	(controller $Animation
+		(bindcall play
+			duration="$event[1]"
+			delay="0"
+			from="{top:indexFrom * EVENT_LOG_SCROLL_AREA_HEIGHT}"
+			to="{top:indexTo * EVENT_LOG_SCROLL_AREA_HEIGHT}"
+			watch=false
+			(event "message.eventLogMessage.evMove")
+		)
+
+		(bindcall play
+			duration="$event[1]"
+			delay=0
+			from="{alpha:0}"
+			to="{alpha:1}"
+			watch=false
+			(event "message.eventLogMessage.evShow")
+		)
+
+		(bindcall play
+			duration="$event[1]"
+			delay=0
+			to="{alpha:0}"
+			watch=false
+			(event "message.eventLogMessage.evHide")
+		)
+	)
+
+	(controller $Instance (renderer="eventLogItemName")
+		(args
+			_message = "message"
+		)
+	)
+)
+
+(def element EventLogSingleLineMessage (_message:gfx) layout=true
+	(scope
+		(var message:gfx = "_message" watch=false)
+
+		(var textIDS:str = "message.eventLogMessage.text")
+		(var substituteMap:gfx = "message.eventLogMessage.substitutes ? message.eventLogMessage.substitutes : {}")
+		(var color:number = "message.eventLogMessage.color")
+		(var itemRendererId:number = "message.eventLogMessage.itemRendererId")
+		(var textClass:str = "itemRendererId == SC.Common.EVENT_LOG_ITEM_RENDERERS.DESTROYED_ENEMY_SHIP ? '$TextDefaultBold23NM' : '$TextDefaultBold20NM'")
+	)
+
+	(style
+		(width = 100%)
+		(minHeight = "EVENT_LOG_MESSAGE_MIN_HEIGHT")
+		(align = "center|middle")
+	)
+
+	(block
+		(style
+			(width = "EVENT_LOG_MAX_WIDTH")
+			(align = "center|middle")
+			(paddingTop = 23px)
+		)
+
+		(tf
+			(bind class "textClass")
+
+			(style
+				(textAlign = "center")
+				(bind textColor "color")
+			)
+
+			(bindcall	substitute
+						imageOffset="6"
+						substitutionMap="substituteMap"
+						sourceText="textIDS"
+						postfix=''
+						init=true)
+		)
+	)
+)
+
+(def element EventLogMultiLineMessage (_message:gfx) layout=true
+	(scope
+		(var message:gfx = "_message" watch=false)
+
+		(var textIDS:str = "message.eventLogMessage.text")
+		(var substituteMap:gfx = "message.eventLogMessage.substitutes ? message.eventLogMessage.substitutes : {}")
+		(var color:number = "message.eventLogMessage.color")
+		(var headerText:str = "message.eventLogMessage.extraText")
+
+		(var textClass:str = '$TextDefault19NM')
+		(var textShadowClass:str = '$DropShadowDisabler')
+	)
+
+	(style
+		(width = 100%)
+		(minHeight = "EVENT_LOG_MESSAGE_MIN_HEIGHT")
+		(align = "center|middle")
+		(backgroundSize = "fill")
+		(backgroundImage = 'url:../battle_hud/central_log/event_log_bg_9scale.png')
+		(scale9grid = [4, 3, 4, 3])
+	)
+
+	(block
+		(style
+			(width = "EVENT_LOG_MAX_WIDTH - EVENT_LOG_MESSAGE_MARGIN")
+			(paddingTop = "SXS")
+			(paddingBottom = "SXS")
+			(align = "center|middle")
+		)
+
+		(block
+			(bind visible "headerText")
+
+			(tf
+				(class $TextDefaultBold19NM)
+				(alpha = "TS")
+
+				(style
+					(textAlign = "center")
+					(width = "EVENT_LOG_MAX_WIDTH - EVENT_LOG_MESSAGE_MARGIN")
+					(marginBottom = "S")
+				)
+
+				(bind text "headerText")
+			)
+		)
+
+		(tf
+			(bind class "[textClass, textShadowClass]")
+			(alpha = "TA")
+
+			(style
+				(textAlign = "center")
+				(width = "EVENT_LOG_MAX_WIDTH - EVENT_LOG_MESSAGE_MARGIN")
+				(bind textColor "color")
+			)
+
+			(bindcall	substitute
+						imageOffset="6"
+						substitutionMap="substituteMap"
+						sourceText="textIDS"
+						postfix=''
+						init=true)
+		)
+	)
+)

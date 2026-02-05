@@ -1,0 +1,287 @@
+(def constant headerNames {
+	'$_primary_header_$': 'IDS_PRIMARYHEADER',
+	'$_secondary_header_$': 'IDS_SECONDARYHEADER'
+	}
+)
+
+(def constant taskBadgesColors {
+	'done' : 0xFF50FFB2,
+	'failed': 0xFFFF6600,
+	'changed': 0xFF50FFB2,
+	'new': 0xFF50FFB2,
+	}
+)
+
+(def constant BATTLE_TASK_ICON_SIZE 27)
+(def constant BATTLE_TASK_ICON_PIVOT 14)
+(def constant BATTLE_TASK_TEXT_MARGIN_DEFAULT 20)
+
+(def constant BATTLE_TASK_WIDTH_MAX 400)
+
+(def element BattleTaskContainer () layout = true
+	(scope
+		(var taskViewCollection:gfx = "$datahub.getCollection(CC.taskView)" )
+		(var sortedTaskView:gfx = "taskViewCollection ? taskViewCollection.getChildByPath('sorted') : null"
+			(event "taskViewCollection.evAdded")
+			(event "taskViewCollection.evRemoved")
+			(event "sortedTaskView.evUpdated")
+		)
+		(var taskViewsCount:number = "sortedTaskView ? sortedTaskView.items.length : 0")
+	)
+
+	(style
+		(width = "BATTLE_TASK_WIDTH_MAX")
+		(marginTop = 22px)
+	)
+
+	(block
+		(controller $Repeat renderer='BattleTaskViewRenderer'
+			(bind count "taskViewsCount")
+			(bindcall removeChildAt "$event[1]" (event "sortedTaskView.evRemoved"))
+			(bindcall addChildAt "$event[1]" (event "sortedTaskView.evAdded"))
+			(args
+				"sortedTaskView.items[$index].taskView"
+			)
+		)
+	)
+)
+
+
+(def element TaskAnimatedBadge (taskView:gfx) layout = true
+	(scope 
+		(event eventAdded)
+	)
+	(dispatch eventAdded on='addedToStage')
+
+	(style 
+		(width = 60px)
+		(height = 10px)
+		(marginLeft = "LM")
+		(marginBottom = -1px)
+		(align = "bottom")
+	)
+
+	(controller $Animation
+		
+		(bindcall play
+			duration=0.3 
+			from={visualScaleX:2.2, visualScaleY:2.2, alpha:0}
+			to={visualScaleX:1.0, visualScaleY:1.0, alpha:1}
+			delay=0
+			action="kill" 
+			id='badge'
+			easing="Easing.bounce_in_out"
+			(event "taskView.evUpdated") (event "eventAdded") (event "taskView.evFailed") (event "taskView.evDone")
+		)
+
+		
+		(bindcall play
+			duration=0.3
+			to={alpha:0}
+			id='badgeOff'
+			delay=3
+			action="kill"
+			(event "eventAdded") 
+		)
+
+		
+		(bindcall stop id='badgeOff' (event "taskView.evUpdated") (event "taskView.evFailed") (event "taskView.evDone"))
+	)
+	(tf
+		(class $TextDefaultBoldNMWithoutShadow)
+		(style
+			
+			(bind textColor "taskBadgesColors.new" init=false (event "eventAdded"))
+			(bind textColor "taskBadgesColors.done" init=false (event "taskView.evDone"))
+			(bind textColor "taskBadgesColors.failed" init=false (event "taskView.evFailed"))
+		)
+
+		
+		(bind text "'IDS_NEW_TASK'" init=false (event "eventAdded"))
+		(bind text "'IDS_DONE'" init=false (event "taskView.evDone"))
+		(bind text "'IDS_FAILED'" init=false (event "taskView.evFailed"))
+		(bind text "'IDS_UPDATED'" init=false (event "taskView.evUpdated"))
+	)
+)
+
+(def element BattleTaskViewRenderer (taskView:gfx) layout = true
+	(scope
+		(event eventAdded)
+		(event eventRemoved)
+
+		(var id:str = "taskView.id" (event "taskView.evChanged"))
+		(var isCaption:bool = "taskView.header")
+		(var caption:str = "isCaption ? headerNames[id] : 'IDS_BATTLE_TASK_TEXT_' + id")
+		(var isSecondaryHeader:bool = "caption == 'IDS_SECONDARYHEADER'")
+
+		
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.battleTimer)")
+		(var currentTime:number = "timerEntity.battleTimer.battleTime" (event "timerEntity.battleTimer.evBattleTimeChanged"))
+
+		
+		(var taskEntity:gfx = "$datahub.getPrimaryEntity(CC.task, id)")
+		(var taskComponent:gfx = "taskEntity ? taskEntity.task : null")
+		(var timeout:gfx = "taskEntity ? taskEntity.timeout : null" (event "taskEntity.evAdded") (event "taskEntity.evRemoved"))
+		(var timerValue:number = "timeout ? timeout.time : null")
+		(var timeLeft:number = "timerValue > currentTime ? timerValue - currentTime : 0")
+		(var taskProgressType:number = "taskComponent ? taskComponent.progressType : 0")
+
+		(var taskIcon:str = "taskComponent ? taskComponent.icon : ''" (event "taskEntity.task.evIconChanged"))
+		(var hasTaskIcon:bool = "taskIcon.length > 0")
+		(bind hasTaskIcon "false" init=false (event "taskView.evFailed") (event "taskView.evDone"))
+
+		
+		(var progress:gfx = "taskEntity ? taskEntity.progress : null")
+		(var maxProgress:number = "progress ? progress.max : null" (event "progress.evMaxChanged"))
+		(var currentProgress:number = "progress ? progress.value : null" (event "progress.evChanged"))
+		(var needShowProgress:bool = "isIn(taskProgressType, [TaskProgressType.DIGIT, TaskProgressType.DIGIT_SINGLE])")
+		(var progressText:str = "!needShowProgress	?	''
+													:	taskProgressType == TaskProgressType.DIGIT_SINGLE	?	toString(currentProgress)
+																											:	toString(currentProgress) + '/' + toString(maxProgress)")
+
+		(var timeLeftText:str = "timeout && !needShowProgress ? countdownFormat(timeLeft, 0, true, true) : ''")
+
+		(var progressTextMaxLength:number = "!needShowProgress ? 0 : taskProgressType == TaskProgressType.DIGIT_SINGLE ? progressText.length : (toString(maxProgress) + '/' + toString(maxProgress)).length" watch=false)
+		(var timeLeftTextMaxLength:number = "timeLeftText.length" watch=false)
+
+		(var timeLeftTextWidth:number = "timeLeftTextMaxLength == 0 ? 0 : round(timeLeftTextMaxLength * 6.5)" watch=false)
+		(var progressTextWidth:number = "progressTextMaxLength == 0 ? 0 : round(progressTextMaxLength * 6.5)")
+
+		(var taskTextWidth:number = "BATTLE_TASK_WIDTH_MAX - timeLeftTextWidth - progressTextWidth - BATTLE_TASK_TEXT_MARGIN_DEFAULT - BATTLE_TASK_ICON_SIZE")
+	)
+
+	(style
+		(width = "BATTLE_TASK_WIDTH_MAX")
+		(backgroundColor = 0x4D000000)
+		(flow = "vertical")
+		(bind marginTop "isSecondaryHeader ? 1px : 0px")
+		(alpha = 0) 
+	)
+
+	(dispatch eventAdded on='addedToStage')
+	(dispatch eventRemoved on="taskView.evStartHide")
+
+	(controller $Animation
+		(bindcall play duration=0.2 from={visualOffsetX:-100} to={visualOffsetX:0} easing="Easing.sine_out" delay=0 action="combine" (event "eventAdded"))
+		(bindcall play duration=0.3 from={alpha:0} to={alpha:1} delay=0 action="combine" (event "eventAdded"))
+		(bindcall play duration=0.2 to={visualOffsetX:-100} easing="Easing.sine_in" delay=0 action="combine" (event "taskView.evStartHide"))
+		(bindcall play duration=0.3 to={alpha:0} delay=0 action="combine" (event "taskView.evStartHide"))
+	)
+
+	(block
+		(style
+			(width = "BATTLE_TASK_WIDTH_MAX")
+			(flow = "horizontal")
+			(align = "left|middle")
+			(bind height "isCaption ? 20px : 'auto'")
+			(bind paddingTop "isCaption ? 0px : 8px")
+			(bind paddingBottom "isCaption ? 0px : 8px")
+		)
+
+		(block
+			(bind visible "!isCaption")
+
+			(style
+				(position = "absolute")
+				(align = "center|middle")
+				(width = "BATTLE_TASK_ICON_SIZE")
+				(height = "BATTLE_TASK_ICON_SIZE")
+				(top = 6px)
+				(left = "BATTLE_TASK_ICON_PIVOT")
+				(pivotX = "BATTLE_TASK_ICON_PIVOT")
+				(pivotY = "BATTLE_TASK_ICON_PIVOT")
+
+				(bind backgroundImage "hasTaskIcon ? 'url:../service_kit/battle_tasks/' + taskIcon + '.png' : 'url:../service_kit/battle_tasks/icon_task_current.png'")
+				(bind backgroundImage "'url:../service_kit/battle_tasks/icon_task_failed.png'" init=false (event "taskView.evFailed"))
+				(bind backgroundImage "'url:../service_kit/battle_tasks/icon_task_succeeded.png'" init=false (event "taskView.evDone"))
+			)
+
+			(controller $Animation
+				(bindcall play
+					duration=0.2
+					from={visualScaleX: 2, visualScaleY: 2, alpha: 0}
+					to={visualScaleX:1, visualScaleY: 1, alpha: 1}
+					delay=0
+					action="combine"
+					(event "eventAdded")
+					(event "taskView.evFailed")
+					(event "taskView.evDone")
+					(event "taskEntity.task.evIconChanged")
+				)
+			)
+		)
+
+		(block
+			(style
+				(marginLeft = "BATTLE_TASK_ICON_SIZE")
+			)
+
+			(tf
+				(bind class "isCaption ? '$TextDefaultBoldNM' : '$TextDefaultNM'")
+				(alpha = "TA")
+
+				(style
+					(bind maxWidth "taskTextWidth")
+
+					(bind textColor "taskBadgesColors.done" init=false (event "taskView.evDone"))
+					(bind textColor "taskBadgesColors.failed" init=false (event "taskView.evFailed"))
+				)
+
+				(bind alpha "TC" init=false (event "taskView.evDone") (event "taskView.evFailed"))
+				(bind text "caption")
+			)
+		)
+
+		
+		(block
+			(bind visible "timeout && !needShowProgress")
+
+			(style
+				(position = "absolute")
+				(height = 100%)
+				(right = 10px)
+				(align = "center|top")
+				(marginLeft = "S")
+			)
+
+			(tf
+				(class $TextDefaultBoldNM)
+				(alpha = "TA")
+
+				(style
+					(bind textColor "taskBadgesColors.done" init=false (event "taskView.evDone"))
+					(bind textColor "taskBadgesColors.failed" init=false (event "taskView.evFailed"))
+				)
+
+				(bind alpha "TC" init=false (event "taskView.evDone") (event "taskView.evFailed"))
+				(bind text "timeLeftText")
+			)
+		)
+
+		
+		(block
+			(bind visible "needShowProgress")
+
+			(style
+				(position = "absolute")
+				(height = 100%)
+				(right = 10px)
+				(align = "center|top")
+				(marginLeft = "S")
+			)
+
+			(tf
+				(class $TextDefaultBoldNM)
+				(alpha = "TA")
+
+				(style
+					(bind textColor "taskBadgesColors.done" init=false (event "taskView.evDone"))
+					(bind textColor "taskBadgesColors.failed" init=false (event "taskView.evFailed"))		
+				)
+
+				(bind alpha "TC" init=false (event "taskView.evDone") (event "taskView.evFailed"))
+				(bind text "progressText")
+			)
+		)
+	)
+)
