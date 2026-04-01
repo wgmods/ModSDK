@@ -1,0 +1,65 @@
+(def constant SCALE_FOR_CURSOR_IMAGE_SWITCH "1.9")
+(def constant HD_HALF_SCREEN_WIDTH "640")
+(def constant HD_HALF_SCREEN_HEIGHT "360")
+
+
+(def element CursorMessageContainer ()
+	(scope
+		(event evPosUpdate)
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var scale:number = "stageComponent.scale" (event "stageComponent.evStageSizeChanged"))
+
+		(var isLargeCursor:bool = "scale >= SCALE_FOR_CURSOR_IMAGE_SWITCH")
+
+		(var mouse:gfx = "$datahub.getSingleComponent(CC.mouse)")
+		(var isMouseActive:bool = "mouse.active" (event "mouse.evActiveChanged"))
+		(var mouseX:number = "mouse.x / scale" (event "evPosUpdate"))
+		(var mouseY:number = "mouse.y / scale" (event "evPosUpdate"))
+
+		(var mouseTimerComponent:gfx = "$datahub.getSingleComponent(CC.mouseTimer)")
+		(var time:number = "mouseTimerComponent ? mouseTimerComponent.time : ''" (event "mouseTimerComponent.evTimeChanged"))
+		(var isComponentVisible:bool = "mouseTimerComponent ? mouseTimerComponent.isVisible : false" (event "mouseTimerComponent.evIsVisibleChanged"))
+
+		(var isVisible:bool = "isComponentVisible && isMouseActive")
+
+		(macro HUMAN_READABLE_COUNTDOWN_SCOPE "time")
+	)
+
+	(dispatch evPosUpdate args={} (event "evEnterFrame") (bind enabled "isVisible"))
+	(bind visible "isVisible")
+
+	(class $FullsizeAbsolute)
+
+	(block
+		(style
+			(width = "HD_HALF_SCREEN_WIDTH")
+			(height = "HD_HALF_SCREEN_HEIGHT")
+			(position = "absolute")
+			(bind left "mouseX")
+			(bind top "mouseY")
+		)
+		(hblock
+			(class $FullsizeAbsolute)
+			(style
+				(bind marginLeft "isLargeCursor ? SXS : S")
+				(bind marginTop "isLargeCursor ? SXS : S")
+			)
+			(tf
+				(class $TextDefaultNM)
+				(style
+					(textColor = "C_ALLY")
+				)
+				(bind text "countdownText")
+			)
+			(tf
+				(class $TextDefaultNM)
+				(style
+					(textColor = "C_ALLY")
+					(marginLeft = "XS")
+				)
+				(alpha = "TS")
+				(text = "'IDS_SECOND'")
+			)
+		)
+	)
+)

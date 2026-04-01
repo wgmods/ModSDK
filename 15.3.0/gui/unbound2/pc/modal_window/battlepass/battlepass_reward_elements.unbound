@@ -1,0 +1,27 @@
+(def element BattlePassRewardBannerShipDestructionItem (_id:number, _rarity:str, _bannerSize:number=0, _sid:number=0, _amount:number=0) layout=true
+	(scope
+		(var shipDestructionEntity:gfx = "$datahub.getPrimaryEntity(CC.exteriorConfig, _id)")
+		(var exteriorConfig:gfx = "shipDestructionEntity ? shipDestructionEntity.exteriorConfig : null")
+	)
+
+	(bindcall externalCall 'inputMapping.onAction' "['setNewVideoSource', {videoSourcePath:'coui://gui/video/ship_destruction/' + exteriorConfig.name + '.webm'}]" init=false watch=false on=mouseOver)
+
+	(style
+		(backgroundColor = 0x00000001) 
+		(bind width "_bannerSize")
+		(bind height "_bannerSize")
+	)
+
+	(controller $Tooltip
+		(renderer = 'ShipDestructionTooltip')
+		(args
+			_id = "_id"
+			_sid = "_sid"
+			_rarity = "_rarity"
+			_amount = "_amount"
+			_isReward = true
+			_fromBattlepass = true
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
