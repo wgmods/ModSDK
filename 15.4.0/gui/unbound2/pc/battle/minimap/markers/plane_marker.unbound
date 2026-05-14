@@ -1,0 +1,143 @@
+
+(def constant PLANE_TYPE_TO_STR [
+	'scout',
+	'bomber',
+	'torpedo',
+	'fighter',
+	'skip',
+	'emptybomber',
+	'auxiliary',
+	'auxiliary', 
+	'smoke',
+])
+
+(def element MapSquadronMarker (_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number) layout=true
+	(scope
+		(var markerYaw:number = "radToGrad(_markerEntity.mapPosition.yaw)" (event "evEnterFrame"))
+		(var markerScale:number = "_itemScale / _mapScale")
+
+		(var aircarrier:gfx = "$datahub.getSingleComponent(CC.aircarrier)")
+		(var activeSquadron:number = "aircarrier.activeSquadron" (event "aircarrier.evStateChanged"))
+		(var isControlledByPlayer:bool = "_markerEntity.ownSquadron && _markerEntity.ownSquadron.id == activeSquadron")
+
+		(var planeTypeInt:number = "_markerEntity.plane.planeType")
+		(var markerElement:gfx = "planeTypeInt == SC.Battle.PLANES_TYPES.AIRSHIP ? 'MapMarkerAirshipicon' : 'MapMarkerSquadronIcon'")
+		(macro SCOPE_HIGHLIGHT_MARKER_ON_MAP_MOUSE_OVER "_markerEntity")
+
+		(var minimapEntity:gfx = "$datahub.getSingleEntity(CC.minimap)")
+		(var minimapComponent:gfx = "minimapEntity.minimap")
+		(var angleToRotate:number = "minimapComponent && !isControlledByPlayer ? minimapComponent.rotationAngleDeg : 0" (event "minimapComponent.evRotationAngleDegChanged"))
+	)
+
+	(style
+		(bind rotation "-(angleToRotate)")
+	)
+
+	(controller $Instance (renderer = 'MapMarkerRanges') 
+		(bind enabled "isControlledByPlayer")
+		(args entity="_markerEntity" mapScale="_mapScale")
+	)
+
+	(block
+		(macro BIND_FAIR_SCALE "markerScale")
+		(macro EFFECT_HIGHLIGHT_MARKER_ON_MOUSE_OVER)
+		(controller $Instance
+			(bind renderer "markerElement")
+			(args "_markerEntity" "markerYaw")
+			(bind enabled "_markerEntity != null")
+		)
+	)
+)
+
+(def element MapMarkerAirshipicon (_markerEntity:gfx, _rotation:number) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'relation')
+		(var relationStr:str = "toLower(SC.Battle.PLAYER_RELATION.VALUE_TO_NAME[relationComponent.value])")
+		(var markerIcon:str = "'svg:../battle_hud/markers/convoy_airships/marker_' + relationStr + '.svg'")
+	)
+	(style
+		(width = "24")
+		(height = "24")
+	)
+	(block
+		(style
+			(width = 0) (height = 0)
+			(align = "center|middle")
+			(bind rotation "_rotation")
+		)
+
+		(block
+			(style
+				(bind backgroundImage "markerIcon")
+				(backgroundSize = "autosize")
+			)
+		)
+	)
+)
+
+(def element MapMarkerSquadronIcon (_markerEntity:gfx, _rotation:number) layout=true
+	(scope
+		(var rotation:number = "_rotation")
+
+		(var planeTypeInt:number = "_markerEntity.plane.planeType")
+		(var ammoType:number = "_markerEntity.plane.ammoType")
+		(var ammoTypeName:str = "SC.Common.PLANE_AMMO_TYPES.VALUE_TO_NAME[ammoType]")
+		(var isModified:bool = "_markerEntity.plane.isModified")
+		(var isConsumable:bool = "_markerEntity.plane.isConsumable && !_markerEntity.plane.isAirSupport")
+
+		(var ammoPostfix:str = "ammoTypeName in SC.Common.PLANE_AMMO_TYPES.SHORT_NAMES && !isConsumable	? SC.Common.PLANE_AMMO_TYPES.SHORT_NAMES[ammoTypeName]
+																										: ''"
+		)
+		(var planeCathegoryFolder:str = "	_markerEntity.plane.isAirSupport		? 'airsupport/' :
+											_markerEntity.plane.isConsumable		? 'consumables/'
+																				: 'controllable/'"
+		)
+		(var postfix:str = "isModified ? '_upgrade' : ''")
+		(var planeIconPath:str = "planeCathegoryFolder + PLANE_TYPE_TO_STR[planeTypeInt] + ammoPostfix + postfix")
+		
+		(var ownerEntity:gfx = "_markerEntity.squadron.owner.ref")
+		(var ownerAvatar:gfx = "ownerEntity.avatar")
+		(var ownerDivision:gfx = "ownerEntity.divisionMember")
+
+		(var healthComponent:gfx = "_markerEntity.health" (event "_markerEntity.evAdded"))
+		(var isInSameDivision:bool = "ownerDivision && ownerDivision.isInSameDivision" (event "ownerDivision.evDivisionChanged"))
+
+		(var relationComponent:gfx = "ownerEntity.relation ? ownerEntity.relation : _markerEntity.relation")
+		(var isSelf:bool = "relationComponent ? relationComponent.value == SC.Battle.DIPLOMACY_RELATIONS.SELF : false")
+		(var isAlly:bool = "relationComponent ? relationComponent.value == SC.Battle.DIPLOMACY_RELATIONS.ALLY : false")
+		(var tkStatus:bool = "ownerAvatar.tkStatus && isAlly" (event "ownerAvatar.evTeamkillStatusChanged"))
+
+		(var aircarrier:gfx = "$datahub.getSingleComponent(CC.aircarrier)")
+		(var activeSquadron:number = "aircarrier.activeSquadron" (event "aircarrier.evStateChanged"))
+		(var isControlledByPlayer:bool = "_markerEntity.ownSquadron && _markerEntity.ownSquadron.id == activeSquadron")
+		(var isCameraAttachedToPlane:bool = "isSelf && isControlledByPlayer")
+
+		(var markerPlaneIconPath:str = 
+			"isSelf
+				? isControlledByPlayer
+					? 'swf:../fla/minimap/minimap.swf:minimap_self_alive'
+					: planeIconPath + '_own'
+				: isAlly
+					? isInSameDivision
+						? planeIconPath + '_division'
+						: tkStatus 
+							? planeIconPath + '_teamkiller'
+							: planeIconPath + '_ally'
+					: planeIconPath + '_enemy'"
+		)
+		(var markerIcon:str = "'url:../battle_hud/markers_minimap/plane/' + markerPlaneIconPath + '.png'")
+	)
+	(style 
+		(width = 0) (height = 0)
+		(align = "center|middle")
+		(bind rotation "isCameraAttachedToPlane ? rotation : 0")
+	)
+
+	(block
+		(style
+			(bind backgroundImage "isCameraAttachedToPlane ? markerPlaneIconPath : markerIcon")
+			
+			(bind backgroundSize "isCameraAttachedToPlane ? repeat : autosize")
+		)
+	)
+)

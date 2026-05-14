@@ -1,0 +1,53 @@
+(def element TorpedoLauncherParams (shipTTX:gfx, torpedoTTX:gfx) layout=true
+	(scope
+		(var isGroup:bool = "shipTTX.bowGroup || shipTTX.sternGroup")
+		(var torpedoesTTX:gfx = "shipTTX.torpedoes")
+		(var launchersRotationTime:gfx = "torpedoesTTX.ungroupedLaunchers ? torpedoesTTX.ungroupedLaunchers.launchers[0].rotationTime : null")
+		(var torpedoesReloadTime:gfx = "torpedoesTTX.reloadTime")
+		(var torpedoesSwitchTime:gfx = "torpedoesTTX.ammoSwitchTime")
+	)
+	(style (width = 100%))
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ROTATION_TIME'
+											_value = "launchersRotationTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDOES_TIME_RELOAD'
+											_value = "torpedoesReloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_MIN_SWITCH_TIME'
+											_value = "torpedoesSwitchTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_zeroValueHidden = true
+			)
+			(macro TTX_INSTANCE 'TorpedoLoaderInfoInner' "torpedoesTTX" "isGroup")
+		)
+	)
+)
+
+(def element TorpedoLoaderInfoInner (shipTTX:gfx, torpedoTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_TORPEDO_LOADERS_COUNT'
+									_values = 		"torpedoTTX.sternGroup	? [torpedoTTX.bowGroup.numLoaders, torpedoTTX.sternGroup.numLoaders]
+																			: [torpedoTTX.bowGroup.numLoaders]"
+									_valueConfigs =	"torpedoTTX.sternGroup	? [VALUE_CONFIG.DEFAULT, VALUE_CONFIG.DEFAULT]
+																			: [VALUE_CONFIG.DEFAULT]"
+	)
+)
+
+(def layout ModuleTorpedoes_Parameters (shipTTX:gfx) 
+	(scope
+		(var torpedoesTTX:gfx = "shipTTX	? shipTTX.torpedoes
+											: null")
+	)
+	(style (width = 100%))
+	(macro TTX_INSTANCE 'TorpedoLauncherParams' "torpedoesTTX")
+
+	(macro TTX_INSTANCE 'TorpedoDefaultTTX' "torpedoesTTX.torpedo")
+	(macro TTX_INSTANCE 'TorpedoDefaultTTX' "torpedoesTTX.torpedoDeepwater")
+	(macro TTX_INSTANCE 'TorpedoDefaultTTX' "torpedoesTTX.torpedoAlt")
+)
