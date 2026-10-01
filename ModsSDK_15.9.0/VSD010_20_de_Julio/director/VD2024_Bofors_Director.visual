@@ -1,0 +1,52 @@
+<VD2024_Bofors_Director.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	VD2024_Bofors_Director	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0480 0.0000 -0.0377	</min>
+		<max>	0.0412 0.1133 0.0675	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	VD2024_Bofors_DirectorShape	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	VD2024_Bofors_Director	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Director	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD010_20_de_Julio/director/VD2024_Bofors_Director.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	50000.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	VD2024_Bofors_DirectorShape	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</VD2024_Bofors_Director.visual>

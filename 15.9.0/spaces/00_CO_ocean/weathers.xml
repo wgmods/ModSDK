@@ -1,0 +1,72 @@
+<weathers.xml>
+	<!-- Статичный -->
+<!--	<scheme>-->
+<!--		<startWeight> 50 </startWeight>-->
+<!--		<step>-->
+<!--			<param>PCOW003_Cloudy</param>-->
+<!--			<duration>-->
+<!--				<min> 1200 </min>-->
+<!--				<max> 1200 </max>-->
+<!--			</duration>-->
+<!--			<transition> 1200 </transition>-->
+<!--		</step>-->
+<!--	</scheme>-->
+
+	<!-- Перед началом боя -->
+<!--	<scheme>-->
+<!--		<startWeight> 50 </startWeight>-->
+<!--		<step>-->
+<!--			<param>PCOW002_Storm</param>-->
+<!--			<duration>-->
+<!--				<min> 0 </min>-->
+<!--				<max> 0 </max>-->
+<!--			</duration>-->
+<!--			<transition> 90 </transition>-->
+<!--		</step>-->
+<!--		<step>-->
+<!--			<param>PCOW003_Cloudy</param>-->
+<!--			<duration>-->
+<!--				<min> 1200 </min>-->
+<!--				<max> 1200 </max>-->
+<!--			</duration>-->
+<!--			<transition> 60 </transition>-->
+<!--		</step>-->
+<!--	</scheme>-->
+
+<!-- Updated Cyclone -->
+	<scheme>
+		<startWeight> 100 </startWeight>
+		<step>
+			<param>PCOW003_Cloudy</param>
+			<duration>
+				<min> 30 </min>
+				<max> 30 </max>
+			</duration>
+			<transition> 60 </transition>
+		</step>
+		<step>
+			<param>PCOW037_Storm_Logic_15km</param>
+			<duration>
+				<min> 420 </min>
+				<max> 540 </max>
+			</duration>
+			<transition> 60 </transition>
+		</step>
+		<step>
+			<param>PCOW003_Cloudy</param>
+			<duration>
+				<min> 60 </min>
+				<max> 60 </max>
+			</duration>
+			<transition> 60 </transition>
+		</step>
+		<step>
+			<param>PCOW001_Sunny</param>
+			<duration>
+				<min> 6000 </min>
+				<max> 6000 </max>
+			</duration>
+			<transition> 60 </transition>
+		</step>
+	</scheme>
+</weathers.xml>

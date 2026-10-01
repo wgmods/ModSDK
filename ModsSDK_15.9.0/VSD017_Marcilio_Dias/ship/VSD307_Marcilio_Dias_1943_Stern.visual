@@ -1,0 +1,286 @@
+<VSD307_Marcilio_Dias_1943_Stern.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Stern	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	HP_Ship_death_3	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 -2.3863 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	Stern_crack_MidBack	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+					<node>
+						<identifier>	Stern_crack_MidBack_in	</identifier>
+						<transform>
+							<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+							<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+							<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+							<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+						</transform>
+					</node>
+				</node>
+				<node>
+					<identifier>	Stern_patch_MidBack	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0667 -0.0667 -0.0667	</min>
+		<max>	0.0667 0.0667 0.0667	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	Stern	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD017_Marcilio_Dias/ship/VSD307_Marcilio_Dias_1943.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD017_Marcilio_Dias/ship/VSD307_Marcilio_Dias_1943.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_in	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD017_Marcilio_Dias/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_in_lod1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD017_Marcilio_Dias/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_in_lod2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD017_Marcilio_Dias/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_in_lod3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD017_Marcilio_Dias/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_lod1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD017_Marcilio_Dias/ship/VSD307_Marcilio_Dias_1943.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_lod2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD017_Marcilio_Dias/ship/VSD307_Marcilio_Dias_1943.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_crack_MidBack_lod3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_crack_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD017_Marcilio_Dias/ship/VSD307_Marcilio_Dias_1943.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_lod1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD017_Marcilio_Dias/ship/VSD307_Marcilio_Dias_1943.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_lod2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD017_Marcilio_Dias/ship/VSD307_Marcilio_Dias_1943.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_lod3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD017_Marcilio_Dias/ship/VSD307_Marcilio_Dias_1943.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_patch_MidBack	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_patch_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD017_Marcilio_Dias/ship/VSD307_Marcilio_Dias_1943.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_patch_MidBack_lod1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_patch_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD017_Marcilio_Dias/ship/VSD307_Marcilio_Dias_1943.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_patch_MidBack_lod2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_patch_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD017_Marcilio_Dias/ship/VSD307_Marcilio_Dias_1943.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Stern_patch_MidBack_lod3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Stern_patch_MidBack	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD017_Marcilio_Dias/ship/VSD307_Marcilio_Dias_1943.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	17.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Stern	</renderSet>
+				<renderSet>	Stern_crack_MidBack	</renderSet>
+				<renderSet>	Stern_crack_MidBack_in	</renderSet>
+				<renderSet>	Stern_patch_MidBack	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	35.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Stern_crack_MidBack_in_lod1	</renderSet>
+				<renderSet>	Stern_crack_MidBack_lod1	</renderSet>
+				<renderSet>	Stern_lod1	</renderSet>
+				<renderSet>	Stern_patch_MidBack_lod1	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	45.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Stern_crack_MidBack_in_lod2	</renderSet>
+				<renderSet>	Stern_crack_MidBack_lod2	</renderSet>
+				<renderSet>	Stern_lod2	</renderSet>
+				<renderSet>	Stern_patch_MidBack_lod2	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	400.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Stern_crack_MidBack_in_lod3	</renderSet>
+				<renderSet>	Stern_crack_MidBack_lod3	</renderSet>
+				<renderSet>	Stern_lod3	</renderSet>
+				<renderSet>	Stern_patch_MidBack_lod3	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</VSD307_Marcilio_Dias_1943_Stern.visual>

@@ -1,0 +1,286 @@
+<VSD309_Nueva_Esparta_1953_Bow.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	Bow	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+				<node>
+					<identifier>	Bow_crack_MidFront	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	Bow_crack_MidFront_in	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	Bow_patch_MidFront	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+					</transform>
+				</node>
+				<node>
+					<identifier>	HP_Ship_death_1	</identifier>
+					<transform>
+						<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+						<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+						<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+						<row3>	0.0000 0.0000 2.9449 1.0000	</row3>
+					</transform>
+				</node>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-0.0033 -0.0033 -0.0033	</min>
+		<max>	0.0033 0.0033 2.4625	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	Bow	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD019_Nueva_Esparta/ship/VSD309_Nueva_Esparta_1953.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD019_Nueva_Esparta/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_in	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD019_Nueva_Esparta/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_in_lod1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD019_Nueva_Esparta/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_in_lod2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD019_Nueva_Esparta/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_in_lod3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront_in	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD019_Nueva_Esparta/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_lod1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD019_Nueva_Esparta/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_lod2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD019_Nueva_Esparta/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_crack_MidFront_lod3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_crack_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD019_Nueva_Esparta/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_lod1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD019_Nueva_Esparta/ship/VSD309_Nueva_Esparta_1953.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_lod2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD019_Nueva_Esparta/ship/VSD309_Nueva_Esparta_1953.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_lod3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow	</node>
+			</nodes>
+			<material>
+				<identifier>	TL2_SHIPMAT_PBS_Hull	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD019_Nueva_Esparta/ship/VSD309_Nueva_Esparta_1953.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_patch_MidFront	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_patch_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD019_Nueva_Esparta/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_patch_MidFront_lod1	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_patch_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD019_Nueva_Esparta/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_patch_MidFront_lod2	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_patch_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD019_Nueva_Esparta/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+		<renderSet>
+			<name>	Bow_patch_MidFront_lod3	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	Bow_patch_MidFront	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIPMAT_PBS_Crack	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/VSD019_Nueva_Esparta/ship/C002_Razlom.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	17.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Bow	</renderSet>
+				<renderSet>	Bow_crack_MidFront	</renderSet>
+				<renderSet>	Bow_crack_MidFront_in	</renderSet>
+				<renderSet>	Bow_patch_MidFront	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	35.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Bow_crack_MidFront_in_lod1	</renderSet>
+				<renderSet>	Bow_crack_MidFront_lod1	</renderSet>
+				<renderSet>	Bow_lod1	</renderSet>
+				<renderSet>	Bow_patch_MidFront_lod1	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	45.0000	</extent>
+			<castsShadow>	true	</castsShadow>
+			<renderSets>
+				<renderSet>	Bow_crack_MidFront_in_lod2	</renderSet>
+				<renderSet>	Bow_crack_MidFront_lod2	</renderSet>
+				<renderSet>	Bow_lod2	</renderSet>
+				<renderSet>	Bow_patch_MidFront_lod2	</renderSet>
+			</renderSets>
+		</lod>
+		<lod>
+			<extent>	400.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	Bow_crack_MidFront_in_lod3	</renderSet>
+				<renderSet>	Bow_crack_MidFront_lod3	</renderSet>
+				<renderSet>	Bow_lod3	</renderSet>
+				<renderSet>	Bow_patch_MidFront_lod3	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</VSD309_Nueva_Esparta_1953_Bow.visual>
