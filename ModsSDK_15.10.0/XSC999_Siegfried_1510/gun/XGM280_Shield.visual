@@ -1,0 +1,52 @@
+<XGM280_Shield.visual>
+	<skeleton>
+		<node>
+			<identifier>	Scene Root	</identifier>
+			<transform>
+				<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+				<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+				<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+				<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+			</transform>
+			<node>
+				<identifier>	XGM280_Shield	</identifier>
+				<transform>
+					<row0>	1.0000 0.0000 0.0000 0.0000	</row0>
+					<row1>	0.0000 1.0000 0.0000 0.0000	</row1>
+					<row2>	0.0000 0.0000 1.0000 0.0000	</row2>
+					<row3>	0.0000 0.0000 0.0000 1.0000	</row3>
+				</transform>
+			</node>
+		</node>
+	</skeleton>
+	<properties>
+		<underwaterModel>	false	</underwaterModel>
+		<abovewaterModel>	true	</abovewaterModel>
+	</properties>
+	<boundingBox>
+		<min>	-1.6000 -0.6891 -10.0321	</min>
+		<max>	1.6000 3.2442 10.0321	</max>
+	</boundingBox>
+	<renderSets>
+		<renderSet>
+			<name>	XGM280_Shield	</name>
+			<treatAsWorldSpaceObject>	false	</treatAsWorldSpaceObject>
+			<nodes>
+				<node>	XGM280_Shield	</node>
+			</nodes>
+			<material>
+				<identifier>	SHIELD_MATERIAL	</identifier>
+				<mfm>	PnFMods/ModsSDK.zip/XSC999_Siegfried_1510/gun/XGM282_Shield_Medium.mfm	</mfm>
+			</material>
+		</renderSet>
+	</renderSets>
+	<lods>
+		<lod>
+			<extent>	50000.0000	</extent>
+			<castsShadow>	false	</castsShadow>
+			<renderSets>
+				<renderSet>	XGM280_Shield	</renderSet>
+			</renderSets>
+		</lod>
+	</lods>
+</XGM280_Shield.visual>
