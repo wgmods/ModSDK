@@ -1,0 +1,256 @@
+(def constant HUB2D_SECTION_OFFSET "24") 
+(def constant HUB2D_BANNER_OFFSET "12") 
+(def constant HUB2D_BANNER_CONTAINER_WIDTH 460)
+(def constant HUB2D_PROMO_BANNER_WIDTH 256)
+(def constant HUB2D_PROMO_BANNER_HEIGHT 625)
+
+(def constant HUB2D_SIDE_BANNER_WIDTH_BIG 448)
+(def constant HUB2D_SIDE_BANNER_HEIGHT_BIG 448)
+(def constant HUB2D_SIDE_BANNER_WIDTH 218)
+(def constant HUB2D_SIDE_BANNER_HEIGHT 218)
+
+(def constant HUB2D_INFO_BANNER_WIDTH_BIG 448)
+(def constant HUB2D_INFO_BANNER_WIDTH 218)
+(def constant HUB2D_INFO_BANNER_HEIGHT 40)
+
+(def element ModalWindow2DHub() layout=true 
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(scope
+		(var paddingTopValue:number = "stageHeight <= 720 ? -SXS : 0")
+		(var marginTopValue:number = "stageHeight <= 720 ? M : 0")
+
+		(event ev2dHubRemoved)
+		(var hub2DWatcher:gfx = "$datahub.getFirstWatcher(CC.hub2D)")
+		(var hub2DEntity:gfx = "hub2DWatcher ? hub2DWatcher.entity : null" (event "hub2DWatcher.event"))
+		(var isHubAvailable:bool = "!!hub2DEntity")
+
+		(var backgroundImageUrl:str = "hub2DEntity && hub2DEntity.hub2D ? hub2DEntity.hub2D.backgroundImageUrl : ''" (event "hub2DEntity.hub2D.evChanged"))
+		(var byteArrayCollection:gfx = "$datahub.getCollection(CC.byteArrayData)")
+		(var byteArrayEntity:gfx = "$datahub.getPrimaryEntity(CC.byteArrayData, backgroundImageUrl)" (event "byteArrayCollection.evAdded"))
+		(var backgroundImageUrlByteArrayComponent:gfx = "byteArrayEntity ? byteArrayEntity.byteArrayData : null")
+
+		(var hub2DBannerCollection:gfx = "$datahub.getCollection(CC.hub2DBannerBlockData)")
+		(var hub2DBannerVisibleCollection:gfx = "hub2DBannerCollection	? hub2DBannerCollection.getChildByPath('visibleBanners')
+																		: null"
+			(event "hub2DBannerCollection.evChildAdded") (event "hub2DBannerCollection.evChildRemoved") (event "hub2DBannerCollection.evChildUpdated")
+			(event "hub2DBannerCollection.evAdded") (event "hub2DBannerCollection.evRemoved") (event "hub2DBannerCollection.evUpdated")
+		)
+
+		(var promotedBannerCollection:gfx = "hub2DBannerVisibleCollection	?
+				hub2DBannerVisibleCollection.getChildByPath('bySectionType.' + SC.Hub_2d.BANNER_SIDE.PROMOTED)
+																			: null"
+			(event "hub2DBannerVisibleCollection.evAdded") (event "hub2DBannerVisibleCollection.evRemoved") (event "hub2DBannerVisibleCollection.evUpdated")
+		)
+		(var sideBannerCollection:gfx = "hub2DBannerVisibleCollection	?
+				hub2DBannerVisibleCollection.getChildByPath('bySectionType.' + SC.Hub_2d.BANNER_SIDE.SIDE)
+																		: null"
+			(event "hub2DBannerVisibleCollection.evAdded") (event "hub2DBannerVisibleCollection.evRemoved") (event "hub2DBannerVisibleCollection.evUpdated")
+		)
+		(var newsBannerCollection:gfx = "hub2DBannerVisibleCollection	?
+				hub2DBannerVisibleCollection.getChildByPath('bySectionType.' + SC.Hub_2d.BANNER_SIDE.NEWS)
+																		: null"
+			(event "hub2DBannerVisibleCollection.evAdded") (event "hub2DBannerVisibleCollection.evRemoved") (event "hub2DBannerVisibleCollection.evUpdated")
+		)
+		(var infoBannerCollection:gfx = "hub2DBannerVisibleCollection	?
+				hub2DBannerVisibleCollection.getChildByPath('bySectionType.' + SC.Hub_2d.BANNER_SIDE.INFO)
+																		: null"
+			(event "hub2DBannerVisibleCollection.evAdded") (event "hub2DBannerVisibleCollection.evRemoved") (event "hub2DBannerVisibleCollection.evUpdated")
+		)
+
+		(var numberOfPromotedBanners:number = "promotedBannerCollection ? promotedBannerCollection.items.length : 0"
+			(event "promotedBannerCollection.evAdded") (event "promotedBannerCollection.evRemoved") (event "promotedBannerCollection.evUpdated")
+		)
+		(var numberOfSideBanners:number = "sideBannerCollection ? sideBannerCollection.items.length : 0"
+			(event "sideBannerCollection.evAdded") (event "sideBannerCollection.evRemoved") (event "sideBannerCollection.evUpdated")
+		)
+		(var numberOfNewsBanners:number = "newsBannerCollection ? newsBannerCollection.items.length : 0"
+			(event "newsBannerCollection.evAdded") (event "newsBannerCollection.evRemoved") (event "newsBannerCollection.evUpdated")
+		)
+		(var numberOfInfoBanners:number = "infoBannerCollection ? infoBannerCollection.items.length : 0"
+			(event "infoBannerCollection.evAdded") (event "infoBannerCollection.evRemoved") (event "infoBannerCollection.evUpdated")
+		)
+
+		(var isBannersAvailable:bool = "hub2DBannerVisibleCollection && hub2DBannerVisibleCollection.items.length > 0")
+		(var isRightSection:bool = "numberOfSideBanners || numberOfNewsBanners || numberOfInfoBanners")
+	)
+	(dispatch ev2dHubRemoved args="{}" init=false (bind enabled "!isHubAvailable") (bind trigger "isHubAvailable"))
+	(bindcall externalCall 'inputMapping.onRequest' "['close', { }]" init=false watch=false (event "ev2dHubRemoved"))
+
+	(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+	(style	(align = "center|middle"))
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style	(align = "center|middle")
+				(backgroundSize = "cover")
+				(bind backgroundImage "backgroundImageUrlByteArrayComponent && backgroundImageUrlByteArrayComponent.data	?
+																				backgroundImageUrlByteArrayComponent.data	: ''")
+		)
+
+		
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+			(style	(width = 100%)
+					(align = "center|middle")
+					(position = "absolute")
+					(bind paddingTop "paddingTopValue")
+			)
+
+			(element ModalWindowHeaderFullSize
+				_windowName = "'IDS_2D_HUB_WINDOW_HEADER_UPPER'"
+				_paddingRight = "0"
+				_paddingLeft = "0"
+				_paddingTop = "0"
+				_hideBackButton = true
+			)
+		)
+
+		
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+			(bind visible "!isBannersAvailable")
+
+			(tf
+				(class $TextDefaultBold21NM)
+				(style
+					(bind textColor "SC.Ui_styles.SERVICE_COLORS.ORANGE")
+				)
+				
+				(text = 'IDS_2D_HUB_WINDOW_NO_BANNERS_AVAILABLE_STATE')
+			)
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style 
+				(align = "center|middle")
+				(flow = "horizontal")
+				(bind marginTop "marginTopValue")
+			)
+
+			(block
+				(style (flow = "horizontal") (hgap = "HUB2D_SECTION_OFFSET"))
+
+				(block
+					(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+					(element Hub2DPromotedBannerContainer
+						_numberOfPromotedBanners = "numberOfPromotedBanners"
+						_promotedBannerCollection = "promotedBannerCollection"
+					)
+				)
+				(block
+					(macro DEFAULT_MODAL_WINDOW_ANIMATION 1.5)
+					(bind visible "isRightSection")
+					(block
+						(controller $Instance 
+							(bind enabled "isRightSection")
+							(bind renderer "'Hub2DSideBannerContainer'")
+							(args
+								_numberOfSideBanners = "numberOfSideBanners"
+								_sideBannerCollection = "sideBannerCollection"
+							)
+						)
+					)
+					(block
+						(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+						(style (marginTop = "numberOfSideBanners ? HUB2D_BANNER_OFFSET : 0"))
+						(element Hub2DNewsBannerContainer
+							_numberOfNewsBanners = "numberOfNewsBanners"
+							_newsBannerCollection = "newsBannerCollection"
+						)
+					)
+					(block
+						(macro DEFAULT_MODAL_WINDOW_ANIMATION 2.5)
+						(style (marginTop = "numberOfNewsBanners || numberOfSideBanners ? HUB2D_BANNER_OFFSET : 0"))
+						(element Hub2DInfoBannerContainer
+							_numberOfInfoBanners = "numberOfInfoBanners"
+							_infoBannerCollection = "infoBannerCollection"
+						)
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element Hub2DPromotedBannerContainer(_numberOfPromotedBanners:number, _promotedBannerCollection:gfx) layout=true
+	(style (flow = "tile_horizontal"))
+
+	(controller $Repeat renderer='Hub2DBanner'
+		(bind count "_numberOfPromotedBanners")
+		(args "_promotedBannerCollection")
+		(exprs
+			(style
+				(height = "HUB2D_PROMO_BANNER_HEIGHT")
+				(bind width "HUB2D_PROMO_BANNER_WIDTH")
+				(bind marginRight "$index == _numberOfPromotedBanners - 1 ? 0 : HUB2D_BANNER_OFFSET")
+			)
+		)
+	)
+)
+
+(def element Hub2DSideBannerContainer(_numberOfSideBanners:number, _sideBannerCollection:gfx) layout=true
+	(style
+		(width = "HUB2D_BANNER_CONTAINER_WIDTH")
+		(gap = "HUB2D_BANNER_OFFSET")
+		(flow = "tile_horizontal")
+		(marginBottom = "_numberOfSideBanners ? HUB2D_BANNER_OFFSET : 0")
+	)
+
+	(controller $Repeat renderer='Hub2DBanner'
+		(bind count "_numberOfSideBanners")
+		(args "_sideBannerCollection")
+		(exprs
+			(style
+				(bind height "_numberOfSideBanners == 1 ? HUB2D_SIDE_BANNER_HEIGHT_BIG : HUB2D_SIDE_BANNER_HEIGHT")
+				(bind width "(_numberOfSideBanners == 3 && $index == 0) || _numberOfSideBanners < 3	? HUB2D_SIDE_BANNER_WIDTH_BIG 
+																									: HUB2D_SIDE_BANNER_WIDTH")
+			)
+		)
+	)
+)
+
+(def element Hub2DNewsBannerContainer(_numberOfNewsBanners:number, _newsBannerCollection:gfx) layout=true
+	(controller $Repeat renderer='Hub2DBanner'
+		(bind count "_numberOfNewsBanners")
+		(args "_newsBannerCollection")
+		(exprs
+			(style
+				(bind height "HUB2D_NEWS_HEIGHT")
+				(bind width "HUB2D_NEWS_WIDTH")
+			)
+		)
+	)
+)
+
+(def element Hub2DInfoBannerContainer(_numberOfInfoBanners:number, _infoBannerCollection:gfx) layout=true
+	(style
+		(width = "HUB2D_BANNER_CONTAINER_WIDTH")
+	)
+
+	(block
+		(style
+			(width = 100%)
+			(flow = "tile_horizontal")
+		)
+
+		(controller $Repeat renderer='Hub2DBanner'
+			(bind count "_numberOfInfoBanners")
+			(args "_infoBannerCollection")
+			(exprs
+				(style
+					(bind height "HUB2D_INFO_BANNER_HEIGHT")
+					(bind width "	(_numberOfInfoBanners == 3 && $index == 0) || _numberOfInfoBanners < 3	? HUB2D_INFO_BANNER_WIDTH_BIG
+																											: HUB2D_INFO_BANNER_WIDTH")
+					(bind marginRight "	$index % 2 != 0 && _numberOfInfoBanners != 3	||
+										((_numberOfInfoBanners == 3 && $index == 0)		|| _numberOfInfoBanners < 3)	? 0 
+																														: HUB2D_BANNER_OFFSET")
+					(bind marginBottom "($index == _numberOfInfoBanners - 1 || !((_numberOfInfoBanners == 3 && $index == 0) ||
+										_numberOfInfoBanners < 3) && $index == _numberOfInfoBanners - 2) ? 0 : HUB2D_BANNER_OFFSET")
+				)
+			)
+		)
+	)
+)

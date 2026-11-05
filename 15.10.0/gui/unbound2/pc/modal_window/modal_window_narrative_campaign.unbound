@@ -1,0 +1,55 @@
+(def element ModalWindowNarrativeCampaign() layout=true dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+
+	(scope
+		(var previewRouteEntity:gfx = "$datahub.getPrimaryEntity(CC.route, SC.Ui_windows.ROUTE.SHIP_PREVIEW)")
+		(var isInPreview:bool = "previewRouteEntity.route.isActive" (event "previewRouteEntity.route.evIsActiveChanged"))
+
+		(var sseRouteEntity:gfx = "$datahub.getPrimaryEntity(CC.route, SC.Ui_windows.ROUTE.SSE)")
+		(var isInSSE:bool = "sseRouteEntity.route.isActive" (event "sseRouteEntity.route.evIsActiveChanged"))
+
+		(var isInterfaceHidden:bool = "isInPreview || isInSSE")
+	)
+
+	(name = 'window_ModalWindowNarrativeCampaign')
+
+	(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+	(class $Fullsize)
+	(style
+		(alpha = 0)
+		(backgroundColor = 0xFF000000)
+		(bind hitTest "!isInterfaceHidden")
+	)
+
+	(controller $Animation
+		(bindcall play  duration=0.2
+						from = "{ alpha: 0 }"
+						to = "{ alpha: 1 }"
+						action="killAll"
+						(event "startShow")
+		)
+		(bindcall play  duration=0.2
+						delay=0.2
+						from = "{ alpha: 1 }"
+						to = "{ alpha: 0 }"
+						action="killAll"
+						(event "startHide")
+		)
+	)
+
+	(controller $Animation
+		(bindcall play  duration=0.2
+						from = "{ alpha: 0 }"
+						to = "{ alpha: 1 }"
+						reverse="isInterfaceHidden"
+						action="killAll"
+						(bind trigger "isInterfaceHidden")
+		)
+	)
+
+	(element GamefaceWidget
+		_gfName = "SC.Gameface.DATA_PROVIDER_NAME.NARRATIVE_CAMPAIGN"
+		_gfPath = 'gui/gameface/build/narrative_campaign/index.html'
+	)
+	(element DeclareBlurLayer)
+)

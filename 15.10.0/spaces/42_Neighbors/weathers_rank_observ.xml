@@ -1,0 +1,30 @@
+<weathers.xml>
+	<!-- Середина боя -->
+	<scheme>
+		<startWeight> 100 </startWeight>
+		<step>
+			<param>PCOW003_Cloudy</param>
+			<duration>
+				<min> 420 </min>
+				<max> 420 </max>
+			</duration>
+			<transition> 120 </transition>
+		</step>
+		<step>
+			<param>PCOW006_Storm_Logic</param>
+			<duration>
+				<min> 300 </min>
+				<max> 420 </max>
+			</duration>
+			<transition> 120 </transition>
+		</step>
+		<step>
+			<param>PCOW003_Cloudy</param>
+			<duration>
+				<min> 6000 </min>
+				<max> 6000 </max>
+			</duration>
+			<transition> 120 </transition>
+		</step>
+	</scheme>
+</weathers.xml>

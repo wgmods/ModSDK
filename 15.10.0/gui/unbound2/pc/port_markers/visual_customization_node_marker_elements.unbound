@@ -1,0 +1,136 @@
+(def element VisualCustomizationNodesMarkersContainer() layout=true dispatch_size_change=true
+	(scope
+		(var visualCustomizationNodeCollection:gfx = "$datahub.getCollection(CC.visualCustomizationNode)")
+		(var visualCustomizationAvailabilityEntity:gfx = "$datahub.getSingleEntity(CC.visualCustomizationAvailability)")
+		(var visualCustomizationAvailabilityComponent:gfx = "visualCustomizationAvailabilityEntity ? visualCustomizationAvailabilityEntity.visualCustomizationAvailability : null")
+	)
+	(bindcall externalCall "'inputMapping.onAction'" "['navigateTo', {route: SC.Ui_windows.ROUTE.VISUAL_CUSTOMIZATION}]" init=false watch=false (event "visualCustomizationAvailabilityComponent.evMoveToVisualCustomization"))
+
+	(element PortMarkersContainer
+		_interactiveComponentClass = "CC.visualCustomizationNode"
+		_interactiveRenderer = "'VisualCustomizationNodesCollectionMarker'"
+	)
+)
+
+
+
+(def element VisualCustomizationNodesCollectionMarker(_markerEntity:gfx)
+	(scope
+		(event evMoveToNode)
+		(event onAnimation)
+
+		
+		(var visualCustomizationAvailabilityEntity:gfx = "$datahub.getSingleEntity(CC.visualCustomizationAvailability)")
+		(var visualCustomizationAvailabilityComponent:gfx = "visualCustomizationAvailabilityEntity ? visualCustomizationAvailabilityEntity.visualCustomizationAvailability : null")
+		(var isAvailableShip:bool = "visualCustomizationAvailabilityComponent ? visualCustomizationAvailabilityComponent.isShipAvailableForVisualCustomization : false"	(event "visualCustomizationAvailabilityComponent.evUpdate"))
+		(var isInstalledMeshSkin:bool = "visualCustomizationAvailabilityComponent ? visualCustomizationAvailabilityComponent.isInstalledMeshSkin : false"				(event "visualCustomizationAvailabilityComponent.evUpdate"))
+
+		(var accountResourceEntity:gfx = "$datahub.getSingleEntity(CC.accountResource)")
+		(var operationsAccountLocked:bool = "accountResourceEntity.accountResource.operationsLocked" (event "accountResourceEntity.accountResource.evOperationsLockChanged"))
+
+		(macro PULL_CURRENT_SHIP_ID)
+		(macro PULL_OWN_SHIP_SCOPE "shipId" "'shipEntity'" "'shipInfo'")
+
+		(var ownShipInfo:gfx = "shipEntity ? shipEntity.ownShip : null"	(event "shipEntity.ship.evUpdate")
+																		(event "shipEntity.ship.evCurrentSkinChanged")
+																		(event "shipEntity.ship.evFlagNameWithCrewChanged"))
+
+		(var isLocked:bool =		"ownShipInfo ? ownShipInfo.isLocked : false"		(event "ownShipInfo.evUpdateLock")) 
+		(var isInFormation:bool =	"ownShipInfo ? ownShipInfo.isInFormation : false"	(event "ownShipInfo.evUpdateLock"))
+		(var isNeedRepair:bool =	"ownShipInfo ? ownShipInfo.isNeedRepair : false"	(event "ownShipInfo.evUpdateDockState"))
+		(var isNeedShell:bool =		"ownShipInfo ? ownShipInfo.isNeedShell : false"		(event "ownShipInfo.evUpdateDockState"))
+
+		(var isActionsAvailable:bool = "!(operationsAccountLocked || isInFormation || isLocked || isNeedRepair || isNeedShell)")
+
+		
+		(var isVisualCustomizationAvailable:bool = "isAvailableShip && !isInstalledMeshSkin && !isNeedRepair && !isNeedShell")
+
+		
+		(var visualCustomizationNodeComponent:gfx = "_markerEntity ? _markerEntity.visualCustomizationNode : null"	(event "_markerEntity.evAdded")
+																													(event "_markerEntity.evRemoved"))
+		(var nodeName:str = "visualCustomizationNodeComponent ? visualCustomizationNodeComponent.nodeName : null"					(event "visualCustomizationNodeComponent.evUpdated"))
+		(var installedDecalId:number = "visualCustomizationNodeComponent ? visualCustomizationNodeComponent.customizationId : null"	(event "visualCustomizationNodeComponent.evUpdated"))
+		(var isVisible:bool = "visualCustomizationNodeComponent ? visualCustomizationNodeComponent.isVisible : false"				(event "visualCustomizationNodeComponent.evIsVisibleChanged"))
+		(var isInstalledDecalLinked:bool = "visualCustomizationNodeComponent ? visualCustomizationNodeComponent.isLinked : false"	(event "visualCustomizationNodeComponent.evUpdated"))
+		(var isHighlight:bool = "visualCustomizationNodeComponent ? visualCustomizationNodeComponent.isHighlight : false"			(event "visualCustomizationNodeComponent.evIsHighlightChanged"))
+
+		(var isAnimationAvailable:bool = true)
+		(bind isAnimationAvailable "false" (event "visualCustomizationAvailabilityComponent.evMoveToVisualCustomization"))
+		(bind isAnimationAvailable "true" (event "onAnimation"))
+	)
+
+	
+	(dispatch evMoveToNode delay=0.01 on=leftClick (event "visualCustomizationNodeComponent.evMoveToNode"))
+	(dispatch onAnimation delay=1 (event "visualCustomizationAvailabilityComponent.evMoveToVisualCustomization"))
+
+	(bindcall externalCall "isActionsAvailable ? 'inputMapping.onAction' : ''" "['navigateTo', {route: SC.Ui_windows.ROUTE.VISUAL_CUSTOMIZATION_NODE, data: { nodeId: nodeName }}]" init=false watch=false (event "evMoveToNode"))
+	(bindcall externalCall 'direct.action' "[SC.Common.STATISTICS_EVENTS.LOG, [SC.Common.VISUAL_CUSTOMIZATION_STATISTICS.OPEN_NODE_BY_3D + '_' + nodeName]]"	init=false
+																																								watch=false
+																																								on='leftClick')
+
+	(controller $Animation
+		(bindcall play
+			from =		"{alpha: 1}"
+			to =		"{alpha: 0}"
+			easing =	"Easing.quad_in"
+			duration =	0.25
+			reverse =	"isVisible"
+			action =	"killAll"
+			(bind enabled "isAnimationAvailable")
+		)
+	)
+
+	(controller $Instance renderer='VisualCustomizationNodeMarker'
+		(bind enabled "isVisualCustomizationAvailable && isVisible")
+		(args
+			_nodeId = "nodeName"
+			_installedDecalId = "installedDecalId"
+			_isHighlight = "isHighlight"
+			_isActionsAvailable = "isActionsAvailable"
+		)
+	)
+
+	(controller $Tooltip
+		(renderer='VisualCustomizationNodeTooltip')
+		(args
+			_headerText = "visualCustomizationNodeComponent.group"
+			_isDecalInNode = "installedDecalId"
+			_isActionsAvailable = "isActionsAvailable"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+
+(def element VisualCustomizationNodeMarker (_nodeId:str = '', _installedDecalId:number = 0, _isHighlight:bool = false, _isActionsAvailable:bool = false) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var imageName:str = "	!_isActionsAvailable	? 'blocked' :
+								_installedDecalId		? 'installed'
+														: 'available'")
+	)
+	(macro MOUSE_EVENTS_DISPATCHER)
+
+	(block
+		(bind colorTransform "	!_isActionsAvailable		? {} :
+								mouseDown					? ITEM_DOWN_COLOR_TRANSFORM_PARAMS :
+								rollOver || _isHighlight	? ITEM_OVER_COLOR_TRANSFORM_PARAMS
+															: {}")
+
+		
+		(block
+			(style
+				(width = 28px)
+				(height = 28px)
+				(bind alpha "_isActionsAvailable && (rollOver || _isHighlight || _installedDecalId) ? 1 : 0.7")
+
+				(bind backgroundImage "'url:../port_markers/visual_customization/' + imageName + '.png'")
+			)
+		)
+	)
+
+	(macro SOUND_HANDLER
+		_soundSet = "_isActionsAvailable ? 'marker_decal' : ''"
+	)
+)

@@ -1,0 +1,45 @@
+(def element DurabilityTTX (shipTTX:gfx) layout=true
+	(scope
+		(var shieldTTX:gfx = "shipTTX.shield")
+		(var shieldHp:gfx = "shieldTTX ? shieldTTX.health : {'value': 0, 'delta': 0}")
+		(var shieldRegenDelay:gfx = "shieldTTX ? shieldTTX.regenDelay : {'value': 0, 'delta': 0}")
+		(var shieldRegenCoeff:gfx = "shieldTTX ? shieldTTX.regenCoeff : {'value': 0, 'delta': 0}")
+	)
+
+	(style (width = 100%))
+	(class $TTXSecondaryPanel)
+
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_HEALTH'
+									_value = "shipTTX.durability.health"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_HEALTH' 'IDS_TOOLTIP_HEALTH')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PTZDAMAGEPROB'
+									_value = "shipTTX.durability.ptz"
+									_valueConfig = "VALUE_CONFIG.PERCENT"
+									_zeroValueHidden = "true"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_PTZDAMAGEPROB' 'IDS_TOOLTIP_PTZDAMAGEPROB')
+	)
+
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_HEALTH'
+									_value = "shieldHp"
+									_zeroValueHidden = "true"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_SHIELD_HEALTH' 'IDS_TOOLTIP_SHIELD_HEALTH')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_REGEN_DELAY'
+									_value = "shieldRegenDelay"
+									_valueConfig = "VALUE_CONFIG.SECONDS"
+									_zeroValueHidden = "shieldRegenCoeff.value == 0"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_SHIELD_REGEN_DELAY' 'IDS_TOOLTIP_SHIELD_REGEN_DELAY')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_REGEN_COEFF'
+									_value = "shieldRegenCoeff"
+									_valueConfig = "VALUE_CONFIG.PERCENT"
+									_zeroValueHidden = "true"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_SHIELD_REGEN_COEFF' 'IDS_TOOLTIP_SHIELD_REGEN_COEFF')
+	)
+)

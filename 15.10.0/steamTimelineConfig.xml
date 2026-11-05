@@ -1,0 +1,238 @@
+<steamTimelineConfig>
+
+	<!--
+		Steam Timeline events: what the game puts on the Steam recording timeline during a battle.
+		Every section under <events> is one event, its name is the key the client looks it up by
+		(see TIMELINE_EVENT in scripts/client/systems/steamTimelineSystem/SteamTimelineConfig.py) - do NOT rename the sections.
+
+		For more detailed description check documentation:
+		https://confluence.wargaming.net/spaces/PSO/pages/2731019401/DOC+GL+steamTimelineConfig.xml
+
+		Steam documentation:
+		https://partner.steamgames.com/doc/api/ISteamTimeline?l=english
+	-->
+
+	<events>
+		<shipDestroyed>
+			<title>IDS_EVENT_DESTROYED</title>
+			<description>IDS_EVENT_DESTROYED_DESCRIPTION</description>
+			<icon>event_destroyed</icon>
+			<priority>10</priority>
+			<startOffsetSeconds>0.0</startOffsetSeconds>
+			<clipPriority>standard</clipPriority>
+		</shipDestroyed>
+
+		<multipleCitadelHits>
+			<title>IDS_EVENT_CRUSHINGSALVO</title>
+			<description>IDS_EVENT_CRUSHINGSALVO_DESCRIPTION</description>
+			<icon>event_crushingsalvo</icon>
+			<priority>60</priority>
+			<startOffsetSeconds>0.0</startOffsetSeconds>
+			<clipPriority>featured</clipPriority>
+			<threshold>3</threshold>
+			<accumulationSeconds>1.0</accumulationSeconds>
+		</multipleCitadelHits>
+
+		<luckySurvival>
+			<title>IDS_EVENT_LUCKYSURVIVAL</title>
+			<description>IDS_EVENT_LUCKYSURVIVAL_DESCRIPTION</description>
+			<icon>event_luckysurvival</icon>
+			<priority>60</priority>
+			<startOffsetSeconds>0.0</startOffsetSeconds>
+			<clipPriority>featured</clipPriority>
+			<accumulationSeconds>30.0</accumulationSeconds>
+			<thresholdHealthFraction>0.85</thresholdHealthFraction>
+			<survivalSeconds>5.0</survivalSeconds>
+		</luckySurvival>
+
+		<longRangeSalvo>
+			<title>IDS_EVENT_LONGRANGEHIT</title>
+			<description>IDS_EVENT_LONGRANGEHIT_DESCRIPTION</description>
+			<icon>event_longrangehit</icon>
+			<priority>40</priority>
+			<startOffsetSeconds>0.0</startOffsetSeconds>
+			<clipPriority>featured</clipPriority>
+			<threshold>18000</threshold>
+			<minHits>3</minHits>
+			<accumulationSeconds>5.0</accumulationSeconds>
+		</longRangeSalvo>
+
+		<getSunk>
+			<title>IDS_EVENT_SUNK</title>
+			<description>IDS_EVENT_SUNK_DESCRIPTION</description>
+			<icon>event_sunk</icon>
+			<priority>0</priority>
+			<startOffsetSeconds>-20.0</startOffsetSeconds>
+			<durationSeconds>20.0</durationSeconds>
+			<clipPriority>featured</clipPriority>
+		</getSunk>
+
+		<mainBatterySpam>
+			<title>IDS_EVENT_SHELLSTORM</title>
+			<description>IDS_EVENT_SHELLSTORM_DESCRIPTION</description>
+			<icon>event_shellstorm</icon>
+			<priority>90</priority>
+			<startOffsetSeconds>0.0</startOffsetSeconds>
+			<clipPriority>featured</clipPriority>
+			<threshold>40</threshold>
+			<accumulationSeconds>20.0</accumulationSeconds>
+		</mainBatterySpam>
+
+		<torpedoSalvo>
+			<title>IDS_EVENT_TORPEDOSALVO</title>
+			<description>IDS_EVENT_TORPEDOSALVO_DESCRIPTION</description>
+			<icon>event_torpedosalvo</icon>
+			<priority>60</priority>
+			<startOffsetSeconds>0.0</startOffsetSeconds>
+			<clipPriority>featured</clipPriority>
+			<minEnemies>2</minEnemies>
+			<accumulationSeconds>5.0</accumulationSeconds>
+		</torpedoSalvo>
+
+		<ramShip>
+			<title>IDS_EVENT_RAMMING</title>
+			<description>IDS_EVENT_RAMMING_DESCRIPTION</description>
+			<icon>event_ramming</icon>
+			<priority>60</priority>
+			<startOffsetSeconds>0.0</startOffsetSeconds>
+			<clipPriority>featured</clipPriority>
+			<accumulationSeconds>10.0</accumulationSeconds>
+		</ramShip>
+
+		<defendKeyArea>
+			<title>IDS_EVENT_KEYAREADEFEND</title>
+			<description>IDS_EVENT_KEYAREADEFEND_DESCRIPTION</description>
+			<icon>event_keyareadefend</icon>
+			<priority>50</priority>
+			<startOffsetSeconds>0.0</startOffsetSeconds>
+			<clipPriority>featured</clipPriority>
+			<minEnemies>2</minEnemies>
+		</defendKeyArea>
+
+		<overPenetration>
+			<title>IDS_EVENT_MASSOVERPENETRATION</title>
+			<description>IDS_EVENT_MASSOVERPENETRATION_DESCRIPTION</description>
+			<icon>event_massoverpenetration</icon>
+			<priority>40</priority>
+			<startOffsetSeconds>-2.0</startOffsetSeconds>
+			<clipPriority>standard</clipPriority>
+			<minHits>4</minHits>
+			<minOverPenetrationFraction>0.9</minOverPenetrationFraction>
+			<accumulationSeconds>2.0</accumulationSeconds>
+		</overPenetration>
+
+		<commanderTalent>
+			<title>Commander talent</title>
+			<description></description>
+			<icon>steam_star</icon>
+			<priority>50</priority>
+			<startOffsetSeconds>0.0</startOffsetSeconds>
+			<clipPriority>standard</clipPriority>
+			<accumulationSeconds>30.0</accumulationSeconds>
+			<!-- Only these talents get a marker. Emptying the list turns the event off completely. -->
+			<talents>
+				<!-- <talent>PBW100_3_0_21</talent>	-->	<!-- Andrew Cunningham Equipment Spoils -->
+			</talents>
+
+			<!-- An icon for a single talent, by its id. Anything not listed here uses the icon above. -->
+			<talentIcons>
+				<!-- <PBW100_3_0_21>steam_cart</PBW100_3_0_21> -->
+			</talentIcons>
+
+			<!-- A priority of its own for a talent, 0..255. Anything not listed uses the priority above. -->
+			<talentPriority>
+				<!-- <PBW100_3_0_21>90</PBW100_3_0_21> -->
+			</talentPriority>
+
+			<!-- A time offset of its own for a talent. Anything not listed uses the offset above. -->
+			<talentStartOffsetSeconds>
+				<!-- <PBW100_3_0_21>-5.0</PBW100_3_0_21> -->
+			</talentStartOffsetSeconds>
+
+			<!-- A clip priority of its own for a talent: "none", "standard" or "featured".-->
+			<talentClipPriority>
+				<!-- <PBW100_3_0_21>none</PBW100_3_0_21> -->
+			</talentClipPriority>
+		</commanderTalent>
+
+		<!-- Title is always replaced by the name of the earned achievement. -->
+		<achievementEarned>
+			<title></title>
+			<description></description>
+			<icon>steam_achievement</icon>
+			<priority>100</priority>
+			<startOffsetSeconds>0.0</startOffsetSeconds>
+			<clipPriority>standard</clipPriority>
+
+			<!-- Only these achievements get a marker. Emptying the list turns the event off completely.
+			Add one by its uiName, which the "Steam Achievements debug panel" shows for every achievement. -->
+			<achievements>
+				<!-- kills -->
+				<achievement>FIRST_BLOOD</achievement>				<!-- First Blood: the first kill of the battle -->
+				<achievement>DOUBLE_KILL</achievement>				<!-- Double Strike: two ships within 10 seconds -->
+				<achievement>INSTANT_KILL</achievement>				<!-- Devastating Strike: half the base HP in 5 seconds, and the kill -->
+				<achievement>RETRIBUTION</achievement>				<!-- It's Just a Flesh Wound!: a kill after our own death -->
+				<achievement>HEADBUTT</achievement>					<!-- Die-Hard: a kill by ramming, and survive it -->
+				<achievement>ATBA_CALIBER</achievement>				<!-- Close Quarters Expert: the last damage from the secondaries -->
+				<achievement>WARRIOR</achievement>					<!-- Kraken Unleashed!: five ships or more -->
+				<!-- damage dealt -->
+				<achievement>ARSONIST</achievement>					<!-- Arsonist: a kill where the fire did 40% of the base HP -->
+			</achievements>
+
+			<!-- An icon for a single achievement, by its uiName. Anything not listed here uses the icon above. -->
+			<achievementIcons>
+				<FIRST_BLOOD>event_firstblood</FIRST_BLOOD>
+				<DOUBLE_KILL>event_doublestrike</DOUBLE_KILL>
+				<INSTANT_KILL>event_devastatingstrike</INSTANT_KILL>
+				<RETRIBUTION>event_itsjustafleshwound</RETRIBUTION>
+				<HEADBUTT>event_diehard</HEADBUTT>
+				<ATBA_CALIBER>event_closequartersexpert</ATBA_CALIBER>
+				<WARRIOR>event_kraken</WARRIOR>
+				<ARSONIST>event_arsonist</ARSONIST>
+			</achievementIcons>
+
+			<!-- A priority of its own for an achievement, 0..255. Anything not listed uses the priority above. -->
+			<achievementPriority>
+				<WARRIOR>150</WARRIOR>							<!-- Kraken Unleashed! -->
+				<DOUBLE_KILL>140</DOUBLE_KILL>					<!-- Double Strike: two ships within 10 seconds -->
+				<RETRIBUTION>130</RETRIBUTION>					<!-- It's Just a Flesh Wound!: a kill after our own death -->
+				<ATBA_CALIBER>120</ATBA_CALIBER>				<!-- Close Quarters Expert: the last damage from the secondaries -->
+				<HEADBUTT>145</HEADBUTT>						<!-- Die-Hard: a kill by ramming, and survive it -->
+				<ARSONIST>120</ARSONIST>						<!-- Arsonist: a kill where the fire did 40% of the base HP -->
+				<FIRST_BLOOD>110</FIRST_BLOOD>					<!-- First Blood: the first kill of the battle -->
+				<INSTANT_KILL>90</INSTANT_KILL>					<!-- Devastating Strike: half the base HP in 5 seconds, and the kill -->
+			</achievementPriority>
+
+			<!-- A time offset of its own for an achievement. Anything not listed uses the offset above. -->
+			<achievementStartOffsetSeconds>
+				<!-- <WARRIOR>-10.0</WARRIOR>-->
+			</achievementStartOffsetSeconds>
+
+			<!-- A clip priority of its own for an achievement: "none", "standard" or "featured". -->
+			<achievementClipPriority>
+				<WARRIOR>featured</WARRIOR>						<!-- Kraken Unleashed! -->
+				<HEADBUTT>featured</HEADBUTT>					<!-- Die-Hard: a kill by ramming, and survive it -->
+				<ARSONIST>featured</ARSONIST>					<!-- Arsonist: a kill where the fire did 40% of the base HP -->
+			</achievementClipPriority>
+		</achievementEarned>
+
+	</events>
+
+	<phases>
+
+		<battle>
+			<enabled>true</enabled>
+			<phaseId>battle</phaseId>
+			<tooltip>%(ship)s, %(battleType)s</tooltip>
+			<tagName>Battle</tagName>
+			<tagIcon>steam_marker</tagIcon>
+			<tagGroup>Battle</tagGroup>
+			<priority>50</priority>
+			<attributes>
+				<Battle>%(ship)s, %(battleType)s</Battle>
+			</attributes>
+		</battle>
+
+	</phases>
+
+</steamTimelineConfig>

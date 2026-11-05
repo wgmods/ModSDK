@@ -1,0 +1,189 @@
+(def element TooltipSystemRewards (_rewards:array, _rewardsTitle:str="null") layout=true
+	(style (width = "100%"))
+	(macro TOOLTIP_SYSTEM_INNER_PANEL_BACKGROUND)
+
+	(tf
+		(bind visible "_rewardsTitle")
+		(style (width = "100%") (alpha = "TA") (leading = "-2"))
+		(class $TextDefaultNM)
+		(bind text "_rewardsTitle")
+	)
+	(block
+		(style (width = "100%"))
+		(controller $Repeat renderer='RewardContainerTooltipItem'
+			(bind count "_rewards.length")
+			(args
+				_reward = "_rewards[$index]"
+			)
+		)
+	)
+)
+
+(def element TooltipSystemDHRewards (_rewards:array, _rewardsTitle:str = "null") layout=true
+	(style (width = 100%))
+	(macro TOOLTIP_SYSTEM_INNER_PANEL_BACKGROUND)
+
+	(tf
+		(bind visible "_rewardsTitle")
+		(style (width = "100%") (alpha = "TA") (leading = "-2"))
+		(class $TextDefaultNM)
+		(bind text "_rewardsTitle")
+	)
+
+	(block
+		(style (width = "100%"))
+		(controller $Repeat renderer='RewardContainerTooltipItem'
+			(bind count "_rewards.length")
+			(args
+				_reward = "$datahub.getEntity(_rewards[$index]).rewardComponent"
+			)
+		)
+	)
+)
+
+(def element TooltipSystemDHRewardsList (_rewards:array) layout=true
+	(style (width = "100%"))
+	(macro TOOLTIP_SYSTEM_INNER_PANEL_BACKGROUND)
+
+	(block
+		(style (width = "100%") (marginBottom = "-SXS"))
+
+		(controller $Repeat renderer='TooltipSystemRewardListItemAdapter'
+			(bind count "_rewards.length")
+			(args
+				_rewardEntityId = "_rewards[$index]"
+			)
+		)
+	)
+)
+
+(def element TooltipSystemRewardsDHList (_rewards:array) layout=true
+	(style (width = "100%"))
+	(macro TOOLTIP_SYSTEM_INNER_PANEL_BACKGROUND)
+
+	(block
+		(style (width = "100%"))
+
+		(controller $Repeat renderer='RewardContainerTooltipItemAdapter'
+			(bind count "_rewards.length")
+			(args
+				_entityId = "_rewards[$index]"
+			)
+		)
+	)
+)
+
+
+(def element TooltipSystemRewardListItemAdapter (_rewardEntityId:gfx) layout=true
+	(scope
+		(var renderItemList:dict = "{	'Exterior':	'TooltipSystemRewardExteriorAdapter',
+										'Resource':	'TooltipSystemRewardResourceAdapter',
+										'Lootbox':	'TooltipSystemRewardLootboxAdapter' }")
+
+		(var rewardEntity:gfx = "$datahub.getEntity(_rewardEntityId)")
+		(var type:str = "rewardEntity.rewardComponent.type")
+		(var renderItem:str = "type in renderItemList ? renderItemList[type] : null")
+	)
+	(style (width = "100%") (marginBottom = "SXS"))
+
+	(controller $Instance
+		(bind renderer "renderItem")
+		(bind enabled "renderItem")
+		(args
+			_rewardEntity = "rewardEntity"
+		)
+	)
+)
+
+(def element TooltipSystemRewardsList (_rewards:array) layout=true
+	(style (width = "100%"))
+	(macro TOOLTIP_SYSTEM_INNER_PANEL_BACKGROUND)
+
+	(block
+		(style (width = "100%") (marginBottom = "-SXS"))
+
+		(controller $Repeat renderer='TooltipSystemRewardListItem'
+			(bind count "_rewards.length")
+			(args
+				_reward = "_rewards[$index]"
+			)
+		)
+	)
+)
+
+(def element TooltipSystemRewardListItem (_reward:dict) layout=true
+	(scope
+		(var currency:str = "	_reward.subtype == 'clanResource'	?	SC.Common.CURRENCIES.CLAN_RESOURCE
+																	:	_reward.subtype")
+		
+		(var title:str = "tr(toUpper('IDS_REWARD_' + _reward.subtype + '_TITLE'))")
+		(var priceInfo:dict = "{ finalPrice: _reward.amount, currency: currency}")
+	)
+	(style (width = "100%") (marginBottom = "SXS"))
+	(element TooltipSystemRewardPriceTag _title = "title" _priceInfo = "priceInfo")
+)
+
+(def element TooltipSystemRewardExteriorAdapter (_rewardEntity:gfx) layout=true
+	(scope
+		(var exteriorEntity:gfx = "$datahub.getPrimaryEntity(CC.exteriorConfig, _rewardEntity.rewardComponent.id)")
+		(var exteriorConfig:gfx = "exteriorEntity ? exteriorEntity.exteriorConfig : null")
+
+		(var title:str = "subst( tr('IDS_SUBST_' + toUpper(exteriorConfig.type)), [], { _exteriorNameIds: tr('IDS_' + toUpper(exteriorConfig.name)) } )")
+		(var count:number = "_rewardEntity.rewardComponent.amount")
+	)
+	(style (width = "100%"))
+	(element TooltipSystemRewardCounter _title = "title" _count = "count")
+)
+
+(def element TooltipSystemRewardLootboxAdapter (_rewardEntity:gfx) layout=true
+	(scope
+		(var title:str = "tr(toUpper('IDS_REWARD_LOOTBOX_' + _rewardEntity.rewardComponent.subtype + '_TITLE'))")
+		(var count:number = "_rewardEntity.rewardComponent.amount")
+	)
+	(style (width = "100%"))
+	(element TooltipSystemRewardCounter _title = "title" _count = "count")
+)
+
+(def element TooltipSystemRewardResourceAdapter (_rewardEntity:gfx) layout=true
+	(scope
+		(var title:str = "tr(toUpper('IDS_REWARD_' + _rewardEntity.rewardComponent.subtype + '_TITLE'))")
+
+		(var currency:str = "	_rewardEntity.rewardComponent.subtype == 'clanResource'		?	SC.Common.CURRENCIES.CLAN_RESOURCE
+																							:	_rewardEntity.rewardComponent.subtype")
+
+		(var priceInfo:dict = "{ finalPrice: _rewardEntity.rewardComponent.amount, currency: currency}")
+
+	)
+	(style (width = "100%"))
+	(element TooltipSystemRewardPriceTag _title = "title" _priceInfo = "priceInfo")
+)
+
+(def element TooltipSystemRewardPriceTag (_priceInfo:dict, _title:str, _showDiscountTag:bool = "false") layout=true
+	(style (flow = "horizontal") (width = "100%"))
+
+	(tf
+		(style (alpha = "TA") (leading = "-2"))
+		(class $TextDefaultNM)
+		(bind text "_title")
+	)
+	(block
+		(style (width = "100%") (align = "right"))
+		(element PriceTag _priceInfo = "_priceInfo" _showDiscountTag = "_showDiscountTag")
+	)
+)
+
+(def element TooltipSystemRewardCounter (_title:str, _count:number) layout=true
+	(style (flow = "horizontal") (width = "100%"))
+
+	(tf
+		(style (width = "100%") (alpha = "TA") (leading = "-2"))
+		(class $TextDefaultNM)
+		(bind text "_title")
+	)
+
+	(tf
+		(style (alpha = "TA"))
+		(class $TextDefaultBoldNM)
+		(bind text "formatSeparator(_count)")
+	)
+)

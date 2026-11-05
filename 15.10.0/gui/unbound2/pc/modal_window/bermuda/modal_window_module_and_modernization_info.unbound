@@ -1,0 +1,628 @@
+(def constant MODULES_AND_MODERINIZATIONS_NAV_WIDTH_LARGE 320)
+(def constant MODULES_AND_MODERINIZATIONS_NAV_WIDTH 250)
+
+(def constant MODULES_AND_MODERINIZATIONS_INFO_WIDTH_LARGE 405)
+(def constant MODULES_AND_MODERINIZATIONS_INFO_WIDTH 310)
+
+
+(def constant MODULES_AND_MODERINIZATIONS_COUNT_OF_PARAGRAPHS_IN_INFO 3)
+
+
+(def constant MODULES_AND_MODERINIZATIONS_COUNT_OF_MODULE_LEVELS_IN_INFO 3)
+
+(def constant MODULES_AND_MODERINIZATIONS_BREAKPOINT_SM 1440)
+
+(def macro IS_SMALL_MODULES_SCREEN(_isSmallField:expression)
+	
+	(var name="_isSmallField" type=bool value="stageWidth <= MODULES_AND_MODERINIZATIONS_BREAKPOINT_SM")
+)
+
+
+(def element ModalWindowModuleAndModernizationInfo()
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(scope
+		(event evNavBtnClicked)
+
+		(macro PULL_SHIP_ID) 
+		(macro IS_SMALL_MODULES_SCREEN "'isSmallModulesScreen'") 
+
+		(var moduleLayoutEntity:gfx = "$datahub.getPrimaryEntity(CC.moduleLayout, shipIdForModuleInset)")
+		(var moduleLayoutComponent:gfx = "moduleLayoutEntity ? moduleLayoutEntity.moduleLayout : null")
+		(var availiableTypes:array = "moduleLayoutComponent ? moduleLayoutComponent.availiableTypes : []" (event "moduleLayoutComponent.evAvailiableTypesChanged"))
+
+		(var currentSelectedModuleType:str = "availiableTypes ? availiableTypes[0] : ''")
+		(bind currentSelectedModuleType "$event.type" init=false (event "evNavBtnClicked"))
+
+		(var navbarWidth:number = "isSmallModulesScreen	? MODULES_AND_MODERINIZATIONS_NAV_WIDTH
+														: MODULES_AND_MODERINIZATIONS_NAV_WIDTH_LARGE")
+		(var moduleTreeIndex:number = "indexOf(currentSelectedModuleType, availiableTypes)")
+	)
+
+	(macro STATS_LOG_WINDOW_DURATION "SC.Common.BERMUDA_TECHNOLOGIES_WINDOW_STATISTICS.BERMUDA_TECHNOLOGIES_MODAL_DURATION")
+	(bindcall externalCall 'direct.action'
+		"[
+			SC.Common.STATISTICS_EVENTS.LOG,
+			[SC.Common.BERMUDA_TECHNOLOGIES_WINDOW_TABS_STATISTICS[SC.Common.BERMUDA_TECHNOLOGIES_WINDOW_TABS.VALUE_TO_NAME[currentSelectedModuleType]]]
+		]"
+		init=false watch=false (event "evNavBtnClicked"))
+
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(style (width = 100%))
+
+		(element ModalWindowHeaderFullSize
+			_windowName = 'IDS_MODERNIZATION_AND_MODULES_MODAL_WINDOW_TITLE'
+			_paddingRight = "M"
+			_paddingLeft = "M"
+		)
+	)
+
+	(block
+		(class $Fullsize)
+		(style
+			(paddingBottom = "XXL")
+			(flow = "horizontal")
+		)
+		
+		
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+			(style (position = "absolute"))
+
+			(element ModuleAndModernizationNav
+				_moduleTypes="availiableTypes"
+				_selectedType = "currentSelectedModuleType"
+				_width = "navbarWidth"
+				(style
+					(bind width "navbarWidth")
+					(position = "absolute")
+					(paddingTop = "LM")
+				)
+			)
+		)
+
+		
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+			(class $FullsizeAbsolute)
+			(style
+				(bind paddingLeft "navbarWidth")
+				(paddingTop = "LM")
+			)
+			
+			(controller $Instance
+				(bind renderer "currentSelectedModuleType == SC.Common.BERMUDA_TECHNOLOGIES_WINDOW_ADDITIONAL_TABS.TALENTS	? 'TalentTabContent'
+																															: 'ModuleAndModernizationContent'")
+				(args
+					_selectedType = "currentSelectedModuleType"
+					_moduleTreeIndex = "moduleTreeIndex"
+				)
+			)
+		)
+	)
+)
+
+(def element ModuleAndModernizationNav (_moduleTypes:array, _selectedType:str, _width:number)
+	(scope
+		(macro STAGE_SIZE)
+	)
+	(style (width = 100%))
+
+	(controller $Repeat renderer='InfoNavItem'
+		(bind count "_moduleTypes.length")
+		(args
+			_label = "'IDS_MODERNIZATION_AND_MODULES_MODAL_WINDOW_NAV_CATEGORY' + toUpper(_moduleTypes[$index])"
+			_moduleType="_moduleTypes[$index]"
+			_selectedType="_selectedType"
+		)
+	)
+
+	(element InfoNavItem
+		_label = "'IDS_MODERNIZATION_AND_MODULES_MODAL_WINDOW_INFO_TALENT_TAB'"
+		_moduleType="SC.Common.BERMUDA_TECHNOLOGIES_WINDOW_ADDITIONAL_TABS.TALENTS"
+		_selectedType="_selectedType"
+
+		(style
+			(bind width "_width")
+		)
+	)
+)
+
+(def element InfoNavItem(_moduleType:str, _selectedType:str, _label:str)
+	(scope
+		(var isTabSelected:bool = "_moduleType == _selectedType")
+	)
+	(style (width = 100%))
+	
+	(element SideTabButton
+		_label =				"_label"
+		_isSelected =			"isTabSelected"
+		_dispatchedEv =			"'evNavBtnClicked'"
+		_dispatchParams =		"{ type: _moduleType }"
+	)
+)
+
+(def element ModuleAndModernizationContent(_selectedType:str, _moduleTreeIndex:number)
+	(scope
+		(macro STAGE_SIZE)
+		(macro IS_SMALL_MODULES_SCREEN "'isSmallModulesScreen'") 
+
+		
+		(macro PULL_SHIP_ID) 
+		(var layoutCollection:gfx = "$datahub.getCollection(CC.moduleLayout)")
+
+		(var shipLayoutEntity:gfx = "layoutCollection.items[0]" (event "layoutCollection.evAdded") (event "layoutCollection.evRemoved"))
+		(var shipLayoutComponent:gfx = "shipLayoutEntity ? shipLayoutEntity.moduleLayout : null")
+		(var moduleTree:array = "shipLayoutComponent ? shipLayoutComponent.moduleTree : null"   (event "shipLayoutEntity.evModuleTreeChanged")
+																								(event "shipLayoutComponent.evUpdated"))
+		(var moduleTreeByModuleType:array = "_moduleTreeIndex != -1 ? moduleTree[_moduleTreeIndex] : []")
+		
+
+		
+		(var modernizationSlotsCollection:gfx = "$datahub.getCollection(CC.modernizationSlot)")
+		(var selectedTypeModernizationSlotsCollection:gfx = "modernizationSlotsCollection.child('byModType').child(_selectedType).child('sorted')"
+																							(event "modernizationSlotsCollection.evAdded")
+																							(event "modernizationSlotsCollection.evRemoved")
+																							(event "modernizationSlotsCollection.evUpdated"))
+		(var slotEntity:gfx = "selectedTypeModernizationSlotsCollection ? selectedTypeModernizationSlotsCollection.items[0] : null"
+																							(event "selectedTypeModernizationSlotsCollection.evAdded")
+																							(event "selectedTypeModernizationSlotsCollection.evRemoved")
+																							(event "selectedTypeModernizationSlotsCollection.evUpdated"))
+		
+		(var modernizationSlot:gfx = "slotEntity ? slotEntity.modernizationSlot : null" (event "slotEntity.evChanged"))
+		(var fullItemsIds:array = "modernizationSlot ? modernizationSlot.fullItemsIds : []" (event "modernizationSlot.evFullItemsIdsChanged"))
+
+		(var modernizationCount:number = "fullItemsIds ? fullItemsIds.length : 0")
+		
+
+		(var contentTitle:str = "'IDS_MODERNIZATION_AND_MODULES_MODAL_WINDOW_CATEGORY_TITLE' + toUpper(_selectedType)")
+	)
+
+	(class $Fullsize)
+	(style
+		(flow = "horizontal")
+		(align = "center")
+		(paddingLeft = "{1280:MS, 1920:LM}")
+		(paddingRight = "{1280:MS, 1920:LM}")
+	)
+
+	
+	(block
+		(style
+			(height = "100%")
+			(bind width "isSmallModulesScreen ? 600 : 635")
+		)
+
+		(tf
+			(bind class "isSmallModulesScreen ? '$TextDefaultBold21NM' : '$TextDefaultBold30NM'")
+			(style (alpha = "TA") (width = 100%))
+			(bind text "contentTitle")
+		)
+
+		(element HorizontalDividerTwoPx
+			(style
+				(width = 100%)
+				(marginTop = "{1280:M, 1920:MS}")
+				(marginBottom = "{1280:MS, 1920:L}")
+			)
+		)
+
+		
+		(block
+			(style (width = 100%) (marginBottom = "L"))
+
+			(tf
+				(bind class "isSmallModulesScreen ? '$TextDefaultBold17NM' : '$TextDefaultBold21NM'")
+				(style (alpha = "TA") (width = 100%) (marginBottom = "MS"))
+				(bind text "'IDS_MODERNIZATION_AND_MODULES_MODAL_WINDOW_MODULES_TITLE'")
+			)
+
+			(hblock
+				(style (width = 100%))
+
+				(block
+					(style
+						(width = 100%)
+						(gap = "LS")
+						(paddingTop = "M")
+						(paddingBottom = "M")
+					)
+
+					(controller $Repeat renderer='ModulesLevelTitle'
+						(bind count "MODULES_AND_MODERINIZATIONS_COUNT_OF_MODULE_LEVELS_IN_INFO")
+					)
+				)
+
+				(hblock
+					(style (hgap = "14") (align = "middle|right"))
+
+					(controller $Repeat renderer='ModuleLevelsGroup'
+						(bind count "moduleTreeByModuleType.length")
+						(args
+								_moduleTreeGroup="moduleTreeByModuleType[$index]"
+								_selectedType = "_selectedType"
+								_shipIdForModuleInset = "shipIdForModuleInset"
+						)
+					)
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%))
+
+			(tf
+				(bind class "isSmallModulesScreen ? '$TextDefaultBold17NM' : '$TextDefaultBold21NM'")
+				(style (alpha = "TA") (width = 100%) (marginBottom = "M"))
+				(bind text "'IDS_MODERNIZATION_AND_MODULES_MODAL_WINDOW_MODERNIZATIONS_TITLE'")
+			)
+
+			(element HorizontalDividerTwoPx
+				(style
+					(width = 100%)
+				)
+			)
+
+			(block
+				(style
+					(width = 100%)
+					(backgroundColor = "SC.Ui_styles.SERVICE_COLORS.INNER_PANEL")
+					(align = "center")
+					(flow = "tile_horizontal")
+					(paddingTop = "M")
+					(paddingBottom = "M")
+					(gap = "LM")
+				)
+
+				(controller $Repeat renderer='ModernizationItem_ModulesAndModernizationsWindow'
+					(bind count "modernizationCount")
+					(args
+						_id = "fullItemsIds[$index]"
+					)
+				)
+			)
+
+			(element HorizontalDividerTwoPx
+				(style
+					(width = 100%)
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(style
+			(paddingLeft = "LM")
+			(hitTest = false)
+		)
+
+		(block
+			(style
+				(bind width "isSmallModulesScreen	? MODULES_AND_MODERINIZATIONS_INFO_WIDTH
+													: MODULES_AND_MODERINIZATIONS_INFO_WIDTH_LARGE")
+			)
+
+			(tf
+				(bind class "isSmallModulesScreen ? '$TextDefaultBold17NM' : '$TextDefaultBold21NM'")
+				(style (alpha = "TA") (width = 100%))
+				(bind text "'IDS_MODERNIZATION_AND_MODULES_MODAL_WINDOW_INFO_TITLE'")
+			)
+
+			(controller $Repeat renderer='ModuleAndModernizationInfoParagraph'
+				(bind count "MODULES_AND_MODERINIZATIONS_COUNT_OF_PARAGRAPHS_IN_INFO")
+				(exprs
+					(style (marginTop = "SXS"))
+				)
+			)
+		)
+	)
+)
+
+(def element TalentTabContent()
+	(scope
+		(macro STAGE_SIZE)
+		(macro PULL_SHIP_ID) 
+		(macro IS_SMALL_MODULES_SCREEN "'isSmallModulesScreen'") 
+	
+		(var shipOwnEntity:gfx = "$datahub.getPrimaryEntity(CC.ownShip, shipId)")
+		(var crewId:number = "shipOwnEntity ? shipOwnEntity.ownShip.crewId : null" (event "shipOwnEntity.ownShip.evCrewChanged"))
+		(var crewEntity:gfx = "$datahub.getPrimaryEntity(CC.crew, crewId)")
+		(var crewSkillSlots:gfx = "crewEntity ? crewEntity.crewSkillSlots : null")
+		(var installedItems:array = "crewSkillSlots ? crewSkillSlots.installedItems : []" (event "crewSkillSlots.evInstalledItemsChanged"))
+		(var allItems:array = "crewSkillSlots ? crewSkillSlots.allItems : []" (event "crewSkillSlots.evAllItemsChanged"))
+	)
+
+	(class $Fullsize)
+	(style
+		(flow = "horizontal")
+		(align = "center")
+		(paddingLeft = "{1280:MS, 1920:LM}")
+		(paddingRight = "{1280:MS, 1920:LM}")
+	)
+
+	
+	(block
+		(style
+			(height = "100%")
+			(bind width "isSmallModulesScreen ? 600 : 635")
+		)
+
+		(tf
+			(bind class "isSmallModulesScreen ? '$TextDefaultBold21NM' : '$TextDefaultBold30NM'")
+			(style (alpha = "TA") (width = 100%))
+			(bind text "'IDS_MODERNIZATION_AND_MODULES_MODAL_WINDOW_NAV_CATEGORY_TALENTS'")
+		)
+
+		(element HorizontalDividerTwoPx
+			(style
+				(width = 100%)
+				(marginTop = "{1280:M, 1920:MS}")
+				(marginBottom = "{1280:MS, 1920:L}")
+			)
+		)
+
+		
+		(block
+			(style (width = 100%) (marginBottom = "L"))
+
+			(hblock
+				(style (width = 100%))
+
+				(hblock
+					(style
+						(width = 100%)
+						(backgroundColor = "SC.Ui_styles.SERVICE_COLORS.INNER_PANEL")
+						(align = "center")
+						(flow = "tile_horizontal")
+						(paddingTop = "M")
+						(paddingBottom = "M")
+						(gap = "LM")
+					)
+
+					(controller $Repeat renderer='CrewSkillInfoItem'
+						(bind count "allItems.length")
+						(args
+							_itemId = "allItems[$index]"
+							_isInstalled = "allItems[$index] in installedItems"
+						)
+					)
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(style
+			(paddingLeft = "LM")
+			(hitTest = false)
+		)
+
+		(block
+			(style
+				(bind width "isSmallModulesScreen	? MODULES_AND_MODERINIZATIONS_INFO_WIDTH
+													: MODULES_AND_MODERINIZATIONS_INFO_WIDTH_LARGE")
+			)
+
+			(tf
+				(bind class "isSmallModulesScreen ? '$TextDefaultBold17NM' : '$TextDefaultBold21NM'")
+				(style (alpha = "TA") (width = 100%))
+				(bind text "'IDS_MODERNIZATION_AND_MODULES_MODAL_WINDOW_INFO_TITLE'")
+			)
+
+			(controller $Repeat renderer='ModuleAndModernizationInfoParagraph'
+				(bind count "MODULES_AND_MODERINIZATIONS_COUNT_OF_PARAGRAPHS_IN_INFO")
+				(exprs
+					(style (marginTop = "SXS"))
+				)
+			)
+		)
+	)
+)
+
+(def element CrewSkillInfoItem(_itemId:number, _isInstalled:bool=false)
+	(scope
+		(macro STAGE_SIZE)
+
+		(var skillEntity:gfx = "$datahub.getPrimaryEntity(CC.crewSlotSkill, _itemId)")
+		(var skillComponent:gfx = "skillEntity ? skillEntity.crewSlotSkill : null")
+	)
+
+	(style
+		(width = 60)
+		(height = 60)
+
+		(marginLeft = "XS")
+
+		(bind backgroundImage "'url:../crew_commander/slot_talents/' + skillComponent.index +'.png'")
+		(backgroundSize = "fill")
+	)
+
+	(bind colorTransform "_isInstalled ? COLOR_TRANSFORM_WHITE_TO_YELLOW : {}")
+
+	(controller $Tooltip
+		(renderer = 'SlotSkillTooltip')
+		(args
+			_skillId = "_itemId"
+			_isInstalled = "_isInstalled"
+			_noMouseInstruction = true
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(offset = { x: 20, y: 20 })
+		(align = "left|bottom")
+	)
+)
+
+(def element ModuleAndModernizationInfoParagraph()
+	(scope
+		(macro STAGE_SIZE)
+		(macro IS_SMALL_MODULES_SCREEN "'isSmallModulesScreen'") 
+	)
+
+	(style (width = 100%))
+
+	(tf
+		(bind class "isSmallModulesScreen ? '$TextDefaultNM' : '$TextDefault17NM'")
+		(style (alpha = "TC") (width = 100%) (marginTop = "SXS"))
+		(bind text "'IDS_MODERNIZATION_AND_MODULES_MODAL_WINDOW_INFO_PARAGRAPH_' + ($index + 1)")
+	)
+)
+
+(def element ModulesLevelTitle()
+	(scope
+		(macro STAGE_SIZE)
+		(macro IS_SMALL_MODULES_SCREEN "'isSmallModulesScreen'") 
+	)
+
+	(style
+		(height = 60px)
+		(width = 100%)
+		(align = "middle")
+	)
+
+	(tf
+		(bind class "isSmallModulesScreen ? '$TextDefaultNM' : '$TextDefault17NM'")
+		(style (alpha = "TC") (width = 100%))
+		(bind text "'IDS_MODERNIZATION_AND_MODULES_MODAL_WINDOW_MODULE_LEVEL_' + ($index + 1)")
+	)
+)
+
+(def element ModuleLevelsGroup(_moduleTreeGroup:array, _selectedType:str, _shipIdForModuleInset:number)
+	(block
+		(class $FullsizeAbsolute)
+		(style 
+			(width = 92px)
+			(height = 292px)
+			(backgroundImage = 'url:../service_kit/frames/92px_not_empty_field.png') (scale9grid = 2) (alpha = 0.5))
+	)
+
+	(block
+		(style (padding = "M") (gap = "LS"))
+
+		(controller $Repeat renderer='ModuleInfoItem'
+			(bind count "_moduleTreeGroup.length")
+			(args
+				_moduleId = "_moduleTreeGroup[$index]"
+				_moduleType = "_selectedType"
+				_shipId = "_shipIdForModuleInset"
+			)
+		)
+	)
+)
+
+(def element ModuleInfoItem (_moduleId:number, _moduleType:str, _shipId:number)
+	(scope
+		(var moduleEntity:gfx = "$datahub.getPrimaryEntity(CC.module, _moduleId)")
+		(var moduleComponent:gfx = "moduleEntity.module")
+
+		(var modulePK:str = "moduleComponent.id" (event "moduleComponent.evUpdated"))
+		(var name:str = "moduleComponent.name" (event "moduleComponent.evUpdated"))
+
+		(var isInstalled:gfx = "moduleComponent.isInstalled" (event "moduleComponent.evUpdated"))
+		(var isResearched:bool = "moduleComponent.isExplored" (event "moduleComponent.evUpdated"))
+
+		(var iconName:str = "	isInstalled	?	'url:../modules/event/' + _moduleType + '/icon_module_' + name + '_installed.png'
+											: 'url:../modules/event/' + _moduleType + '/icon_module_' + name + '.png'")
+		(var headerText:str = "moduleComponent ? moduleComponent.nameText : ''" (event "moduleComponent.evUpdated"))
+	)
+
+	(style
+		(width = 60)
+		(height = 60)
+		(bind backgroundImage "iconName")
+		(backgroundSize = "fill")
+	)
+	
+	(controller $Tooltip
+		(renderer = 'ModuleTooltip')
+		(bind enabled "modulePK != ''")
+		(args
+			_modulePK = "modulePK"
+			_noMouseInstructions = true
+			_isShowUB2Tooltip = true
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(offset = { x: 20, y: 20 })
+		(align = "right|middle")
+		(macro STATS_LOG_TOOLTIP_DURATION "SC.Common.BERMUDA_TECHNOLOGIES_WINDOW_TOOLTIP_STATISTICS.MODULE_TOOLTIP")
+	)
+)
+
+(def element ModernizationItem_ModulesAndModernizationsWindow (_id:number)
+	(scope
+		(var modernizationCollection:gfx = "$datahub.getCollection(CC.modernization)")
+		(var modernizationEntity:gfx = "$datahub.getPrimaryEntity(CC.modernization, _id)"	(event "modernizationCollection.evAdded")
+																							(event "modernizationCollection.evRemoved"))
+		(var modernizationComponent:gfx = "	modernizationEntity ? modernizationEntity.modernization : null")
+		(var name:str = "modernizationComponent ? modernizationComponent.name : null")
+	)
+
+	(element ModernizationItemView
+		_name = "name"
+	)
+
+	(controller $Tooltip
+		(bind renderer "'ModernizationTooltip_ModulesAndModernizationsWindow'")
+		(args
+			_modernizationEntityId = "modernizationEntity.id"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(macro STATS_LOG_TOOLTIP_DURATION "SC.Common.BERMUDA_TECHNOLOGIES_WINDOW_TOOLTIP_STATISTICS.MODERNIZATION_TOOLTIP")
+	)
+)
+
+(def element ModernizationTooltip_ModulesAndModernizationsWindow (_modernizationEntityId:number=0) layout=true
+	(scope
+		(var modernizationEntity:gfx = "$datahub.getEntity(_modernizationEntityId)")
+		(var modernizationComponent:gfx = "modernizationEntity ? modernizationEntity.modernization : null")
+		(var modernizationAttributes:gfx = "modernizationEntity ? modernizationEntity.attributes : null")
+
+		(var id:number = "modernizationComponent ? modernizationComponent.modId : null")
+		(var name:str = "modernizationComponent ? modernizationComponent.name : null")
+		(var type:str = "modernizationComponent ? modernizationComponent.type : null")
+
+		(var attributesNegative:array = "modernizationAttributes ? modernizationAttributes.negative : null" (event "modernizationAttributes.evChanged"))
+		(var attributesNeutral:array = "modernizationAttributes ? modernizationAttributes.neutral : null" (event "modernizationAttributes.evChanged"))
+		(var attributesPositive:array = "modernizationAttributes ? modernizationAttributes.positive : null" (event "modernizationAttributes.evChanged"))
+
+		(var headerText:str = "tr('IDS_TITLE_' + toUpper(name))")
+		(var subheaderText:str = "tr('IDS_MODERNIZATION_' + toUpper(type))")
+		(var descriptionText:str = "tr('IDS_DESC_' + toUpper(name))")
+		(var descriptionVisible:str = "descriptionText != ' '")
+
+		(var iconPath:str = "'url:../modernization_icons/icon_modernization_' + name + '.png'")
+	)
+
+	(name = 'module_and_modernization__modernization_item_tooltip')
+
+	(style (hitTest = "false") (width = "340px"))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_imageUrl =			"iconPath"
+			_headerText =		"headerText"
+			_imageWidth = 		60
+			_imageHeight = 		60
+			_subheaderText =	"subheaderText"
+			_unifiedStatus =	"SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemParamsModifiersList'
+				(args
+					_attributesNegative = "attributesNegative"
+					_attributesPositive = "attributesPositive"
+					_attributesNeutral = "attributesNeutral"
+				)
+			)
+		)
+	)
+)

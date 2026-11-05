@@ -1,0 +1,229 @@
+(def constant PROGRESS_BAR_WIDTH 190)
+
+(def constant GatherBlockReasons "{
+	NONE: 0,
+	ENEMY: 1,
+	SPEED: 2,
+	FIRE: 3,
+	FLOOD: 4
+}")
+
+(def constant RESOURCE_BAR_SETTINGS "{
+    '1': {
+        barIcon: 'url:../battle_hud/markers/zone_markers/icon_resource_survivor_small.png',
+        barColor: 0xFF4CE8AA,
+        loadingIDS: 'IDS_RESCUING',
+        unloadingIDS: 'IDS_UNLOADING',
+        holdingIDS: 'IDS_TRANSPORTING',
+		enabled: true
+    },
+    '2': {
+        barIcon: 'url:../battle_hud/markers/zone_markers/icon_resource_survivor_small.png',
+        barColor: 0xFF4CE8AA,
+        loadingIDS: 'IDS_RESCUING',
+        unloadingIDS: 'IDS_UNLOADING',
+        holdingIDS: 'IDS_TRANSPORTING',
+		enabled: true
+    },
+    '3': {
+        barIcon: 'url:../battle_hud/markers/zone_markers/icon_resource_filthior_small.png',
+        barColor: 0xFF4CE8AA,
+        loadingIDS: 'IDS_RESOURCE_LOADING',
+        unloadingIDS: 'IDS_UNLOADING',
+        holdingIDS: 'IDS_IN_THE_HOLD',
+		enabled: true
+    },
+	'4': {
+        barIcon: '',
+        barColor: 0,
+        loadingIDS: '',
+        unloadingIDS: '',
+        holdingIDS: '',
+		enabled: false
+    },
+	'5': {
+        barIcon: '',
+        barColor: 0,
+        loadingIDS: '',
+        unloadingIDS: '',
+        holdingIDS: '',
+		enabled: false
+    },
+	'6': {
+        barIcon: '',
+        barColor: 0,
+        loadingIDS: '',
+        unloadingIDS: '',
+        holdingIDS: '',
+		enabled: false
+    }
+}")
+
+(def element IndividualProgressContainer () layout=true dispatch_size_change=true
+	(scope
+		(var avatar:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var healthComponent:gfx = "avatar.health")
+		(var isAlive:bool = "healthComponent != null ? healthComponent.isAlive : false" (event "healthComponent.evIsAliveChanged"))
+	
+		(var stageComponent:gfx = "$datahub.getSingleComponent(CC.stage)")
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+	)
+
+	(style
+		(bind paddingTop "stageHeight >= 1080 ? -64px : 0")
+	)
+	
+	(controller $Instance renderer='ResourcesGatherProgressBarWrapper'
+		(bind enabled "isAlive")
+	)
+)
+
+(def element ResourcesGatherProgressBarWrapper () layout=true
+	(scope
+		(var avatar:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var resourcesCollection:gfx = "$datahub.getCollection(CC.resource)")
+		(var playerResources:gfx = "resourcesCollection.getChildByPath('byOwnerId.' + avatar.id)" (event "resourcesCollection.evAdded"))
+	)
+
+	(controller $Repeat renderer='ResourcesGatherProgressBar' layout=false
+		(bind count "playerResources ? playerResources.items.length : 0")
+		(args
+			collection = "playerResources"
+		)
+	)
+)
+
+(def element ResourcesGatherProgressBar (collection:gfx) layout=true
+	(scope
+		(var resourceEntity:gfx = "collection.items[$index]")
+		(var resourceType:str = "resourceEntity.resource.type")
+		(var resourceBarSettings:dict = "RESOURCE_BAR_SETTINGS[resourceType]")
+
+		
+		(var progressComponent:gfx = "resourceEntity.progress")
+		(var minProgress:number = "progressComponent.min" (event "progressComponent.evChanged"))
+		(var maxProgress:number = "progressComponent.max" (event "progressComponent.evChanged"))
+		(var valueProgress:number = "progressComponent.value" (event "progressComponent.evChanged"))
+
+		
+		(var playerInsideZones:gfx = "$datahub.getCollection(CC.interactiveZone).getChildByPath('playerInside.byResourceType.' + resourceType)")
+		(var resourceZone:gfx = "playerInsideZones.items[0]" (event "playerInsideZones.evAdded") (event "playerInsideZones.evRemoved"))
+		(var playerIsInsideZone:bool = "resourceZone != null")
+		(var resourceHolder:gfx = "resourceZone ? resourceZone.resourceHolder : null")
+		(var gatherLocked:bool = "resourceHolder && resourceHolder.gatherLocked" (event "resourceHolder.evGatherLockedChanged"))
+		(var lockReason:number = "resourceHolder ? resourceHolder.lockReason : 0" (event "resourceHolder.evLockReasonChanged"))
+		(var lockReasonIcon:str = "lockReason == GatherBlockReasons.SPEED   ? 'speed_limit' :
+									lockReason == GatherBlockReasons.FIRE   ? 'fire' 
+																			: 'flooding'")
+
+		(var canGather:bool = "resourceHolder && playerIsInsideZone && !(gatherLocked)")
+
+        
+        (var globalVisible:bool = "(canGather || progressComponent) && resourceBarSettings.enabled")
+    )
+    (bind visible "globalVisible")
+    (controller $Animation
+        (bindcall play  duration=0.15
+                        from="{ alpha: 0 }"
+                        to="{ alpha: 1 }"
+                        action="killAll"
+                        reverse="!(globalVisible)"
+                        (bind trigger "globalVisible")
+        )
+    )
+
+	(style (align = "center"))
+
+	(block
+		(style (align = "center"))
+		(tf
+			(class $TextDefaultBoldNM)
+			(style (marginBottom = "4px"))
+			(bind text "canGather   ? resourceHolder.loading    ? resourceBarSettings.loadingIDS
+																: resourceBarSettings.unloadingIDS
+									: resourceBarSettings.holdingIDS")
+		)
+		(hblock
+			(tf
+				(class $TextDefaultBoldNM)
+				(style (marginRight = 0))
+				(bind text "valueProgress")
+			)
+			(tf
+				(alpha = 0.8)
+				(class $TextDefaultNM)
+				(bind text "'/' + maxProgress")
+			)
+		)
+	)
+
+	(block
+
+		(block
+			(style
+				(position = "absolute")
+				(left = "-28px") (top = "-8px")
+				(width = "26px") (height = "26px")
+				(bind backgroundImage "resourceBarSettings.barIcon")
+			)
+		)
+
+		(element SimpleProgressBar
+			(style
+				(marginTop = "3px")
+				(marginLeft = "6px")
+			)
+			(scope
+				(bind maxProgress "maxProgress")
+				(bind valueProgress "valueProgress")
+				(bind color "resourceBarSettings.barColor")
+			)
+
+			
+			(block
+				(bind alpha "lockReason > 0 ? 1 : 0")
+				(style 
+					(position = "absolute")
+					(top = "-11px")
+					(bind left "(valueProgress / maxProgress) * PROGRESS_BAR_WIDTH - 11")
+					(width = "27px")
+					(height = "27px")
+					(bind backgroundImage "'bitmap:icon_personal_lock_' + lockReasonIcon")
+				)
+			)
+		) 
+	)
+)
+
+(def element SimpleProgressBar () layout=true
+	(scope
+		(var maxProgress:number = "1")
+		(var valueProgress:number = "0")
+
+		(var barWidth:number = "PROGRESS_BAR_WIDTH")
+		(var color:number = "0xFFFFFF00")
+	)
+
+	(style
+		(width = "barWidth")
+		(height = "4px")
+		(backgroundImage = "'url:../battle_hud/markers/bar/bar_bg.png'")
+		(scale9grid = [1, 1, 44, 2])
+		(backgroundSize = "cover")
+	)
+
+	(block
+		(style 
+			(position = "absolute")
+			(top = "1px")
+			(left = "1px")
+			(height = "2px")
+			(width = "barWidth - 2")
+			(bind backgroundColor "color")
+			(bind scaleX "maxProgress > 0	? maxProgress > valueProgress 	? valueProgress / maxProgress
+																			: 1
+											: 0")
+		)
+	)
+)
+

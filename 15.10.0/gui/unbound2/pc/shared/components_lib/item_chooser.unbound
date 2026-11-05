@@ -1,0 +1,426 @@
+(def constant INFOTIP_DEFAULT_TEXT_LIST_ITEM_RENDERER_ITEM_HEIGHT 29)
+
+(def macro DEFAULT_INFOTIP_ANIMATIONS ()
+	(showAnimation=	{	duration:	"0.15",
+						easing:		"Easing.quint_in",
+						from:		{ alpha: 0, top: 10 },
+						to:			{ alpha: 1, top: 0 }
+					})
+	(hideAnimation=	{	duration:	"0.15",
+						easing:		"Easing.quint_out",
+						from:		{ alpha: 1, top: 0 },
+						to:			{ alpha: 0, top: 10 }
+					})
+)
+
+(def css $SimpleDropdownElement ()
+	(width = 100%)
+	(padding = 9px)
+)
+
+(def css $DropdownSimpleOptionText ()
+	(extends $TextDefaultNM)
+	(maxWidth = 100%)
+	(leading = 0)
+)
+
+(def css $DropdownSimpleOptionTextSelected ()
+	(extends $DropdownSimpleOptionText)
+	(extends $TextDefaultBoldNM)
+)
+
+(def element ItemChooser (	_name:str='', _disabled:bool=false, _items:array=[], _listItemRenderer:str='', _listItemRendererData:gfx={}, _onItemSelectedEvent:str='',
+							_curIndex:number=0, _curDirection:bool=true, _itemChooserTooltipText:str='', _customDropdown:str='', _maxDropDownHeight:number=220,
+							_dropDownWidth:number=140, _selectedMaxWidth:number=0, _choosedItemRenderer:str='', _choosedItemRendererParams:gfx={}) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+		(event evMenuClosed)
+		(event evItemChooserInner)
+
+		(event evClickedElem)
+		(event evClickedOutside)
+		(event evMenuItemClicked)
+		(event evCloseDropdownByOuterEvent)
+
+		(event evInnerDropdownShown)
+		(event evInnerDropdownHidden)
+
+		(var isDropdownChooserListVisible:bool = false)
+		(bind isDropdownChooserListVisible	"false" init=false watch=false (event "evClickedOutside") (event "evMenuItemClicked"))
+		(bind isDropdownChooserListVisible	"!isDropdownChooserListVisible" init=false watch=false (event "evClickedElem"))
+
+		
+		(var _curItemIndex:number = "_curIndex")
+		(bind _curItemIndex "$event._curItemIndex" init=false (event "evItemChooserInner"))
+
+		
+		
+		(var _lastItemIndex:number = "_curIndex")
+		(bind _lastItemIndex "_curItemIndex" init=false)
+		(var _direction:bool = "_curDirection")
+		(bind _direction "_curItemIndex == _lastItemIndex ? !_direction : false" init=false watch=false (event "evItemChooserInner"))
+
+		(var isEnabled:bool = "!_disabled")
+		(var isItemNavigateVisible:bool = "_items.length > 1 && isEnabled")
+		(var selectedItemMaxWidth:number = "_selectedMaxWidth ? _selectedMaxWidth : 9999")
+		(var selectedItemRightPadding:number = "isItemNavigateVisible ? 23 : 0")
+
+		(var tooltipData:gfx = "!_itemChooserTooltipText || (_items.length <= 1) ? null : { _text: _itemChooserTooltipText }")
+		(var dropdownElemName:str = "_customDropdown ? _customDropdown : 'ItemChooserDropdown'")
+	)
+
+	(bind name "_name")
+
+	
+	(dispatch "'ItemChooser_' + _onItemSelectedEvent" args="{ selectedIndex: _curItemIndex, direction: _direction }" dir="EventDirection.UP" (event "evItemChooserInner"))
+	(dispatch evClickedElem dir="EventDirection.NONE" on='click')
+
+	(dispatch evClickedOutside dir="EventDirection.NONE" (event "evCloseDropdownByOuterEvent"))
+	(dispatch evMenuClosed dir="EventDirection.NONE" (event "evCloseDropdownByOuterEvent"))
+
+	(controller $Tooltip
+		(renderer = "dropdownElemName")
+		(args
+			_items = "_items"
+			_listItemRenderer = "_listItemRenderer"
+			_listItemRendererData = "_listItemRendererData"
+			_curItemIndex = "_curItemIndex"
+			_maxDropDownHeight = "_maxDropDownHeight"
+			_dropDownWidth = "_dropDownWidth"
+		)
+
+		(macro DEFAULT_INFOTIP_ANIMATIONS)
+		(bindcall show on='click')
+		(bindcall hide on='evClickOutside' (event "evMenuClosed"))
+
+		
+		(dispatch evMenuItemClicked dir="EventDirection.UP" (event "evMenuClosed"))
+		
+		(dispatch evClickedOutside dir="EventDirection.UP" on='evClickOutside')
+
+		
+		(dispatch evInnerDropdownShown	dir="EventDirection.DOWN" on='click')
+		(dispatch evInnerDropdownHidden	dir="EventDirection.DOWN" on='evClickOutside' (event "evMenuClosed"))
+
+		(priority = 1)
+		(offset = { x: 0, y: 4 })
+		(align = "bottom|center")
+		(position = "border")
+		(screenBoundsOffset = "{ left: M, top: M, right: M, bottom: M }")
+
+		(pinTop='InfotipPinTop')
+		(pinBottom='InfotipPinBottom')
+
+		(cache = false)
+	)
+
+	(controller $Tooltip
+		(bind enabled "tooltipData")
+		(renderer = 'SimpleStatusTooltip')
+		(args
+			_text = "tooltipData._text"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(style
+		(bind hitTest "isItemNavigateVisible")
+		(flow = "horizontal")
+		(maxWidth = "selectedItemMaxWidth")
+	)
+
+	
+	(block
+		(bind visible "isEnabled")
+		(class $FullsizeAbsolute)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(alpha = 0)
+				(scale9grid = 4)
+				(backgroundImage = 'url:../service_kit/buttons/button_dock/over.png')
+			)
+
+			(controller $Animation
+				(bindcall play
+					duration = 0.15
+					from	 = { alpha: 0 }
+					to		 = { alpha: 1 }
+					reverse	 = "!(rollOver && !mouseDown)"
+					(bind trigger "rollOver && !mouseDown")
+					(bind enabled "!isDropdownChooserListVisible")
+				)
+			)
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(alpha = 0)
+				(scale9grid = 4)
+				(backgroundImage = 'url:../service_kit/buttons/button_dock/down.png')
+			)
+
+			(controller $Animation
+				(bindcall play
+					duration = 0.15
+					from	 = { alpha: 0 }
+					to		 = { alpha: 1 }
+					reverse	 = "!(mouseDown || isDropdownChooserListVisible)"
+					(bind trigger "mouseDown || isDropdownChooserListVisible")
+				)
+			)
+		)
+	)
+	
+
+	(block
+		(bind name "_items[_curIndex]")
+		(style (bind paddingRight "selectedItemRightPadding"))
+
+		(controller $Instance renderer="_choosedItemRenderer"
+			(args
+				_item = "_items[_curIndex]"
+				_choosedItemRendererParams = "_choosedItemRendererParams"
+				_labelMaxWidth = "selectedItemMaxWidth - selectedItemRightPadding"
+			)
+		)
+	)
+
+	(block
+		(bind visible "isItemNavigateVisible")
+
+		(style
+			(position = "absolute")
+			(right = 0px)
+
+			(align = "middle")
+			(height = 100%)
+			(marginLeft = 5px)
+			(marginRight = "XS")
+			(hitTest = "false")
+		)
+
+		(block
+			(style
+				(width = 14px)
+				(height = 14px)
+				(backgroundImage = 'url:../service_kit/buttons/icon_navigate/down.png')
+			)
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "isEnabled"
+		_soundSet = "'dropdown'"
+	)
+)
+
+(def element ItemChooserDropdown (	_items:array=[], _listItemRenderer:str='TextListItemRenderer', _curItemIndex:number=0, _listItemRendererData:gfx={},
+									_dropDownWidth:number=140, _maxDropDownHeight:number=220) layout=true
+	(scope
+		(var dockDataEntity:gfx = "$datahub.getSingleEntity(CC.dockData)")
+		(var isShipOverviewEnabled:bool = "dockDataEntity ? dockDataEntity.dockData.isShipOverviewEnabled : false" (event "dockDataEntity.dockData.evIsShipOverviewEnabledChanged"))
+
+		
+		(var itemHeight:number = "INFOTIP_DEFAULT_TEXT_LIST_ITEM_RENDERER_ITEM_HEIGHT")
+		(var infotipHeight:number = "_maxDropDownHeight >= _items.length * itemHeight	? _items.length * itemHeight
+																						: _maxDropDownHeight")
+		
+	)
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND "true")
+
+	(style
+		(position = "absolute")
+		(bind width "_dropDownWidth")
+		(backgroundImage = 'url:../service_kit/panel_backgrounds/infotip_panel.png')
+		(scale9grid = 3)
+		(bind hitTest "!isShipOverviewEnabled")
+		(bind maxHeight "infotipHeight")
+	)
+
+	(controller $Animation
+		(bindcall play
+			duration = "isShipOverviewEnabled ? 0.4 : 0.25"
+			delay	 = "!isShipOverviewEnabled ? 0.15 : 0.5"
+			easing	 = "Easing.quad_in"
+			from	 = { alpha: 1 }
+			to		 = { alpha: 0 }
+			reverse	 = "!isShipOverviewEnabled"
+			(bind trigger "isShipOverviewEnabled")
+		)
+	)
+
+	(block
+		(name = 'ItemChooserDropdown')
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundColor = 0x01000000)
+			(hitTest = false)
+		)
+	)
+
+	(scrollArea
+		(style
+			(width = 100%)
+			(bind height "infotipHeight")
+		)
+
+		(verticalSlider='ScrollBarVLight')
+
+		(topShadow='InfotipShadowTop')
+		(bottomShadow='InfotipShadowBottom')
+
+		(hscrollPolicy='off')
+		(vscrollPolicy='auto')
+
+		(repeatController='infotip')
+
+		(scrollPerItem = "true")
+		(wheelScrollSpeed = "1.0")
+		(wheelScrollAcceleration = "0.85")
+		(maxScrollingAnimatedDistance = "150")
+
+		(content
+			(style
+				(width = "_dropDownWidth")
+				(height = "infotipHeight")
+			)
+
+			(controller $Repeat count="_items.length" renderer="_listItemRenderer" name='infotip'
+				(reuseElements=true)
+				(itemHeight = "INFOTIP_DEFAULT_TEXT_LIST_ITEM_RENDERER_ITEM_HEIGHT")
+				(itemWidth = "_dropDownWidth")
+				(itemOffset = "INFOTIP_DEFAULT_TEXT_LIST_ITEM_RENDERER_ITEM_HEIGHT * 5") 
+				(args
+					_curItemIndex = "_curItemIndex"
+					_listItemRendererData = "_listItemRendererData"
+					_itemText = "_items[$index]"
+				)
+			)
+		)
+	)
+)
+
+(def element TextListItemRenderer (_curItemIndex:number=0, _itemText:str='', _listItemRendererData:gfx={}, _isInactive:bool=false) layout=true
+	(scope
+		(event evAddedToStage)
+		(event evMenuClosed)
+
+		(macro MOUSE_HANDLER_SCOPE)
+		(var isSelected:bool = "_curItemIndex == $index")
+	)
+
+	(bind name "_itemText")
+	(style (width = 100%))
+
+	
+	(block
+		(controller $Animation
+			(bindcall play
+				duration = 0.05
+				from	 = { alpha: 1 }
+				to		 = { alpha: 0.7 }
+				reverse	 = "!(mouseDown)"
+				(bind trigger "mouseDown")
+			)
+		)
+
+		(class $FullsizeAbsolute)
+		(style (hitTest = false) (alpha = 1))
+
+		(block
+			(controller $Animation
+				(bindcall play
+					duration = 0.05
+					from	 = { alpha: 1 }
+					to		 = { alpha: 1.75 }
+					reverse	 = "!(rollOver && !mouseDown)"
+					(bind trigger "rollOver && !mouseDown")
+				)
+			)
+
+			(class $FullsizeAbsolute)
+			(style (alpha = 1))
+
+			(block
+				(controller $Animation
+					(bindcall play
+						duration = 0.05
+						from	 = { alpha: 0 }
+						to		 = { alpha: 0.7 }
+						reverse	 = "!(rollOver || isSelected)"
+						(bind trigger "rollOver || isSelected")
+						(event "evAddedToStage")
+					)
+				)
+
+				(class $FullsizeAbsolute)
+				(style
+					(scale9grid = 3)
+					(bind backgroundImage "_isInactive ? '' : 'url:../service_kit/panel_backgrounds/menu_item_panel.png'")
+				)
+			)
+		)
+	)
+	
+
+	(block
+		(class $SimpleDropdownElement)
+		(style
+			(bind alpha "_isInactive ? 0.5 : 1")
+		)
+
+		(tf
+			(bind name "'menu_item_' + _itemText")
+
+			(bind class "isSelected ? '$DropdownSimpleOptionTextSelected': '$DropdownSimpleOptionText'")
+			(style
+				(alpha = "TA")
+				(elideMode = true)
+				(textAlign = "left")
+			)
+
+			(bind text "tr(_itemText)")
+		)
+	)
+
+	(dispatch evMenuClosed dir="EventDirection.UP" on='click' (bind enabled "!_isInactive"))
+	(dispatch evAddedToStage dir="EventDirection.NONE" on=addedToStage)
+	(dispatch "'evItemChooserInner'" args="{ _curItemIndex: $index }" dir="EventDirection.UP" on='click' (bind enabled "!_isInactive"))
+
+	(macro MOUSE_HANDLER
+		_enabled = "!_isInactive"
+		_soundSet = "'button_default'"
+	)
+)
+
+(def element DefaultItemChooserPickedItemRenderer (_item:str='', _choosedItemRendererParams:gfx={}, _labelMaxWidth:number=0)
+	(style
+		(height = "L")
+		(hitTest = false)
+	)
+
+	(tf
+		(class $TextDefaultBold17NM)
+		(class $FontColorBlueish)
+
+		(style
+			(maxWidth = "_labelMaxWidth")
+
+			(marginLeft = 7px)
+			(marginRight = 3px)
+			(marginTop = 9px)
+			(marginBottom = 6px)
+
+			(elideMode = true)
+			(textAlign = "left")
+
+			(backgroundColor = 0x8000ff00)
+		)
+
+		(bind text "(tr(_item))")
+	)
+)

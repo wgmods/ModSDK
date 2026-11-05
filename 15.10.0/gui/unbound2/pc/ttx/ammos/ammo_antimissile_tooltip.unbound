@@ -1,0 +1,53 @@
+(def layout Antimissiles_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ANTIMISSILE_DURATION'
+											_value = "_shipTTX.antiMissile.duration"
+											_valueConfig = "VALUE_CONFIG.SECONDS"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ANTIMISSILE_RELOADTIME'
+											_value = "_shipTTX.antiMissile.reloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ANTIMISSILE_NUMCHARGES'
+											_value = "_shipTTX.antiMissile.numCharges"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ANTIMISSILE_DETECTION_ANGLE'
+											_value = "_shipTTX.antiMissile.shootingAngle"
+											_valueConfig = "VALUE_CONFIG.DEGREES"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ANTIMISSILE_MAX_DIST'
+											_value = "_shipTTX.antiMissile.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+		)
+	)
+)
+
+(def layout Antimissiles_ParametersForBattle (_shipTTX:gfx, _ownerEntityId:str) dispatch_size_change=true
+	(class $ParametersPanel)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ANTIMISSILE_DURATION'
+											_value = "_shipTTX.antiMissile.duration"
+											_valueConfig = "VALUE_CONFIG.SECONDS"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ANTIMISSILE_RELOADTIME'
+											_value = "_shipTTX.antiMissile.reloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ANTIMISSILE_NUMCHARGES'
+											_value = "_shipTTX.antiMissile.numCharges"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ANTIMISSILE_DETECTION_ANGLE'
+											_value = "_shipTTX.antiMissile.shootingAngle"
+											_valueConfig = "VALUE_CONFIG.DEGREES"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ANTIMISSILE_MAX_DIST'
+											_value = "_shipTTX.antiMissile.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+		)
+	)
+)

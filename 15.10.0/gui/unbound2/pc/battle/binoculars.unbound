@@ -1,0 +1,91 @@
+(def macro BINOCULAR_APPEAR_ANIMATION ()
+	(controller $Animation
+		(play	duration="0.3"
+				from="{alpha: 0}"
+				to="{alpha: 1}"
+		)
+	)
+)
+
+(def element BinocularsBackground () layout=true
+	(scope
+		(macro STAGE_SIZE)
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var isBinocular:bool = "cameraEntity.camera.isBinocular" (event "cameraEntity.camera.evIsBinocularChanged"))
+		(var isMaskedBinocular:bool = "cameraEntity.camera.isMaskedBinocular" (event "cameraEntity.camera.evIsMaskedBinocularChanged"))
+
+		(var selfVehicleEntity:gfx = "$datahub.getSingleEntity(CC.selfVehicle)")
+		(var isSubmarine:bool = "selfVehicleEntity ? selfVehicleEntity.hasComponent(CC.submarine) : false")
+
+		(var binocularVisible:bool = "isBinocular && isMaskedBinocular")
+	)
+
+	(style
+		(bind width "stageWidth")
+		(bind height "stageHeight")
+	)
+
+	(controller $Instance
+		(bind renderer "isSubmarine ? 'PeriscopeMode' : 'NormalMode'")
+		(bind enabled "binocularVisible")
+	)
+)
+
+(def element NormalMode () layout=true
+	(class $FullsizeAbsolute)
+
+	(macro BINOCULAR_APPEAR_ANIMATION)
+
+	(mc binocular_top_left
+		(style (position = "absolute") (left = 0) (top = 0))
+	)
+
+	(block
+		(style (position = "absolute") (left = 50%) (top = 0))
+		(mc binocular_top
+			(style (marginLeft = -50%))
+		)
+	)
+
+	(mc binocular_top_right
+		(style (position = "absolute") (right = 0) (top = 0))
+	)
+
+	(mc binocular_bottom_left
+		(style (position = "absolute") (left = 0) (bottom = 0))
+	)
+
+	(block
+		(style (position = "absolute") (left = 50%) (bottom = 0))
+		(mc binocular_bottom
+			(style (marginLeft = -50%))
+		)
+	)
+
+	(mc binocular_bottom_right
+		(style (position = "absolute") (right = 0) (bottom = 0))
+	)
+)
+
+(def element PeriscopeMode () layout=true
+	(class $FullsizeAbsolute)
+
+	(macro BINOCULAR_APPEAR_ANIMATION)
+
+	(block
+		(style
+			(position = "absolute") (left = 0) (top = 0) (height = 100%) (width = 50%)
+			(backgroundImage = "'url:../battle_hud/binoculars/periscope/periscope_ocular_left.png'")
+			(backgroundSize = "fill")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute") (right = 0) (top = 0) (height = 100%) (width = 50%)
+			(backgroundImage = "'url:../battle_hud/binoculars/periscope/periscope_ocular_right.png'")
+			(backgroundSize = "fill")
+		)
+	)
+)

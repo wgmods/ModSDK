@@ -1,0 +1,37 @@
+<botDecalsConfig>
+
+	<enableReplay>false</enableReplay>
+
+	<!--
+		mode: how decals are assigned to bot ships
+			"random" - random compatible decals in each slot, maximizing unique decals across slots
+			"single" - one specific decal installed in all compatible slots on all bots
+			"manual" - list of decals assigned to slots in order
+	-->
+	<mode>random</mode>
+
+	<!--
+		For mode="single": PCEX name of the decal to install everywhere.
+		Example: PCEX001_F_S_UK
+	-->
+	<singleDecal></singleDecal>
+
+	<!--
+		For mode="manual": ordered list of decals.
+		Assigned to available slots in order. Incompatible decals are skipped.
+		If fewer decals than slots, remaining slots stay empty.
+	-->
+	<manualDecals>
+		<!-- <decal>PCEX001_F_S_UK</decal> -->
+		<!-- <decal>PCEX002_F_S_Spain</decal> -->
+	</manualDecals>
+
+	<!--
+		Filter by customization type (affects random pool):
+			"all"   - both 2D decals and 3D models
+			"decal" - only 2D decals (CustomizationType.DECAL)
+			"model" - only 3D models (CustomizationType.MODEL)
+	-->
+	<customizationType>all</customizationType>
+
+</botDecalsConfig>

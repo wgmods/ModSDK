@@ -1,0 +1,105 @@
+
+(def element SlotSkillTooltip (_skillId:number, _isInstalled:bool = false, _isSlotTooltip:bool=false, _isPurchased:bool=false, _noMouseInstruction:bool = false)
+	(scope
+		(var skillEntity:gfx = "$datahub.getPrimaryEntity(CC.crewSlotSkill, _skillId)")
+		(var skillComponent:gfx = "skillEntity.crewSlotSkill")
+
+		(var mouseInstruction:dict = "	_isSlotTooltip							? {	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																					text: 'IDS_OPEN_CREW_SLOT_SKILL_LIST_MOUSE_INSTRUCTION' } :
+										_isInstalled							? {	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																					text: 'IDS_UNMOUNT_CREW_SLOT_SKILL_MOUSE_INSTRUCTION' } :
+										_isPurchased							? {	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																					text:	'IDS_MOUNT_CREW_SLOT_SKILL_MOUSE_INSTRUCTION' }
+																				: {	unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT,
+																					text:	'IDS_PURCHASE_AND_MOUNT_CREW_SLOT_SKILL_MOUSE_INSTRUCTION'}")
+	)
+
+	(style (width = "SHIP_PARAM_TOOLTIP_WIDTH") (hitTest = false))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+				_imageUrl = "'url:../crew_commander/slot_talents/' + skillComponent.index +'.png'"
+				_imageWidth = 60
+				_imageHeight = 60
+				_unifiedStatus = "_isInstalled ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				_headerText = "'IDS_SKILL_' + skillComponent.index + '_NAME'"
+				_subheaderText = 'IDS_TALENT_CAT_NAME_DEFAULT'
+				_data = "_isInstalled ? {colorTransform: COLOR_TRANSFORM_WHITE_TO_YELLOW} : {}"
+		)
+
+		(element TooltipSystemHorizontalDivider
+			(bind visible "_isInstalled")
+		)
+		
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "_isInstalled")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+					_text = 'IDS_COMMON_MOUNTED'
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemInnerHeaderText
+			_headerText = 'IDS_SKILL_REGULAR_ACTIVATION'
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "'IDS_SKILL_' + skillComponent.index + '_DESCRIPTION'"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemParamsModifiersList
+			_attributesPositive =	"skillComponent.firstLevel.positive"
+			_attributesNeutral =	"skillComponent.firstLevel.neutral"
+			_attributesNegative =	"skillComponent.firstLevel.negative"
+		)
+
+		(block
+			(style (width = 100%))
+			(bind visible "skillComponent.buffParams != null")
+
+			(element TooltipSystemHorizontalDivider)
+
+			(element TooltipSystemInnerHeaderText
+				_headerText = 'IDS_SKILL_TEMPORARY_ACTIVATION'
+			)
+
+			(element TooltipSystemHorizontalDivider)
+
+			(controller $Instance renderer='TooltipSystemParamsModifiersList'
+				(bind enabled "skillComponent.buffParams != null")
+				(args
+					_attributesPositive =	"skillComponent.buffParams.positive"
+					_attributesNeutral =	"skillComponent.buffParams.neutral"
+					_attributesNegative =	"skillComponent.buffParams.negative"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider'
+				(bind enabled "!_noMouseInstruction")
+			)
+
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "!_noMouseInstruction")
+				(args
+					_unifiedStatus = "mouseInstruction.unifiedStatus"
+					_text = "mouseInstruction.text"
+				)
+			)
+		)
+	)
+)

@@ -1,0 +1,67 @@
+(def element ModalWindowUninstallDecals () layout=true
+	(scope
+		(var visualCustomizationAvailabilityEntity:gfx = "$datahub.getSingleEntity(CC.visualCustomizationAvailability)")
+		(var visualCustomizationAvailabilityComponent:gfx =  "visualCustomizationAvailabilityEntity	?
+																visualCustomizationAvailabilityEntity.visualCustomizationAvailability
+																									: null")
+		(var hasInstalledDecalsInPoints:bool = "visualCustomizationAvailabilityComponent	?
+												visualCustomizationAvailabilityComponent.hasInstalledDecalsInPoints
+																							: false" (event "visualCustomizationAvailabilityComponent.evUpdate")
+		)
+	)
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+	(name = "'window_ModalWindowUninstallDecals'")
+
+	(style (align = "middle|center"))
+
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(style
+			(width = "MODERN_ERA_PURCHASE_WINDOW_WIDTH")
+			(align = "center")
+		)
+
+		(element ModalWindowShortHeader
+			_header = "'IDS_CONFIRMATION'"
+			_hasDivider = true
+		)
+
+		(tf
+			(class $TextDefault25NM)
+			(style (alpha = "TA") (marginTop = "MS"))
+			(bind text 'IDS_MODAL_WINDOW_UNINSTALL_ALL_DECALS_HEADER')
+		)
+	)
+
+	(hblock
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1.5)
+		(style (gap = "MS") (marginTop = "L"))
+
+		(element DefaultButton
+			_width = '129px'
+			_label = 'IDS_YES'
+			_name = 'btn_ok'
+			_defaultFocused = "true"
+			_enabled = "hasInstalledDecalsInPoints"
+			_focusIndex = 0
+			_methods = "[	{	type: 'inputMapping.onRequest',
+								name: SC.Ui_common.DECAL_ACTIONS.UNINSTALL_ALL,
+								args: {}
+							},
+							{	type: 'direct.action',
+								name: SC.Common.STATISTICS_EVENTS.LOG,
+								args: [SC.Common.VISUAL_CUSTOMIZATION_STATISTICS.DISMOUNT_ALL_CONFIRMATION]
+							}]"
+
+			(bindcall externalCall "'sound.playSetSoundDirect'" "['button_decals_item_2D', 'unselect']" init=false watch=false on='click')
+		)
+
+		(element DefaultButton
+			_width = '129px'
+			_label = 'IDS_NO'
+			_focusIndex = 1
+			_name = 'btn_cancel'
+		)
+	)
+)

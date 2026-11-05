@@ -1,0 +1,20 @@
+(def element ModalWindowPromoscreenGf() layout=true dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+
+	(name = "'window_ModalWindowPromoScreen'")
+
+	(macro MODAL_WINDOW_BG)
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(class $Fullsize)
+		(style (align = "center"))
+
+		(block
+			(class $FullsizeAbsolute)
+			(element GamefaceWidget
+				_gfName = 'gf_ub2_promoscreen'
+				_gfPath = 'gui/gameface/build/promoscreen/index.html'
+			)
+		)
+	)
+)

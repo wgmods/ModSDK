@@ -1,0 +1,60 @@
+(def element EventHubInfoButton ()
+	(hblock
+		(bindcall externalCall "'inputMapping.onRequest'" "['showRules', { _rulesType: 'event_hub' }]" init=false watch=false on='click')
+		(tf
+			(class $TextDefaultNM)
+			(style (marginTop = "XS"))
+
+			(text = 'IDS_EVENT_HUB_RULES_BUTTON')
+			(style (hitTest = "true"))
+
+		)
+		(block
+			(style (marginLeft = "S") (width = 22) (height = 22) (hitTest = "true"))
+			(element ImageButton
+				_width = 22
+				_height = 22
+				_enabled = "true"
+				_backgroundImage = 'url:../service_kit/buttons/info_tab_new.png'
+			)
+		)
+	)
+)
+
+(def element EventHubAboutEventButton (_width:number)
+	(scope
+		(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM_SCOPE)
+	)
+
+	(style
+		(bind width "_width")
+	)
+
+	(bindcall externalCall "'direct.action'" "[SC.Common.STATISTICS_EVENTS.LOG, [SC.Common.EVENT_HUB_STATISTICS.EVENT_HUB_ABOUT_EVENT_BUTTON]]" init=false watch=false on='click')
+
+	(hblock
+		(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM "true")
+		(class $FullsizeAbsolute)
+		(style (align = "right"))
+
+		(bindcall externalCall "'inputMapping.onRequest'" "['showWindowEventHubOnboarding', { }]" init=false watch=false on='click')
+
+		(tf
+			(class $TextDefaultNM)
+
+			(style (marginTop = "XS") (alpha = "TC"))
+			(text = 'IDS_EVENT_HUB_ABOUT_EVENT_BUTTON')
+			(style (hitTest = "true"))
+
+		)
+		(block
+			(style (marginLeft = "S") (width = 22) (height = 22) (hitTest = "true"))
+			(element ImageButton
+				_width = 22
+				_height = 22
+				_enabled = "true"
+				_backgroundImage = 'url:../service_kit/buttons/info_tab_new.png'
+			)
+		)
+	)
+)

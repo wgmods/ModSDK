@@ -1,0 +1,182 @@
+<sound_preferences.scheme.xml>
+	<scheme xmlns:common="system/data/common_preferences.scheme.xml">
+	<!-- [WWSD-201221] copypasted constraints
+		<constraints>
+			<sound>
+				<vivox type="interval" min="0" max="70"/>
+			</sound>
+		</constraints>
+	 -->
+		<sound>
+			<volume>
+			<!-- [WWSD-201221] copypasted constraints
+				<master type="Float" localization="IDS_MASTER_VOLUME" constraints="common:slider">1.0</master>
+				
+				<ui type="Float" localization="IDS_OPTIONS_UI_VOLUME" constraints="common:slider">1.0</ui>
+				<engines type="Float" localization="IDS_OPTIONS_ENGINES_VOLUME" constraints="common:slider">1.0</engines>
+				<voice type="Float" localization="IDS_OPTIONS_VOICE_VOLUME" constraints="common:slider">1.0</voice>
+				<world type="Float" localization="IDS_OPTIONS_WORLD_VOLUME" constraints="common:slider">1.0</world>
+				<shoot type="Float" localization="IDS_OPTIONS_SHOOT_VOLUME" constraints="common:slider">1.0</shoot>
+				<damage type="Float" localization="IDS_OPTIONS_DAMAGE_VOLUME" constraints="common:slider">1.0</damage>
+			-->
+				<master type="Float" localization="IDS_MASTER_VOLUME" min="0.0" max="1.0">1.0
+					<constraints type="interval" min="0.0" max="1.0"/><!-- [WWSD-201221] copy of common:slider -->
+				</master>
+				
+				<ui type="Float" localization="IDS_OPTIONS_UI_VOLUME" min="0.0" max="1.0">1.0
+					<constraints type="interval" min="0.0" max="1.0"/><!-- [WWSD-201221] copy of common:slider -->
+				</ui>
+				<engines type="Float" localization="IDS_OPTIONS_ENGINES_VOLUME" min="0.0" max="1.0">1.0
+					<constraints type="interval" min="0.0" max="1.0"/><!-- [WWSD-201221] copy of common:slider -->
+				</engines>
+				<voice type="Float" localization="IDS_OPTIONS_VOICE_VOLUME" min="0.0" max="1.0">1.0
+					<constraints type="interval" min="0.0" max="1.0"/><!-- [WWSD-201221] copy of common:slider -->
+				</voice>
+				<world type="Float" localization="IDS_OPTIONS_WORLD_VOLUME" min="0.0" max="1.0">1.0
+					<constraints type="interval" min="0.0" max="1.0"/><!-- [WWSD-201221] copy of common:slider -->
+				</world>
+				<shoot type="Float" localization="IDS_OPTIONS_SHOOT_VOLUME" min="0.0" max="1.0">1.0
+					<constraints type="interval" min="0.0" max="1.0"/><!-- [WWSD-201221] copy of common:slider -->
+				</shoot>
+				<damage type="Float" localization="IDS_OPTIONS_DAMAGE_VOLUME" min="0.0" max="1.0">1.0
+					<constraints type="interval" min="0.0" max="1.0"/><!-- [WWSD-201221] copy of common:slider -->
+				</damage>
+			</volume>
+			
+			<source localization="IDS_MUSIC_DEVICE">SPEAKERS
+				<constraints>
+					<SPEAKERS localization="IDS_SOUND_DEVICE_SPEAKER">0</SPEAKERS>
+					<HEADPHONES localization="IDS_SOUND_DEVICE_HEADSET">1</HEADPHONES>
+				</constraints>
+			</source>
+			
+			<music>
+			<!-- [WWSD-201221] copypasted constraints
+				<dockVolume type="Float" localization="IDS_OPTIONS_DOCK_MUSIC_VOLUME" constraints="common:slider">1.0f</dockVolume>
+				<battleVolume type="Float" localization="IDS_OPTIONS_BATTLE_MUSIC_VOLUME" constraints="common:slider">1.0f</battleVolume>
+			-->
+				<dockVolume type="Float" localization="IDS_OPTIONS_DOCK_MUSIC_VOLUME" min="0.0" max="1.0">1.0
+					<constraints type="interval" min="0.0" max="1.0"/><!-- [WWSD-201221] copy of common:slider -->
+				</dockVolume>
+				<battleVolume type="Float" localization="IDS_OPTIONS_BATTLE_MUSIC_VOLUME" min="0.0" max="1.0">1.0
+					<constraints type="interval" min="0.0" max="1.0"/><!-- [WWSD-201221] copy of common:slider -->
+				</battleVolume>
+				<mod localization="IDS_MUSIC_MOD">MIXED
+					<constraints>
+						<MIXED localization="IDS_MUSIC_MOD_MIXED">0</MIXED>
+						<LEGACY localization="IDS_MUSIC_MOD_LEGACY">1</LEGACY>
+						<DYNAMIC localization="IDS_MUSIC_MOD_DYNAMIC">2</DYNAMIC>
+						<WARDRUMS localization="IDS_MUSIC_MOD_WARDRUMS">3</WARDRUMS>
+					</constraints>
+				</mod>
+			</music>
+			
+			<foghorn>
+				<enabled type="Boolean" localization="IDS_ENABLE_FOGHORN">True</enabled>
+			</foghorn>
+
+			<thirdPartyMusic>
+				<enabled type="Boolean" localization="IDS_PREF_ENABLE_THIRD_PARTY_MUSIC">True</enabled>
+			</thirdPartyMusic>
+			
+			<mixingPreset localization="IDS_MIXING_PRESET">ORIGINAL
+				<constraints>
+					<ORIGINAL localization="IDS_MIXING_PRESETS_ORIGINAL" description="IDS_MIXING_PRESETS_DESCRIPTION_ORIGINAL">0
+						<!-- TODO: <preset> tag is not implemented yet in UserPreferences. The settings below don't work. -->
+						<preset>
+							<set path="sound.volume.ui" value="1.0"/>
+							<set path="sound.volume.engines" value="1.0"/>
+							<set path="sound.volume.voice" value="1.0"/>
+							<set path="sound.volume.world" value="1.0"/>
+							<set path="sound.volume.shoot" value="1.0"/>
+							<set path="sound.volume.damage" value="1.0"/>
+							<set path="sound.voiceOverEffect" value="0.0"/>
+							<set path="sound.narrowDynamicRange" value="True"/>
+							<set path="sound.toneDefeat" value="False"/>
+						</preset>
+					</ORIGINAL>
+					<CINEMATIC localization="IDS_MIXING_PRESETS_CINEMATIC" description="IDS_MIXING_PRESETS_DESCRIPTION_CINEMATIC">1
+						<preset>
+							<set path="sound.volume.ui" value="1.0"/>
+							<set path="sound.volume.engines" value="1.0"/>
+							<set path="sound.volume.voice" value="1.0"/>
+							<set path="sound.volume.world" value="1.0"/>
+							<set path="sound.volume.shoot" value="1.0"/>
+							<set path="sound.volume.damage" value="1.0"/>
+							<set path="sound.voiceOverEffect" value="0.0"/>
+							<set path="sound.narrowDynamicRange" value="True"/>
+							<set path="sound.toneDefeat" value="False"/>
+						</preset>
+					</CINEMATIC>
+					<SIMPLIFIED localization="IDS_MIXING_PRESETS_SIMPLIFIED" description="IDS_MIXING_PRESETS_DESCRIPTION_SIMPLIFIED">2
+						<preset>
+							<set path="sound.volume.ui" value="1.0"/>
+							<set path="sound.volume.engines" value="1.0"/>
+							<set path="sound.volume.voice" value="1.0"/>
+							<set path="sound.volume.world" value="1.0"/>
+							<set path="sound.volume.shoot" value="1.0"/>
+							<set path="sound.volume.damage" value="1.0"/>
+							<set path="sound.voiceOverEffect" value="0.0"/>
+							<set path="sound.narrowDynamicRange" value="True"/>
+							<set path="sound.toneDefeat" value="False"/>
+						</preset>
+					</SIMPLIFIED>
+					<NIGHT localization="IDS_MIXING_PRESETS_NIGHT" description="IDS_MIXING_PRESETS_DESCRIPTION_NIGHT">3
+						<preset>
+							<set path="sound.volume.ui" value="1.0"/>
+							<set path="sound.volume.engines" value="1.0"/>
+							<set path="sound.volume.voice" value="1.0"/>
+							<set path="sound.volume.world" value="1.0"/>
+							<set path="sound.volume.shoot" value="1.0"/>
+							<set path="sound.volume.damage" value="1.0"/>
+							<set path="sound.voiceOverEffect" value="0.0"/>
+							<set path="sound.narrowDynamicRange" value="False"/>
+							<set path="sound.toneDefeat" value="True"/>
+						</preset>
+					</NIGHT>
+					<CUSTOM localization="IDS_MIXING_PRESETS_CUSTOM">4</CUSTOM>
+				</constraints>
+			</mixingPreset>
+			
+		<!-- [WWSD-201221] copypasted constraints
+			<voiceOverEffect type="Float" localization="IDS_OPTIONS_VOICE_OVER_EFFECT" constraints="common:slider">0.0</voiceOverEffect>
+		-->
+			<voiceOverEffect type="Float" localization="IDS_OPTIONS_VOICE_OVER_EFFECT" min="0.0" max="1.0">0.0
+				<constraints type="interval" min="0.0" max="1.0"/><!-- [WWSD-201221] copy of common:slider -->
+			</voiceOverEffect>
+			<narrowDynamicRange type="Boolean" localization="IDS_OPTIONS_NARROW_DYNAMIC_RANGE">True</narrowDynamicRange>
+			<toneDefeat type="Boolean" localization="IDS_OPTIONS_TONE_DEFEAT">False</toneDefeat>
+			<quickCommands type="Boolean" localization="IDS_OPTIONS_QUICKCOMMANDS_SOUND">True</quickCommands>
+			
+			<voice>
+				<package type="String" localization="IDS_VOICE_PACKAGE"/>
+				<mod type="String" localization="IDS_VOICE_MOD">IDS_SOUND_MOD_DEFAULT</mod>
+
+				<chat>
+					<enabled type="Boolean" localization="IDS_OPTIONS_ENABLE_VOICECHAT">False</enabled>
+
+				<!-- [WWSD-201221] copypasted constraints
+					<inputVolume type="Integer" localization="IDS_MICROPHONE_SENSITIVITY" constraints="sound.vivox">50</inputVolume>
+					<outputVolume type="Integer" localization="IDS_VOICECHAT_OUTPUT_VOLUME" constraints="sound.vivox">50</outputVolume>
+				 -->
+					<!-- <inputVolume type="Float" localization="IDS_MICROPHONE_SENSITIVITY" min="0.0" max="70.0">50.0 		Maybe make them also float like this? -->
+					<inputVolume type="Integer" localization="IDS_MICROPHONE_SENSITIVITY" min="0.0" max="70.0">50
+						<constraints type="interval" min="0" max="70"/><!-- [WWSD-201221] copy of sound.vivox -->
+					</inputVolume>
+					<!-- <outputVolume type="Float" localization="IDS_VOICECHAT_OUTPUT_VOLUME" min="0.0" max="70.0">50.0 		Maybe make them also float like this? -->
+					<outputVolume type="Integer" localization="IDS_VOICECHAT_OUTPUT_VOLUME" min="0.0" max="70.0">50
+						<constraints type="interval" min="0" max="70"/><!-- [WWSD-201221] copy of sound.vivox -->
+					</outputVolume>
+
+					<activationMethod localization="IDS_VOICECHAT_MODE">PUSH_TO_TALK
+						<constraints>
+							<PUSH_TO_TALK localization="IDS_VOICECHAT_PUSH_TO_TALK_MODE">0</PUSH_TO_TALK>
+							<TOGGLE_TO_TALK localization="IDS_VOICECHAT_TOGGLE_TO_TALK_MODE">1</TOGGLE_TO_TALK>
+						</constraints>
+					</activationMethod>
+					<device type="String" localization="IDS_VOICECHAT_INPUT_DEVICE">Default System Device</device>
+				</chat>
+			</voice>
+		</sound>
+	</scheme>
+</sound_preferences.scheme.xml>

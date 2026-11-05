@@ -1,0 +1,58 @@
+(def element InteractiveObjectMarkersPanel() layout=true
+	(macro MODAL_WINDOW_INIT)
+
+	(scope
+		(macro PULL_PORT_INFO "'current'" "'current'") 
+		(macro PULL_PORT_INFO "'newYear25'" "'visible.newYear25Port'") 
+		(macro PULL_PORT_INFO "'newYear26'" "'visible.newYear26Port'") 
+		(macro PULL_PORT_INFO "'starTrek'" "'visible.starTrekPort'") 
+
+		(var collectionPreviewRouteEntity:gfx = "$datahub.getPrimaryEntity(CC.route, SC.Ui_windows.ROUTE.COLLECTION_PREVIEW)")
+		(var collectionPreviewComponentRoute:gfx = "collectionPreviewRouteEntity ? collectionPreviewRouteEntity.route : null")
+		(var isOnCollectionPreviewInset:bool = "collectionPreviewComponentRoute.isActive" (event "collectionPreviewComponentRoute.evIsActiveChanged"))
+
+		(var dockMainRouteEntity:gfx = "$datahub.getPrimaryEntity(CC.route, SC.Ui_windows.ROUTE.MAIN)")
+		(var dockMainComponentRoute:gfx = "dockMainRouteEntity ? dockMainRouteEntity.route : null")
+		(var isOnMainDockTab:bool = "dockMainComponentRoute.isActive" (event "dockMainComponentRoute.evIsActiveChanged"))
+
+		(var dockDataEntity:gfx = "$datahub.getSingleEntity(CC.dockData)")
+		(var dockData:gfx = "dockDataEntity ? dockDataEntity.dockData : null")
+		(var isIOMarkersHidden:bool = "dockData ? dockData.isIOMarkersHidden : false" (event "dockData.evIsIOMarkersHiddenChanged"))
+
+		
+		(var containerVariantRenderer:str =	"	currentPortId == newYear25PortId && isOnMainDockTab				? 'NewYear25RoutePortMarkersContainer'	:
+												currentPortId == newYear26PortId && isOnMainDockTab				? 'NewYear26PortMarkersContainer'		:
+												currentPortId == starTrekPortId && isOnCollectionPreviewInset	? 'STCollectionPortMarkersContainer'
+																												: ''")
+	)
+
+	(class $FullsizeAbsolute)
+	(alpha = "!isIOMarkersHidden ? 1 : 0")
+	(visible = "!isIOMarkersHidden")
+
+	(controller $Animation
+		(bindcall play  duration=0.15
+						to="{ alpha: 1, visible: true }"
+						init=false
+						action="kill"
+						(bind enabled "!isIOMarkersHidden")
+		)
+		(bindcall play  duration=0.15
+						to="{ alpha: 0, visible: false }"
+						init=false
+						action="kill"
+						(bind enabled "isIOMarkersHidden")
+		)
+	)
+
+	
+	(controller $Instance
+		(bind enabled "containerVariantRenderer != ''")
+		(bind renderer "containerVariantRenderer")
+	)
+
+	
+	(controller $Instance
+		(bind renderer "'VisualCustomizationNodesMarkersContainer'")
+	)
+)

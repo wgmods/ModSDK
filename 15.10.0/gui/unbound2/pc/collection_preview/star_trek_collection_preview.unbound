@@ -1,0 +1,157 @@
+(def constant SIDEBAR_HEIGHT "850")
+(def constant BOTTOM_BAR_HEIGHT "30")
+
+(def css $CollectionSidebarItemContainer()
+	(width = 100%)
+	(paddingTop = "MS")
+	(paddingBottom = "MS")
+)
+
+(def element StarTrekCollectionInset () layout=true dispatch_size_change=true
+	(scope
+		(macro STAGE_SIZE)
+		(event evStartShow)
+		(event evStartHide)
+
+		
+		(var albumsCollection:gfx = "$datahub.getCollection(CC.collectionAlbum)")
+		(var starTrekCollection:gfx = "albumsCollection.getChildByPath('starTrekCollection')")
+		(var starTrekCollectionAlbum:gfx = "starTrekCollection.items.length > 0 ? starTrekCollection.items[0] : null")
+		
+
+		
+		(var collectionAlbum:gfx = "starTrekCollectionAlbum ? starTrekCollectionAlbum.collectionAlbum : null")
+		(var collectionID:number = "collectionAlbum ? collectionAlbum.id : null")
+		
+	)
+
+	(dispatch evStartShow on='addedToStage')
+	(dispatch evStartHide on='removedFromStage')
+
+	(bindcall externalCall 'sound.playSetSoundDirect' "['dock_inset', 'tab_collection_whoosh']" init=false watch=false on='addedToStage')
+
+	(controller $Animation
+		(bindcall play duration=0.25 delay=4 from="{alpha: 0}" to="{alpha: 1}" action="killAll" (event "evStartShow"))
+		(bindcall play duration=0.25 from="{alpha: 1}" to="{alpha: 0}" action="killAll" (event "evStartHide"))
+	)
+
+	(style
+		(bind width "stageWidth")
+		(bind height "stageHeight")
+		(alpha = 0)
+	)
+
+	(bind name "'StarTrekCollectionInset'")
+
+	
+	(element RightCollectionSidebar
+		_collectionID = "collectionID"
+	)
+
+	
+	(block
+		(style (width = 100%) (align = "center"))
+
+		
+		(block
+			(style (width = 100%) (height = 54px))
+
+			(element ModalWindowHeaderFullSize
+				_backButtonText = 'IDS_RETURN_TO_DOCK'
+				_hideDivider = true
+				_paddingRight = "M"
+				_paddingLeft = "M"
+				_paddingTop = "MS"
+			)
+		)
+	)
+)
+
+(def element RightCollectionSidebar (_collectionID:number) layout=true
+	(scope
+		(macro GET_PREF 'isBlurOptionEnabled' "'graphics.GUI.blur'")
+		(macro GET_PREF 'isUIContrastOptionEnabled' "'graphics.GUI.contrast'")
+
+		(var isHighContrast:bool = "isUIContrastOptionEnabled || !isBlurOptionEnabled")
+	)
+
+	(class $FullsizeAbsolute)
+	(style (align = "right"))
+
+	
+	(block
+		(style
+			(width = "{1280: 320, 1920: 384}") (height = "100%")
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+
+			(element BlurMap)
+
+			(block
+				(bind visible "isHighContrast")
+				(class $FullsizeAbsolute)
+				(style
+					(backgroundImage = "'url:../service_kit/panel_backgrounds/infotip_panel.png'")
+					(scale9grid = 3)
+					(alpha = 1.3)
+				)
+			)
+		)
+
+		(block
+			(class $Fullsize)
+			(style (paddingTop = "{720: 54px, 1080: XLL}"))
+
+			(scrollArea
+				(style
+					(width = "{1280: 320, 1920: 384}")
+					(height = 95%)
+				)
+
+				(verticalSlider='AchievementsScrollBarV')
+
+				(hscrollPolicy='off')
+				(vscrollPolicy='auto')
+
+				(content
+					(style
+						(height = 100%) (width = "{1280: 320, 1920: 384}")
+						(paddingLeft = "{1280: SXS, 1920: M}") (paddingRight = "{1280: SXS, 1920: M}")
+					)
+
+					(element CollectionTitle
+						_collectionID = "_collectionID"
+						_overrideCollectionRecieveDescription = 'IDS_COLLECTION_RECEIVE_IN_PROGRESS_LINE'
+					)
+
+					(element HorizontalDividerTwoPx)
+
+					(controller $Instance renderer='CollectionReward'
+						(exprs (class $CollectionSidebarItemContainer))
+						(args _collectionID = "_collectionID")
+					)
+
+					(element HorizontalDividerTwoPx)
+
+					(controller $Instance renderer='CollectionTokensAndDuplicates'
+						(exprs (class $CollectionSidebarItemContainer))
+						(args _collectionID = "_collectionID")
+					)
+
+					(controller $Instance renderer='CollectionRewardsList'
+						(exprs
+							(style
+								(width = 100%)
+								(paddingBottom = "MS")
+							)
+						)
+						(args _collectionID = "_collectionID")
+					)
+				)
+			)
+		)
+
+	)
+)

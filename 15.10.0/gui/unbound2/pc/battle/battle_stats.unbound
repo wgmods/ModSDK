@@ -1,0 +1,1106 @@
+
+
+
+
+(def constant BATTLE_STATISTICS_SIDE_RAIL_WIDTH "{1280: 187, 1920: 220}")
+(def constant BATTLE_STATISTICS_SIDE_RAIL_GAP "{1280: 16, 1920: 40}")
+
+(def constant BATTLE_STATISTICS_SIDE_RAIL_TOP_INSET 12)
+
+(def constant BATTLE_STATISTICS_SIDE_RAIL_LABEL_WIDTH "{1280: 127, 1920: 160}")
+
+
+
+
+(def constant BATTLE_STATISTICS_TAB_CONTENT_TOP 164)
+(def constant BATTLE_STATISTICS_TAB_CONTENT_BOTTOM 16)
+
+
+
+(def constant BATTLE_STATISTICS_TABS_ROW_HEIGHT 46)
+
+(def element BattleStatsInBattle () layout=true
+	(scope
+		
+		
+		
+		(var avatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var battleInfo:gfx = "battleDataEntity ? battleDataEntity.battleInfo : null")
+		(var gameModeId:number = "battleInfo ? battleInfo.gameModeId : SC.Battle.GAME_MODE.INVALID" (event "battleInfo.evGameModeIdChanged"))
+
+		
+		
+		(var gameStatsCommandEntity:gfx = "$datahub.getPrimaryEntity(CC.commandMappingCommandName, 'CMD_GAME_STATS')")
+		(var isStatsPanelShown:bool = "gameStatsCommandEntity && gameModeId != SC.Battle.GAME_MODE.TUTORIAL ? gameStatsCommandEntity.commandMappingCommand.isDown : false" (event "gameStatsCommandEntity.commandMappingCommand.evIsDownChanged"))
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(alpha = 0)
+		(visible = false)
+		(controller $Animation
+			(bindcall play duration=0.1 from={alpha:0, visible: false} to={alpha:1, visible: true} action="killAll" (bind enabled "isStatsPanelShown"))
+			(bindcall play duration=0.1 from={alpha:1, visible: true} to={alpha:0, visible: false} action="killAll" (bind enabled "!isStatsPanelShown"))
+		)
+		(controller $Instance renderer='BattleStatsInBattleContent'
+			(bind enabled "avatarEntity != null")
+		)
+	)
+)
+
+
+
+
+(def element BattleStatsInBattleContent () layout=true
+	(scope
+		(event evBattleStatsPageSelected)
+
+		
+		(var navigationEntity:gfx = "$datahub.getSingleEntity(CC.battleStatisticsNavigation)")
+		(var navigation:gfx = "navigationEntity ? navigationEntity.battleStatisticsNavigation : null")
+		(var selectedPage:number = "navigation ? navigation.selectedPage : SC.Battle.BATTLE_STATISTICS_PAGE.MAIN" (event "navigation.evSelectedPageChanged"))
+
+		
+		
+		(var gameStatsCommandEntity:gfx = "$datahub.getPrimaryEntity(CC.commandMappingCommandName, 'CMD_GAME_STATS')")
+		(var isStatsShown:bool = "gameStatsCommandEntity ? gameStatsCommandEntity.commandMappingCommand.isDown : false" (event "gameStatsCommandEntity.commandMappingCommand.evIsDownChanged"))
+
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+
+		
+		
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		
+		
+		
+		(var battleInfo:gfx = "battleDataEntity ? battleDataEntity.battleInfo : null" (event "battleDataEntity.evAdded"))
+		(var battleType:str = "battleInfo ? battleInfo.battleType : ''")
+		(var gameModeId:number = "battleInfo ? battleInfo.gameModeId : SC.Battle.GAME_MODE.INVALID" (event "battleInfo.evGameModeIdChanged"))
+		(var scenario:str = "battleInfo ? battleInfo.scenario : ''")
+
+		(var isOperation:bool = "gameModeId == SC.Battle.GAME_MODE.PVE")
+		
+		(var isPointsAccrualShown:bool = "!isIn(gameModeId, [SC.Battle.GAME_MODE.EPICENTER, SC.Battle.GAME_MODE.EPICENTER_RING, SC.Battle.GAME_MODE.CONVOY_AIRSHIP])")
+		(var isFirstBattle:bool = "scenario == 'FIRST_BATTLE'")
+		(var isDynamicDivisionsEnabled:bool = "isIn(battleType, SC.Common.BATTLE_TYPES.DYNAMIC_DIVISION_AVAILABLE) && !isFirstBattle")
+
+		
+		(var selfPlayerEntity:gfx = "$datahub.getSingleEntity(CC.accountSelf)")
+		(var preBattlePlayerSimple:gfx = "selfPlayerEntity ? selfPlayerEntity.preBattlePlayerSimple : null")
+		(var teamId:number = "preBattlePlayerSimple ? preBattlePlayerSimple.teamId : SC.Common.TRAINING_ROOM_TEAMS_IDS.SELF_TEAM" (event "preBattlePlayerSimple.evTeamIdChanged"))
+		(var isTeamIdObserver:bool = "teamId == SC.Common.TRAINING_ROOM_TEAMS_IDS.OBSERVER_TEAM")
+		
+		
+		(var isTabsRowShown:bool = "!isTeamIdObserver && !isFirstBattle")
+
+		(var contentTop:number = "isTabsRowShown	? BATTLE_STATISTICS_TAB_CONTENT_TOP
+													: BATTLE_STATISTICS_TAB_CONTENT_TOP - BATTLE_STATISTICS_TABS_ROW_HEIGHT")
+		(var containerHeight:number = "stageHeight - contentTop - BATTLE_STATISTICS_TAB_CONTENT_BOTTOM")
+
+		
+		
+		(var contentWidthHD:number = "isOperation ? STRUCTURE_ITEM_WIDTH_PVE : TEAM_BATTLE_WIDTH_HD")
+		(var contentWidthFHD:number = "isOperation ? STRUCTURE_ITEM_WIDTH_PVE : TEAM_BATTLE_WIDTH")
+	)
+
+	(style
+		(position = "absolute")
+		(left = 0)
+		(top = 0)
+		(bind width "stageWidth")
+		(bind height "stageHeight")
+	)
+	(bindcall externalCall 'inputMapping.onAction' "['BattleHints.refresh', {}]" init=false watch=false on='addedToStage')
+	
+	
+	(bindcall externalCall 'inputMapping.onAction'
+		"['battleStatisticsSelectPage', { index: SC.Battle.BATTLE_STATISTICS_PAGE.DETAILS, auto: true, isFirstBattle: true }]"
+		init=false watch=false on='addedToStage' (bind enabled "isFirstBattle"))
+	(bindcall externalCall 'inputMapping.onAction' "['BattleHints.refresh', {}]" init=false watch=false (bind enabled "isStatsShown"))
+	(bindcall externalCall 'inputMapping.onAction' "['battleStatisticsSelectPage', { index: $event.index }]" init=false watch=false (event "evBattleStatsPageSelected"))
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(alpha = 0.8)
+			(backgroundSize = "fill")
+			(backgroundImage = 'url:../service_kit/panel_backgrounds/modal_battle.png')
+		)
+	)
+
+	(element BattleStatisticsHeader "battleInfo")
+	(block
+		(bind visible "isTabsRowShown")
+		(style (width = 100%))
+		(element BattleStatsTopLevelTabs
+			_selectedPage = "selectedPage"
+		)
+	)
+
+	
+	
+	(block
+		(bind visible "selectedPage == SC.Battle.BATTLE_STATISTICS_PAGE.MAIN && !isFirstBattle")
+		(style
+			(width = 100%)
+			(marginTop = "MS")
+		)
+
+		
+		
+		(block
+			(style
+				(width = 100%)
+				(align = "center")
+			)
+
+			(hblock
+				(block
+					(style
+						(width = "BATTLE_STATISTICS_SIDE_RAIL_WIDTH")
+						(marginRight = "BATTLE_STATISTICS_SIDE_RAIL_GAP")
+						(paddingTop = "BATTLE_STATISTICS_SIDE_RAIL_TOP_INSET")
+					)
+					(element QuickCommandHelpPanel)
+				)
+
+				(scrollArea
+					(macro BATTLE_STATISTICS_SCROLL_COLUMN_SHELL _widthHD = "contentWidthHD" _widthFHD = "contentWidthFHD" _height = "containerHeight" _flush = "true")
+
+					(content
+						(macro BATTLE_STATISTICS_SCROLL_COLUMN_CONTENT _widthHD = "contentWidthHD" _widthFHD = "contentWidthFHD")
+
+						(element TeamBattlePage
+							_isBattleStats = true
+							_isDynamicDivisionsEnabled = "isDynamicDivisionsEnabled"
+							_isAnimShown = true
+							_isAdaptive = true
+						)
+
+						(element BattleStatisticsInfoPanel
+							_leftRenderer = "isOperation	? 'BattleStatisticsTabOperationDescription'
+															: 'BattleStatisticsTabRandomDescription'"
+							_rightRenderer = "isOperation	? 'BattleStatsTaskList'
+															: 'BattleStatisticsTabPointsAccrual'"
+							_gap = "isOperation	? BATTLE_STATISTICS_TAB_PANEL_GAP_PVE
+												: BATTLE_STATISTICS_TAB_PANEL_GAP"
+							_rightShown = "isOperation || isPointsAccrualShown"
+							(style (marginTop = "S"))
+						)
+					)
+				)
+
+				
+				
+				(block
+					(style
+						(width = "BATTLE_STATISTICS_SIDE_RAIL_WIDTH")
+						(marginLeft = "BATTLE_STATISTICS_SIDE_RAIL_GAP")
+						(paddingTop = "BATTLE_STATISTICS_SIDE_RAIL_TOP_INSET")
+					)
+					(block
+						(bind visible "gameModeId != SC.Battle.GAME_MODE.ESCAPE_TO_PORTAL && !isFirstBattle")
+						(style (width = 100%))
+						(element BattleStatsDivisionsPanel)
+					)
+				)
+			)
+		)
+	)
+
+	(block
+		(bind visible "selectedPage == SC.Battle.BATTLE_STATISTICS_PAGE.DETAILS || isFirstBattle")
+		(style
+			(width = 100%)
+			(marginTop = "MS")
+			(align = "center")
+		)
+
+		(scrollArea
+			(macro BATTLE_STATISTICS_SCROLL_COLUMN_SHELL _widthHD = "BATTLE_STATISTICS_DETAILS_WIDTH_HD" _widthFHD = "BATTLE_STATISTICS_DETAILS_WIDTH" _height = "containerHeight")
+
+			(content
+				(macro BATTLE_STATISTICS_SCROLL_COLUMN_CONTENT _widthHD = "BATTLE_STATISTICS_DETAILS_WIDTH_HD" _widthFHD = "BATTLE_STATISTICS_DETAILS_WIDTH")
+
+				(element BattleStatsDetailsPage)
+			)
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(class $BottomMenu)
+		(block
+			(style (marginLeft = 10px) (marginTop = 4px) (width = 19px) (height = 17px))
+			(element VoiceChatOutgoingIcon)
+		)
+	)
+
+	(element BattleDivisionInvitations
+		(bind visible "selectedPage == SC.Battle.BATTLE_STATISTICS_PAGE.MAIN")
+	)
+)
+
+(def element BattleStatsTopLevelTabs (_selectedPage:number) dispatch_size_change=true
+	(style
+		(width = 100%)
+		(marginTop = "M")
+		(align = "center")
+	)
+
+	(element MAIN_TAB_BUTTONS_BLOCK
+		(element MainTabButton
+			_label = 'IDS_BATTLE_STATISTICS_TAB_PRIMARY'
+			_width = "MAIN_TAB_BUTTON_WIDTH.TINY"
+			_isSelected = "_selectedPage == SC.Battle.BATTLE_STATISTICS_PAGE.MAIN"
+			_dispatchedEv = 'evBattleStatsPageSelected'
+			_dispatchParams = "{ index: SC.Battle.BATTLE_STATISTICS_PAGE.MAIN }"
+			_name = 'battleStatsMainPageTab'
+		)
+
+		(element MainTabButton
+			_label = 'IDS_BATTLE_STATISTICS_TAB_DETAILED'
+			_width = "MAIN_TAB_BUTTON_WIDTH.TINY"
+			_isSelected = "_selectedPage == SC.Battle.BATTLE_STATISTICS_PAGE.DETAILS"
+			_dispatchedEv = 'evBattleStatsPageSelected'
+			_dispatchParams = "{ index: SC.Battle.BATTLE_STATISTICS_PAGE.DETAILS }"
+			_name = 'battleStatsDetailsPageTab'
+			_isLast = true
+		)
+	)
+)
+
+
+
+
+(def element BattleStatsDivisionsPanel () layout=true
+	(scope
+		(macro GET_PREF 'voiceChatEnabled' "'sound.voice.chat.enabled'")
+
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var battleInfo:gfx = "battleDataEntity ? battleDataEntity.battleInfo : null")
+		(var battleType:str = "battleInfo ? battleInfo.battleType : ''")
+		(var scenario:str = "battleInfo ? battleInfo.scenario : ''")
+		(var isDynamicDivisionsEnabled:bool = "isIn(battleType, SC.Common.BATTLE_TYPES.DYNAMIC_DIVISION_AVAILABLE) && scenario != 'FIRST_BATTLE'")
+
+		(var selfPlayerEntity:gfx = "$datahub.getSingleEntity(CC.accountSelf)")
+		(var battleInvite:gfx = "selfPlayerEntity ? selfPlayerEntity.battleInvite : null")
+		(var invitationsEnabled:bool = "battleInvite ? battleInvite.invitationsEnabled : false" (event "battleInvite.evInvitationsEnabledChanged"))
+	)
+	(style
+		(width = 100%)
+		(gap = "MS")
+	)
+
+	(tf
+		(class $TextDefaultBoldNM)
+		(style
+			(width = 100%)
+			(alpha = "TA")
+		)
+		(text = 'IDS_DIVISIONS_IN_BATTLE_HEADER')
+	)
+	(tf
+		(class $TextDefaultNM)
+		(style
+			(width = 100%)
+			(alpha = 0.7)
+		)
+		(text = 'IDS_DYNAMIC_DIVISIONS_INFO')
+	)
+
+	
+	
+	(block
+		(style (width = 100%))
+		(element SwitchWithRightLabel
+			_state = "voiceChatEnabled"
+			_label = 'IDS_ENABLE_VOICE_CHAT'
+			_adaptiveTextWidth = "BATTLE_STATISTICS_SIDE_RAIL_LABEL_WIDTH"
+			_methods = "[	{ type: 'direct.action', name: 'option.set', args: ['sound.voice.chat.enabled', !voiceChatEnabled] },
+							{ type: 'inputMapping.onAction', name: 'battleStatisticsLog', args: { event: voiceChatEnabled ? 'voice_chat_disabled' : 'voice_chat_enabled' } }]"
+		)
+		(controller $Tooltip
+			(renderer = 'SimpleStatusTooltip')
+			(args _text = 'IDS_ENABLE_VOICE_CHAT_IN_BATTLE_HINT')
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+	)
+
+	
+	
+	(block
+		(bind visible "isDynamicDivisionsEnabled")
+		(style (width = 100%))
+		(element SwitchWithRightLabel
+			_state = "invitationsEnabled"
+			_label = 'IDS_ENABLE_INVITATIONS_TO_DIVISION'
+			_adaptiveTextWidth = "BATTLE_STATISTICS_SIDE_RAIL_LABEL_WIDTH"
+			_methods = "[	{ type: 'inputMapping.onAction', name: 'toggleInvitationsEnabled', args: {} },
+							{ type: 'inputMapping.onAction', name: 'battleStatisticsLog', args: { event: invitationsEnabled ? 'restrict_join_enabled' : 'restrict_join_disabled' } }]"
+		)
+		(controller $Tooltip
+			(renderer = 'SimpleStatusTooltip')
+			(args _text = 'IDS_ENABLE_INVITATIONS_TO_DIVISION_IN_BATTLE_HINT')
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+	)
+)
+
+
+
+
+
+
+(def constant BATTLE_STATISTICS_DETAILS_CATEGORIES_WIDTH "{1280: 326, 1920: 420}")
+(def constant BATTLE_STATISTICS_DETAILS_TEXT_WIDTH "{1280: 360, 1920: 420}")
+(def constant BATTLE_STATISTICS_DETAILS_GALLERY_WIDTH 528)
+(def constant BATTLE_STATISTICS_DETAILS_WIDTH "420 + BATTLE_STATISTICS_DETAILS_GALLERY_WIDTH + 420")
+(def constant BATTLE_STATISTICS_DETAILS_WIDTH_HD "326 + BATTLE_STATISTICS_DETAILS_GALLERY_WIDTH + 360")
+
+(def constant BATTLE_STATISTICS_DETAILS_COLUMN_PADDING 16)
+(def constant BATTLE_STATISTICS_DETAILS_COLUMN_INNER_PADDING "{1280: 0, 1920: 16}")
+(def constant BATTLE_STATISTICS_DETAILS_IMAGE_SIZE 440)
+(def constant BATTLE_STATISTICS_DETAILS_ARROW_WIDTH 44)
+(def constant BATTLE_STATISTICS_DETAILS_CATEGORY_HEIGHT 40)
+
+(def constant BATTLE_STATISTICS_DETAILS_CATEGORY_INSET 18)
+
+(def element BattleStatsDetailsPage ()
+	(scope
+		(event evBattleStatsDetailsCategorySelected)
+		(event evBattleStatsHintNext)
+
+		(var battleHintsEntity:gfx = "$datahub.getSingleEntity(CC.battleHints)")
+		(var hintCategories:array = "battleHintsEntity ? battleHintsEntity.battleHints.hintCategories : []" (event "battleHintsEntity.battleHints.refreshData"))
+		(var hintCategoryIds:array = "battleHintsEntity ? battleHintsEntity.battleHintsCategories.ids : []" (event "battleHintsEntity.battleHints.refreshData"))
+
+		
+		
+		(var navigationEntity:gfx = "$datahub.getSingleEntity(CC.battleStatisticsNavigation)")
+		(var navigation:gfx = "navigationEntity ? navigationEntity.battleStatisticsNavigation : null")
+		(var storedCategory:number = "navigation ? navigation.detailsCategory : SC.Battle.BATTLE_HINT_CATEGORY.BASIC" (event "navigation.evDetailsCategoryChanged"))
+		
+		
+		
+		(var storedCategoryIndex:number = "indexOf(storedCategory, hintCategoryIds)")
+		(var selectedCategoryIndex:number = "storedCategoryIndex >= 0 ? storedCategoryIndex : 0")
+		(var selectedCategory:gfx = "selectedCategoryIndex < hintCategories.length ? hintCategories[selectedCategoryIndex] : null")
+		(var selectedCategoryId:number = "selectedCategory ? selectedCategory.category : storedCategory")
+		(var selectedHints:array = "selectedCategory ? selectedCategory.hints : []")
+
+		
+		
+		
+		
+		(var selectedHintIndex:number = "navigation ? navigation.detailsHintIndex : 0")
+		(bind selectedHintIndex "navigation.detailsHintIndex" init=false watch=false (event "navigation.evDetailsHintIndexChanged"))
+		(bind selectedHintIndex "0" init=false watch=false (event "navigation.evDetailsCategoryChanged"))
+		(bind selectedHintIndex "$event.index" init=false watch=false (event "evBattleStatsHintNext"))
+		
+		
+		(var currentHintIndex:number = "selectedHints.length ? min(selectedHintIndex, selectedHints.length - 1) : 0")
+
+		(var currentHint:gfx = "selectedHints.length ? selectedHints[currentHintIndex] : null")
+		(var nextHintIndex:number = "currentHintIndex + 1 >= selectedHints.length ? 0 : currentHintIndex + 1")
+		(var prevHintIndex:number = "currentHintIndex == 0 ? selectedHints.length - 1 : currentHintIndex - 1")
+		(var hasManyHints:bool = "selectedHints.length > 1")
+
+		
+		
+		(event evBattleStatsHintHalfHover)
+		(var hoveredPagingSide:number = "0")
+		(bind hoveredPagingSide "$event.side" init=false watch=false (event "evBattleStatsHintHalfHover"))
+	)
+
+	(bindcall externalCall 'inputMapping.onAction'
+		"['battleStatisticsSelectDetailsCategory', { category: $event.category }]"
+		init=false watch=false (event "evBattleStatsDetailsCategorySelected"))
+	
+	(bindcall externalCall 'inputMapping.onAction'
+		"['battleStatisticsLog', { event: 'hint_paged' }]"
+		init=false watch=false (event "evBattleStatsHintNext"))
+
+	(style
+		(width = "{1280: BATTLE_STATISTICS_DETAILS_WIDTH_HD, 1920: BATTLE_STATISTICS_DETAILS_WIDTH}")
+		(flow = "horizontal")
+	)
+
+	(element BattleStatsDetailsCategories
+		_categories = "hintCategories"
+		_selectedCategoryId = "selectedCategoryId"
+	)
+
+	(block
+		(style (width = "BATTLE_STATISTICS_DETAILS_GALLERY_WIDTH"))
+
+		
+		
+		
+		(block
+			(style
+				(position = "absolute")
+				(bind width "BATTLE_STATISTICS_DETAILS_ARROW_WIDTH + BATTLE_STATISTICS_DETAILS_IMAGE_SIZE / 2")
+				(height = "BATTLE_STATISTICS_DETAILS_IMAGE_SIZE")
+				(backgroundColor = 0x01000000)
+			)
+			(dispatch evBattleStatsHintNext args="{ index: prevHintIndex }" dir="EventDirection.UP" on='click' init=false)
+			(bindcall externalCall 'sound.playSetSoundDirect' "['button_default', SoundEvent.CLICK]" init=false watch=false on='click')
+		)
+		(block
+			(style
+				(position = "absolute")
+				(bind left "BATTLE_STATISTICS_DETAILS_ARROW_WIDTH + BATTLE_STATISTICS_DETAILS_IMAGE_SIZE / 2")
+				(bind width "BATTLE_STATISTICS_DETAILS_ARROW_WIDTH + BATTLE_STATISTICS_DETAILS_IMAGE_SIZE / 2")
+				(height = "BATTLE_STATISTICS_DETAILS_IMAGE_SIZE")
+				(backgroundColor = 0x01000000)
+			)
+			(dispatch evBattleStatsHintNext args="{ index: nextHintIndex }" dir="EventDirection.UP" on='click' init=false)
+			(bindcall externalCall 'sound.playSetSoundDirect' "['button_default', SoundEvent.CLICK]" init=false watch=false on='click')
+		)
+
+		(hblock
+			(style (width = 100%))
+
+			(element BattleStatsDetailsPagingArrow
+				_isLeft = true
+				_targetIndex = "prevHintIndex"
+				_isShown = "hasManyHints"
+				_isHighlighted = "hoveredPagingSide < 0"
+			)
+
+			(block
+				(style
+					(width = "BATTLE_STATISTICS_DETAILS_IMAGE_SIZE")
+					(height = "BATTLE_STATISTICS_DETAILS_IMAGE_SIZE")
+				)
+				(controller $Instance renderer='BattleStatsHintGalleryItem'
+					(bind enabled "currentHint")
+					(args
+						_hint = "currentHint"
+						_prevIndex = "prevHintIndex"
+						_nextIndex = "nextHintIndex"
+					)
+				)
+				(element BattleStatsDetailsEmptyState
+					(bind visible "!currentHint")
+				)
+			)
+
+			(element BattleStatsDetailsPagingArrow
+				_isLeft = false
+				_targetIndex = "nextHintIndex"
+				_isShown = "hasManyHints"
+				_isHighlighted = "hoveredPagingSide > 0"
+			)
+		)
+
+		
+		(block
+			(bind visible "hasManyHints")
+			(style
+				(marginLeft = "BATTLE_STATISTICS_DETAILS_ARROW_WIDTH")
+				(marginTop = "XS")
+			)
+			(element CarouselPageIndicator
+				_count = "selectedHints.length"
+				_selectedIndex = "currentHintIndex"
+				_width = "BATTLE_STATISTICS_DETAILS_IMAGE_SIZE"
+				_dispatchedEv = 'evBattleStatsHintNext'
+			)
+		)
+	)
+
+	
+	
+	(block
+		(style (width = "BATTLE_STATISTICS_DETAILS_TEXT_WIDTH"))
+		(controller $Instance renderer='BattleStatsHintGalleryTextRenderer'
+			(bind enabled "currentHint")
+			(args
+				_hint = "currentHint"
+			)
+		)
+	)
+)
+
+(def element BattleStatsDetailsCategories (_categories:array, _selectedCategoryId:number)
+	(name = 'battleStatsDetailsCategories')
+	(style
+		(width = "BATTLE_STATISTICS_DETAILS_CATEGORIES_WIDTH")
+		(paddingLeft = "BATTLE_STATISTICS_DETAILS_COLUMN_PADDING")
+		(paddingRight = "BATTLE_STATISTICS_DETAILS_COLUMN_INNER_PADDING")
+		(paddingTop = "SXS")
+	)
+
+	
+	
+	(controller $Repeat renderer='BattleStatsDetailsCategoryButton'
+		(bind count "_categories.length > 1 ? _categories.length : 0")
+		(args
+			_label = "'IDS_BATTLE_HINT_CATEGORY_' + SC.Battle.BATTLE_HINT_CATEGORY.VALUE_TO_NAME[_categories[$index].category]"
+			_isSelected = "_categories[$index].category == _selectedCategoryId"
+			_dispatchedEv = 'evBattleStatsDetailsCategorySelected'
+			_dispatchParams = "{ category: _categories[$index].category }"
+		)
+	)
+)
+
+
+
+(def element BattleStatsDetailsCategoryButton (_label:str, _isSelected:bool, _dispatchedEv:str='', _dispatchParams:gfx={})
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+
+	(style
+		(width = 100%)
+		(height = "BATTLE_STATISTICS_DETAILS_CATEGORY_HEIGHT")
+		(marginBottom = "XS")
+		(backgroundColor = 0x33000000)
+	)
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundImage = 'url:../service_kit/frames/two_pixel_frame.png')
+			(scale9grid = 3)
+			(hitTest = false)
+			(bind alpha "_isSelected ? 0.75 : rollOver ? 0.45 : 0.2")
+		)
+	)
+
+	(hblock
+		(class $Fullsize)
+		(style
+			(align = "middle")
+			(paddingLeft = "BATTLE_STATISTICS_DETAILS_CATEGORY_INSET")
+			(paddingRight = "BATTLE_STATISTICS_DETAILS_CATEGORY_INSET")
+		)
+		(tf
+			(class $TextDefaultBold17NM)
+			(style
+				(maxWidth = 100%)
+				(multiline = false)
+				(elideMode = true)
+				(bind alpha "_isSelected || rollOver ? TA : TC")
+			)
+			(bind text "toUpper(tr(_label))")
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "!_isSelected"
+		_dispatchedEv = "_dispatchedEv"
+		_dispatchParams = "_dispatchParams"
+		_soundSet = "'button_secondary'"
+	)
+)
+
+
+(def element BattleStatsDetailsPagingArrow (_isLeft:bool, _targetIndex:number, _isShown:bool, _isHighlighted:bool=false)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+
+	(style
+		(width = "BATTLE_STATISTICS_DETAILS_ARROW_WIDTH")
+		(height = "BATTLE_STATISTICS_DETAILS_IMAGE_SIZE")
+		(align = "center|middle")
+	)
+
+	(block
+		(bind visible "_isShown")
+		(style (bind alpha "rollOver || _isHighlighted ? 1 : TC"))
+		(element CarouselArrowButton
+			_isLeft = "_isLeft"
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "_isShown"
+		_dispatchedEv = "'evBattleStatsHintNext'"
+		_dispatchParams = "{ index: _targetIndex }"
+		_soundSet = "'button_default'"
+	)
+)
+
+(def element BattleStatsDetailsEmptyState ()
+	(style
+		(width = "BATTLE_STATISTICS_DETAILS_IMAGE_SIZE")
+		(height = "BATTLE_STATISTICS_DETAILS_IMAGE_SIZE")
+		(backgroundColor = "BATTLE_STATISTICS_INFO_PANEL_COLOR")
+		(align = "center|middle")
+	)
+	(tf
+		(class $TextDefault17NM)
+		(style
+			(maxWidth = 380px)
+			(textAlign = "center")
+			(alpha = 0.7)
+		)
+		(text = 'IDS_WAITING_SCREEN_LOADING_DATA')
+	)
+)
+
+(def element BattleStatsHintGalleryItem (_hint:gfx, _prevIndex:number, _nextIndex:number)
+	(style
+		(width = "BATTLE_STATISTICS_DETAILS_IMAGE_SIZE")
+		(height = "BATTLE_STATISTICS_DETAILS_IMAGE_SIZE")
+	)
+
+	(element BattleStatsHintGalleryDefaultPngViewer
+		_hint = "_hint"
+	)
+
+	
+	
+	
+	(block
+		(style
+			(position = "absolute")
+			(bind width "BATTLE_STATISTICS_DETAILS_IMAGE_SIZE / 2")
+			(height = 100%)
+			(backgroundColor = 0x01000000)
+		)
+		(dispatch evBattleStatsHintNext args="{ index: _prevIndex }" dir="EventDirection.UP" on='click' init=false)
+		(dispatch evBattleStatsHintHalfHover args="{ side: -1 }" dir="EventDirection.UP" on='rollOver' init=false)
+		(dispatch evBattleStatsHintHalfHover args="{ side: 0 }" dir="EventDirection.UP" on='rollOut' init=false)
+		(bindcall externalCall 'sound.playSetSoundDirect' "['button_default', SoundEvent.CLICK]" init=false watch=false on='click')
+	)
+	(block
+		(style
+			(position = "absolute")
+			(bind left "BATTLE_STATISTICS_DETAILS_IMAGE_SIZE / 2")
+			(bind width "BATTLE_STATISTICS_DETAILS_IMAGE_SIZE / 2")
+			(height = 100%)
+			(backgroundColor = 0x01000000)
+		)
+		(dispatch evBattleStatsHintNext args="{ index: _nextIndex }" dir="EventDirection.UP" on='click' init=false)
+		(dispatch evBattleStatsHintHalfHover args="{ side: 1 }" dir="EventDirection.UP" on='rollOver' init=false)
+		(dispatch evBattleStatsHintHalfHover args="{ side: 0 }" dir="EventDirection.UP" on='rollOut' init=false)
+		(bindcall externalCall 'sound.playSetSoundDirect' "['button_default', SoundEvent.CLICK]" init=false watch=false on='click')
+	)
+)
+
+
+
+
+(def element BattleStatsHintGalleryDefaultPngViewer (_hint:gfx)
+	(style
+		(width = "BATTLE_STATISTICS_DETAILS_IMAGE_SIZE")
+		(height = "BATTLE_STATISTICS_DETAILS_IMAGE_SIZE")
+		(backgroundSize = "cover")
+		(bind backgroundImage "_hint.image")
+	)
+)
+
+
+(def element BattleStatsHintGalleryTextRenderer (_hint:gfx)
+	(scope
+		
+		
+		(var items:array = "_hint.description.items ? _hint.description.items : []")
+		
+		
+		(var textParams:gfx = "_hint.description.textParams ? _hint.description.textParams : null")
+		(var descriptionText:str = "textParams ? subst(_hint.description.text, [], textParams) : tr(_hint.description.text)")
+	)
+
+	(style
+		(width = "BATTLE_STATISTICS_DETAILS_TEXT_WIDTH")
+		(paddingLeft = "BATTLE_STATISTICS_DETAILS_COLUMN_INNER_PADDING")
+		(paddingRight = "BATTLE_STATISTICS_DETAILS_COLUMN_PADDING")
+		(paddingTop = "SXS")
+	)
+
+	(tf
+		(class $TextDefaultBold19NM)
+		(style
+			(width = 100%)
+			(alpha = "TA")
+		)
+		(bind text "tr(_hint.description.textHeader)")
+	)
+	(tf
+		(class $TextDefaultNM)
+		(style
+			(width = 100%)
+			(marginTop = "M")
+			(leading = -2px)
+			(alpha = 0.7)
+		)
+		(bindcall substitute imageOffset=6 sourceText="descriptionText" postfix='_bg' init=true)
+	)
+	
+	(block
+		(style
+			(width = 100%)
+			(marginTop = "S")
+		)
+		(controller $Instance renderer='BattleStatisticsBulletList'
+			(bind enabled "items.length > 0")
+			(args _items = "items")
+		)
+	)
+)
+
+
+
+
+(def element BattleStatsTaskList () layout=true
+	(scope
+		(var tasksCollection:gfx = "$datahub.getCollection(CC.task)")
+		(var primaryTasks:gfx = "tasksCollection ? tasksCollection.getChildByPath('category.primary') : null" (event "tasksCollection.evAdded"))
+		(var secondaryTasks:gfx = "tasksCollection ? tasksCollection.getChildByPath('category.secondary.visible') : null" (event "tasksCollection.evAdded"))
+		(var primarySorted:gfx = "primaryTasks ? primaryTasks.getChildByPath('sorted') : null")
+		(var secondarySorted:gfx = "secondaryTasks ? secondaryTasks.getChildByPath('sorted') : null")
+		(var primaryItems:array = "primarySorted ? primarySorted.items : []"
+			(event "primarySorted.evAdded") (event "primarySorted.evRemoved") (event "primarySorted.evUpdated"))
+		(var secondaryItems:array = "secondarySorted ? secondarySorted.items : []"
+			(event "secondarySorted.evAdded") (event "secondarySorted.evRemoved") (event "secondarySorted.evUpdated"))
+	)
+	(style
+		(width = "BATTLE_STATISTICS_TAB_TASKS_WIDTH")
+		(gap = "MS")
+	)
+	(controller $Instance renderer='BattleStatsTaskGroup' layout=true
+		(bind enabled "primaryItems.length > 0")
+		(args
+			_titleIDS = 'IDS_PRIMARYHEADER'
+			_tasksNode = "primaryTasks"
+			_items = "primaryItems"
+			_showTracker = false
+		)
+	)
+	(controller $Instance renderer='BattleStatsTaskGroup' layout=true
+		(bind enabled "secondaryItems.length > 0")
+		(args
+			_titleIDS = 'IDS_SECONDARYHEADER'
+			_tasksNode = "secondaryTasks"
+			_items = "secondaryItems"
+			_showTracker = true
+		)
+	)
+)
+
+
+
+
+
+(def element BattleStatsTaskGroup (_titleIDS:str, _tasksNode:gfx, _items:array, _showTracker:bool) layout=true
+	(scope
+		(var succeededNode:gfx = "_tasksNode ? _tasksNode.getChildByPath('succeeded') : null")
+		(var failedNode:gfx = "_tasksNode ? _tasksNode.getChildByPath('failed') : null")
+		(var succeededItems:array = "succeededNode ? succeededNode.items : []"
+			(event "succeededNode.evAdded") (event "succeededNode.evRemoved"))
+		(var failedItems:array = "failedNode ? failedNode.items : []"
+			(event "failedNode.evAdded") (event "failedNode.evRemoved"))
+		(var hasCompleted:bool = "succeededItems.length + failedItems.length > 0")
+	)
+	(style
+		(width = 100%)
+		(gap = "SXS")
+	)
+	(block
+		(style
+			(width = 100%)
+			(marginBottom = "XS")
+		)
+		(tf
+			(class $TextDefaultBold19NM)
+			(style (width = 100%))
+			(alpha = "TA")
+			(bind text "tr(_titleIDS)")
+		)
+		(block
+			(class $MiddleVAlignedAbsolutely)
+			(style (right = 0px))
+			(controller $Instance renderer='BattleStatsTaskTracker' layout=true
+				(bind enabled "_showTracker")
+				(args
+					_items = "_items"
+					_succeededItems = "succeededItems"
+					_failedItems = "failedItems"
+				)
+			)
+		)
+	)
+	
+	
+	(block
+		(style
+			(width = 100%)
+			(gap = "SXS")
+		)
+		(controller $Repeat layout=true
+			(renderer = 'BattleStatsTaskRow')
+			(bind count "_items.length")
+			(args
+				_entity = "_items[$index]"
+			)
+		)
+	)
+	
+	
+	(block
+		(name = 'battleStatsCompletedTasks')
+		(bind visible "hasCompleted")
+		(style
+			(marginLeft = "BATTLE_STATISTICS_TASK_ICON_SIZE")
+		)
+		(tf
+			(class $TextDefaultNM)
+			(alpha = "TS")
+			(text = 'IDS_BATTLE_STATISTICS_SHOW_COMPLETED_TASKS')
+		)
+		(element HIT_TEST_TOOLTIP_CONTAINER
+			(controller $Tooltip (renderer = 'BattleStatsCompletedTasksTooltip')
+				(args
+					_succeededItems = "succeededItems"
+					_failedItems = "failedItems"
+				)
+				(macro BATTLE_STATISTICS_TOOLTIP_BEHAVIOUR "'completed_tasks_tooltip'")
+			)
+		)
+	)
+)
+
+(def constant BATTLE_STATISTICS_COMPLETED_TASKS_TOOLTIP_WIDTH 360)
+(def constant BATTLE_STATISTICS_COMPLETED_TASKS_TOOLTIP_ICON_SIZE 27)
+
+
+
+
+(def element BattleStatsCompletedTasksTooltip (_succeededItems:array, _failedItems:array) layout=true
+	(style
+		(width = "BATTLE_STATISTICS_COMPLETED_TASKS_TOOLTIP_WIDTH")
+		(hitTest = false)
+	)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_BATTLE_STATISTICS_COMPLETED_TASKS'
+		)
+		(block
+			(style (width = 100%))
+			(element BattleStatsCompletedTasksTooltipGroup
+				_titleIDS = 'IDS_BATTLE_STATISTICS_TASKS_SUCCEEDED'
+				_items = "_succeededItems"
+				_iconUrl = 'url:../service_kit/battle_tasks/icon_task_succeeded.png'
+				(bind visible "_succeededItems.length > 0")
+			)
+			(element BattleStatsCompletedTasksTooltipGroup
+				_titleIDS = 'IDS_BATTLE_STATISTICS_TASKS_FAILED'
+				_items = "_failedItems"
+				_iconUrl = 'url:../service_kit/battle_tasks/icon_task_failed.png'
+				(bind visible "_failedItems.length > 0")
+			)
+		)
+	)
+)
+
+
+
+
+(def element BattleStatsCompletedTasksTooltipGroup (_titleIDS:str, _items:array, _iconUrl:str) layout=true
+	(style (width = 100%))
+	
+	
+	(element TooltipSystemHorizontalDivider)
+	(element TooltipSystemDescriptionTextSingleLine _descriptionText = "_titleIDS")
+	(element TooltipSystemHorizontalDivider)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(block
+			(name = 'battleStatsCompletedTasksRows')
+			(style
+				(width = 100%)
+				(padding = "M")
+				(paddingTop = "SXS")
+				(paddingBottom = "SXS")
+				(gap = "SXS")
+			)
+			(controller $Repeat layout=true
+				(renderer = 'BattleStatsCompletedTasksTooltipRow')
+				(bind count "_items.length")
+				(args
+					_entity = "_items[$index]"
+					_iconUrl = "_iconUrl"
+				)
+			)
+		)
+	)
+)
+
+
+
+(def constant BATTLE_STATISTICS_COMPLETED_TASKS_TOOLTIP_TEXT_INSET 31px)
+(def constant BATTLE_STATISTICS_COMPLETED_TASKS_TOOLTIP_TEXT_WIDTH 297px)
+
+(def element BattleStatsCompletedTasksTooltipRow (_entity:gfx, _iconUrl:str) layout=true
+	(name = 'battleStatsCompletedTasksRow')
+	(style (width = 100%))
+	(block
+		(class $MiddleVAlignedAbsolutely)
+		(style
+			(left = 0px)
+			(width = "BATTLE_STATISTICS_COMPLETED_TASKS_TOOLTIP_ICON_SIZE")
+			(height = "BATTLE_STATISTICS_COMPLETED_TASKS_TOOLTIP_ICON_SIZE")
+			(backgroundSize = "fill")
+			(bind backgroundImage "_iconUrl")
+		)
+	)
+	(tf
+		(class $TextDefaultNM)
+		(style
+			(marginLeft = "BATTLE_STATISTICS_COMPLETED_TASKS_TOOLTIP_TEXT_INSET")
+			(maxWidth = "BATTLE_STATISTICS_COMPLETED_TASKS_TOOLTIP_TEXT_WIDTH")
+			(leading = -2px)
+		)
+		(alpha = "TC")
+		(bind text "_entity.task.text")
+	)
+)
+
+
+
+(def constant BATTLE_STATISTICS_SECONDARY_TASKS_COUNT 5)
+(def constant BATTLE_STATISTICS_SECONDARY_TASKS_COUNT_BERMUDA 3)
+
+
+
+
+(def element BattleStatsTaskTracker (_items:array, _succeededItems:array, _failedItems:array) layout=true
+	(scope
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var battleInfo:gfx = "battleDataEntity ? battleDataEntity.battleInfo : null")
+		(var operationIndex:str = "battleInfo ? battleInfo.operationIndex : ''")
+
+		(var isBermudaOperation:bool = "isIn(operationIndex, SC.Ui_common.EVENTS.BERMUDA_OPS)")
+		(var secondaryTaskCount:number = "isBermudaOperation ? BATTLE_STATISTICS_SECONDARY_TASKS_COUNT_BERMUDA : BATTLE_STATISTICS_SECONDARY_TASKS_COUNT")
+
+		(var inProgressCount:number = "max(_items.length - _succeededItems.length - _failedItems.length, 0)")
+		(var pendingCount:number = "max(secondaryTaskCount - _items.length, 0)")
+	)
+
+	(style (flow = "horizontal"))
+
+	(hblock
+		(controller $Repeat layout=true
+			(renderer = 'BattleStatsTaskTrackerSlot')
+			(bind count "_succeededItems.length")
+			(args _status = "SC.Battle.TASK_STATUS.SUCCESS")
+		)
+	)
+	(hblock
+		(controller $Repeat layout=true
+			(renderer = 'BattleStatsTaskTrackerSlot')
+			(bind count "_failedItems.length")
+			(args _status = "SC.Battle.TASK_STATUS.FAILURE")
+		)
+	)
+	(hblock
+		(controller $Repeat layout=true
+			(renderer = 'BattleStatsTaskTrackerSlot')
+			(bind count "inProgressCount + pendingCount")
+			(args _status = "SC.Battle.TASK_STATUS.IN_PROGRESS")
+		)
+	)
+)
+
+(def element BattleStatsTaskTrackerSlot (_status:number) layout=true
+	(scope
+		(var isCompleted:bool = "_status != SC.Battle.TASK_STATUS.IN_PROGRESS")
+	)
+	(style
+		(width = "BATTLE_STATISTICS_TASK_ICON_SIZE")
+		(height = "BATTLE_STATISTICS_TASK_ICON_SIZE")
+		(backgroundSize = "fill")
+		(bind backgroundImage "_status == SC.Battle.TASK_STATUS.SUCCESS	? 'url:../service_kit/battle_tasks/icon_task_succeeded.png' :
+								isCompleted								? 'url:../service_kit/battle_tasks/icon_task_failed.png'
+																		: 'url:../service_kit/battle_tasks/icon_task_current.png'")
+		(bind alpha "isCompleted ? 1 : 0.5")
+	)
+)
+
+
+
+
+(def element BattleStatsTaskRow (_entity:gfx) layout=true
+	(scope
+		(var taskComponent:gfx = "_entity.task")
+		(var status:number = "taskComponent.status" (event "taskComponent.evStatusChanged"))
+		(var isCompleted:bool = "isIn(status, [SC.Battle.TASK_STATUS.SUCCESS, SC.Battle.TASK_STATUS.FAILURE, SC.Battle.TASK_STATUS.CANCELED])")
+		(var isFailed:bool = "isIn(status, [SC.Battle.TASK_STATUS.FAILURE, SC.Battle.TASK_STATUS.CANCELED])")
+		(var taskIcon:str = "taskComponent.icon" (event "taskComponent.evIconChanged"))
+		(var iconUrl:str = "status == SC.Battle.TASK_STATUS.SUCCESS	? 'url:../service_kit/battle_tasks/icon_task_succeeded.png' :
+							isFailed								? 'url:../service_kit/battle_tasks/icon_task_failed.png' :
+							taskIcon								? 'url:../service_kit/battle_tasks/' + taskIcon + '.png'
+																	: 'url:../service_kit/battle_tasks/icon_task_current.png'")
+
+		(var progressComponent:gfx = "_entity.progress")
+		(var timeoutComponent:gfx = "_entity.timeout" (event "_entity.evAdded") (event "_entity.evRemoved"))
+		(var progressType:number = "taskComponent.progressType")
+		(var needShowProgress:bool = "isIn(progressType, [TaskProgressType.DIGIT, TaskProgressType.DIGIT_SINGLE])")
+		(var maxProgress:number = "progressComponent ? progressComponent.max : 0" (event "progressComponent.evMaxChanged"))
+		(var currentProgress:number = "progressComponent ? progressComponent.value : 0" (event "progressComponent.evChanged"))
+		(var progressText:str = "!needShowProgress	?	''
+													:	progressType == TaskProgressType.DIGIT_SINGLE	?	toString(currentProgress)
+																										:	toString(currentProgress) + '/' + toString(maxProgress)")
+
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.battleTimer)")
+		(var currentTime:number = "timerEntity.battleTimer.battleTime" (event "timerEntity.battleTimer.evBattleTimeChanged"))
+		(var timerValue:number = "timeoutComponent ? timeoutComponent.time : 0")
+		(var timeLeft:number = "timerValue > currentTime ? timerValue - currentTime : 0")
+		(var timeLeftText:str = "timeoutComponent && !needShowProgress ? countdownFormat(timeLeft, 0, true, true) : ''")
+		(var valueText:str = "isCompleted ? '' : (needShowProgress ? progressText : timeLeftText)")
+	)
+	(bind visible "!isCompleted")
+	
+	
+	
+	
+	(style
+		(width = 100%)
+	)
+	(block
+		(class $MiddleVAlignedAbsolutely)
+		(style
+			(left = 0px)
+			(width = "BATTLE_STATISTICS_TASK_ICON_SIZE")
+			(height = "BATTLE_STATISTICS_TASK_ICON_SIZE")
+			(backgroundSize = "fill")
+			(bind backgroundImage "iconUrl")
+		)
+	)
+	
+	(tf
+		(class $TextDefaultNM)
+		(style
+			(marginLeft = "BATTLE_STATISTICS_TASK_ICON_SIZE")
+			(maxWidth = 310px)
+			(leading = -2px)
+		)
+		(bind alpha "isCompleted ? TS : 0.7")
+		(bind text "taskComponent.text")
+	)
+	(block
+		(style
+			(position = "absolute")
+			(right = 0px)
+			(height = 100%)
+			(align = "middle")
+		)
+		(tf
+			(class $TextDefaultBoldNM)
+			(alpha = "TA")
+			(bind text "valueText")
+		)
+	)
+)

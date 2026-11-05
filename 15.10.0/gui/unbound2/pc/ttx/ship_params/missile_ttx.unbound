@@ -1,0 +1,173 @@
+(def element MissileTTX (shipTTX:gfx) layout=true
+	(style (width = 100%))
+	(class $TTXSecondaryPanel)
+	(scope
+		(var launchers:array = "shipTTX.missile ? shipTTX.missile.missileLaunchers : null")
+	)
+
+	(macro TTX_REPEAT 'MissileLauncherTTX' "launchers")
+
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_MAX_DIST'
+									_value = "shipTTX.missile.maxDist"
+									_valueConfig = "VALUE_CONFIG.KILOMETER"
+
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_MISSILE_MAX_DIST' 'IDS_TOOLTIP_MISSILE_MAX_DIST')
+	)
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_RELOAD_TIME'
+									_value = "shipTTX.missile.reloadTime"
+									_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro SIMPLE_TTX_TOOLTIP 'IDS_SHIP_PARAM_MISSILE_RELOAD_TIME' 'IDS_TOOLTIP_MISSILE_RELOAD_TIME')
+	)
+)
+
+(def element MissileLauncherTTX (shipTTX:gfx, missileLauncherTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_GunConfiguration	_title = 'IDS_TOOLTIP_MISSILE_LAUNCHER'
+											_gunTTX = "missileLauncherTTX"
+											_onNewLine = false
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro TTX_TOOLTIP 'missileLauncherTooltipTTX' "missileLauncherTTX")
+		(element ShipParamExcursionButton	_shipTTX = "shipTTX"	
+											_excursionId = "['_Missiles', $index]"
+											_isExcursionOn = "false"
+		)
+	)
+)
+
+(def element missileLauncherTooltipTTX (shipTTX:gfx, launcherTTX:gfx) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER	
+		(macro TTX_HEADER_ROW "'IDS_SHIP_PARAM_MISSILE'" "'IDS_TOOLTIP_MISSILE_LAUNCHER'")
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_TIME_BETWEEN_SHOTS'
+												_value = "launcherTTX.timeBetweenShots"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_NUM_OF_MISSILE_TUBES'
+												_value = "launcherTTX.numBarrels"
+				)
+			)
+		)
+
+		(macro TTX_INSTANCE 'MissileAmmoTTX' "shipTTX.missile.missileAmmo")
+	)
+)
+(def element MissileAmmoTTX (shipTTX:gfx, ammoTTX:gfx, _hideDiff:bool = false) layout=true
+	(style (width = 100%))
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_AMMO_MISSILE_TTX'" "ammoTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_ALPHA_DAMAGE'
+											_value = "ammoTTX.alphaDamage"
+											_showDelta = "!_hideDiff"
+											_hideDiff = "_hideDiff"
+			)
+
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_SHIELD_DAMAGE'
+											_value = "ammoTTX.shieldDamage"
+											_zeroValueHidden = true
+											_showDelta = "!_hideDiff"
+											_hideDiff = "_hideDiff"
+			)
+
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_SPLASH_RADIUS'
+											_value = "ammoTTX.splashRadius"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+											_zeroValueHidden = true
+											_showDelta = "!_hideDiff"
+											_hideDiff = "_hideDiff"
+			)
+
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_MAX_SPLASH_ALPHA_DAMAGE'
+											_value = "ammoTTX.splashDamage"
+											_zeroValueHidden = true
+											_showDelta = "!_hideDiff"
+											_hideDiff = "_hideDiff"
+			)
+
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_MAX_SPLASH_SHIELD_DAMAGE'
+											_value = "ammoTTX.splashShieldDamage"
+											_zeroValueHidden = true
+											_showDelta = "!_hideDiff"
+											_hideDiff = "_hideDiff"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_VISIBILITY'
+											_value = "ammoTTX.visibilityFactor"
+											_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+											_showDelta = "!_hideDiff"
+											_hideDiff = "_hideDiff"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_SPEED'
+											_value = "ammoTTX.maxSpeedCruise"
+											_valueConfig = "VALUE_CONFIG.KNOT"
+											_showDelta = "!_hideDiff"
+											_hideDiff = "_hideDiff"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_SEARCH_ANGLE'
+											_value = "ammoTTX.searchAngle"
+											_valueConfig = "VALUE_CONFIG.DEGREES"
+											_showDelta = "!_hideDiff"
+											_hideDiff = "_hideDiff"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_SEARCH_RADIUS'
+											_value = "ammoTTX.searchRadius"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+											_showDelta = "!_hideDiff"
+											_hideDiff = "_hideDiff"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_MIN_DIST'
+											_value = "shipTTX.missile.minDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+											_showDelta = "!_hideDiff"
+											_hideDiff = "_hideDiff"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_TIME_BETWEEN_SHOTS'
+											_value = "shipTTX.missile.timeBetweenShots"
+											_valueConfig = "VALUE_CONFIG.SECONDS"
+											_showDelta = "!_hideDiff"
+											_hideDiff = "_hideDiff"
+			)
+
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_RELOAD_TIME'
+											_value = "shipTTX.missile.reloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_showDelta = "!_hideDiff"
+											_hideDiff = "_hideDiff"
+			)
+
+			
+			(element ShipParameter_Percent	_title = 'IDS_SHIP_PARAM_MISSILE_FLOOD_CHANCE'
+											_value = "ammoTTX.floodChance"
+											_zeroValueHidden = true
+											_showDelta = "!_hideDiff"
+											_hideDiff = "_hideDiff"
+			)
+
+			
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_MAX_DIST'
+											_value = "shipTTX.missile.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+											_showDelta = "!_hideDiff"
+											_hideDiff = "_hideDiff"
+			)
+		)
+	)
+)

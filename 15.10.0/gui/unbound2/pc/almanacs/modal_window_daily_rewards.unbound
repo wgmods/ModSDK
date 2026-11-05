@@ -1,0 +1,100 @@
+(def element ModalWindowDailyRewardsSplashScreen () dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+
+	(name = "'window_ModalWindowDailyRewardsSplashScreen'")
+
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 3)
+
+		(style (width = 100%))
+
+		(element ModalWindowCloseIcon _tooltipText = 'IDS_RETURN_FROM_MODAL_WINDOW_BUTTON'
+			(style
+				(position = "absolute")
+				(right = "LM")
+				(top = "{720:M, 1080:LM}")
+			)
+		)
+	)
+
+	(class $FullsizeAbsolute)
+	(style	(backgroundImage = 'url:../events/backgrounds/new_year_daily_rewards.jpg')
+			(backgroundSize = "cover"))
+
+	
+	(block
+		(class $MiddleVHAbsolutely)
+		(style (width = 735px) (align = "center"))
+
+		
+		(block
+			(style (width = 100%))
+
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+
+				(style (width = 100%))
+
+				(tf
+					(class $TextDefaultBold58NM)
+					(style (width = 100%) (textAlign = "center") (alpha = "TA"))
+
+					(bind text "'IDS_MODAL_WINDOW_DAILY_REWARD_PROMO_HEADER_UPPER_CASE'")
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%) (marginTop = "{720:L, 1080:LS}"))
+
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+
+				(style (width = 100%))
+
+				(tf
+					(class $TextDefault21NM)
+					(style (width = 100%) (textAlign = "center") (alpha = "TC"))
+
+					(bind text "'IDS_MODAL_WINDOW_DAILY_REWARD_PROMO_DESCRIPTION'")
+				)
+			)
+		)
+
+		
+		(hblock
+			(style (width = 100%) (marginTop = "{720:LS, 1080:LM}") (align = "center"))
+
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 3)
+
+				(style (marginRight = "{720:M, 1080:MS}"))
+
+				(element DefaultButton
+					_width = 136
+					_height = 32
+					_name = 'btn_proceed_to_daily_rewards'
+					_enabled = true
+					_label = 'IDS_MODAL_WINDOW_DAILY_REWARD_PROMO_OK_BUTTON_UPPER_CASE'
+					_methods = "[	{	type: 'inputMapping.onRequest',
+										name: 'setSplashScreenViewed',
+										args: {clickedButtonType: 'ingame'}
+									}]"
+				)
+			)
+
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 3)
+
+				(element DefaultButton
+					_width = 136
+					_height = 32
+					_name = 'btn_cancel'
+					_enabled = true
+					_label = 'IDS_CLOSE_BTN'
+				)
+			)
+		)
+	)
+)

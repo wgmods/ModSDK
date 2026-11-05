@@ -1,0 +1,203 @@
+(def element AmmoHEDamageNoDiff (shipTTX:gfx, ammoHETTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_DAMAGE_HE'
+									_value = "ammoHETTX.damage"
+									_showDelta = false
+									_hideDiff = true
+									_zeroValueHidden = true
+	)
+)
+
+(def element AmmoCSDamageNoDiff (shipTTX:gfx, ammoCSTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_DAMAGE_CS'
+									_value = "ammoCSTTX.damage"
+									_showDelta = false
+									_hideDiff = true
+									_zeroValueHidden = true
+	)
+)
+
+(def element AmmoAPDamageNoDiff (shipTTX:gfx, ammoAPTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_DAMAGE_AP'
+									_value = "ammoAPTTX.damage"
+									_showDelta = false
+									_hideDiff = true
+									_zeroValueHidden = true
+	)
+)
+
+(def element AmmoHEShieldDamage (shipTTX:gfx, ammoHETTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE_HE'
+									_value = "ammoHETTX.shieldDamage"
+									_showDelta = false
+									_hideDiff = true
+									_zeroValueHidden = true
+	)
+)
+
+(def element AmmoCSShieldDamage (shipTTX:gfx, ammoCSTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE_CS'
+									_value = "ammoCSTTX.shieldDamage"
+									_showDelta = false
+									_hideDiff = true
+									_zeroValueHidden = true
+	)
+)
+
+(def element AmmoAPShieldDamage (shipTTX:gfx, ammoAPTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_DAMAGE_AP'
+									_value = "ammoAPTTX.shieldDamage"
+									_showDelta = false
+									_hideDiff = true
+									_zeroValueHidden = true
+	)
+)
+
+(def element HeatingPerShot (shipTTX:gfx, heatingTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_GUN_HEAT_PER_SHOT'
+									_value = "heatingTTX.heatPerSalvo"
+									_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+									_zeroValueHidden = true
+									_showDelta = false
+									_hideDiff = true
+	)
+)
+
+(def element HeatCooldownSpeed (shipTTX:gfx, heatingTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_GUN_HEAT_COOLDOWN_VALUE'
+									_value = "heatingTTX.coolingSpeed"
+									_valueConfig = "VALUE_CONFIG.PERCENT_FLOAT"
+									_zeroValueHidden = true
+									_showDelta = false
+									_hideDiff = true
+	)
+)
+
+(def element HeatCooldownDelay (shipTTX:gfx, heatingTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_GUN_HEAT_COOLDOWN_DELAY'
+									_value = "heatingTTX.coolingDelay"
+									_valueConfig = "VALUE_CONFIG.SECONDS"
+									_zeroValueHidden = true
+									_showDelta = false
+									_hideDiff = true
+	)
+)
+
+(def element OverheatCooldownDelay (shipTTX:gfx, heatingTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_GUN_HEAT_COOLDOWN_DELAY_OVERHEAT'
+									_value = "heatingTTX.coolingDelayOH"
+									_valueConfig = "VALUE_CONFIG.SECONDS"
+									_zeroValueHidden = true
+									_showDelta = false
+									_hideDiff = true
+	)
+)
+
+
+(def element HeatingDamageFactor (shipTTX:gfx, heatingTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Range
+									_title = "subst(tr('IDS_SHIP_PARAM_GUN_HEAT_MAX_DAMAGE_FACTOR'), [], {value: heatingTTX.damageFactor[1].range.value, minValue: heatingTTX.damageFactor[0].range.value})"
+									_valueMax = "heatingTTX.damageFactor[1].value"
+									_valueMin = "heatingTTX.damageFactor[0].value"
+									_valueConfig = "VALUE_CONFIG.PERCENT"
+									_zeroValueHidden = true
+									_showDelta = false
+									_hideDiff = true
+	)
+)
+
+(def element HeatingReloadFactor (shipTTX:gfx, heatingTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Range
+									_title = "subst(tr('IDS_SHIP_PARAM_GUN_HEAT_MIN_RELOAD_FACTOR'), [], {value: heatingTTX.reloadFactor[1].range.value, minValue: heatingTTX.reloadFactor[0].range.value})"
+									_valueMax = "heatingTTX.reloadFactor[1].value"
+									_valueMin = "heatingTTX.reloadFactor[0].value"
+									_valueConfig = "VALUE_CONFIG.PERCENT"
+									_zeroValueHidden = true
+									_showDelta = false
+									_hideDiff = true
+	)
+)
+
+(def layout ModuleArtillery_Extended_Parameters (shipTTX:gfx, _extendedInfo:gfx=null)
+	(scope
+		(var anyGun:gfx = "shipTTX.artillery.mainGun[0]")
+		(var rotationTime:gfx = "anyGun ? anyGun.rotationTime : DEFAULT_TTX_VALUE")
+		(var extraArmaments:array = "_extendedInfo ? _extendedInfo.extraArmaments : []" (event "_extendedInfo.evUpdated"))
+
+		(var heatingTTX:gfx = "shipTTX && shipTTX.artillery && shipTTX.artillery.heating ? shipTTX.artillery.heating : null")
+	)
+
+	(style (width = 100%))
+
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+											_value = "shipTTX.artillery.mgReloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_showDelta = false
+											_hideDiff = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ROTATION_TIME'
+											_value = "rotationTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_showDelta = false
+											_hideDiff = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_TOOLTIP_ARTILLERY_SHOOT_DIST'
+											_value="shipTTX.artillery.mgMaxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+											_showDelta = false
+											_hideDiff = true
+			)
+			(macro TTX_INSTANCE 'HeatingPerShot' "heatingTTX")
+			(macro TTX_INSTANCE 'HeatCooldownSpeed' "heatingTTX")
+			(macro TTX_INSTANCE 'HeatCooldownDelay' "heatingTTX")
+			(macro TTX_INSTANCE 'OverheatCooldownDelay' "heatingTTX")
+			(macro TTX_INSTANCE 'HeatingDamageFactor' "heatingTTX && heatingTTX.damageFactor.length !=0 ? heatingTTX : null")
+			(macro TTX_INSTANCE 'HeatingReloadFactor' "heatingTTX && heatingTTX.reloadFactor.length !=0 ? heatingTTX : null")
+			(element ShipParameter_Number	_title = 'IDS_PARAMS_MODIFIER_GMIDEALRADIUS'
+								_value = "shipTTX.artillery.mgDispersion"
+								_valueConfig = "VALUE_CONFIG.METER_NEGATIVE"
+								_showDelta = false
+								_hideDiff = true
+			)
+			(macro TTX_INSTANCE 'AmmoHEShieldDamage' "shipTTX.artillery.ammoHE")
+			(macro TTX_INSTANCE 'AmmoCSShieldDamage' "shipTTX.artillery.ammoCS")
+			(macro TTX_INSTANCE 'AmmoAPShieldDamage' "shipTTX.artillery.ammoAP")
+			(macro TTX_INSTANCE 'AmmoHEDamageNoDiff' "shipTTX.artillery.ammoHE")
+			(macro TTX_INSTANCE 'AmmoCSDamageNoDiff' "shipTTX.artillery.ammoCS")
+			(macro TTX_INSTANCE 'AmmoAPDamageNoDiff' "shipTTX.artillery.ammoAP")
+		)
+	)
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "extraArmaments.length != 0"))
+	)
+
+	(block
+		(bind visible "extraArmaments.length != 0")
+		(style
+			(width = 100%)
+		)
+		(controller $Instance renderer='TooltipSystemModuleExtraInfo'
+			(bind enabled "extraArmaments.length != 0")
+			(args
+				_items = "extraArmaments"
+				_title = "'IDS_MODULE_EXTRA_FIRE_MODES'"
+				_iconPrefix = 'url:../consumables/'
+			)
+		)
+	)
+)

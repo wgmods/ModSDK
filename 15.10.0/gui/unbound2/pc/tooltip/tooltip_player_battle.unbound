@@ -1,0 +1,164 @@
+(def element PlayerTooltipInvitationCountdown (_invitedPlayerEntity:gfx, _text:str) layout=true
+	(scope
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+		(var cooldownTime:number = "_invitedPlayerEntity.playerInvitedToPrebattleInfo.expirationTime - timerEntity.timer.currentServerTime"
+									(event "timerEntity.timer.evFrequent"))
+		(var cooldownTimeText:str = "countdownFormat(cooldownTime, 2, true)")
+	)
+	(style (width = 100%))
+
+	(element TooltipSystemHorizontalDivider)
+	(block
+		(style (width = 100%) (marginTop = "XS") (marginRight = "XS") (marginBottom = 3px))
+		
+		(hblock
+			(style (width = 100%) (marginRight = 6px))
+			(element FormationPlayerIcon
+				_isEmptySlot="true"
+			)
+
+			(tf
+				(style (marginLeft = "S") (maxWidth = 158px) (leading = -3))
+				(class $TextDefaultBoldNM)
+				(bind text "_text")
+			)
+			(tf
+				(style (top = "-XS"))
+				(class $TextDefault19NM)
+				(class $AlignRight)
+				(bind text "cooldownTimeText")
+			)
+		)		
+	)
+)
+
+(def element BattlePlayerTooltip (_playerEntity:gfx, _isInPostBattle:bool=false, _isBot:bool=false) layout=true
+	(scope
+		(var playerDbId:number =	"_playerEntity ? _playerEntity.accountSimple.dbId : INVALID_PLAYER_AVATAR_ID")
+		(var isSelf:bool =			"_playerEntity.accountSimple.isSelfPlayer")
+		(var relation:number =		"_playerEntity.relation.value" (event "_playerEntity.relation.evChanged"))
+
+		(var tkStatus:number =		"_playerEntity.avatar.tkStatus" (event "_playerEntity.avatar.evTeamkillStatusChanged"))
+		(var ttkStatus:number =		"_playerEntity.avatar.ttkStatus" (event "_playerEntity.avatar.evTTKStatusChanged"))
+
+		(var isEnemyPlayer:bool =	"relation == SC.Battle.PLAYER_RELATION.ENEMY")
+
+		(var name:str =			"_playerEntity.avatar.name")
+		(var pureName:str =		"_playerEntity.avatar.pureName")
+		(var playerVoiceChatEntity:gfx = "$datahub.getPrimaryEntity(CC.playerVoiceState, pureName)")
+		(var isMuted:bool =		"playerVoiceChatEntity ? playerVoiceChatEntity.playerVoiceState.isMuted : false" (event "playerVoiceChatEntity.playerVoiceState.evIsMutedChanged"))
+		(macro GET_PREF 'selfVoiceChatEnabled' "'sound.voice.chat.enabled'")
+		(var isInVoiceChat:bool ="playerVoiceChatEntity != null || (isSelf && selfVoiceChatEnabled)")
+		(var isAlive:bool =		"_playerEntity.health.isAlive" (event "_playerEntity.health.evIsAliveChanged"))
+		(var isLeaver:bool =	"_playerEntity.avatar.isLeaver" (event "_playerEntity.avatar.evIsLeaverChanged"))
+		(var playerId:number =	"_playerEntity.avatar.id")
+		(var mute:bool =		"_playerEntity.avatar.mute" (event "_playerEntity.avatar.evMuteChanged"))
+		(var isBot:bool =		"_playerEntity.avatar.isBot")
+
+		(var division:number =				"_playerEntity.divisionMember.division" (event "_playerEntity.divisionMember.evDivisionChanged"))
+		(var isInSameDivision:bool =		"_playerEntity.divisionMember.isInSameDivision" (event "_playerEntity.divisionMember.evDivisionChanged"))
+		(var isDivisionCommander:bool =		"_playerEntity.divisionMember.isDivisionCommander" (event "_playerEntity.divisionMember.evIsDivisionCommanderUpdated"))
+		(var isInSameDivisionOnStart:bool = "_playerEntity.divisionMember.isInSameDivisionOnStart")
+
+		(var inviteCooldown:number =		"_playerEntity.battleInvite.inviteCooldown" (event "_playerEntity.battleInvite.evInviteCooldownChanged"))
+		(var invitationsEnabled:bool =		"_playerEntity.battleInvite.invitationsEnabled" (event "_playerEntity.battleInvite.evInvitationsEnabledChanged"))
+		(var inviteCooldownEnabled:bool =	"_playerEntity.battleInvite.inviteCooldownEnabled" (event "_playerEntity.battleInvite.evInviteCooldownEnabledChanged"))
+
+		(var playerRoleStr:str =			"isDivisionCommander	? tr('IDS_DIVISION_COMMANDER_C')
+																	: tr('IDS_IN_DIVISION')")
+		
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var battleType:str = "battleDataEntity.battleInfo.battleType")
+
+		(var invitedPlayerEntity:gfx = "_playerEntity.hasComponent(CC.playerInvitedToPrebattleInfo) ? _playerEntity : null")
+	)
+
+	(style (width = 320) (hitTest = false))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltypSystemPlayerStereotypeDogTag _playerEntity="_playerEntity"
+			(style (width = 100%))
+		)
+
+		(block
+			(bind visible "isInSameDivision")
+			(style (width = 100%))
+			(element TooltipSystemHorizontalDivider)
+			(hblock
+				(style (width = 100%) (align = "middle"))
+
+				(element FormationPlayerIcon
+					_isEmptySlot=false
+					_isCommander="isDivisionCommander"
+					_isReady=true
+					_isInBattle=false
+				)
+
+				(tf
+					(style (marginLeft = "S") (textColor = "SC.Ui_styles.SERVICE_COLORS.YELLOW"))
+					(class $TextDefaultBoldNM)
+					(bind text "playerRoleStr")
+				)
+			)
+		)
+		
+		(block
+			(bind visible "selfVoiceChatEnabled && !isEnemyPlayer && (isInSameDivision || battleType == SC.Common.BATTLE_TYPES.CLAN_BATTLE)")
+			(style (width = 100%))
+			(element TooltipSystemHorizontalDivider)
+			(hblock
+				(style (width = 100%) (align = "middle"))
+
+				(mc icon_voice_chat_small
+					(bindcall gotoAndStop "	!isInVoiceChat		? 'disabled' :
+											isMuted				? 'muted'
+																: 'speak'"
+											init=true
+					)
+				)
+
+				(tf
+					(class $TextDefaultNM)
+					(style (marginLeft = "SXS")
+					(bind textColor "!isInVoiceChat || isMuted	? SC.Ui_styles.SERVICE_COLORS.ORANGE
+																: 0xFFFFFFFF"))
+					(bind text "isSelf			?	selfVoiceChatEnabled	? 	'IDS_VOICE_CHAT_ENABLED'
+																			:	'IDS_VOICE_CHAT_DISABLED' :
+								!isInVoiceChat	? 'IDS_PLAYER_IS_NOT_AVAILABLE_IN_VOICE_CHAT' :
+								isMuted			? 'IDS_PLAYER_IS_MUTED_IN_VOICE_CHAT'
+												: 'IDS_PLAYER_IS_AVAILABLE_IN_VOICE_CHAT'")
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='PlayerTooltipInvitationCountdown'
+				(args
+					_invitedPlayerEntity="invitedPlayerEntity"
+					_text="'IDS_INVITED_IN_DIVISION'"
+				)
+				(bind enabled "invitedPlayerEntity")
+			)
+		)
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider'
+				(bind enabled "!isSelf && !_isBot")
+			)
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "!isSelf && !_isBot")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_RIGHT"
+					_text = 'IDS_HINT_RIGHT_CLICK_FOR_CONTEXT_MENU'
+				)
+			)
+		)
+	)
+)

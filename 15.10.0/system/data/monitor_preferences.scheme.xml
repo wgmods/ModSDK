@@ -1,0 +1,34 @@
+<monitor_preferences.scheme.xml>
+	<scheme xmlns:common="system/data/common_preferences.scheme.xml">
+		<monitor storage="local">
+			
+			<index type="Integer"> 0 </index>
+			<mode type="Integer"> 0 </mode>
+			<!-- -1 means the value has to be set by ResolutionManager's recommended -->
+			<uiScale type="Float"> -1.0 </uiScale>
+			
+			<window>
+				<width type="Integer"> 1280 </width>
+				<height type="Integer"> 720 </height>
+			</window>
+			
+			<windowMode>BORDERLESS
+				<constraints>
+					<WINDOWED> 0 </WINDOWED>
+					<FULLSCREEN> 1 </FULLSCREEN>
+					<BORDERLESS> 2 </BORDERLESS>
+				</constraints>
+			</windowMode>
+			
+			<!-- Mirror of BW::Windowing::BorderlessBehaviour-->
+			<borderlessBehaviour>FULLSCREEN
+				<constraints>
+					<FULLSCREEN> 0 </FULLSCREEN>
+					<WINDOWED_FIXED_SIZE> 1 </WINDOWED_FIXED_SIZE>
+					<WINDOWED_UNCONSTRAINED> 2 </WINDOWED_UNCONSTRAINED><!-- not used -->
+					<WORKAREA_MAXIMIZED> 3 </WORKAREA_MAXIMIZED>
+				</constraints>
+			</borderlessBehaviour>
+		</monitor>
+	</scheme>
+</monitor_preferences.scheme.xml>

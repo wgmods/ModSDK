@@ -1,0 +1,1023 @@
+(def constant BERMUDA_EQUIPMENT_SLOT_ALPHA {
+	DEFAULT: 0.7,
+	PRESSED: 0.5,
+	FULL: 1
+})
+
+(def constant BERMUDA_MODULE_BRANCH_MARGINS [11,11,3,17,10])
+
+(def element BermudaEquipmentScreen(_shipId:number, _isVisible:bool)
+	(scope
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+		(var isHd:bool = "stageWidth < 1400")
+	)
+
+	(class $FullsizeAbsolute)
+	(style
+		(bind height "stageHeight - 60")
+	)
+
+	(controller $Instance renderer = 'ModulesAndModernizations'
+		(bind enabled "_isVisible")
+		(args
+			_shipId = "_shipId"
+			_isHd = "isHd"
+		)
+	)
+
+	(controller $Instance renderer = 'ArmamentsAndConsumables'
+		(bind enabled "_isVisible")
+		(args
+			_shipId = "_shipId"
+			_stageWidth = "stageWidth"
+		)
+	)
+)
+
+(def element ModulesAndModernizations (_shipId:number, _isHd:bool)
+	(scope
+		(var layoutCollection:gfx = "$datahub.getCollection(CC.moduleLayout)")
+
+		(var shipLayoutEntity:gfx = "layoutCollection.items[0]" (event "layoutCollection.evAdded") (event "layoutCollection.evRemoved"))
+		(var shipLayoutComponent:gfx = "shipLayoutEntity ? shipLayoutEntity.moduleLayout : null")
+		(var availiableTypes:array = "shipLayoutComponent ? shipLayoutComponent.availiableTypes : []" (event "shipLayoutComponent.evAvailiableTypesChanged") (event "shipLayoutEntity.evUpdated"))
+		(var bestExploredByType:array = "shipLayoutComponent ? shipLayoutComponent.bestExploredByType : []" (event "shipLayoutComponent.evBestExploredByTypeChanged") (event "shipLayoutEntity.evUpdated"))
+		(var installedModules:array = "shipLayoutComponent ? shipLayoutComponent.installedModules : []" (event "shipLayoutComponent.evInstalledModulesChanged") (event "shipLayoutEntity.evUpdated"))
+		(var moduleTree:array = "shipLayoutComponent ? shipLayoutComponent.moduleTree : null" (event "shipLayoutComponent.evModuleTreeChanged") (event "shipLayoutEntity.evUpdated"))
+
+		(macro PULL_ACCOUNT_RESOURCES)
+		(macro PULL_ACCOUNT_RESOURCE_BY_ID "SC.Common.CURRENCIES.METASHOPIUM_2" 'accountMetashopium')
+
+		(var shipEntity:gfx = "$datahub.getPrimaryEntity(CC.ship, _shipId)")
+		(var isOwned:bool = "shipEntity.hasComponent(CC.ownShip)" (event "shipEntity.evAdded") (event "shipEntity.evRemoved"))
+
+	)
+
+	(style
+		(position = "absolute")
+		(width = 306)
+		(top = 36)
+		(bind left "_isHd ? -64 : 0")
+	)
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND "false")
+
+	(block
+		(style
+			(position = "absolute")
+			(height = 600)
+			(width = 300)
+			(backgroundImage = 'url:../events/bermuda/equipment_screen/modules_layout_tree.png')
+			(backgroundSize = "fill")
+		)
+	)
+
+	(hblock
+		(style
+			(width = 100%)
+			(height = 30)
+		)
+
+		(hblock
+			(style
+				(position = "absolute")
+				(width = 70)
+				(height = 26)
+
+				(top = 3)
+				(left = 69)
+				(align = "middle")
+			)
+
+			(tf
+				(class $TextDefaultBoldNM)
+				(alpha = "TC")
+				(style
+					(height = 20)
+					(width = 50)
+					(marginRight = "XS")
+					(marginTop = "-XXS")
+					(textAlign = "right")
+				)
+				(bind text "toString(accountMetashopium)")
+			)
+
+			(element Currency
+				_currency = "SC.Common.CURRENCIES.METASHOPIUM_2"
+				_size = "SIZE.SMALL"
+			)
+
+			(block
+				(class $FullsizeAbsolute)
+				(style
+					(width = 76)
+					(backgroundImage = 'url:../events/bermuda/equipment_screen/currency_over.png')
+					(backgroundSize = "fill")
+				)
+			)
+
+			(controller $Tooltip
+				(bind renderer "'CurrencyWidgetTooltip'")
+				(args
+					_currency = "SC.Common.CURRENCIES.METASHOPIUM_2"
+					_noMouseInstruction = true
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			)
+		)
+
+		(element ImageButton
+			_width = 28
+			_name = 'btn_details'
+			_enabled = "isOwned"
+			_backgroundImage = 'url:../events/bermuda/equipment_screen/button_info_up.png'
+			_methods = "[
+							{	type:	'inputMapping.onRequest',
+								name:	'showModuleAndModernizationWindow',
+								args:	{}
+							},
+							{	type: 'direct.action',
+								name: SC.Common.STATISTICS_EVENTS.LOG,
+								args: [SC.Common.BERMUDA_TECHNOLOGIES_WINDOW_STATISTICS.OPEN_BERMUDA_TECHNOLOGIES_MODAL_PRIMARY_WEAPON_TAB]
+							}
+						]"
+
+			(style
+				(position = "absolute")
+				(height = 28)
+				(right = 28)
+				(top = 4)
+			)
+		)
+	)
+
+	(block
+		(style
+			(width = 100%)
+			(paddingTop = 24)
+		)
+
+		(block
+			(style (width = 100%) (align = "right"))
+		
+			(controller $Repeat renderer='ModuleSection' name='ModuleSectionRepeat'
+				(bind count "availiableTypes.length")
+				(args
+					_shipId = "_shipId"
+					_type = "availiableTypes[$index]"
+					_moduleIds = "bestExploredByType[$index]"
+					_installedModuleId = "installedModules[$index]"
+					_moduleTreeByType = "moduleTree[$index]"
+					_isFinalSection = "$index == availiableTypes.length - 1"
+				)
+			)
+		)
+	)
+)
+
+(def element ModuleSection (_shipId:number, _type:str, _moduleIds:array, _installedModuleId:number, _moduleTreeByType:array, _isFinalSection:bool)
+	(scope
+		(var installedModule:gfx = "_installedModuleId ? $datahub.getPrimaryEntity(CC.module, _installedModuleId) : null")
+
+		(var installedModuleBranch:number = "installedModule ? installedModule.module.branchId : -1" (event "installedModule.module.evUpdated"))
+
+		(var modernizationSlotsCollection:gfx = "$datahub.getCollection(CC.modernizationSlot)")
+		(var modernizationSlots:gfx = "modernizationSlotsCollection.child('byModType').child(_type).child('sorted')" (event "modernizationSlotsCollection.evAdded")(event "modernizationSlotsCollection.evRemoved")(event "modernizationSlotsCollection.evUpdated"))
+		(var slotItems:array = "modernizationSlots.items")
+
+		
+		(var slot0:gfx = "slotItems ? slotItems[0] : null")
+		(var isSlot0Installed:bool = "slot0 ? slot0.equipmentSlot.installedEntityId != 0 : false" (event "slot0.equipmentSlot.evInstalledEntityIdChanged"))
+
+		(var slot1:gfx = "slotItems && slotItems.length > 1 ? slotItems[1] : null")
+		(var isSlot1Installed:bool = "slot1 ? slot1.equipmentSlot.installedEntityId != 0 : false" (event "slot1.equipmentSlot.evInstalledEntityIdChanged"))
+
+		(var linkPostfix:str = "isSlot0Installed ? isSlot1Installed ? '1_1' : '1_0' : isSlot1Installed ? '0_1' : '0_0'")
+	)
+
+	(style
+		(width = 244)
+		(height = 96)
+		(bind marginBottom "_isFinalSection ? 0 : 16")
+	)
+
+	(block
+		(class $Fullsize)
+
+		(hblock
+			(class $Fullsize)
+			(style
+				(align = "top")
+			)
+
+			(block
+				(style
+					(width = 66)
+					(height = 86)
+					(marginRight = 30)
+				)
+
+				(element ModuleSlot
+					_moduleIds = "_moduleIds"
+					_moduleType = "_type"
+					_installedEntity = "installedModule"
+					_shipId = "_shipId"
+					(style (marginLeft = 11) (marginTop = 10))
+				)
+
+				(element BranchesDisplay
+					_moduleTreeByType = "_moduleTreeByType"
+					_installedModuleBranch = "installedModuleBranch"
+					(style
+						(marginTop = 10)
+						(marginLeft = 2)
+					)
+				)
+			)
+
+			(hblock
+				(class $Fullsize)
+				(style
+					(align = "top")
+					(hgap = 12)
+					
+					(zindex = "ZIndex.BACKGROUND")
+				)
+
+				(controller $Repeat renderer='ModernizationSlot'
+					(bind count "slotItems.length")
+					(args
+						_slotItems = "slotItems"
+						_moduleType = "_type"
+					)
+				)
+			)
+		)
+
+		(block
+			(style
+				(position = "absolute")
+				(width = 97)
+				(height = 12)
+				(right = 59)
+				(bottom = 20)
+				(bind backgroundImage "'url:../events/bermuda/equipment_screen/mods_' + linkPostfix + '.png'")
+				(backgroundSize = "fill")
+			)
+		)
+	)
+)
+
+(def element ModuleSlot(_moduleIds:array, _moduleType:str, _shipId:number, _installedEntity:gfx=null)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'module_'")
+		(macro PULL_INFOTIP_STATE_SCOPE)
+
+		(var iconName:str = "_installedEntity ? 'url:../modules/event/' + _moduleType + '/icon_module_' + _installedEntity.module.name +'_installed.png' : 'url:../service_kit/frames/64px_empty_field.png'")
+		(var modulePK:str = "_installedEntity ? _installedEntity.module.id: ''")
+
+		(var infotipVisible:bool = false)
+		(var isSlotPressed:bool = "!infotipVisible && module_mouseDown")
+		(var isSlotFullOpacity:bool = "infotipVisible || module_rollOver")
+		(var newModulesOfType:gfx = "$datahub.getCollection(CC.newItem).child('newModules').child('byModuleType').child(_moduleType)")
+		(var isNew:bool = "newModulesOfType ? newModulesOfType.items.length > 0 : false" (event "newModulesOfType.evAdded") (event "newModulesOfType.evRemoved"))
+	)
+
+	(style
+		(width = 60)
+		(height = 60)
+	)
+
+	(macro SOUND_HANDLER _soundSet = "'button_module'" _prefix = "'module_'")
+
+	(macro MOUSE_EVENTS_DISPATCHER_OPTIONAL
+		_prefix = "'module_'"
+		_enabled = "!infotipVisible"
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+
+		(style
+			(backgroundSize = "fill")
+
+			(bind alpha "isSlotPressed ? BERMUDA_EQUIPMENT_SLOT_ALPHA.PRESSED : isSlotFullOpacity ? BERMUDA_EQUIPMENT_SLOT_ALPHA.FULL : BERMUDA_EQUIPMENT_SLOT_ALPHA.DEFAULT")
+			(bind backgroundImage "iconName")
+		)
+	)
+
+	
+	(block
+		(style (position = "absolute") (right = "-MS") (top = "-XXS"))
+
+		(block
+			(macro DEFAULT_CONTROL_MARKER_ANIMATION "isNew")
+			(element MarkerNew)
+		)
+	)
+
+	(controller $Tooltip
+		(renderer = 'ModuleTooltip')
+		(bind enabled "modulePK != '' && !infotipVisible")
+		(args
+			_modulePK = "modulePK"
+			_isBermudaScreen = true
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(offset = { x: 20, y: 20 })
+		(align = "right|middle")
+	)
+
+	(controller $Tooltip
+		(renderer = 'ModuleEventInfotip')
+		(args
+			_moduleIds = "_moduleIds"
+			_moduleType = "_moduleType"
+			_shipId = "_shipId"
+			_isInfotip = true
+			_infotipVisible = "infotipVisible"
+		)
+
+		(bindcall show animation={duration:0.1, easing:"Easing.cubic_in", from:{alpha:1}, to:{alpha:1}} on='leftClick')
+		(bindcall hide animation={duration:0.1, easing:"Easing.cubic_out", from:{alpha:1}, to:{alpha:0}} on='evClickOutside')
+		(macro INFOTIP_ESCAPE_BEHAVIOUR "infotipVisible")
+
+		(position = "borderNoTrack")
+		(offset = {x: -67, y: 11})
+		(bind infotipVisible "true" init=false on='evStartShow')
+		(bind infotipVisible "false" init=false on='evHide')
+	)
+)
+
+(def element BranchesDisplay (_moduleTreeByType:array, _installedModuleBranch:number)
+	(style
+		(height = 13)
+		(width = 59)
+	)
+
+	(hblock
+		(class $Fullsize)
+		(style
+			(align = "middle|left")
+		)
+
+		(controller $Repeat renderer = 'BranchIcon'
+			(bind count "_moduleTreeByType.length")
+			(args
+				_branchModules = "_moduleTreeByType[$index]"
+				_installedModuleBranch = "_installedModuleBranch"
+			)
+		)
+	)
+)
+
+(def element BranchIcon (_branchModules:array, _installedModuleBranch:number)
+	(scope
+		(var firstModuleComponent:gfx = "$datahub.getPrimaryComponent(CC.module, _branchModules[0])")
+
+		(var isPurchased:bool = "firstModuleComponent ? firstModuleComponent.isPurchased : false" (event "firstModuleComponent.evUpdated"))
+		(var isInstalled:bool = "_installedModuleBranch == $index")
+
+		(var indicatorPostfix:str = "isInstalled ? 'installed' : isPurchased ? 'add' : 'lock'")
+	)
+
+	(style
+		(width = 3)
+		(height = 13)
+		(bind marginLeft "$index < BERMUDA_MODULE_BRANCH_MARGINS.length ? BERMUDA_MODULE_BRANCH_MARGINS[$index] : XS")
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(bind backgroundImage "'url:../events/bermuda/equipment_screen/modules_type_indicator_' + indicatorPostfix + '.png'")
+			(backgroundSize = "fill")
+		)
+	)
+)
+
+(def element ModernizationSlot(_slotItems:gfx, _moduleType:str)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'modernization_'")
+		(macro PULL_INFOTIP_STATE_SCOPE)
+
+		(var slotEntity:gfx = "_slotItems[$index]")
+
+		(var installedEntityId:number = "slotEntity.equipmentSlot.installedEntityId" (event "slotEntity.equipmentSlot.evInstalledEntityIdChanged"))
+		(var eventPurchasableIds:array = "slotEntity.modernizationSlot.eventPurchasableIds" (event "slotEntity.modernizationSlot.evEventPurchasableIdsChanged"))
+
+		(var installedEntity:gfx = "installedEntityId > 0 ? $datahub.getEntity(installedEntityId) : null")
+		(var isBlocked:bool = "eventPurchasableIds.length == 0")
+		(var modName:str = "installedEntity ? installedEntity.modernization.name : ''")
+
+		(var infotipVisible:bool = "false")
+		(var isSlotPressed:bool = "!isBlocked && !infotipVisible && modernization_mouseDown")
+		(var isSlotFullOpacity:bool = "!isBlocked && (infotipVisible || modernization_rollOver)")
+
+		(var frameIconName:str = "installedEntityId > 0 ? 'url:../events/bermuda/equipment_screen/slot_installed.png' : isBlocked ? 'url:../events/bermuda/equipment_screen/slot_lock.png' : 'url:../events/bermuda/equipment_screen/slot_add.png'")
+		(var modIconName:str = "	installedEntityId > 0 ? 'url:../modernization_icons/icon_modernization_' + modName + '.png': ''")
+	)
+
+	(style
+		(width = 64)
+		(height = 64)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+
+		(style
+			(backgroundSize = "fill")
+
+			(bind alpha "isSlotPressed ? BERMUDA_EQUIPMENT_SLOT_ALPHA.PRESSED : isSlotFullOpacity ? BERMUDA_EQUIPMENT_SLOT_ALPHA.FULL : BERMUDA_EQUIPMENT_SLOT_ALPHA.DEFAULT")
+			(bind backgroundImage "frameIconName")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(width = 60)
+			(height = 60)
+			(top = 2)
+			(left = 2)
+			(bind backgroundImage "modIconName")
+			(backgroundSize = "fill")
+		)
+		(bind alpha "isSlotPressed ? BERMUDA_EQUIPMENT_SLOT_ALPHA.PRESSED : isSlotFullOpacity ? BERMUDA_EQUIPMENT_SLOT_ALPHA.FULL : BERMUDA_EQUIPMENT_SLOT_ALPHA.DEFAULT")
+		(bind colorTransform "COLOR_TRANSFORM_WHITE_TO_YELLOW")
+	)
+
+	(macro SOUND_HANDLER
+		_soundSet = "'button_modernization'"
+		_prefix = "'modernization_'"
+		_enabled = "!isBlocked"
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER_OPTIONAL
+		_prefix = "'modernization_'"
+		_enabled = "!isBlocked && !infotipVisible"
+	)
+
+	(controller $Tooltip
+		(renderer = 'ModernizationsTooltip')
+		(bind enabled "installedEntityId <= 0 && !isBlocked && !infotipVisible")
+		(args
+			_modIds = "eventPurchasableIds"
+			_slotEntity = "slotEntity"
+			_moduleType = "_moduleType"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(offset = { x: 20, y: 20 })
+		(align = "right|middle")
+	)
+
+	(controller $Tooltip
+		(bind enabled "!isBlocked")
+		(renderer = 'ModernizationsInfotip')
+		(args
+			_modIds = "eventPurchasableIds"
+			_slotEntity = "slotEntity"
+			_moduleType = "_moduleType"
+			_infotipVisible = "infotipVisible"
+		)
+
+		(bindcall show animation={duration:0.1, easing:"Easing.cubic_in", from:{alpha:1}, to:{alpha:1}} on='leftClick')
+		(bindcall hide animation={duration:0.1, easing:"Easing.cubic_out", from:{alpha:1}, to:{alpha:0}} on='evClickOutside')
+		(macro INFOTIP_ESCAPE_BEHAVIOUR "infotipVisible")
+
+		(position = "borderNoTrack")
+		(offset = { x: -43, y: 22 })
+		(bind infotipVisible "true" init=false on='evStartShow')
+		(bind infotipVisible "false" init=false on='evHide')
+	)
+
+	(controller $Tooltip
+		(bind enabled "installedEntityId > 0 && !infotipVisible")
+		(bind renderer "'ModernizationTooltip'")
+		(args
+			_modernizationEntityId = "installedEntityId"
+			_isSlotTooltip = true
+			_isInstalled = true
+			_isBermudaScreen = true
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(controller $Tooltip
+		(bind enabled "isBlocked")
+		(renderer = 'TooltipSystemSimpleTooltipWithWidth')
+		(args _tooltipText = 'IDS_BERMUDA_MODULE_UNLOCK_TOOLTIP')
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(macro SIMPLE_TOOLTIP_ANIMATION)
+	)
+)
+
+(def element ArmamentsAndConsumables (_shipId:number, _stageWidth:number)
+	(scope
+		(var isHd:bool = "_stageWidth < 1400")
+		(var panelWidth:number = "isHd ? _stageWidth -600 :_stageWidth - 690")
+
+		
+		(var fireModeCollection:gfx = "$datahub.getCollection(CC.fireModeSlot)")
+
+		(var fireModeSlotEntity:gfx = "fireModeCollection ? fireModeCollection.items[0] : null" (event "fireModeCollection.evRemoved") (event "fireModeCollection.evAdded") (event "fireModeCollection.evMoved"))
+		(var isActiveFireMode:bool = " fireModeSlotEntity ? fireModeSlotEntity.fireModeSlot.isActive : false" (event "fireModeSlotEntity.fireModeSlot.evUpdated"))
+
+		(var ammoCollection:gfx = "$datahub.getCollection(CC.ammo)" (event "fireModeCollection.evRemoved"))
+		(var armamentsCollection:gfx = "ammoCollection ? ammoCollection.child('filtered') : null" (event "ammoCollection.evRemoved") (event "ammoCollection.evAdded") (event "ammoCollection.evMoved"))
+		(var activeCollection:gfx = "isActiveFireMode ? armamentsCollection.child('bySlotId') : armamentsCollection.child('withoutReservedAmmo').child('bySlotId')" (event "armamentsCollection.evRemoved") (event "armamentsCollection.evAdded") (event "armamentsCollection.evMoved"))
+		(var activeCollectionItems:array = "activeCollection ? activeCollection.items : []" (event "activeCollection.evRemoved") (event "activeCollection.evAdded") (event "activeCollection.evMoved"))
+
+		(var rageModeCollection:gfx = "$datahub.getCollection(CC.rageMode)")
+
+		
+		(var squadronCollection:gfx = "ammoCollection.child('byWeaponType').child(SC.Ships.SHIP_WEAPON_TYPES.AIRPLANES)"  (event "ammoCollection.evRemoved") (event "ammoCollection.evAdded") (event "ammoCollection.evMoved"))
+		(var isSquadronPresent:bool = "squadronCollection ? squadronCollection.items.length != 0 : false" (event "squadronCollection.evRemoved") (event "squadronCollection.evAdded"))
+
+		(var selectedAmmoId:number = "isSquadronPresent ? squadronCollection.items[0].id : -1")
+		(var selectedSquadronEntity:gfx = "selectedAmmoId ? $datahub.getEntity(selectedAmmoId) : null")
+		(var selectedSquadronType:str = "selectedSquadronEntity ? selectedSquadronEntity.ammo.squadType : ''" (event "selectedSquadronEntity.ammo.evUpdated"))
+
+		(var squadronAmmoCollection:gfx = "selectedSquadronType ? $datahub.getCollection(CC.ammo).child('bySquadType').child(selectedSquadronType) : null")
+		(var squadronConsumablesCollection:gfx = "selectedSquadronType ? $datahub.getCollection(CC.equipmentSlot).child('squadronAbilitySlotsBySquadType').child(selectedSquadronType) : null")
+
+		
+		(var equipmentSlotsCollection:gfx = "$datahub.getCollection(CC.equipmentSlot)")
+		(var abilitiesCollection:gfx = "equipmentSlotsCollection.child('bySlotType').child(SC.Ships.SHIP_SLOT_TYPES.ABILITY).child('allSortingByCommandId')" (event "equipmentSlotsCollection.evAdded")(event "equipmentSlotsCollection.evRemoved")(event "equipmentSlotsCollection.evUpdated"))
+	)
+
+	(style
+		(position = "absolute")
+		(bind width "panelWidth")
+		(bind left "isHd ? 260 : 350")
+		(bottom = 26)
+		(align = "bottom|center")
+	)
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND "false")
+
+	(block
+		(bind visible "isSquadronPresent")
+
+		(style
+			(height = 120)
+			(width = 100%)
+			(align = "middle|center")
+			(bind paddingLeft "isHd ? 10 : 82")
+			(bind paddingRight "isHd ? 10 : 82")
+			(backgroundColor = 0x30000000)
+		)
+
+		(hblock
+			(style
+				(align = "top|center")
+				(height = 80)
+			)
+
+			(hblock
+				(controller $Repeat renderer='AmmoItem'
+					(bind count "squadronAmmoCollection != null ? squadronAmmoCollection.items.length : 0")
+					(bindcall removeChildAt "$event[1]" (event "squadronAmmoCollection.evRemoved"))
+					(bindcall addChildAt "$event[1]" (event "squadronAmmoCollection.evAdded"))
+					(args
+						_collectionItems = "squadronAmmoCollection.items"
+					)
+					(exprs
+						(style
+							(bind marginLeft "$index == 0 ? 0 : isHd ? 6 : 36")
+						)
+					)
+				)
+			)
+
+			(hblock
+				(controller $Repeat renderer='ConsumableItem'
+					(bind count "squadronConsumablesCollection != null ? squadronConsumablesCollection.items.length : 0")
+					(bindcall removeChildAt "$event[1]" (event "squadronConsumablesCollection.evRemoved"))
+					(bindcall addChildAt "$event[1]" (event "squadronConsumablesCollection.evAdded"))
+					(args
+						_collection = "squadronConsumablesCollection"
+					)
+					(exprs
+						(style
+							(bind marginLeft "isHd ? 6 : 36")
+						)
+					)
+				)
+			)
+		)
+
+		(block
+			(style
+				(position = "absolute")
+				(bind width "panelWidth")
+				(height = 2)
+				(bottom = 0)
+				(bind left "isHd ? -10 : -82")
+			)
+
+			(element HorizontalDividerTwoPx)
+		)
+	)
+
+	(block
+		(style
+			(height = 120)
+			(width = 100%)
+			(align = "middle|center")
+			(bind paddingLeft "isHd ? 10 : 82")
+			(bind paddingRight "isHd ? 10 : 82")
+		)
+
+		(hblock
+			(style
+				(align = "top|center")
+				(height = 80)
+			)
+
+			(hblock
+				(controller $Repeat renderer='AmmoItem'
+					(bind count "activeCollectionItems.length")
+					(args
+						_collectionItems = "activeCollectionItems"
+						_fireModeComponent = "fireModeSlotEntity ? fireModeSlotEntity.fireModeSlot : null"
+					)
+					(exprs
+						(style
+							(bind marginLeft "$index == 0 ? 0 : isHd ? 6 : 36")
+						)
+					)
+				)
+			)
+
+			(hblock
+				(controller $Repeat renderer='ConsumableItem'
+					(bind count "abilitiesCollection.items.length")
+					(bindcall removeChildAt "$event[1]" (event "abilitiesCollection.evRemoved"))
+					(bindcall addChildAt "$event[1]" (event "abilitiesCollection.evAdded"))
+					(args
+						_collection = "abilitiesCollection"
+					)
+					(exprs
+						(style
+							(bind marginLeft "isHd ? 6 : 36")
+						)
+					)
+				)
+			)
+
+			(hblock
+				(controller $Repeat renderer='FireModeItem'
+					(bind count "fireModeCollection.items.length")
+					(bindcall removeChildAt "$event[1]" (event "fireModeCollection.evRemoved"))
+					(bindcall addChildAt "$event[1]" (event "fireModeCollection.evAdded"))
+					(args
+						_collection = "fireModeCollection"
+					)
+					(exprs
+						(style
+							(bind marginLeft "isHd ? 6 : 36")
+						)
+					)
+				)
+
+				(controller $Repeat renderer='RagemodeItem'
+					(bind count "rageModeCollection.items.length")
+					(bindcall removeChildAt "$event[1]" (event "rageModeCollection.evRemoved"))
+					(bindcall addChildAt "$event[1]" (event "rageModeCollection.evAdded"))
+					(args
+						_collection = "rageModeCollection"
+					)
+					(exprs
+						(style
+							(bind marginLeft "isHd ? 6 : 36")
+						)
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element AmmoItem(_collectionItems:gfx, _fireModeComponent:gfx=null)
+	(scope
+		(var ammoEntity:gfx = "_collectionItems[$index]")
+		(var ammoComponent:gfx = "ammoEntity ? ammoEntity.ammo : null")
+
+		(var isSquadron:bool = "ammoComponent ? ammoComponent.weaponType == SC.Ships.SHIP_WEAPON_TYPES.AIRPLANES: false")
+		(var commandId:number = "ammoComponent ? ammoComponent.commandId : -1" (event "ammoComponent.evUpdated"))
+
+		(var viewData:gfx = "ammoComponent ? ammoComponent.viewData : null" (event "ammoComponent.evUpdated"))
+
+		(var iconPath:str = "viewData ? viewData.iconPath : ''" (event "ammoComponent.evUpdated"))
+		(var secondaryIconPath:str = "viewData ? viewData.secondaryIconPath : ''" (event "ammoComponent.evUpdated"))
+
+		(var isActiveFireMode:bool = "_fireModeComponent != null && ammoComponent ? _fireModeComponent.isActive && ammoComponent.weaponType == SC.Ships.SHIP_WEAPON_TYPES.ARTILLERY : false" (event "_fireModeComponent.evUpdated"))
+		(var isBurstFire:bool = "_fireModeComponent != null ? _fireModeComponent.isBurstFire : false")
+
+		(var limitedAmmoEntity:gfx = "ammoComponent ? $datahub.getPrimaryEntity(CC.limitedAmmo, ammoComponent.id) : null")
+		(bind limitedAmmoEntity "$datahub.getPrimaryEntity(CC.limitedAmmo, ammoComponent.id)" (bind trigger "isActiveFireMode"))
+		(var maxAmmoCount:number = "limitedAmmoEntity ? limitedAmmoEntity.limitedAmmo.maxAmmoCount : -1")
+		(var isReservedAmmo:bool = "ammoComponent ? ammoComponent.isReserveAmmo : false" (event "ammoComponent.evUpdated"))
+
+		(var uniqueFeatures:array = "viewData ? viewData.uniqueFeatures : []" (event "ammoComponent.evUpdated"))
+		(var hasUniqueFeatures:bool = "uniqueFeatures.length > 0")
+	)
+
+	(style
+		(width = 60)
+		(height = 60)
+		(bind backgroundImage "'url:' + (isActiveFireMode && !isReservedAmmo ? secondaryIconPath : iconPath)")
+		(backgroundSize = "fill")
+	)
+	(bind alpha "isReservedAmmo ? 0.7 : 1")
+
+	(tf
+		(bind visible "(maxAmmoCount != -1 && isActiveFireMode)")
+		(style (position = "absolute") (top = "XS") (right = "XS"))
+		(class $TextDefaultBoldNM)
+		(bind text "maxAmmoCount")
+	)
+
+	(htile
+		(class $FullsizeAbsolute)
+		(style
+			(hitTest = false)
+			(width = 42px)
+		)
+		(controller $Repeat renderer='WeaponSlotUniqueFeatureItem'
+			(bind count "uniqueFeatures.length")
+			(args
+				_featureId = "uniqueFeatures[$index].id"
+			)
+		)
+	)
+
+	(controller $Tooltip (renderer = 'WeaponTooltip')
+		(bind enabled "ammoEntity != null")
+		(args
+			_ammoEntityId = "ammoEntity.id"
+			_isSecondaryActive = "isActiveFireMode"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(offset = {	x: 20, y: 0 })
+	)
+
+	(controller $Instance renderer='HotkeyIndicator'
+		(bind enabled "commandId != -1")
+		(args
+			_commandId="commandId"
+			_active=true
+		)
+		
+		(exprs
+			(style
+				(bottom = "-HOTKEY_SIZE[SIZE.MEDIUM]")
+				(position = "absolute")
+				(hcenter = "0px")
+			)
+		)
+	)
+
+	(controller $Instance renderer='WeaponSlotTabPin'
+		(bind enabled "isSquadron")
+	)
+)
+
+(def element WeaponSlotTabPin ()
+	(scope
+		(macro GET_PREF 'isBlurOptionEnabled' "'graphics.GUI.blur'")
+
+	)
+
+	(style 
+		(position = "absolute")
+		(width = 100%)
+		(rotation = 180)
+		(top = -9)
+		(left = 60)
+		(align = "center")
+	)
+
+	(block
+		(style
+			(width = 22)
+			(height = 12)
+			(bind backgroundImage "'url:../service_kit/tabs/tabs_pin_vert' + (isBlurOptionEnabled ? '' : '_noblur') + '.png'")
+		)
+	)
+)
+
+(def element RagemodeItem(_collection:gfx)
+	(scope
+		(var rageModeEntity:gfx = "_collection.items[$index]")
+		(var rageModeComponent:gfx = "rageModeEntity.rageMode")
+
+		(var iconPath:str = "'url:' + rageModeComponent.slotData.iconPath" (event "rageModeComponent.evUpdated"))
+		(var commandId:str = "rageModeComponent.slotData.command" (event "rageModeComponent.evUpdated"))
+	)
+
+	(style
+		(width = 60)
+		(height = 60)
+		(bind backgroundImage "iconPath")
+		(backgroundSize = "fill")
+	)
+
+	(controller $Tooltip (renderer = 'RageModeTooltip')
+		(args
+			_rageModeStruct = "rageModeComponent.slotData"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(offset = {	x: 20, y: 0 })
+	)
+
+	(element HotkeyIndicator
+		_commandId="commandId"
+		_active=true
+		
+		(style
+			(bottom = "-HOTKEY_SIZE[SIZE.MEDIUM]")
+			(position = "absolute")
+			(hcenter = "0px")
+		)
+	)
+)
+
+(def element FireModeItem(_collection:gfx)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'fireMode_'")
+
+		(var fireModeEntity:gfx = "_collection.items[$index]")
+		(var fireModeComponent:gfx = "fireModeEntity.fireModeSlot")
+
+		(var commandId:str = "fireModeComponent.commandId" (event "fireModeComponent.evUpdated"))
+		(var iconPath:str = "'url:' + fireModeComponent.iconPath" (event "fireModeComponent.evUpdated"))
+
+		(var isActiveFireMode:bool = "fireModeComponent.isActive" (event "fireModeComponent.evUpdated"))
+
+		(var strokeIconName:str = "isActiveFireMode ? 'button_selected_slot.png' : 'button_full_slot_up.png'")
+	)
+
+	(bindcall externalCall "'inputMapping.onAction'"	"['changeFireModeState', {}]" init=false watch=false on='click')
+
+	(macro SOUND_HANDLER
+		_soundSet = "'button_consumable'"
+		_prefix = "'fireMode_'"
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER_FULL_OPTIONAL
+		_prefix = "'fireMode_'"
+	)
+	
+
+	(style
+		(width = 60)
+		(height = 60)
+
+		(bind backgroundImage "iconPath")
+		(backgroundSize = "fill")
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(hitTest = false)
+			(bind backgroundImage "'url:../service_kit/slots/' + strokeIconName")
+			(backgroundSize = "fill")
+		)
+	)
+
+	(controller $Tooltip (renderer = 'FireModeTooltip')
+		(args
+			_fireModeEntity = "fireModeEntity"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(offset = {	x: 20, y: 0 })
+	)
+
+	(element HotkeyIndicator
+		_commandId="commandId"
+		_active=true
+		(style
+			(bottom = "-HOTKEY_SIZE[SIZE.MEDIUM]")
+			(position = "absolute")
+			(hcenter = "0px")
+		)
+	)
+)
+
+(def element ConsumableItem(_collection:gfx)
+	(scope
+		(var equipmentSlotEntity:gfx = "_collection.items[$index]")
+		(var equipmentSlotComponent:gfx = "equipmentSlotEntity ? equipmentSlotEntity.equipmentSlot : null")
+		(var installedEntityId:number = "equipmentSlotComponent ? equipmentSlotComponent.installedEntityId : 0" (event "equipmentSlotComponent.evInstalledEntityIdChanged"))
+		(var abilityComponent:gfx = "installedEntityId !=0 ? $datahub.getEntity(installedEntityId).ability : null")
+
+		(var maxCharge:number = "abilityComponent ? abilityComponent.maxCharge : -1" (event "abilityComponent.evMaxChargeChanged"))
+		(var isLimitedCount:bool = "maxCharge != -1")
+
+		(var lifecycleType:number = "abilityComponent.lifecycleType" (event "abilityComponent.evLifecycleTypeChanged"))
+		(var isTimeBased:bool = "lifecycleType == SC.Battle.CONSUMABLE_LIFECYCLE_TYPE.TIME_BASED")
+
+		(var workTimeText:str = "countdownFormat(maxCharge, maxCharge > 10 ? 0 : 1, maxCharge >= 60, false)")
+
+		(var viewData:gfx = "abilityComponent ? abilityComponent.viewData : null" (event "abilityComponent.evChanged"))
+
+		(var cmdName:str = "viewData ? viewData.cmdName : ''")
+
+		(var cmdEntity:gfx =  "cmdName != '' ? $datahub.getPrimaryEntity(CC.commandMappingCommandName, cmdName) : null")
+		(var commandId:number = "cmdEntity ? cmdEntity.commandMappingCommand.id : 0" (event "cmdEntity.commandMappingCommand.evChanged"))
+	)
+
+	(style
+		(width = 60)
+		(height = 60)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(bind backgroundImage "viewData ? 'url:' + viewData.iconPath : ''")
+			(backgroundSize = "fill")
+		)
+
+		(controller $Tooltip (renderer = 'BattleConsumableTooltip')
+			(args
+				_viewData = "viewData"
+				_isOwn = true
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			(offset = {	x: 20, y: 0 })
+		)
+	)
+
+	(block
+		(bind visible "isTimeBased")
+		(class $FullsizeAbsolute)
+		(style
+			(top = "-XXS")
+			(left = "-XXS")
+			(backgroundImage = 'url:../consumables/features/time_based.png')
+			(hitTest = false)
+		)
+	)
+
+	(block
+		(bind visible "isLimitedCount == -1")
+		(style
+			(position = "absolute")
+			(top = 4)
+			(right = 5)
+			(backgroundColor = 0x01000000)
+		)
+
+		(controller $Tooltip
+			(renderer = 'SimpleStatusTooltip')
+			(args
+				_text = "isTimeBased ? 'IDS_CONSUMABLE_CAPACITY' : 'IDS_NUMCONSUMABLES'"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+
+		(tf
+			(bind visible "!isTimeBased")
+			(class $TextDefaultBoldNM)
+			(style
+				(textAlign = "right")
+				(alpha = "TA")
+			)
+			(bind text "maxCharge")
+		)
+
+		(tf
+			(bind visible "isTimeBased")
+			(class $TextDefaultBoldNM)
+			(style
+				(width = 44)
+				(textAlign = "left")
+				(alpha = "TA")
+			)
+			(bind text "workTimeText")
+		)
+	)
+
+	(controller $Instance renderer='HotkeyIndicator'
+		(bind enabled "commandId != 0")
+		(args
+			_commandId="commandId"
+			_active=true
+		)
+		
+		(exprs
+			(style
+				(bottom = "-HOTKEY_SIZE[SIZE.MEDIUM]")
+				(position = "absolute")
+				(hcenter = "0px")
+			)
+		)
+	)
+)

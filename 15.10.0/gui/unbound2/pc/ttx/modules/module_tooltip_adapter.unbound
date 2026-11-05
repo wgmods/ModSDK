@@ -1,0 +1,54 @@
+(def constant MODULE_DESCRIPTOR_TO_RENDERER {
+	'_Artillery'		: 'ModuleArtillery_Parameters',
+	'_Suo'				: 'ModuleSuo_Parameters',
+	'_Hull'				: 'ModuleHull_Parameters',
+	'_Engine'			: 'ModuleEngine_Parameters',
+	'_Sonar'			: 'ModuleSonar_Parameters',
+	'_Torpedoes'		: 'ModuleTorpedoes_Parameters',
+	'_Fighter'			: 'ModuleFighter_Parameters',
+	'_DiveBomber'		: 'ModuleDiveBomber_Parameters',
+	'_TorpedoBomber'	: 'ModuleTorpedoBomber_Parameters',
+	'_SkipBomber'		: 'ModuleSkipBomber_Parameters',
+
+	'_PrimaryWeapons_artillery_extended'	: 'ModuleArtillery_Extended_Parameters',
+	'_PrimaryWeapons_phaserLasers_extended'	: 'ModulePhaserLaser_Extended_Parameters',
+	'_Hull_extended'						: 'ModuleHull_Extended_Parameters',
+	'_SecondaryWeapons_torpedoes_extended'	: 'ModuleTorpedoes_Parameters',
+	'_SecondaryWeapons_missiles_extended'	: 'ModuleMissiles_Extended_Parameters',
+	'_Abilities_extended'					: 'ModuleAbilities_Extended_Parameters',
+	'_Shield_extended'						: 'ModuleShield_Extended_Parameters',
+})
+
+(def layout TooltipSystemDockModuleParameters (_ttxDescriptor:str, _extendedInfo:gfx=null) dispatch_size_change=true
+	(scope
+		(var rendererName:str = "_ttxDescriptor in MODULE_DESCRIPTOR_TO_RENDERER	?	MODULE_DESCRIPTOR_TO_RENDERER[_ttxDescriptor]
+																					:	'DefaultParametersForTooltip'")
+		(var comparison:gfx = "$datahub.getSingleEntity(CC.comparison).comparison")
+		(var tooltipTTX:gfx = "comparison ? comparison.tooltipTTX : null" (event "comparison.evTooltipTTXChanged"))
+		(var hasIntegralDiff:gfx = "comparison ? comparison.hasTooltipIntegralDiff : null" (event "comparison.evTooltipTTXChanged"))
+	)
+	(bind visible "tooltipTTX != null")
+	(style (width = 100%))
+
+	(block
+		(style (width = 100%))
+		(controller $Instance
+			(bind enabled "tooltipTTX != null")
+			(bind renderer "rendererName")
+			(args "tooltipTTX" "_extendedInfo")
+		)
+	)
+	(block
+		(style
+			(width = 100%)
+			(paddingLeft = "-M")
+			(paddingRight = "-M")
+			(paddingTop = "SXS")
+			(paddingBottom = "-SXS")
+		)
+		(controller $Instance renderer = 'ShipTTXSimple'
+			(bind enabled "tooltipTTX != null && hasIntegralDiff && _extendedInfo == null")
+			(args _shipTTX="tooltipTTX" _showOnlyDiff="true")
+		)
+	)
+)

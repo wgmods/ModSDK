@@ -1,0 +1,22 @@
+
+(def layout MarkersContainer ()
+	(scope
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+
+		(var markersCollection:gfx = "$datahub.getCollection(CC.worldMarker)")
+	)
+
+	(style
+		(position = "absolute")
+		(bind width "stageWidth")
+		(bind height "stageHeight")
+	)
+
+	(controller $Repeat renderer='WorldMarkerItem'
+		(bind count "markersCollection.items.length" watch=false (event "markersCollection.evAdded"))
+		(bindcall removeChildAt "$event[1]" (event "markersCollection.evRemoved"))
+		(args "markersCollection")
+	)
+)

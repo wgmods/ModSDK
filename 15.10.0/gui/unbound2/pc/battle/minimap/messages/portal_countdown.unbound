@@ -1,0 +1,309 @@
+(def css $EventCountdownTextDefault ()
+	(extends $TextDefault19NM)
+	(hitTest = false)
+	(marginLeft = "SXS")
+	(marginRight = "SXS")
+	(marginTop = "XXS")
+	(marginBottom = "XXS")
+	(multiline = "false")
+)
+
+(def css $FontBlackBoldWithoutShadow19 ()
+	(fontFamily = '$WWSDefaultFontBold')
+	(fontSize = 19)
+	(marginLeft = -3px)
+	(marginRight = -3px)
+	(marginTop = -8px)
+	(marginBottom = -6px)
+)
+
+(def constant COLOR_MAIN 0xFFFFFFFF)
+(def constant COLOR_DANGER 0xFFFF9933)
+
+(def constant PORTAL_TEXT_VISUALS {
+	'PORTAL' : { countdownProgressIds: 'IDS_PORTAL_OPENING_COUNTDOWN_PROGRESS', countdownFinishedIds: 'IDS_PORTAL_OPENING_COUNTDOWN_FINISHED', textColor: "COLOR_MAIN" },
+	'PORTAL_ON' : { countdownProgressIds: 'IDS_PORTAL_CLOSING_COUNTDOWN_PROGRESS', countdownFinishedIds: 'IDS_PORTAL_CLOSING_COUNTDOWN_FINISHED', textColor: "COLOR_DANGER" }
+}
+)
+
+(def element PortalCountdown () layout=true dispatch_size_change=true
+
+	(scope
+		(var taskCollection:gfx = "$datahub.getCollection(CC.task)")
+		(var taskWithIcon:gfx = "taskCollection ? taskCollection.getChildByPath('byShowOnHud.' + 2) : null" (event "taskCollection.evChildAdded") (event "taskCollection.evChildRemoved"))
+		(var count:number = "taskWithIcon ? taskWithIcon.items.length : 0" (event "taskWithIcon.evAdded") (event "taskWithIcon.evRemoved"))
+	)
+	
+	(controller $Repeat renderer='PortalCountdownItemRenderer' layout=false
+		(args _portalsItems="taskWithIcon.items")
+		(bind count "count")
+		(exprs
+			(scope
+				(bind portalsItems "taskWithIcon.items" (event "taskWithIcon.evAdded") (event "taskWithIcon.evRemoved"))
+			)
+		)
+	)
+)
+
+(def element PortalCountdownItemRenderer (_portalsItems:array) layout=true
+	(scope
+		(var portalsItems:array = "_portalsItems")
+
+		(var taskEntity:gfx = "portalsItems[$index]")
+
+		(var timerEntity:gfx = "$datahub.getSingleEntity(CC.timer)")
+		(var taskTimer:gfx = "taskEntity.timeout")
+
+		(var taskTimeoutTime:number = "taskTimer ? taskTimer.time : 0" (event "taskEntity.timeout.evTimeChanged"))
+		(var taskTimeoutTotal:number = "taskTimer ? taskTimer.total : 0" (event "taskEntity.timeout.evTimeChanged"))
+		(var remainingTime:number = "taskTimeoutTime - timerEntity.timer.currentServerTime" (event "timerEntity.timer.evInfrequent"))
+		(var progress:number = "taskTimer ? (taskTimeoutTotal - remainingTime)/taskTimeoutTotal : 0" watch=false)
+		(controller $Animation
+			(bindcall play duration=0.5 delay=0 to="{ progress : (taskTimeoutTotal - remainingTime)/taskTimeoutTotal}" (bind enabled "taskTimer") (event "timerEntity.timer.evInfrequent"))
+		)
+		(var isTimeOut:bool = "remainingTime < 1")
+		(var isRunning:bool = "taskTimer.running && remainingTime > 0" (event "taskTimer.evRunningChanged"))
+
+		(var portalType:str = "taskEntity.task.id")
+		(var portalTextVisual:dict = "PORTAL_TEXT_VISUALS[portalType]")
+	)
+
+	(alpha = 1)
+	(controller $Animation
+		(play from="{alpha:0, height:0}" to="{alpha:1,height:42}" duration=0.3 easing="Easing.quad_in" action="killAll" (bind enabled "isRunning") (bind trigger "isTimeOut"))
+	)	
+	(bind visible "isRunning")
+
+	(style
+		(height = "42px")
+	)
+		
+	(hblock
+		(bind visible "!isTimeOut")
+		(style
+			(height = "100%")
+		)
+		
+		(block
+			(macro DIPLOMACY_BG)
+			(class $FullsizeAbsolute)
+		)
+		
+		(block
+			(style
+				(height = "100%")
+				(padding = "3px")
+				(align = "center|middle")
+			)
+			(block
+				(style
+					(position = "absolute")
+					(height = "100%")
+					(alpha = "0.3")
+					(backgroundColor = "0xFF00FFFF")
+					(bind width "1% * (100 * progress)")
+				)
+			)
+			(tf
+				(class $TextDefaultBold19NM)
+				(style
+					
+					(marginLeft = "SXS")
+					(marginRight = "SXS")
+				)
+				(bind text "toUpper(tr(portalTextVisual.countdownProgressIds))")
+			)
+		)
+		(block
+			(style
+				(height = "100%")
+				(padding = "3px")
+			)
+			(block
+				(style
+					(align = "center|middle")
+					(height = "100%")
+					(width = "64px")
+					(backgroundColor = "0xFFFFFFFF")
+					(alpha = "0.7")
+				)
+				(tf
+					(class $FontBlackBoldWithoutShadow19)
+					(bind text "countdownFormat(max(0, remainingTime), 0, true)")
+				)
+			)
+		)
+	)
+		
+	
+	
+	
+	
+	
+	
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+)
+
+(def element ScenarioTaskExtraHudTimers () layout=true
+	(scope
+		(var taskCollection:gfx = "$datahub.getCollection(CC.task)")
+		(var taskWithIcon:gfx = "taskCollection ? taskCollection.getChildByPath('byShowOnHud.' + 3) : null" (event "taskCollection.evChildAdded") (event "taskCollection.evChildRemoved"))
+		(var count:number = "taskWithIcon ? taskWithIcon.items.length : 0" (event "taskWithIcon.evAdded") (event "taskWithIcon.evRemoved"))
+	)
+
+	(style
+		(position = "absolute")
+		(height = "50%")
+		(width = 100%)
+		(align = "bottom|center")
+		(paddingBottom = "S")
+	)
+
+	(controller $Repeat renderer='ScenarioTaskCountdownWithIcon' 
+		(bind count "count")
+		(exprs
+			(scope
+				(bind taskEntity "taskWithIcon.items[$index]" (event "taskWithIcon.evAdded") (event "taskWithIcon.evRemoved"))
+			)
+		)
+	)
+)
+
+(def element ScenarioTaskCountdownWithIcon () layout=true
+	(scope
+		(var timer:gfx = "$datahub.getSingleComponent(CC.timer)")
+		(var taskEntity:gfx = "null")
+		(var taskTimer:gfx = "taskEntity ? taskEntity.timeout : null" init=false)
+		(var taskComponent:gfx = "taskEntity ? taskEntity.task : null" init=false)
+		
+		(var avatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var isAlive:bool = "avatarEntity.health.isAlive" (event "avatarEntity.health.evIsAliveChanged"))
+
+		(var taskHeader:str = "'IDS_BATTLE_TASK_TEXT_HEADER_' + taskComponent.id + (!isAlive ? '_SPECTATOR' : '')" init=false)
+		(var taskIconPath:str = "'url:../battle_hud/taskTimerIcons/' + taskComponent.id + '.png'" init=false)
+		(var _frameIconUrl:str = "'url:../battle_hud/taskTimerIcons/' + taskComponent.id + '_frame.png'" init=false)
+
+		(var taskTimeoutTime:number = "taskTimer ? taskTimer.time : 0" (event "taskTimer.evTimeChanged"))
+		(var taskTimeoutTotal:number = "taskTimer ? taskTimer.total : 0" (event "taskTimer.evTimeChanged"))
+		(var remainingTime:number = "(taskTimeoutTime - timer.currentServerTime)" (event "timer.evInfrequent"))
+		(var progress:number = "taskTimer ? (remainingTime)/taskTimeoutTotal : 1" watch=false)
+		(controller $Animation
+			
+			(bindcall play duration=0.5 delay=0 to="{ progress : taskTimeoutTotal ? min(max(((remainingTime - 1.0)/taskTimeoutTotal), 0), 1) : 1}" (bind enabled "taskTimer") (event "timer.evInfrequent")) 
+		)
+
+		(var arcProgress:number = "360 * progress")
+		(var isRunning:bool = "taskTimer.running && remainingTime > 0" (event "taskTimer.evRunningChanged"))
+	)
+
+	(style
+		(margin = "S")
+	)
+
+	(bind visible "isRunning")
+
+	(block
+		(class $FullsizeAbsolute)
+		(macro DIPLOMACY_BG)
+	)
+
+	(block
+		(style
+			(width = "100%")
+		)
+
+		(block			
+			(style
+				(bind backgroundImage "taskIconPath")
+				(backgroundSize = "align")
+				(padding = [4, 4, 4, 4])
+				(width = "100%")
+				(height = "100px")
+				(position = "absolute")
+			)
+		)
+
+		(block
+			(block
+				(style 
+					(position = "absolute")
+					(top = 50%)
+					(left = 50%)
+				)
+
+				(controller $Sector
+					(bind arc "arcProgress")
+					(bind offset "-90 - arcProgress")
+					(bind radius "50%")
+				)
+				(isMask = true)
+			)
+			
+			(style
+				(bind backgroundImage "_frameIconUrl")
+				(backgroundSize = "align")
+				(padding = [4, 4, 4, 4])
+				(width = "100%")
+				(height = "100px")
+			)
+			(bind visible "_frameIconUrl")
+		)
+	)
+
+	(block
+		(style
+			(margin = "SXS")
+		)
+		(tf
+			(class $EventCountdownTextDefault)
+			(style
+				(multiline = false)
+				(marginLeft = "M")
+				(marginRight = "M")
+			)
+			(bind text "taskHeader")
+		)
+	)
+)
+
+(def element PortalCountdownHolder () layout=true dispatch_size_change=true
+	(scope
+		(var diplomacyCollection:gfx = "$datahub.getCollection(CC.diplomacyRelation)")
+		(var hasDiplomacyItems:bool = "diplomacyCollection.items.length > 0" (event "diplomacyCollection.evAdded"))
+	)
+
+	(style
+		(align = "top|right")
+		(marginTop = "24px")
+		(flow = "horizontal")
+		(gap = "8px")
+	)
+
+	(controller $Instance renderer='PortalCountdown')
+
+	(controller $Instance renderer='EventShipList'
+		(bind enabled "hasDiplomacyItems")
+	)
+)

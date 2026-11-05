@@ -1,0 +1,250 @@
+(def element ModernizationsTooltip(_modIds:array, _slotEntity:gfx, _moduleType:str)
+	(scope
+		(var moduleTypeUpper:str = "toUpper(_moduleType)")
+	)
+
+	(style
+		(width = 320)
+	)
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "'IDS_MODERNIZATIONS' + moduleTypeUpper"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "'IDS_MODERNIZATIONS_IMPROVING' + moduleTypeUpper"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(block
+			(style
+				(width = 320)
+				(marginLeft = -16)
+				(marginRight = -16)
+				(marginBottom = -12)
+				(marginTop = -12)
+			)
+
+			(controller $Repeat renderer='ModernizationItem'
+				(bind count "_modIds.length")
+				(args
+					_modIds = "_modIds"
+					_slotEntity = "_slotEntity"
+					_isInfotip = false
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemStatusLine
+			_text = 'IDS_OPEN_MODERNIZATIONS_LIST_MOUSE_INSTRUCTION'
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+		)
+	)
+)
+
+(def element ModernizationsInfotip(_modIds:array, _slotEntity:gfx, _moduleType:str, _infotipVisible:bool)
+	(scope
+		(macro PULL_SHIP_ID)
+
+		(var moduleTypeUpper:str = "toUpper(_moduleType)")
+	)
+	
+	(style
+		(width = 320)
+		(marginLeft = -16)
+		(marginRight = -16)
+		(marginBottom = -12)
+		(marginTop = -12)
+		(backgroundColor = 0x01000000)
+	)
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND "true")
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "'IDS_MODERNIZATIONS' + moduleTypeUpper"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "'IDS_MODERNIZATIONS_IMPROVING' + moduleTypeUpper"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(block
+			(style
+				(width = 320)
+				(marginLeft = -16)
+				(marginRight = -16)
+				(marginBottom = -12)
+				(marginTop = -12)
+			)
+			(controller $Repeat renderer='ModernizationItem'
+				(bind count "_modIds.length")
+				(args
+					_modIds = "_modIds"
+					_slotEntity = "_slotEntity"
+					_shipId = "shipIdForModuleInset"
+					_isInfotip = true
+					_infotipVisible = "_infotipVisible"
+				)
+			)
+		)
+	)
+	(element InfotipPins "{pinTop: 16, pinBottom: 0, pinLeft: 0, pinRight: 0}" "true")
+)
+
+
+(def element ModernizationItem (_modIds:array, _slotEntity:gfx, _isInfotip:bool, _shipId:number=0, _infotipVisible:bool=false)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'modernization_item_'")
+
+		(var modernizationId:number = "_modIds[$index]")
+		(var modernizationEntity:gfx = "$datahub.getPrimaryEntity(CC.modernization, modernizationId)")
+		(var name:str = "modernizationEntity ? modernizationEntity.modernization.name : ''")
+		(var eventShopId:number = "modernizationEntity ? modernizationEntity.modernization.eventShopId : 0")
+		(var eventShopEntity:gfx = "eventShopId != 0 ? $datahub.getEntity(eventShopId) : null")
+		(var itemPriceIds:array = "eventShopEntity ? eventShopEntity.eventShopItem.itemPriceIds : null")
+
+		(var itemPriceEntity:gfx = "itemPriceIds ? $datahub.getEntity(itemPriceIds[0]) : null")
+
+		(var isInstalled:gfx = "modernizationEntity.id == _slotEntity.equipmentSlot.installedEntityId" (event "_slotEntity.equipmentSlot.evInstalledEntityIdChanged"))
+		(var numInStorage:number = "modernizationEntity ? modernizationEntity.modernization.numInStorage : 0" (event "modernizationEntity.modernization.evNumInStorageChanged"))
+
+		(var isPurchased:bool = "numInStorage != 0")
+
+		(var modernizationBuyPricesEntity:gfx = "modernizationEntity && itemPriceEntity == null ? $datahub.getPrimaryEntity(CC.prices, toString(modernizationId) + '_' + toString(SC.Common.PRICE_ACTION.BUY)) : null")
+		(var modernizationBuyPricesIds:array = "modernizationBuyPricesEntity ? modernizationBuyPricesEntity.prices.pricesInCurrencies : null" (event "modernizationBuyPricesEntity.prices.evChanged"))
+		(var modernizationBuyPriceEntity:gfx =	"modernizationBuyPricesIds ? $datahub.getEntity(toString(modernizationBuyPricesIds[0])) : null")
+		(var modernizationBuyPriceInfo:gfx = "modernizationBuyPriceEntity ? modernizationBuyPriceEntity.itemPrice : itemPriceEntity ? itemPriceEntity.itemPrice : null" (event "modernizationBuyPriceEntity.itemPrice.evChanged"))
+
+		(var iconName:str = "modernizationEntity ? 'url:../modernization_icons/icon_modernization_' + name + '.png' : ''")
+
+		(var clickAction:str = "isInstalled						? 'demountModernization' :
+								isPurchased						? 'showModernizationsPurchaseAndInstallWindow'
+																: 'showModernizationsPurchaseAndInstallWindow'")
+
+		(var actionParams:dict = "!isInstalled	?	{modId: modernizationId, slotId: _slotEntity.equipmentSlot.subCollectionKey} : {slotId: _slotEntity.equipmentSlot.subCollectionKey, shipId: _shipId}")
+
+		
+		(macro INFOTIP_ROW_BACKGROUND_SCOPE
+			_isHovered = "_isInfotip && modernization_item_rollOver"
+			_isPressed = "modernization_item_mouseDown"
+			_isSelected = "_isInfotip && isInstalled"
+		)
+	)
+
+	(bind visible "modernizationEntity != null")
+
+	(bindcall externalCall "clickAction != null ? isInstalled ? 'inputMapping.onAction' : 'inputMapping.onRequest' : ''" "[clickAction, actionParams]" init=false watch=false on='leftClick')
+
+	(style
+		(width = 100%)
+		(height = 80)
+		(backgroundColor = 0x01000000)
+	)
+
+	(macro SOUND_HANDLER _soundSet = "'button_modernization'" _prefix = "'modernization_item_'")
+
+	(macro MOUSE_EVENTS_DISPATCHER
+		_prefix = "'modernization_item_'"
+	)
+
+	(macro INFOTIP_ROW_BACKGROUND "currentAlpha")
+
+	(controller $Tooltip
+		(bind enabled "_isInfotip || _infotipVisible")
+		(bind renderer "'ModernizationTooltip'")
+		(args
+			_modernizationEntityId = "modernizationEntity.id"
+			_isInstalled = "isInstalled"
+			_isBermudaScreen = true
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(width = 288)
+			(top = -12)
+			(left = 16)
+		)
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "$index != 0")
+		)
+	)
+
+	(hblock
+		(class $FullsizeAbsolute)
+		(style
+			(align = "middle")
+			(paddingLeft = "S")
+		)
+
+		(element ModernizationItemStatic
+			_id = "modernizationId"
+			_isTooltipDisabled = true
+			_isInstalled = "isInstalled"
+			(bind colorTransform "isInstalled ? COLOR_TRANSFORM_WHITE_TO_YELLOW : CT_NONE")
+		)
+
+		(tf
+			(class $TextDefault13NM)
+			(style
+				(width = 120)
+				(height = 80%)
+				(marginLeft = "XS")
+				(bind textColor "isInstalled ? 0xFFCC66 : 0xFFFFFF")
+			)
+			(bind text "tr('IDS_TITLE_' + toUpper(name))")
+		)
+
+		(block
+			(style
+				(width = 100%)
+				(height = 80%)
+				(align = "right")
+				(paddingTop = "XS")
+				(paddingRight = "S")
+			)
+
+			(block
+				(bind visible "isInstalled")
+				(style
+					(width = 20)
+					(height = 20)
+					(backgroundImage = 'url:../service_kit/unified_status_icons/icon_check.png')
+					(backgroundSize = "fill")
+				)
+			)
+
+			(tf
+				(bind visible "!isInstalled && isPurchased")
+				(class $TextDefaultNM)
+				(style
+					(textAlign = "right")
+				)
+				(bind text "tr('IDS_IN_WAREHOUSE') + ' ' + toString(numInStorage)")
+			)
+
+			(controller $Instance renderer='PriceTag'
+				(bind enabled "!isInstalled && !isPurchased && modernizationBuyPriceInfo != null")
+				(args
+					_priceInfo			= "modernizationBuyPriceInfo"
+					_showDiscountTag	= false
+				)
+			)
+		)
+	)
+)

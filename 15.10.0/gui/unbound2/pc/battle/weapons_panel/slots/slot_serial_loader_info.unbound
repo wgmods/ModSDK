@@ -1,0 +1,58 @@
+(def constant SERIAL_LOADER_INFO_MARGIN 1)
+
+(def element SerialLoaderInfo (_weaponType:number) layout=true
+	(scope
+		(var serialLoadsColl:gfx = "$datahub.getCollection(CC.serialLoad).child('byWeaponType').child(_weaponType)")
+		(var width:number = "serialLoadsColl.items.length ? ceil((SLOT_SIZE - (SERIAL_LOADER_INFO_MARGIN * (serialLoadsColl.items.length-1))) / serialLoadsColl.items.length) : 0")
+	)
+	(style
+		(position = "absolute")
+		(top = -7px)
+		(left = -2px)
+		(flow = "horizontal")
+	)
+
+	(controller $Repeat renderer='SerialLoadRenderer'
+		(bind count "serialLoadsColl.items.length")
+		(exprs
+			(scope
+				(bind entity "serialLoadsColl.items[$index]")
+				(bind itemWidth "width")
+			)
+		)
+	)
+)
+
+(def element SerialLoadRenderer () layout=true
+	(scope
+		(var itemWidth:number = 0)
+		(var entity:gfx = null)
+		(var serialLoadComponent:gfx = "entity ? entity.serialLoad : null")
+		(var loadState:gfx = "serialLoadComponent ? serialLoadComponent.state : SC.Weapons.GUN_STATE.READY" (event "entity.serialLoad.evStateChanged"))
+
+		(var progress:number = "entity && entity.progress.max != 0 ? entity.progress.value / entity.progress.max : 0" (event "entity.progress.evChanged"))
+		(var isReloading:bool = "loadState != SC.Weapons.GUN_STATE.READY")
+
+		(macro SCOPE_IS_BATTLE_IN_PROGRESS "'isBattleInProgress'")
+	)
+	(style
+		(height = 2px) (marginLeft = 0px) (marginRight = "SERIAL_LOADER_INFO_MARGIN")
+		(bind width "itemWidth")
+	)
+	(mc hud_bar_bg_sliced
+		(style
+			(height = 4px)
+			(bind width "itemWidth")
+		)
+	)
+	(block
+		(style
+			(position = "absolute")
+			(top = 1px)
+			(left = 1px)
+			(height = 2px)
+			(bind width "(itemWidth - 2) * progress")
+		)
+		(bind class "!isBattleInProgress || isReloading ? '$ColorStatePlaneHalfHP' : '$ColorStatePlaneFullHP'")
+	)
+)

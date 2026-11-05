@@ -1,0 +1,48 @@
+(def element WorldAirSupportChargeMarker (_markerEntity:gfx) layout=true
+	(scope
+		(event evMarkerShow)
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'airSupportCharge')
+		(macro GET_MARKER_ENTITY_COMPONENT 'countDown')
+
+		(var remainTime:number = "countDownComponent ? countDownComponent.remain : 0" (event "countDownComponent.evRemainChanged"))
+		(macro HUMAN_READABLE_COUNTDOWN_SCOPE "remainTime")
+	)
+
+	(dispatch evMarkerShow args="{}" on='addedToStage')
+
+	(style
+		(width = 0) (height = 0)
+		(align = "center|top")
+	)
+
+	(block
+		(style (paddingTop = 6))
+
+		(controller $Animation
+			(bindcall play	duration="0.35"
+							from="{alpha: 0, marginTop: 10}"
+							to="{alpha: 1, marginTop: 0}"
+							action="kill"
+							(event "evMarkerShow")
+			)
+			(bindcall play	duration="0.35"
+							from="{alpha: 1, marginTop: 0}"
+							to="{alpha: 0, marginTop: 10}"
+							action="kill"
+							(event "airSupportChargeComponent.evHide")
+			)
+		)
+
+		(tf
+			(style
+				(width = 50) (textAlign = "center")
+				(textColor = "SC.Ui_styles.SERVICE_COLORS.GREEN")
+			)
+			(class $WorldMarkerTextItemShadowFilter)
+			(class $TextDefaultBoldNM)
+			
+			(bind text "countdownText")
+		)	
+	)
+)

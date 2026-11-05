@@ -1,0 +1,146 @@
+(def constant PROGRESSBAR_WIDTH "270")
+
+(def element StrategicActionsInfo () layout=true dispatch_size_change=true
+	(scope
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var strategicActionsTaskIndex:number = "battleDataEntity.battleInfo.strategicActionsTaskIndex" (event "battleDataEntity.battleInfo.evStrategicActionsTaskChanged"))
+		(var strategicActionsTerritoryID:str = "battleDataEntity.battleInfo.strategicActionsTerritoryID" (event "battleDataEntity.battleInfo.evStrategicActionsTaskChanged"))
+
+		(var taskActiveEntity:gfx =	"$datahub.getPrimaryEntity(CC.strategicActionsTask, strategicActionsTerritoryID + '_' + strategicActionsTaskIndex )")
+		(var conditionType:number = "taskActiveEntity ? taskActiveEntity.strategicActionsTask.conditionType : 0" (event "taskActiveEntity.strategicActionsTask.evChanged"))
+		(var conditionsSets:array = "taskActiveEntity ? taskActiveEntity.strategicActionsTask.conditionsSets : []" (event "taskActiveEntity.strategicActionsTask.strategicActionsTask.evChanged"))
+		(var thresholds:array = "taskActiveEntity ? taskActiveEntity.strategicActionsTask.thresholds : []" (event "taskActiveEntity.strategicActionsTask.evChanged"))
+		(var points:array = "taskActiveEntity ? taskActiveEntity.strategicActionsTask.points : []" (event "taskActiveEntity.strategicActionsTask.evChanged"))
+
+		(var isTaskSingle:bool = "conditionType == SC.Common.CONDITION_TYPES.SINGLE")
+		(var isAndTask:bool = "conditionType == SC.Common.CONDITION_TYPES.AND")
+		(var isOrTask:bool = "conditionType == SC.Common.CONDITION_TYPES.OR")
+		(var isThresholdTask:bool = "conditionType == SC.Common.CONDITION_TYPES.THRESHOLD")
+		(var text:str = "isOrTask ? 'IDS_STRATEGIC_ACTIONS_COMPLETE_ANY_TASK_COLON' : 'IDS_STRATEGIC_ACTIONS_COMPLETE_ALL_TASKS_COLON'")
+
+		(macro HIGH_CONTRAST_DATA_SCOPE)
+	)
+
+	(style (width = 840px) (minHeight = 256px) (flow="horizontal"))
+	(block
+		(class $FullsizeAbsolute)
+		(controller $Instance renderer='StrategicActionsBackground'
+			(bind enabled "!isHighContrast")
+		)
+		(block
+			(bind visible "isHighContrast")
+			(class $FullsizeAbsolute)
+			(style (backgroundImage = "'url:../service_kit/panel_backgrounds/hint_panel_high_contrast.png'") (scale9grid = 3))
+		)
+		(block
+			(class $FullsizeAbsolute)
+			(style (backgroundImage = 'url:../service_kit/frames/one_pixel_frame.png') (scale9grid = 2) (alpha = 0.1))
+		)
+	)
+	(block
+		(style (width = 280px))
+		(block
+			(style	(width = 256px) (height = 256px) (paddingRight = "MS")
+					(bind backgroundImage "'url:../events/strategic_actions/messages/' + strategicActionsTerritoryID + '.png'"))
+		)
+		(element HorizontalDividerTwoPx)
+		(block
+			(style (width = 100%) (padding = "MS"))
+			(tf
+				(class $TextDefaultBold19NM)
+				(style (marginBottom = "SXS"))
+				(alpha = "TA")
+				(bind text "'IDS_TERRITORY_MESSAGE_TITLE_' + toUpper(strategicActionsTerritoryID)")
+			)
+			(tf
+				(class $TextDefault17NM)
+				(alpha = "TA")
+				(style (width = 100%))
+				(bind text "'IDS_TERRITORY_MESSAGE_SUBTITLE_' + toUpper(strategicActionsTerritoryID)")
+			)
+		)
+	)
+	(element VerticalDivider)
+	(block
+		(class $Fullsize)
+		(macro INNER_PANEL_BACKGROUND)
+		(block
+			(style (width = 100%) (padding = "MS"))
+			
+			(tf
+				(class $TextDefaultBold21NM)
+				(style (marginBottom = "SXS"))
+				(alpha = "TA")
+				(text = 'IDS_STRATEGIC_ACTIONS_TERRITORY_ACTIVE_TASK')
+			)
+			(block
+				(bind visible "isAndTask || isOrTask")
+				(tf
+					(class $TextDefault19NM)
+					(style (marginBottom = "S"))
+					(alpha = "TC")
+					(bind text "text")
+				)
+			)
+			(block
+				(style (width = 100%))
+				(controller $Repeat renderer='StrategicActionsInfoTaskItem'
+					(bind count "conditionsSets.length")
+					(args
+						_entityId = "conditionsSets[$index]"
+						_isThresholdTask = "isThresholdTask"
+					)
+				)
+			)
+			
+			(tf
+				(class $TextDefaultBold21NM)
+				(style (marginTop = "MS") (marginBottom = "SXS"))
+				(alpha = "TA")
+				(text = 'IDS_STRATEGIC_ACTIONS_POINTS')
+			)
+			(block
+				(style (width = 100%))
+				(controller $Repeat renderer='StrategicActionsTaskPointsRepeatItem'
+					(bind count "points.length")
+					(args
+						_thresholds = "thresholds"
+						_thresholdPoints = "points"
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element StrategicActionsInfoTaskItem (_entityId:number, _isThresholdTask:bool=false)
+	(scope
+		(var conditionsSetEntity:gfx = "$datahub.getEntity(_entityId)")
+		(var conditionCategory:str = "conditionsSetEntity.sseConditions.conditionCategory" (event "conditionsSetEntity.sseConditions.evConditionSetChanged"))
+		(var thresholdTaskIds:str = "'IDS_SSE_CONDITION_CATEGORY_DESCRIPTION_' + toUpper(conditionCategory) + '_FULL'")
+		(var countablesIds:array = "conditionsSetEntity.sseConditions.countablesIds" (event "conditionsSetEntity.sseConditions.evConditionSetChanged"))
+		(var taskDescription:str = "_isThresholdTask ? thresholdTaskIds : countablesIds[0].ids")
+	)
+	(style (width = 100%) (flow = "horizontal") (bind marginTop "$index ? S : 0"))
+	(block
+		(style (width = 16px) (height = 16px) (marginRight = "XS") (backgroundImage = "'url:../events/strategic_actions/icon_list_bullet.png'"))
+	)
+	(tf
+		(class $TextDefault19NM)
+		(style (width = 100%))
+		(alpha = "TA")
+		(bind text "taskDescription")
+	)
+)
+
+(def element StrategicActionsBackground ()
+	(scope
+		(macro BLUR_MAP_SCOPE)
+	)
+	(class $FullsizeAbsolute)
+	(element DeclareBlurLayer)
+	(mc mc_blurmap_medium
+		(class $FullsizeAbsolute)
+		(macro BLUR_MAP)
+	)
+)

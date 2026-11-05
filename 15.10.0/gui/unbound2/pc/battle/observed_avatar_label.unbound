@@ -1,0 +1,44 @@
+(def element UbObservedPlayerLabel() layout=true dispatch_size_change=true
+	(scope
+		(var cameraComponent:gfx = "$datahub.getSingleComponent(CC.camera)")
+		(var observedPlayerId:number = "cameraComponent.observedPlayerId" (event "cameraComponent.evObservedPlayerIdChanged"))
+
+		(var playerAvatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var avatarComponent:gfx = "playerAvatarEntity.avatar")
+		(var playerAvatarId:number = "avatarComponent ? avatarComponent.id : -1")
+		(var isSelfObserved:bool = "playerAvatarId == observedPlayerId")
+
+		(var observedAvatarEntity:gfx = "$datahub.getPrimaryEntity(CC.avatar, observedPlayerId)")
+		(var avatarName:str = "observedAvatarEntity && observedAvatarEntity.hasComponent(CC.avatar) ? observedAvatarEntity.avatar.name : null")
+		(var nickname:str = "avatarName && observedAvatarEntity.avatar.isBot ? tr(avatarName) : avatarName")
+
+		(var diplomacyCollection:gfx = "$datahub.getCollection(CC.diplomacyRelation)")
+		(var hasDiplomacyItems:bool = "diplomacyCollection.items.length > 0" (event "diplomacyCollection.evAdded"))
+
+		
+		(var hasShields:bool = "observedAvatarEntity && observedAvatarEntity.hasComponent(CC.shield)")
+	)
+
+	(bind visible "!isSelfObserved && !hasDiplomacyItems && (avatarName != null)")
+
+	(style
+		(height = "26px")
+		(width = "HEALTH_PANEL_WIDTH")
+		
+		(bind paddingLeft "hasShields ? 21 : 0")
+	)
+
+	(tf
+		(class $TextHealthBold)
+		(class $FontEnableReadability)
+		(class $FontColorWhite)
+		(style
+			(bind textAlign "hasShields ? left : center")
+			(bind width "hasShields ? 115 : HEALTH_PANEL_WIDTH")
+			(elideMode = true)
+			(noTranslate = true)
+		)
+
+		(bind text "nickname")
+	)
+)

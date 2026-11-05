@@ -1,0 +1,33 @@
+(def element PrebattleText () layout=true
+	(scope
+		(var battleInfoEntity:gfx = "$datahub.getSingleEntity(CC.battleInfo)")
+		(var labelGameModeDescription:str = "battleInfoEntity.battleInfo.gameModeDescription")
+		(var battleTime:number = "battleInfoEntity.battleTimer.battleTime" (event "battleInfoEntity.battleTimer.evBattleTimeChanged"))
+		(var battleTimeLeftText:str = "countdownFormat(battleTime, 0, true)")
+	)
+	
+	(style
+		(align = "center|middle")
+	)
+	
+	(block
+		(tf
+			(class $TextDefaultBold19NM)
+			(bind text "labelGameModeDescription")
+		)
+	)
+	
+	(block
+		(style
+			(marginTop = "MS")
+		)
+		(tf
+			(name = 'prebattle_timer')
+			(class $TextDefaultBold50NM)
+			(style
+				(width = "116")
+			)
+			(bind text "battleTimeLeftText")
+		)
+	)
+)

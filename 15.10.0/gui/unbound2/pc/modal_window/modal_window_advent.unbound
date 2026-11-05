@@ -1,0 +1,50 @@
+(def element ModalWindowAdventCalendar () layout=true dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+
+	(scope
+		(var gfStateWatcher:gfx = "$datahub.getFirstWatcher(CC.gamefaceGlobalState)")
+		(var gfStateEntity:gfx = "gfStateWatcher.entity" (event "gfStateWatcher.event"))
+		(var gfStateComponent:gfx = "gfStateEntity ? gfStateEntity.gamefaceGlobalState : null")
+		(var gfStateWindowHeader:str = "gfStateComponent ? gfStateComponent.header : ''"	(event "gfStateComponent.evChanged")
+																							(event "gfStateComponent.evHeaderChanged"))
+		(var gfStateHasControl:bool = "gfStateComponent ? gfStateComponent.gamefaceHasControl : false"	(event "gfStateComponent.evChanged")
+																										(event "gfStateComponent.evGamefaceHasControlChanged"))
+		(var windowHeader:str = "gfStateWindowHeader ? gfStateWindowHeader : 'IDS_ADVENT_TITLE'")
+
+		(event evAddedToStage)
+	)
+	(dispatch evAddedToStage on='addedToStage')
+
+	(name = "'window_ModalWindowAdventCalendar'")
+
+	(class $FullsizeAbsolute)
+	(style (align = "center"))
+
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(class $Fullsize)
+		(style (align = "center"))
+
+		(block
+			(class $FullsizeAbsolute)
+			(element GamefaceWidget
+				_gfName = 'gf_ub2_port_advent'
+				_gfPath = 'gui/gameface/build/advent/index.html'
+			)
+		)
+
+		
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+			(style (width = 100%) (align = "center"))
+
+			(element ModalWindowHeaderFullSize
+				_windowName = "windowHeader"
+				_paddingRight = "M"
+				_paddingLeft = "M"
+				_paddingTop = "MS"
+				_hideBackButton = true
+			)
+		)
+	)
+)

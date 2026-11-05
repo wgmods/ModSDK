@@ -1,0 +1,350 @@
+(def constant NARRATIVE_CAMPAIGN_POST_BATTLE_CONTENT_CONTAINER_WIDTH 592px)
+(def constant NARRATIVE_CAMPAIGN_POST_BATTLE_TASKS_CONTAINER_WIDTH 570px)
+(def constant NARRATIVE_CAMPAIGN_POST_BATTLE_REWARD_ITEM_SIZE 80px)
+
+(def element ModalWindowNarrativeCampaignPostBattleProgress () layout=true
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(scope
+		(var battleResultsCollection:gfx = "$datahub.getCollection(CC.battleResultsStructured)")
+		(var battleResultsEntity:gfx = "battleResultsCollection ? battleResultsCollection.items[0] : null"	(event "battleResultsCollection.evAdded")
+																											(event "battleResultsCollection.evRemoved"))
+		(var gameData:gfx = "battleResultsEntity ? battleResultsEntity.dataComponent.data.game_data : null")
+
+		
+		(var taskRewards:gfx = "gameData ? gameData.task_rewards : null")
+		(var primaryReward:number	= "taskRewards ? taskRewards.primary.amount : 0")
+		(var primaryCurrency:str	= "taskRewards ? taskRewards.primary.currency : ''")
+		(var secondaryReward:number	= "taskRewards ? taskRewards.secondary.amount : 0")
+		(var secondaryCurrency:str	= "taskRewards ? taskRewards.secondary.currency : ''")
+
+		
+		(var battleLogicInfo:gfx = "gameData ? gameData.battle_logic_info : null")
+		(var secondaryTasks:array = "battleLogicInfo ? battleLogicInfo.filteredSecondaryTasks : []")
+
+		(var postBattleCollection:gfx = "$datahub.getCollection(CC.narrativeCampaignPostBattle)")
+		(var postBattleDataEntity:gfx = "postBattleCollection.length > 0 ? postBattleCollection.items[0] : null"	(event "postBattleCollection.evAdded")
+																													(event "postBattleCollection.evRemoved"))
+		(var postBattleData:gfx = "postBattleDataEntity ? postBattleDataEntity.narrativeCampaignPostBattle : null")
+
+		
+		(var narrativeCampaignId:str = "postBattleData ? postBattleData.narrativeCampaignID : ''" (event "postBattleData.evChanged"))
+		(var narrativeCampaignEntity:gfx = "$datahub.getPrimaryEntity(CC.narrativeCampaign, narrativeCampaignId)")
+		(var narrativeCampaign:gfx = "narrativeCampaignEntity ? narrativeCampaignEntity.narrativeCampaign : null")
+		(var narrativeCampaignCurrency:str = "narrativeCampaign ? toUpper(narrativeCampaign.currencyID) : ''" (event "narrativeCampaign.evChanged"))
+
+		
+		(var unlockedRewardsStackEntityID:number = "postBattleData ? postBattleData.unlockedRewardsStackEntityID : null" (event "postBattleData.evChanged"))
+		(var unlockedRewardsStackEntity:gfx = "$datahub.getEntity(unlockedRewardsStackEntityID)" (event "postBattleData.evChanged"))
+		(var unlockedRewards:array = "unlockedRewardsStackEntity ? unlockedRewardsStackEntity.rewardsStack.rewards : []"	(event "postBattleData.evChanged"))
+		(var hasUnlockedRewards:bool = "unlockedRewards.length > 0")
+
+		
+		(var nextRewardsStackEntityID:number = "postBattleData ? postBattleData.nextRewardsStackEntityID : null" (event "postBattleData.evChanged"))
+		(var nextRewardsStackEntity:gfx = "$datahub.getEntity(nextRewardsStackEntityID)" (event "postBattleData.evChanged"))
+		(var nextRewards:array = "nextRewardsStackEntity ? nextRewardsStackEntity.rewardsStack.rewards : []"	(event "postBattleData.evChanged"))
+		(var hasNextRewards:bool = "nextRewards.length > 0")
+		(var amountToNext:number = "postBattleData ? postBattleData.amountToNext : 0" (event "postBattleData.evChanged"))
+	)
+
+	(style (align = "center|middle"))
+
+	(block
+		(style (width = "NARRATIVE_CAMPAIGN_POST_BATTLE_CONTENT_CONTAINER_WIDTH") (align = "center"))
+
+		
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+			(style (width = 100%) (align = "center"))
+
+			(tf
+				(class $TextDefaultBold36NM)
+				(style (alpha = "TA") (textColor = "SC.Ui_styles.SERVICE_COLORS.YELLOW"))
+				(text = "'IDS_NARRATIVE_CAMPAIGN_RESULT_SCREEN_MISSION_COMPLETE'")
+			)
+		)
+
+		
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 1.5)
+			(style (width = "NARRATIVE_CAMPAIGN_POST_BATTLE_TASKS_CONTAINER_WIDTH") (marginTop = "{720: L, 1080: LM}"))
+
+			
+			
+			
+			(controller $Instance renderer='NarrativeCampaignPostBattleTaskResultElement'
+				(args
+					_text			= 'IDS_NARRATIVE_CAMPAIGN_RESULT_SCREEN_SINGLE_PRIMARY_TASK_TEXT'
+					_currency		= "primaryCurrency"
+					_reward			= "primaryReward"
+					_isCompleted	= true
+				)
+				(exprs
+					(style
+						(bind marginBottom "secondaryTasks.length == 0 ? 0 : MS")
+					)
+				)
+			)
+
+			(controller $Repeat renderer='NarrativeCampaignPostBattleTaskResultElementWrapper'
+				(bind count "secondaryTasks.length")
+				(args
+					_task			= "secondaryTasks[$index]"
+					_currency		= "secondaryCurrency"
+					_reward			= "secondaryReward"
+					_tasksAmount	= "secondaryTasks.length"
+				)
+			)
+		)
+
+		
+		(block
+			(bind visible "hasUnlockedRewards || hasNextRewards")
+			(style (width = 100%) (marginTop = "{720: LM, 1080: XL}"))
+
+			
+			(block
+				(bind visible "hasUnlockedRewards")
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+
+				(style (width = 100%))
+
+				(tf
+					(class $TextDefaultBold21NM)
+					(style
+						(width = 100%) (alpha = "TA")
+						(textAlign = "center")
+					)
+
+					(text = "'IDS_NARRATIVE_CAMPAIGN_RESULT_SCREEN_RECEIVED_REWARDS_UPPER_CASE'")
+				)
+
+				(block
+					(style (width = 100%) (marginTop = "{720: SXS, 1080: M}"))
+					(element HorizontalDividerTwoPx)
+				)
+
+				(hblock
+					(style (width = 100%) (marginTop = "{720: SXS, 1080: M}") (align = "center"))
+
+					(hblock
+						(style
+							(align = "center|middle")
+							(marginRight = "SXS")
+						)
+
+						(controller $Repeat renderer='NarrativeCampaignPostBattleResultScreenRewardItem'
+							(bind count "unlockedRewards.length")
+							(args
+								_entityId = "unlockedRewards[$index]"
+							)
+						)
+					)
+				)
+			)
+
+			
+			(block
+				(bind visible "hasNextRewards")
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 2.5)
+				(style (width = 100%))
+
+				(block
+					(bind visible "hasUnlockedRewards")
+					(style
+						(width = 100%)
+						(bind marginTop "hasUnlockedRewards ? {720: SXS, 1080: M} : 0")
+					)
+					(element HorizontalDividerTwoPx)
+				)
+
+				(tf
+					(class $TextDefaultNM)
+					(style
+						(alpha = "TC") (width = 100%) (textAlign = "center")
+						(bind marginTop "hasUnlockedRewards ? {720: MS, 1080: L} : 0")
+					)
+
+					(text = "'IDS_NARRATIVE_CAMPAIGN_RESULT_SCREEN_TO_NEXT_REWARD'")
+				)
+
+				(hblock
+					(style
+						(width = 100%) (align = "center|middle")
+						(marginTop = "{720: S, 1080: SXS}")
+					)
+
+					(tf
+						(class $TextDefaultBold30NM)
+						(style (alpha = "TA"))
+
+						(bind text "amountToNext")
+					)
+
+					(block
+						(style	
+							(width = "MS") (height = "MS") (marginLeft = "XXS")
+							(bind backgroundImage "'url:../service_kit/currencies/icon_' + SC.Common.CURRENCIES[narrativeCampaignCurrency] + '.png'")
+						)
+					)
+				)
+
+				(hblock
+					(style (width = 100%) (marginTop = "{720: SXS, 1080: M}") (align = "center"))
+
+					(hblock
+						(controller $Repeat renderer='NarrativeCampaignPostBattleResultScreenRewardItem'
+							(bind count "nextRewards.length")
+							(args
+								_entityId = "nextRewards[$index]"
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute") (width = 100%) (align = "center")
+			
+			(bind bottom "10 + (stageHeight - 720) * 0.15")
+		)
+		(controller $Instance renderer='DefaultButton'
+			(exprs (macro DEFAULT_MODAL_WINDOW_ANIMATION 3))
+			(args
+				_width = 136
+				_height = 32
+				_name = 'btn_cancel'
+				_enabled = true
+				_label = 'IDS_CLOSE_BTN'
+			)
+		)
+	)
+)
+
+(def element NarrativeCampaignPostBattleTaskResultElementWrapper (_task:gfx, _currency:str='', _reward:number=0, _tasksAmount:number=0)
+	(scope
+		(var status:number = "_task ? _task.status : null")
+		(var text:str = "_task ? _task.text : null")
+		(var isCompleted:bool = "status == SC.Battle.TASK_STATUS.SUCCESS")
+	)
+
+	(style (width = 100%))
+
+	(controller $Instance renderer='NarrativeCampaignPostBattleTaskResultElement'
+		(args
+			_text			= "text"
+			_currency		= "_currency"
+			_reward			= "_reward"
+			_isCompleted	= "isCompleted"
+		)
+		(exprs
+			(style
+				(bind marginBottom "$index == _tasksAmount - 1 ? 0 : MS")
+			)
+		)
+	)
+)
+
+(def element NarrativeCampaignPostBattleTaskResultElement (_text:str='', _currency:str='', _reward:number=0, _isCompleted:bool=false)
+	(scope
+		(var hasReward:bool = "_reward > 0 && _currency.length > 0")
+	)
+
+	(style
+		(flow = "horizontal") (align = "middle")
+		(width = 100%) (marginBottom = "MS")
+	)
+
+	(tf
+		(class $TextDefault17NM)
+		(style
+			(width = 100%)
+			(bind alpha "_isCompleted ? TA : 0.5")
+		)
+		(text = "_text")
+	)
+
+	(block
+		(bind visible "hasReward")
+		(style (align = "top") (height = 100%) (marginLeft = "XS"))
+		(element NarrativeCampaignPostBattleTaskRewardTag
+			_currency		= "SC.Common.CURRENCIES[_currency]"
+			_reward			= "_reward"
+			_isCompleted	= "_isCompleted"
+		)
+	)
+)
+
+(def element NarrativeCampaignPostBattleTaskRewardTag (_currency:str=null, _reward:number=0, _isCompleted:bool=false)
+	(scope
+		(var textColor:str = "	_currency == SC.Common.CURRENCIES.GOLD		? SC.Ui_styles.SERVICE_COLORS.YELLOW :
+								_currency == SC.Common.CURRENCIES.FREE_XP	? SC.Ui_styles.SERVICE_COLORS.LIGHT_GREEN :
+								_currency == SC.Common.CURRENCIES.ELITE_XP	? SC.Ui_styles.SERVICE_COLORS.LIGHT_BLUE
+																			: SC.Ui_styles.SERVICE_COLORS.WHITE")
+		(var formattedPrice:str = "_reward ? formatSeparator(_reward) : ''")
+		(var hasCurrency:bool = "_currency != null")
+	)
+
+	(style (flow = "horizontal") (align = "middle"))
+
+	(block
+		(tf
+			(bind visible "formattedPrice != ''")
+			(class $TextDefaultBold17NM)
+			(style
+				(marginRight = "MS + XS")
+				(bind textColor "textColor")
+				(bind alpha "_isCompleted	? textColor == SC.Ui_styles.SERVICE_COLORS.WHITE	? TA
+																								: 1
+											: 0.5"
+				)
+			)
+			(bind text "formattedPrice")
+		)
+	)
+
+	(block
+		(bind visible "hasCurrency")
+		(style
+			(position = "absolute") (right = 0) (top = "-XS -XXS")
+			(width = "MS") (height = "MS")
+			(bind backgroundImage "'url:../service_kit/currencies/icon_' + _currency + (_isCompleted ? '' : '_disabled') + '.png'")
+		)
+	)
+)
+
+(def element NarrativeCampaignPostBattleResultScreenRewardItem (_entityId:number)
+	(scope
+		(var rewardEntity:gfx = "$datahub.getEntity(_entityId)")
+		(var rewardComponent:gfx = "rewardEntity.rewardComponent")
+		(var rewardItem:dict = "{	id:			rewardEntity ? rewardComponent.id : null,
+									amount:		rewardEntity ? rewardComponent.amount : null,
+									name:		rewardEntity ? rewardComponent.name : null,
+									type:		rewardEntity ? rewardComponent.type : null,
+									subtype:	rewardEntity ? rewardComponent.subtype : null,
+									params:		rewardEntity ? rewardComponent.params : null,
+									reasons:	rewardEntity ? rewardComponent.reasons : null,
+									isPRMP:		rewardEntity ? rewardComponent.isPRMP : null}")
+	)
+
+	(style
+		(width = "NARRATIVE_CAMPAIGN_POST_BATTLE_REWARD_ITEM_SIZE")
+		(height = "NARRATIVE_CAMPAIGN_POST_BATTLE_REWARD_ITEM_SIZE")
+		(align = "center|middle")
+		(bind marginLeft "$index != 0 ? SXS : 0")
+	)
+
+	(block
+		(controller $Instance renderer='RewardItem'
+			(args
+				_reward="rewardItem"
+				_isClickDisabled="true"
+				_isBattlePassSmallShipView="true"
+			)
+		)
+	)
+)

@@ -1,0 +1,189 @@
+(def element ModalWindowModernEraPurchaseShipUpgrade(_shipUpgradeEntityId:str)
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(scope
+		(macro PULL_MODERN_ERA_EVENT_ITEM_INFO "_shipUpgradeEntityId") 
+		(macro PULL_MODERN_ERA_UPGRADE) 
+
+		(var currenciesPanelPrices:array = "[{currency: itemPrice.currency,	finalPrice: -itemPrice.finalPrice}]")
+
+		
+		(macro PULL_ACCOUNT_RESOURCES)
+		(macro IS_ENOUGH_RESOURCES_FOR_BUYING "[itemPrice]") 
+
+		(var costDiff:number = "firstCurrencyAmount - itemPrice.finalPrice")
+
+		
+		(var modernizationEntity:gfx = "$datahub.getPrimaryEntity(CC.modernization, modernizationId)")
+		(var modernizationComponent:gfx = "	modernizationEntity ? modernizationEntity.modernization : null")
+
+		(var modernizationName:str = "modernizationComponent ? modernizationComponent.name : null")
+		(var headerText:str = "tr('IDS_TITLE_' + toUpper(modernizationName))")
+	)
+
+	(style (align = "middle|center"))
+
+	(block
+		(style
+			(width = "MODERN_ERA_PURCHASE_WINDOW_WIDTH")
+			(align = "center")
+		)
+
+		(element ModalWindowShortHeader
+			_header = 'IDS_MODERN_ERA_PURCHASE_SHIP_UPGRADES_TITLE'
+			_hasDivider = false
+			_headerWidth = "MINI_DOCKYARD_PURCHASE_MODULE_WINDOW_WIDTH"
+		)
+
+		(element CurrenciesPanel
+			_priceInfo = "currenciesPanelPrices"
+			_width = "MINI_DOCKYARD_PURCHASE_MODULE_WINDOW_WIDTH"
+		)
+
+		
+		(hblock
+			(style
+				(width = 100%)
+				(gap = "S")
+				(align = "middle")
+				(marginBottom = "M")
+				(backgroundColor = 0x01000000)
+			)
+
+			
+			(element ModernizationItemView
+				_name = "modernizationName"
+				_amount = "modernizationAmount"
+			)
+
+			
+			(block
+				(style (width = 100%))
+
+				(tf
+					(style (width = "100%") (leading = "-4") (alpha = "TA"))
+					(class $TextDefaultBold19NM)
+					(bind text "headerText")
+				)
+
+				(tf
+					(class $TextDefaultNM)
+					(style
+						(width = 100%)
+						(marginTop = "S")
+						(leading = "-2")
+						(alpha = "TC")
+					)
+					(text = 'IDS_MODERN_ERA_PURCHASE_SHIP_UPGRADES_MODERNIZATION_SUBTITLE')
+				)
+			)
+
+			(controller $Tooltip
+				(bind renderer "'ModernEraModernizationTooltip'")
+				(args
+					_priceInfo="itemPrice"
+					_modernizationEntityId = "modernizationEntity.id"
+					_isPurchased = "isPurchased"
+					_isEnough = "isEnough"
+				)
+				(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+			)
+		)
+
+		(element HorizontalDividerTwoPx
+			(style (marginBottom = "SXS"))
+		)
+
+		(tf
+			(class $TextDefaultNM)
+			(style
+				(width = 100%)
+				(alpha = "TC")
+				(marginBottom = "SXS")
+			)
+			(text = 'IDS_MODERN_ERA_PURCHASE_SHIP_UPGRADES_DESCRIPTION')
+		)
+
+		(element HorizontalDividerTwoPx
+			(style (marginBottom = "MS"))
+		)
+
+		
+
+		(block
+			(style
+				(width = 100%) (align = "center")
+				(gap = "MS")
+			)
+
+			(block
+				(bind visible "isEnough")
+				(style (width = 100%) (align = "center"))
+
+				(element PriceTagWithQuestion
+					_questionText = 'IDS_MODERN_ERA_PURCHASE_SHIP_UPGRADES_QUESTION_PURCHASE_SHIP_FOR'
+					_priceInfo = "itemPrice"
+				)
+			)
+
+			(block
+				(bind visible "!isEnough")
+				(style
+					(width = 100%)
+					(gap = "S")
+					(align = "center")
+				)
+
+				(tf
+					(class $TextDefault17NM)
+					(style
+						(alpha = "TA")
+						(width = 100%)
+						(textAlign = "center")
+						(textColor = "SC.Ui_styles.SERVICE_COLORS.ORANGE")
+					)
+					(text = 'IDS_NOT_ENOUGH_FUNDS')
+				)
+
+				(hblock
+					(style (gap = "S"))
+
+					(element StatusLine
+						_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.NEGATIVE"
+						_text = "'IDS_NOT_ENOUGH'"
+					)
+
+					(element PriceTag
+						_priceInfo="{ currency: itemPrice.currency, finalPrice: -costDiff }"
+					)
+				)
+			)
+
+			(hblock
+				(style (gap = "M"))
+
+				(element DefaultButton
+					_width = '129px'
+					_label = 'IDS_YES'
+					_name = 'btn_ok'
+					_focusIndex = 0
+					_enabled = "isEnough"
+					_methods = "[{	type: 'inputMapping.onAction',
+									name: 'itemPurchase',
+									args: {itemId: id}}]"
+				)
+
+				(element DefaultButton
+					_width = '129px'
+					_label = 'IDS_NO'
+					_focusIndex = 1
+					_name = 'btn_cancel'
+				)
+			)
+		)
+
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+	)
+)
+

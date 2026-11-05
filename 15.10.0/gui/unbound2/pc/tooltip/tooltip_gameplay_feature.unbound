@@ -1,0 +1,163 @@
+(def constant GAMEPLAY_FEATURE_ICON_SIZE 64)
+
+(def macro PULL_GAMEPLAY_FEATURES()
+	(var gameplayFeaturesCollection:gfx = "$datahub.getCollection(CC.gameplayFeature)")
+	(var gameplayFeaturesList:array = "gameplayFeaturesCollection ? gameplayFeaturesCollection.items : []"	(event "gameplayFeaturesCollection.evAdded")
+																												(event "gameplayFeaturesCollection.evRemoved"))
+	(var hasGameplayFeatures:bool = "gameplayFeaturesList.length > 0")
+)
+
+(def element GameplayFeaturesContainer(_gameplayFeaturesList:array, _isNewMarkerEnabled:bool=true, _tooltipRenderer:str='GameplayFeatureTooltip')
+	(style
+		(width = 100%)
+		(flow = "tile_horizontal") (gap = "MS")
+	)
+
+	(controller $Repeat renderer='GameplayFeatureIcon'
+		(bind count "_gameplayFeaturesList.length")
+		(args
+			_gameplayFeatureEntity = "_gameplayFeaturesList[$index]"
+			_isNewMarkerEnabled = "_isNewMarkerEnabled"
+			_tooltipRenderer = "_tooltipRenderer"
+		)
+	)
+)
+
+(def element GameplayFeatureIcon(_gameplayFeatureEntity:gfx, _isNewMarkerEnabled:bool, _tooltipRenderer:str)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'GameplayFeatureIcon_'")
+
+		(var gameplayFeatureComponent:gfx = "_gameplayFeatureEntity ? _gameplayFeatureEntity.gameplayFeature : null")
+
+		(var featureName:str = "gameplayFeatureComponent ? SC.Ships.SHIP_GAMEPLAY_FEATURES.VALUE_TO_NAME[gameplayFeatureComponent.type] : null" (event "gameplayFeatureComponent.evChanged"))
+		(var isNewGameplayFeature:bool = "!!_gameplayFeatureEntity.newItem && _isNewMarkerEnabled")
+
+		
+		(var imageURL:str = "toLower('url:../ships_tree_features/gameplay/icons/' + featureName + '.png')")
+	)
+
+	
+	(bindcall externalCall
+		"'inputMapping.onAction'" "[isNewGameplayFeature ? 'makeSeen' : '', {entityId: _gameplayFeatureEntity.id}]"
+		init=false watch=false
+		(bind trigger "GameplayFeatureIcon_rollOver")
+	)
+
+	
+	(controller $Tooltip
+		(bind renderer "_tooltipRenderer")
+		(args
+			_featureComponent = "gameplayFeatureComponent"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(style
+		(height = "GAMEPLAY_FEATURE_ICON_SIZE") (width = "GAMEPLAY_FEATURE_ICON_SIZE")
+		(padding = "XS")
+	)
+
+	
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(bind backgroundImage "imageURL")
+		)
+	)
+
+	
+	(controller $Instance renderer='MarkerNew'
+		(bind enabled "isNewGameplayFeature")
+		(exprs
+			(style
+				(position = "absolute")
+				(marginTop = -1px)
+				(right = -16px)
+			)
+		)
+	)
+
+	(macro MOUSE_HANDLER _prefix = "'GameplayFeatureIcon_'")
+)
+
+(def element MiniDockyardGameplayFeatureTooltip(_featureComponent:gfx)
+	(scope
+		(var featureName:str = "SC.Ships.SHIP_GAMEPLAY_FEATURES.VALUE_TO_NAME[_featureComponent.type]")
+		(var imageURL:str = "toLower('url:../ships_tree_features/gameplay/icons/' + featureName + '.png')")
+	)
+
+	(style (hitTest = false) (width = 340px))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_imageUrl =			"imageURL"
+			_imageWidth =		"60"
+			_imageHeight =		"60"
+			_headerText =		"'IDS_' + featureName + '_HEADER'"
+			_subheaderText =	"'IDS_SHIP_GAMEPLAY_FEATURES_SUBHEADER'"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "'IDS_' + featureName + '_DESCRIPTION'"
+		)
+	)
+)
+
+(def element GameplayFeatureTooltip (_featureComponent:gfx, _isShowUB2Tooltip:bool = true) layout=true dispatch_size_change=true
+	(scope
+		(var featureName:str = "SC.Ships.SHIP_GAMEPLAY_FEATURES.VALUE_TO_NAME[_featureComponent.type]")
+		(var imageURL:str = "toLower('url:../ships_tree_features/gameplay/icons/' + featureName + '.png')")
+
+		(var attributes:gfx = "_featureComponent.attributes ? _featureComponent.attributes : null")
+		(var attributesNegative:array = "attributes ? attributes.negative : null")
+		(var attributesPositive:array = "attributes ? attributes.positive : null")
+		(var attributesNeutral:array = "attributes ? attributes.neutral : null" )
+		(var isAttributesVisible:bool = "(attributesNegative && attributesNegative.length > 0) || (attributesPositive && attributesPositive.length > 0) || (attributesNeutral && attributesNeutral.length > 0)")
+	)
+
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(style (hitTest = false) (width = 340px))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_imageUrl =			"imageURL"
+			_imageWidth =		"60"
+			_imageHeight =		"60"
+			_unifiedStatus =	"SC.Ui_styles.UNIFIED_STATUS.UNIQUE_CREW"
+			_headerText =		"'IDS_' + featureName + '_HEADER'"
+			_subheaderText =	"'IDS_SHIP_GAMEPLAY_FEATURES_SUBHEADER'"
+			_data = "{colorTransform: {redOffset: 0, greenOffset: -51, blueOffset: -153}}"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+			_text = 'IDS_ACTIVE'
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "'IDS_' + featureName + '_DESCRIPTION'"
+		)
+
+		(controller $Instance renderer = 'TooltipSystemHorizontalDivider'
+			(bind enabled "isAttributesVisible")
+		)
+
+		(controller $Instance renderer = 'TooltipSystemParamsModifiersList'
+			(bind enabled "isAttributesVisible")
+			(args
+				_attributesPositive = "_featureComponent.attributes.positive"
+				_attributesNegative = "_featureComponent.attributes.negative"
+				_attributesNeutral = "_featureComponent.attributes.neutral"
+			)
+		)
+	)
+)

@@ -1,0 +1,199 @@
+(def constant EL_SHIP_BANNER_HEIGHT 80)
+
+(def element EventLobbyShipSelector ()
+	(scope
+		(macro STAGE_SIZE) 
+	)
+
+	(style
+		(bind height "stageHeight")
+		(bind width "stageWidth")
+	)
+
+	(element EventLobbyShipsList)
+)
+
+(def element EventLobbyShipsList()
+	(scope
+		(macro PULL_EVENT_LOBBY_SCOPE) 
+		(macro PULL_SHIP_ID)
+		(var eventShipID:number = "eventLobbyExtra['eventShipIDs'] ? eventLobbyExtra['eventShipIDs'] : 0")
+		(var eventShipEntity:gfx = "$datahub.getPrimaryEntity(CC.ship, eventShipID)")
+		
+		(var eventShipIDs:array = "eventShipEntity ? [eventShipID] : []")
+		(var isShipClickable:bool = "eventShipEntity ? eventShipEntity.hasComponent(CC.ownShip) : false")
+
+		(macro PULL_ROUTE "SC.Ui_windows.ROUTE.MAIN" "'isInMain'")
+	)
+
+	(style
+		(position = "absolute")
+		(left = "XS") 
+		(bottom = 40)
+
+		(height = "CAROUSEL_SLOT_SMALL_HEIGHT")
+		(width = 100%)
+	)
+
+	(hblock
+		(class $Fullsize)
+
+		(controller $Repeat renderer = 'CarouselItem'
+			(bind enabled "eventShipIDs.length > 0")
+			(bind count "eventShipIDs.length")
+			(args
+				_shipEntity = "eventShipEntity"
+				_selectedShipId = "shipId"
+				_isSmallCarouselView = "true"
+				_disableShipActions = "false"
+				_isAffectedByFilters = "false"
+			)
+			(exprs
+				(style
+					(bind hitTest "isShipClickable")
+				)
+			)
+		)
+	)
+)
+
+(def element EventLobbyShipItem (_shipId:number, _currentSelectionId:number, _isOnScreen:bool = false)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'EHShipItem_'")
+		(macro HIGH_CONTRAST_DATA_SCOPE)
+
+		(var isSelected:bool = "_shipId == _currentSelectionId")
+		(var shipEntity:gfx = "$datahub.getPrimaryEntity(CC.ship, _shipId)")
+		(var shipComponent:gfx = "shipEntity.ship" (event "shipEntity.ship.evUpdate") (event "shipEntity.ship.evCurrentSkinChanged") (event "shipEntity.ship.evFlagNameWithCrewChanged"))
+		(var shipName:str = "shipComponent ? toUpper(tr(shipComponent.nameIDS)) : ''" (event "shipComponent.evUpdate"))
+		(var isOwned:bool = "shipEntity.hasComponent(CC.ownShip)" (event "shipEntity.evAdded") (event "shipEntity.evRemoved"))
+
+		(var isThumbSelectedUp:bool = "isSelected && !EHShipItem_mouseDown")
+		(var isThumbDown:bool = "isOwned && EHShipItem_mouseDown")
+		(var isThumbOver:bool = "isOwned && !isSelected && !isThumbDown && EHShipItem_rollOver")
+	)
+
+	(style 
+		(width = 180) 
+		(height = 35) 
+		(align = "center|middle")
+		(backgroundColor = 0x01000000)
+		(marginRight = "M")
+	)
+
+	(macro MOUSE_LMB_EXTERNAL_CALL 'inputMapping.onAction' "['selectShip', { shipId: _shipId }]" "isOwned")
+
+	(macro SOUND_HANDLER
+		_soundSet = "'button_ship'"
+		_prefix = "'EHShipItem_'"
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER
+		_prefix = "'EHShipItem_'"
+	)
+
+	(block
+		(class $Fullsize)
+		(bind alpha "isOwned ? 1 : 0.3")
+		(style (align = "center|middle") (backgroundColor = 0x01000000))
+
+		(block
+			(class $FullsizeAbsolute)
+
+			(macro CAROUSEL_SLOT_BACKGROUND)
+
+			(macro CAROUSEL_SLOT_THUMB_ANIMATION_STATE
+				_path = "'url:../service_kit/buttons/thumb/thumb_down.png'"
+				_isActive = "isOwned && isThumbDown"
+			)
+			(macro CAROUSEL_SLOT_THUMB_ANIMATION_STATE
+				_path = "'url:../service_kit/buttons/thumb/thumb_over.png'"
+				_isActive = "isOwned && isThumbOver"
+			)
+			(macro CAROUSEL_SLOT_THUMB_ANIMATION_STATE
+				_path = "'url:../service_kit/buttons/thumb/thumb_selected_up.png'"
+				_isActive = "isThumbSelectedUp"
+				_isAnimSkipped = false
+			)
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style (backgroundColor = 0x01000000))
+
+			
+			(controller $Tooltip
+				(renderer = 'EventLobbyShipTooltip')
+				(args
+					_shipId = "_shipId"
+					_isOwned = "isOwned"
+					_isSelected = "isSelected"
+				)
+				(macro SHIP_TREE_TOOLTIP_BEHAVIOUR "_shipId" "0")
+			)
+		)
+
+		(block
+			(style (hitTest = false))
+			(element ShipLineItemNM
+				_shipId = "_shipId"
+			)
+		)
+	)
+)
+
+(def element EventLobbyShipTooltip (_shipId:number, _isOwned:bool, _isSelected:bool)
+	(scope
+		(var shipInfo:gfx = "$datahub.getPrimaryComponent(CC.ship, _shipId)")
+
+		(var shipSubType:str = "shipInfo ? shipInfo.subtype : ''" (event "shipInfo.evUpdate"))
+		(var shipClass:str = "tr('IDS_' + toUpper(shipSubType))")
+		(var secondLineText:str = "subst('IDS_SHIP_LEVEL', [], {_shipClass: shipClass, _shipLevel: shipInfo.levelRome})")
+	)
+	
+	(style (width = "340")(hitTest = false))
+	
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		
+		(element TooltipSystemFullsizeImage
+			_height = "EL_SHIP_BANNER_HEIGHT"
+			_imageUrl = "'url:../events/event_lobby/carousel_tooltips/' + shipInfo.shortName + '_tooltip.png'"
+		)
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemShipStereotype
+			_shipId = "_shipId"
+			_isReady = true
+		)
+		(tf
+			(style
+				(textColor = "SC.Ui_styles.SERVICE_COLORS.YELLOW")
+				(width = 100%)
+				(leading = -2)
+				(elideMode = true)
+				(marginTop = "SXS")
+			)
+			(alpha = "TA")
+			
+			(bindcall substitute imageOffset=5 sourceText="tr(secondLineText)" postfix='' init=true) 
+		)
+		
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "shipInfo.nameIDS + '_DESCR'"
+		)
+
+		(block
+			(style (width = 100%))
+			(bind visible "!_isSelected")
+			(element TooltipSystemHorizontalDivider)
+			(element TooltipSystemStatusLine
+				_unifiedStatus = "_isOwned ? SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT : SC.Ui_styles.UNIFIED_STATUS.WARNING"
+				_text = "_isOwned ? 'IDS_CHOOSE_SHIP' : 'IDS_EVENT_UNLOCK_SHIP'"
+			)
+		)
+	)
+)

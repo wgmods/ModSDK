@@ -1,0 +1,333 @@
+(def element CurrentXPMedium (_label:str, _exp:number, _fontSize:number) layout=true
+	(name = "'upgrade_tree_CurrentShipXP'")
+
+	(hblock
+		(style
+			(align = "middle")
+			(marginBottom = "2px")
+		)
+		(block
+			(style
+				(marginRight = "3px")
+			)
+			(tf
+				(class $TextDefaultBold17NM)
+				(class $FontColorExp)
+				(bind text "formatSeparator(_exp)")
+			)
+		)
+
+		(block
+			(style (width = "24px") (height = "24px"))
+
+			(block
+				(style
+					(backgroundImage = "'url:../service_kit/currencies/icon_exp.png'")
+				)
+			)
+		)
+	)
+	
+	(tf
+		(alpha = 0.8)
+		(class $TextDefaultNM)
+		(bind text "_label")
+	)
+)
+
+(def element ShipTreeMenu (_shipId:number, _needScrollOnSelectShipForManagement:bool="false", _disableShipActions:bool="false") layout=true
+	(scope
+		(var shipEntity:gfx =	"$datahub.getPrimaryEntity(CC.ship, _shipId)")
+		(var shipInfo:gfx =		"shipEntity ? shipEntity.ship : null"	(event "shipEntity.ship.evUpdate") (event "shipEntity.ship.evCurrentSkinChanged"))
+		
+		(macro PULL_USI "shipEntity")
+
+		(var shipBuyPriceEntity:gfx = "$datahub.getPrimaryEntity(CC.prices, toString(_shipId) + '_' + toString(SC.Common.PRICE_ACTION.BUY))")
+		(var shipBuyPrice:gfx = "shipBuyPriceEntity ? shipBuyPriceEntity.prices : null" (event "shipBuyPriceEntity.prices.evChanged"))
+
+		(var windowManagerComponent:gfx = "$datahub.getSingleComponent(CC.windowManager)")
+		(var windowsQueue:array = "windowManagerComponent.windowQueue" (event "windowManagerComponent.evChanged"))
+
+		(var isCrewModalWindow:bool =		"isIn('ModalWindowCrewManagement',		windowsQueue)")
+		(var isEconomicsModalWindow:bool =	"isIn('ModalWindowEconomicsManagement',	windowsQueue)")
+	
+		(var shipOwnEntity:gfx =	"$datahub.getPrimaryEntity(CC.ownShip, _shipId)" watch=false)
+		(var shipComponent:gfx =	"shipOwnEntity ? shipOwnEntity.ship : null")
+		(var ownShipComponent:gfx =	"shipOwnEntity ? shipOwnEntity.ownShip : null")
+		(var isOwned:bool =	"shipOwnEntity != null")
+
+		(var isPrimary:bool =				"ownShipComponent && ownShipComponent.isPrimary"		(event "ownShipComponent.evIsPrimaryChanged"))
+		(var isNeedRepair:bool =			"ownShipComponent && ownShipComponent.isNeedRepair"		(event "ownShipComponent.evUpdateDockState"))
+		(var timeRent:number =				"ownShipComponent && ownShipComponent.timeRent"			(event "ownShipComponent.evUpdateDockState"))
+		(var isLocked:bool =				"ownShipComponent && ownShipComponent.isLocked"			(event "ownShipComponent.evUpdateLock"))
+		(var isInFormation:bool =			"ownShipComponent && ownShipComponent.isInFormation"	(event "ownShipComponent.evUpdateLock"))
+		(var isSellable:bool =				"ownShipComponent && ownShipComponent.sellable"			(event "ownShipComponent.evUpdateConfig"))
+		(var crewId:number =				"ownShipComponent && ownShipComponent.crewId"			(event "ownShipComponent.evCrewChanged"))
+		(var isWithoutCrewPenalty:bool =	"shipComponent && shipComponent.isWithoutCrewPenalty"	(event "shipComponent.evUpdate"))
+
+		
+		(var resourceEntity:gfx =			"$datahub.getEntity(CC.accountResource)")
+		(var accountResourceComponent:gfx =	"resourceEntity ? resourceEntity.accountResource : null")
+		(var accountGold:number =			"accountResourceComponent ? accountResourceComponent.gold : 0"		(event "accountResourceComponent.evChangedGold"))
+		(var accountCredits:number =		"accountResourceComponent ? accountResourceComponent.credits : 0"	(event "accountResourceComponent.evChangedCredit"))
+		
+		(var moneyDeficit:number =	"shipBuyPrice.currency == SC.Result_screen.FORMAT.GOLD	? shipBuyPrice.finalPrice - accountGold
+																							: shipBuyPrice.finalPrice - accountCredits")
+		(var isEnoughMoney:bool =	"moneyDeficit <= 0")
+		
+		
+		(var shipCrossResearchInfoComponent:gfx = "shipEntity ? shipEntity.shipCrossResearchInfo : null")
+		(var isResearchAvailable:bool = "shipCrossResearchInfoComponent.isResearchAvailable" (event "shipCrossResearchInfoComponent.evChanged"))
+
+		
+		(var isSupership:bool =	"shipInfo.level == SC.Ships.SHIP_LEVELS.SUPER_SHIP")
+		(var superShipFeatureEntity:gfx = "$datahub.getEntity(CC.superShipFeature)")
+		(var superShipFeatureComponent:gfx = "superShipFeatureEntity ? superShipFeatureEntity.superShipFeature : null")
+		(var isUnlockedSuperShipFeature:bool = "superShipFeatureComponent.isUnlocked" (event "superShipFeatureComponent.evUpdate"))
+
+		(var lastBoardedCrewId:number =	"shipEntity ? shipEntity.ship.lastBoardedCrewId : null"	(event "shipEntity.ship.evLastBoardedCrewIdChanged") (event "shipEntity.ship.evUpdate"))
+		(var lastBoardedCrewEntity:gfx ="lastBoardedCrewId ? $datahub.getPrimaryEntity(CC.crew, lastBoardedCrewId) : null")
+		(var lastBoardedCrew:gfx = "lastBoardedCrewEntity ? lastBoardedCrewEntity.crew : null")
+
+		(var hasLastBoardedCrew:bool =	"lastBoardedCrewEntity != null")
+		(var isReturnLastCrewButtonVisible:bool = "crewId == 0 && lastBoardedCrewId != 0 && hasLastBoardedCrew")
+
+		(var otherShipEntity:gfx =		"lastBoardedCrew ? $datahub.getPrimaryEntity(CC.ownShip, lastBoardedCrew.shipID) : null")
+		(var isOtherShipExist:bool =	"otherShipEntity != null")
+		(var otherShipComponent:gfx =	"otherShipEntity ? otherShipEntity.ownShip : null")
+		(var isOtherShipLocked:bool =	"otherShipComponent && otherShipComponent.isLocked"	(event "otherShipComponent.evUpdateLock"))
+
+		(var isLastBoardedCrewLocked:bool =		"isOtherShipExist && isOtherShipLocked")
+		(var isLastBoardedCrewInBasket:bool =	"hasLastBoardedCrew && lastBoardedCrew && lastBoardedCrew.dismissDelay > 0")
+		(var isReturnCrewDisabled:bool =		"isLocked || isLastBoardedCrewLocked || isLastBoardedCrewInBasket")
+		
+		(var canAssignWithoutRetrain:bool =		"lastBoardedCrew && lastBoardedCrew.specializationID == _shipId || isWithoutCrewPenalty")
+
+		(macro FEATURES "17")
+
+		(var cantBuyReason:str = "shipBuyPrice.currency == SC.Result_screen.FORMAT.GOLD ? 'IDS_NOT_ENOUGH_GOLD' : 'IDS_NOT_ENOUGH_CREDITS'")
+		(var cantResearchReason:str = "isSupership && !isUnlockedSuperShipFeature ? 'IDS_RESEARCH_SUPERSHIP_SHORT_INFO' : 'IDS_NOT_ENOUGH_EXP'")
+	)
+
+	(bind name "'ShipContextMenu'")
+	(class $ContextMenuDimensions)
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	
+	(block
+		(style (width = "100%"))
+		(block
+			(style (width = "100%"))
+			(bind name "'ShipContextMenu_Primary'")
+			(controller $Instance renderer = 'ContextMenuItem'
+				(bind enabled "isOwned")
+				(args
+					_title = "isPrimary ? 'IDS_REMOVE_PRIMARY' : 'IDS_ASSIGN_PRIMARY'"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+					_enabled = "true"
+					_methods = "[{
+									type:	'inputMapping.onRequest',
+									name:	'primaryThisShip',
+									args:	{shipId: _shipId}
+								}]"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(bind alpha "isReturnCrewDisabled ? 0.5 : 1")
+			(bind name "'ShipContextMenu_Primary'")
+			(controller $Instance renderer = 'ContextMenuItem'
+				(bind enabled "isReturnLastCrewButtonVisible")
+				(args
+					_title="'IDS_CREW_HIRE_LAST_CREW'"
+					_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+					_enabled="!isReturnCrewDisabled"
+					_methods="[ {
+									type:	'inputMapping.onAction',
+									name:	'selectShip',
+									args:	{shipId: _shipId}
+								},
+								{
+									type:	!canAssignWithoutRetrain ? 'inputMapping.onRequest' : 'inputMapping.onAction',
+									name:	!canAssignWithoutRetrain ? 'openRetrainCrewWindow' : 'assignCrewToShip',
+									args:	{crewId: lastBoardedCrewId, shipId: _shipId}
+								}]"
+				)
+			)
+
+			(controller $Tooltip
+				(renderer='CrewTooltip')
+				(args
+					_crewId = "lastBoardedCrewId"
+					_targetShipId = "_shipId"
+					_noContextMenuInstruction = "true"
+				)
+				(align="top|right")
+				(priority=0)
+				(position="trackMouse")
+				(offset=[5, 25])
+				(macro SIMPLE_TOOLTIP_ANIMATION)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(bind name "'ShipContextMenu_Modules'")
+			(controller $Instance renderer = 'ContextMenuItem'
+				(bind enabled "feature_17 != 'locked' && !_disableShipActions")
+				(args
+					_title="'IDS_MODULES'"
+					_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+					_enabled="true"
+					_methods="[ {
+									type:	'inputMapping.onAction',
+									name:	'selectShipForManagement',
+									args:	{	shipId:		_shipId,
+													needScroll:	_needScrollOnSelectShipForManagement }
+								},
+								{
+									type:	'inputMapping.onRequest',
+									name:	isCrewModalWindow		? 'hideCrewManagement' :
+											isEconomicsModalWindow	? 'hideEconomicsManagement'
+																	: '',
+									args:	{}
+								}]"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(bind name "'ShipContextMenu_Sell'")
+			(controller $Instance renderer = 'ContextMenuItem'
+				(bind enabled "	feature_17 != 'locked' &&
+								isOwned &&
+								isSellable &&
+								(timeRent == 0) &&
+								!(isLocked || isNeedRepair || isInFormation) &&
+								!_disableShipActions")
+				(args
+					_title="'IDS_SELL'"
+					_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+					_enabled="true"
+					_methods = "[{
+									type:	'inputMapping.onRequest',
+									name:	'sellShipWindow',
+									args:	{	shipId:	_shipId,
+												shipName:	shipInfo.fullName }
+								}]"
+				)
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(bind name "'ShipContextMenu_Purchase'")
+			(controller $Instance renderer = 'ContextMenuItem'
+				(bind enabled "feature_17 != 'locked' &&
+								(!isOwned || (timeRent != 0)) &&
+								upgradableShipInfo.isExplored &&
+								shipInfo.canBuy &&
+								!_disableShipActions")
+				(args
+					_title="'IDS_DO_PURCHASE'"
+					_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+					_enabled="isEnoughMoney"
+					_methods = "[{
+									type:	'inputMapping.onAction',
+									name:	'purchaseShip',
+									args:	{	shipId:	_shipId }
+								}]"
+				)
+			)
+
+			(controller $Tooltip
+				(renderer='SimpleStatusTooltip')
+				(args
+					_text = "cantBuyReason"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.NEGATIVE"
+				)
+				(align="bottom|right")
+				(position="trackMouse")
+				(offset=[5, 25])
+				(macro SIMPLE_TOOLTIP_ANIMATION)
+
+				(bind enabled "!isEnoughMoney")
+			)
+		)
+
+		(block
+			(style (width = "100%"))
+			(bind name "'ShipContextMenu_Research'")
+			(controller $Instance renderer = 'ContextMenuItem'
+				(bind enabled "feature_17 != 'locked' &&
+								!upgradableShipInfo.isExplored &&
+								!shipInfo.isEventLike &&
+								shipInfo.group != SC.Ships.SHIP_GROUPS.EARLY_ACCESS &&
+								shipInfo.group != SC.Ships.SHIP_GROUPS.EVENT")
+				(args
+					_title="'IDS_DO_RESEARCH'"
+					_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+					_enabled="isResearchAvailable"
+					_methods="[ {
+									type:	'inputMapping.onAction',
+									name:	'researchShip',
+									args:	{ shipId: _shipId }
+								},
+								{
+									type:	'inputMapping.onAction',
+									name:	'selectShipForResearch',
+									args:	{ shipId: _shipId }
+								}]"
+				)
+			)
+			(controller $Tooltip
+				(renderer='SimpleStatusTooltip')
+				(args
+					_text = "cantResearchReason"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.NEGATIVE"
+				)
+				(align="bottom|right")
+				(position="trackMouse")
+				(offset=[5, 25])
+				(macro SIMPLE_TOOLTIP_ANIMATION)
+
+				(bind enabled "!isEnoughMoney")
+			)
+		)
+	)
+)
+
+(def element ContextMenuItem (	_title:str, _unifiedStatus:str, _enabled:bool=true, _noTranslate:bool=false, _methods:array=[]) layout=true
+	(scope
+		(event evMenuItemClicked)
+	)
+	(class $ContextMenuListItem)
+	(bind alpha "_enabled ? 1 : 0.5")
+
+	(element DockSubmenuItem _selected="false"
+		(class $FullsizeAbsolute)
+		(style (bind hitTest "_enabled"))
+	)
+
+	(controller $Repeat
+		(bind count "_methods.length")
+		(exprs
+			(bindcall externalCall "_methods[$index].type" "[_methods[$index].name, _methods[$index].args]" init=false watch=false (event "evMenuItemClicked"))
+		)
+	)
+
+	(element StatusLine
+			_unifiedStatus = "_unifiedStatus"
+			_text = "_title"
+			_width = "100%"
+			_noTranslate = "_noTranslate"
+		(style
+			(hitTest = false)
+			(width = "100%")
+			(marginLeft = "SXS")
+		)
+	)
+)

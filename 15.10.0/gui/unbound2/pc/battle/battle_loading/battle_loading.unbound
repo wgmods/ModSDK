@@ -1,0 +1,412 @@
+
+
+(def constant BATTLE_LOADING_MINIMAP_SIZE 344)
+(def constant BATTLE_LOADING_SCRIM_COLOR 0x99000000)
+
+
+
+(def constant BATTLE_LOADING_CONTENT_TOP 164)
+(def constant BATTLE_LOADING_FOOTER_BOTTOM 24)
+(def constant BATTLE_LOADING_FOOTER_HEIGHT 72)
+
+
+(def constant BATTLE_LOADING_PROGRESS_COMPLETED 1)
+
+(def element BattleLoading ()
+	(scope
+		(event evBattleLoadingPageSelected)
+
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var battleInfo:gfx = "battleDataEntity.battleInfo")
+		
+		(var isFirstBattle:bool = "battleInfo.scenario == 'FIRST_BATTLE'")
+		(var contentTop:number = "isFirstBattle	? BATTLE_LOADING_CONTENT_TOP - BATTLE_STATISTICS_TABS_ROW_HEIGHT
+												: BATTLE_LOADING_CONTENT_TOP")
+		(var containerHeight:number = "stageHeight - contentTop - BATTLE_LOADING_FOOTER_BOTTOM - BATTLE_LOADING_FOOTER_HEIGHT")
+
+		
+		(var navigationEntity:gfx = "$datahub.getSingleEntity(CC.battleStatisticsNavigation)")
+		(var navigation:gfx = "navigationEntity ? navigationEntity.battleStatisticsNavigation : null")
+		(var selectedPage:number = "navigation ? navigation.selectedPage : SC.Battle.BATTLE_STATISTICS_PAGE.MAIN" (event "navigation.evSelectedPageChanged"))
+	)
+
+	(style
+		(bind width "stageWidth")
+		(bind height "stageHeight")
+	)
+	(bindcall externalCall 'inputMapping.onAction' "['BattleHints.refresh', {}]" init=false watch=false on='addedToStage')
+	
+	
+	(bindcall externalCall 'inputMapping.onAction'
+		"['battleStatisticsSelectPage', { index: SC.Battle.BATTLE_STATISTICS_PAGE.DETAILS, auto: true, isFirstBattle: true }]"
+		init=false watch=false on='addedToStage' (bind enabled "isFirstBattle"))
+	(bindcall externalCall 'inputMapping.onAction' "['battleStatisticsSelectPage', { index: $event.index }]" init=false watch=false (event "evBattleLoadingPageSelected"))
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundSize = "cover")
+			(bind backgroundImage "'img://' + battleInfo.mapPath" (event "battleInfo.evBitmapIdChanged"))
+		)
+	)
+
+	(element BattleStatisticsHeader "battleInfo")
+	(element BattleLoadingTopLevelTabs
+		_selectedPage = "selectedPage"
+		(bind visible "!isFirstBattle")
+	)
+
+	
+	
+	(block
+		(bind visible "selectedPage == SC.Battle.BATTLE_STATISTICS_PAGE.MAIN && !isFirstBattle")
+		(style (width = 100%))
+		(element BattleLoadingMainContent
+			_containerHeight = "containerHeight"
+		)
+	)
+	(block
+		(bind visible "selectedPage == SC.Battle.BATTLE_STATISTICS_PAGE.DETAILS || isFirstBattle")
+		(style (width = 100%))
+		(element BattleLoadingTipsContent
+			_containerHeight = "containerHeight"
+		)
+	)
+
+	(element BattleLoadingFooter)
+
+	(element BattleDivisionInvitations)
+)
+
+(def element BattleLoadingTopLevelTabs (_selectedPage:number) dispatch_size_change=true
+	(style
+		(width = 100%)
+		(marginTop = "M")
+		(align = "center")
+	)
+
+	(element MAIN_TAB_BUTTONS_BLOCK
+		(element MainTabButton
+			_label = 'IDS_BATTLE_STATISTICS_TAB_PRIMARY'
+			_width = "MAIN_TAB_BUTTON_WIDTH.TINY"
+			_isSelected = "_selectedPage == SC.Battle.BATTLE_STATISTICS_PAGE.MAIN"
+			_dispatchedEv = 'evBattleLoadingPageSelected'
+			_dispatchParams = "{ index: SC.Battle.BATTLE_STATISTICS_PAGE.MAIN }"
+			_name = 'battleLoadingMainPageTab'
+		)
+
+		(element MainTabButton
+			_label = 'IDS_BATTLE_STATISTICS_TAB_DETAILED'
+			_width = "MAIN_TAB_BUTTON_WIDTH.TINY"
+			_isSelected = "_selectedPage == SC.Battle.BATTLE_STATISTICS_PAGE.DETAILS"
+			_dispatchedEv = 'evBattleLoadingPageSelected'
+			_dispatchParams = "{ index: SC.Battle.BATTLE_STATISTICS_PAGE.DETAILS }"
+			_name = 'battleLoadingDetailsPageTab'
+			_isLast = true
+		)
+	)
+)
+
+(def element BattleLoadingMainContent (_containerHeight:number)
+	(scope
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var battleInfo:gfx = "battleDataEntity.battleInfo")
+		(var gameModeId:number = "battleInfo.gameModeId" (event "battleInfo.evGameModeIdChanged"))
+		(var isOperation:bool = "gameModeId == SC.Battle.GAME_MODE.PVE")
+		(var columnWidth:number = "isOperation ? STRUCTURE_ITEM_WIDTH_PVE : TEAM_BATTLE_WIDTH")
+	)
+	(style
+		(width = 100%)
+		(marginTop = "MS")
+		(align = "center")
+	)
+
+	
+	(scrollArea
+		(macro BATTLE_STATISTICS_SCROLL_COLUMN_SHELL _widthHD = "columnWidth" _widthFHD = "columnWidth" _height = "_containerHeight")
+
+		(content
+			(macro BATTLE_STATISTICS_SCROLL_COLUMN_CONTENT _widthHD = "columnWidth" _widthFHD = "columnWidth")
+
+			(element TeamBattlePage
+				_isBattleStats = false
+				_isDynamicDivisionsEnabled = false
+				_isAnimShown = false
+			)
+
+			(element BattleStatisticsInfoPanel
+				_leftRenderer = "isOperation	? 'BattleStatisticsLoadingOperationDescription'
+												: 'BattleStatisticsLoadingRandomDescription'"
+				_rightRenderer = 'BattleLoadingMinimap'
+				_gap = "isOperation	? BATTLE_STATISTICS_LOADING_PANEL_GAP_PVE
+									: BATTLE_STATISTICS_LOADING_PANEL_GAP"
+				(style (marginTop = "S"))
+			)
+		)
+	)
+)
+
+(def element BattleLoadingTipsContent (_containerHeight:number)
+	(style
+		(width = 100%)
+		(marginTop = "MS")
+		(align = "center")
+	)
+
+	(scrollArea
+		(macro BATTLE_STATISTICS_SCROLL_COLUMN_SHELL _widthHD = "BATTLE_STATISTICS_DETAILS_WIDTH_HD" _widthFHD = "BATTLE_STATISTICS_DETAILS_WIDTH" _height = "_containerHeight")
+
+		(content
+			(macro BATTLE_STATISTICS_SCROLL_COLUMN_CONTENT _widthHD = "BATTLE_STATISTICS_DETAILS_WIDTH_HD" _widthFHD = "BATTLE_STATISTICS_DETAILS_WIDTH")
+
+			(element BattleStatsDetailsPage)
+		)
+	)
+)
+
+(def element BattleLoadingMinimap ()
+	(style
+		(width = "BATTLE_LOADING_MINIMAP_SIZE")
+		(height = "BATTLE_LOADING_MINIMAP_SIZE")
+	)
+	
+	
+	(element FullMinimap
+		_isLoading = true
+	)
+)
+
+(def element BattleLoadingFooter ()
+	(scope
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var battleInfo:gfx = "battleDataEntity.battleInfo")
+		(var battleStateComponent:gfx = "battleDataEntity.battleState")
+		(var battleTimer:gfx = "battleDataEntity.battleTimer")
+		(var loadingProgress:number = "battleInfo.loadingProgress" (event "battleInfo.evLoadingProgressChanged"))
+		(var battleType:str = "battleInfo.battleType")
+		(var battleState:number = "battleStateComponent.battleState" (event "battleStateComponent.evBattleStateChanged"))
+		(var readyToBattle:bool = "battleStateComponent.readyToBattle" (event "battleStateComponent.evReadyToBattleChanged"))
+		(var battleTime:number = "battleTimer.battleTime" (event "battleTimer.evBattleTimeChanged"))
+		(var battleTimeLeftText:str = "countdownFormat(battleTime, 0, true)")
+		(var isStartBattleShown:bool = "loadingProgress == BATTLE_LOADING_PROGRESS_COMPLETED && readyToBattle && battleState != SC.Common.CLIENT_BATTLE_STATE.STARTED")
+		
+		
+		
+		(var battleLoadingEntity:gfx = "$datahub.getSingleEntity(CC.battleLoading)")
+		(var isPveBattle:bool = "battleType == SC.Common.BATTLE_TYPES.PVE_BATTLE")
+		(var isEventBattle:bool = "battleType == SC.Common.BATTLE_TYPES.EVENT_BATTLE")
+		
+		(var isFirstBattle:bool = "battleInfo.scenario == 'FIRST_BATTLE'")
+		(var winnerClanEntity:gfx = "$datahub.getSingleEntity(CC.lastClanSeasonWinner)")
+		(var winnerClanId:number = "winnerClanEntity ? winnerClanEntity.clan.id : 0")
+		(var showClanWinner:bool = "winnerClanEntity && winnerClanId && !isPveBattle && !isEventBattle && !isFirstBattle")
+	)
+
+	(style
+		(position = "absolute")
+		(width = 100%)
+		(height = 100%)
+	)
+
+	(bindcall externalCall "isStartBattleShown ? 'inputMapping.onRequest' : ''" "['showBattle', {}]" init=false watch=false
+		(event "battleLoadingEntity.battleLoading.evStartBattleKeyDown"))
+	(bindcall externalCall "isStartBattleShown ? 'sound.playSetSoundDirect' : ''" "['button_' + SC.Ui_styles.BUTTON_TYPE.ACCENT, SoundEvent.CLICK]" init=false watch=false
+		(event "battleLoadingEntity.battleLoading.evStartBattleKeyDown"))
+
+	(block
+		(style
+			(position = "absolute")
+			(bottom = "BATTLE_LOADING_FOOTER_BOTTOM")
+			(width = 100%)
+			(height = "BATTLE_LOADING_FOOTER_HEIGHT")
+		)
+
+		(block
+			(style
+				(position = "absolute")
+				(top = 0px)
+				(width = 100%)
+				(align = "center")
+			)
+			(tf
+				(name = 'loadingPreBattleTimer')
+				(class $TextHeaderHugeWhite)
+				(class $TextAccentBold)
+				(bind visible "loadingProgress == BATTLE_LOADING_PROGRESS_COMPLETED && battleState == SC.Common.CLIENT_BATTLE_STATE.COUNTDOWN")
+				(bind text "battleTimeLeftText")
+			)
+		)
+
+		(block
+			(style
+				(position = "absolute")
+				(top = 40px)
+				(width = 100%)
+				(align = "center")
+			)
+
+			(block
+				(bind visible "loadingProgress < BATTLE_LOADING_PROGRESS_COMPLETED")
+				(style
+					(flow = "horizontal")
+					(align = "middle|center")
+				)
+				(block
+					(style
+						(width = 20px)
+						(height = 20px)
+					)
+					(mc indicator_busy_small)
+				)
+				(tf
+					(class $TextDefaultBold17NM)
+					(style
+						(marginLeft = 6px)
+						(marginTop = -2px)
+						(alpha = 0.7)
+					)
+					(bind text "toUpper(tr('IDS_BUSY_LOADING'))")
+				)
+			)
+
+			(block
+				(bind visible "isStartBattleShown")
+				
+				(element DefaultButton
+					_width = 190
+					_type = "SC.Ui_styles.BUTTON_TYPE.ACCENT"
+					_enabled = true
+					_name = 'btnStartBattle'
+					_focusIndex = 0
+					_defaultFocused = true
+					_methods = "[{ type: 'inputMapping.onRequest', name: 'showBattle', args: {} }]"
+					_label = 'IDS_START_BATTLE_BUTTON'
+				)
+			)
+
+			(block
+				(bind visible "loadingProgress == BATTLE_LOADING_PROGRESS_COMPLETED && !readyToBattle && battleState != SC.Common.CLIENT_BATTLE_STATE.STARTED")
+				(tf
+					(class $TextHeaderBigDefault)
+					(text = 'IDS_WAITING_PLAYERS')
+				)
+			)
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(right = {1280:312,1920:383})
+			(bottom = 16px)
+		)
+		(controller $Instance renderer='BattleLoadingFooterClanSeasonWinner'
+			(bind enabled "showClanWinner")
+		)
+	)
+)
+
+(def element BattleLoadingFooterClanSeasonWinner ()
+	(scope
+		(var winnerClanEntity:gfx = "$datahub.getSingleEntity(CC.lastClanSeasonWinner)")
+		(var winnerClanId:number = "winnerClanEntity ? winnerClanEntity.clan.id : 0")
+		(var seasonId:number = "winnerClanEntity ? winnerClanEntity.lastClanSeasonWinner.seasonId : 0" (event "winnerClanEntity.lastClanSeasonWinner.evChanged"))
+		(var clanEntity:gfx = "$datahub.getPrimaryEntity(CC.clan, winnerClanId)")
+		(var clanTag:str = "clanEntity ? clanEntity.clan.tag : ''" (event "clanEntity.clan.evTagChanged"))
+		
+		(var clanName:str = "clanEntity && clanEntity.clanExtended ? clanEntity.clanExtended.name : ''" (event "clanEntity.evAdded") (event "clanEntity.clanExtended.evNameChanged"))
+	)
+
+	(block
+		(style
+			(width = 80px)
+			(height = 80px)
+			(backgroundSize = "fill")
+			(bind backgroundImage "'url:../achievements/icon_achievement_WINNER_CLAN_SEASON_' + seasonId + '.png'")
+		)
+	)
+	(controller $Tooltip
+		(renderer = 'BattleLoadingClanSeasonWinnerTooltip')
+		(args _headerText = "'[' + clanTag + '] ' + clanName")
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+	(block
+		(style
+			(position = "absolute")
+			(left = 88px)
+			(top = 17px)
+			(width = {1280:300,1920:352})
+		)
+		(tf
+			(style
+				(width = 100%)
+				(marginBottom = "S")
+			)
+			(class $TextDefaultBold19NM)
+			(bind text "'[' + clanTag + ']'")
+		)
+		(tf
+			(style
+				(width = 100%)
+				(alpha = "TC")
+			)
+			(class $TextDefault17NM)
+			(text = 'IDS_CLAN_BATTLES_SEASON_WINNER')
+		)
+	)
+)
+
+
+(def element BattleLoadingClanSeasonWinnerTooltip (_headerText:str) layout=true
+	(style (width = 300) (hitTest = false))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "_headerText"
+		)
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemDescriptionText
+			_descriptionText = "'IDS_CLAN_BATTLES_SEASON_WINNER'"
+		)
+	)
+)
+
+
+
+
+
+
+
+
+(def constant BATTLE_DIVISION_INVITATION_HEIGHT 100)
+
+(def element BattleDivisionInvitations ()
+	(scope
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageHeight:number = "stageComponent.height" (event "stageComponent.evStageSizeChanged"))
+
+		(var invitationCollection:gfx = "$datahub.getCollection(CC.invitationToDivision)")
+		(var hasInvitation:bool = "invitationCollection.items.length > 0" (event "invitationCollection.evAdded") (event "invitationCollection.evRemoved"))
+		(var invitationEntity:gfx = "invitationCollection.items[0]" (event "invitationCollection.evAdded") (event "invitationCollection.evRemoved"))
+
+		(var bottomOffset:number = "17 + (stageHeight - 720) / 3")
+	)
+
+	(style
+		(position = "absolute")
+		(left = 5px)
+		(bind bottom "bottomOffset")
+		(height = "BATTLE_DIVISION_INVITATION_HEIGHT")
+	)
+
+	(controller $Instance renderer='InvitationToDivision'
+		(bind enabled "hasInvitation")
+		(args _invitationEntity = "invitationEntity")
+		(bindcall recreate (bind trigger "invitationEntity"))
+	)
+)

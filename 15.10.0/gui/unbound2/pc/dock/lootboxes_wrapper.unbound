@@ -1,0 +1,31 @@
+(def element LootboxesInset () layout=true dispatch_size_change=true
+	(scope
+		(macro STAGE_SIZE)
+		(macro PULL_ROUTE "SC.Ui_windows.ROUTE.BARGE" "'isOnBarge'")
+		(var gfStateWatcher:gfx = "$datahub.getFirstWatcher(CC.gamefaceGlobalState)")
+		(var gfStateEntity:gfx = "gfStateWatcher.entity" (event "gfStateWatcher.event"))
+		(var gfStateComponent:gfx = "gfStateEntity ? gfStateEntity.gamefaceGlobalState : null")
+		(var gfStateHasControl:bool = "gfStateComponent ? gfStateComponent.gamefaceHasControl : false"	(event "gfStateComponent.evChanged")
+																										(event "gfStateComponent.evGamefaceHasControlChanged"))
+
+		(event evAddedToStage) 
+	)
+
+	(dispatch evAddedToStage on='addedToStage')
+
+	(name = "'LootboxesInset'")
+
+	(style (bind width "stageWidth") (bind height "stageHeight") (align = "center") (position = "absolute"))
+
+	(controller $Instance renderer='LootboxesContent'
+		(bind enabled "isOnBarge")
+	)
+)
+
+(def element LootboxesContent () layout=true
+	(class $FullsizeAbsolute)
+	(element GamefaceWidget
+		_gfName = "SC.Gameface.DATA_PROVIDER_NAME.LOOTBOXES"
+		_gfPath = 'gui/gameface/build/barge/index.html'
+	)
+)

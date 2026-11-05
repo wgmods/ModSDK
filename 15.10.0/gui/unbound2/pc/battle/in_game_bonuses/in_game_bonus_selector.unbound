@@ -1,0 +1,406 @@
+(def constant INGAME_BONUS_ICON_SIZE 60)
+(def constant INGAME_BONUS_ICON_PLACEHOLDER_SIZE 64)
+
+(def constant IN_GAME_BONUS_RENDERER {
+	'1' :	'ModifierInfoContent',
+	'2' :	'ConsumableInfoContent'
+})
+
+(def element InGameBonusSelector () layout=true
+	(scope
+		(var collection:gfx = "$datahub.getCollection(CC.inGameBonus)")
+		(var itemsLength:number = "collection ? collection.items.length : 0" (event "collection.evAdded") (event "collection.evRemoved"))
+		(var hasItems:bool = "itemsLength > 0")
+		(var avatarEntity:gfx = "$datahub.getSingleEntity(CC.playerAvatar)")
+		(var isAlive:bool = "avatarEntity.health.isAlive" (event "avatarEntity.health.evIsAliveChanged"))
+	)
+
+	(controller $Instance renderer='InGameBonusSelectorContent'
+		(bind enabled "hasItems && isAlive")
+	)
+)
+
+(def element InGameBonusSelectorContent () layout=true
+	(scope
+		(var collection:gfx = "$datahub.getCollection(CC.inGameBonus)")
+		(var itemsLength:number = "collection ? collection.items.length : 0" (event "collection.evAdded") (event "collection.evRemoved"))
+
+		(event evAddedToStage)
+		(event evSelectionChanged)
+		(event evHideItems)
+	)
+	(dispatch evAddedToStage on=addedToStage)
+	(dispatch evHideItems dir="EventDirection.DOWN" (event "evSelectionChanged"))
+
+	(alpha = 0)
+
+	(controller $Animation
+		(bindcall play duration="SC.Ingame_bonus_selector.ANIMATION_TIMEOUTS.HIDE_BACK_PANEL_TIME" delay="SC.Ingame_bonus_selector.ANIMATION_TIMEOUTS.HIDE_BACK_PANEL_DELAY" from={scaleY:1, alpha:1} to={scaleY:0.2, alpha : 0} (event "evHideItems"))
+		(bindcall play duration="0.15" delay="0.5" from={scaleY: 0.2, alpha: 0} to={scaleY:1, alpha:1} action="killAll" (event "evAddedToStage"))
+	)
+
+	(block			
+		(style
+			(margin = "S")
+			(width = "100%")
+		)
+		(tf
+			(class $TextDefaultBold21NM)		
+			(style
+				(width = "100%")
+				(textAlign = "center")
+			)
+			(bind text "tr('IDS_INGAME_BONUS_SELECTION_HEADER')")
+		)
+	)
+
+	(hblock
+		(element PackSelectionBG)
+		
+		(controller $Repeat renderer='PackItemInfoContent'
+			(bind count "itemsLength")
+			(args "collection")
+			(exprs
+				(scope
+					(bind coll "collection")
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(style 
+			(width = 100%)
+			(marginTop = "XXS")
+			(align = "center")
+		)
+
+		(hblock
+			(style
+				(width = 100%)
+				(gap = "XS")
+			)
+			(controller $Repeat renderer='PackItemHotkeyContent'
+				(bind count "itemsLength")
+				(args "collection")
+				(exprs
+					(style
+						(bind width "1%  * 100/itemsLength")
+					)
+					(scope
+						(bind coll "collection")
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element PackItemHotkeyContent (_collection:gfx) layout=true
+	(scope
+		(event evHideItems)
+
+		(var coll:gfx = "_collection")
+		(var packEntity:gfx = "coll.items[$index]")
+		(var packItemComponent:gfx = "packEntity.inGameBonus")
+
+		(var selectCmd:number = "packItemComponent.cmd")
+		(var selectionId:number = "packItemComponent.indexInPack")
+		(var packId:number = "packItemComponent.packId")
+		(var selected:bool = "packItemComponent.selected" (event "packItemComponent.evSelectedChanged"))
+
+		(var rightAligned:bool = "$index % 2 == 0")
+		(var hasSelection:bool = "true" init=false watch=false (event "evHideItems"))
+
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var clickMethods:array = "[ { type: 'direct.action', name: 'ingamebonus.select', args: [ packId, selectionId ] } ]")
+	)
+
+	(style
+		(height = 40px)
+		(bind align "rightAligned ? right|middle : left|middle")
+	)
+
+	
+	(block
+		(bind alpha "rollOver ? 1.2 : 1")
+		(class $FullsizeAbsolute)
+		(macro DIPLOMACY_BG)
+	)
+	
+	
+	(element HotkeyIndicator	_commandId="selectCmd" _fxOnDown=true _toggled=true
+								_overwriteState="selected ? HotkeyState.POSITIVE : HotkeyState.DEFAULT"
+		(style
+			(marginLeft = "34")
+			(marginRight = "34")
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "hasSelection"
+		_methods = "clickMethods"
+	)
+)
+
+(def element PackItemInfoContent (_collection:gfx) layout=true
+	(scope
+		(var coll:gfx = "_collection")
+		(var packEntity:gfx = "coll.items[$index]")
+		(var packItemComponent:gfx = "packEntity.inGameBonus")
+		(var rendererName:str = "IN_GAME_BONUS_RENDERER[packItemComponent.type]")
+	)
+
+	(controller $Instance renderer="rendererName"
+		(args "packItemComponent" "$index")
+		(exprs
+			(scope
+				(bind component "packItemComponent")
+			)
+		)
+	)
+)
+
+(def element ModifierInfoContent (_component:gfx, index:number) layout=true
+	(scope
+		(var component:gfx = "_component")
+		(var iconPath:str = "'url:../powerups/modifiers/icon_ship_modifier_' + component.buffName + '.png'")
+		(var itemNameIds:str = "'IDS_SHIP_MODIFIER_PARAM_HEADER_' + toUpper(component.buffName)")
+		(var itemDescIds:str = "'IDS_SHIP_MODIFIER_PARAM_DESCRIPTION_' + toUpper(component.buffName)")
+	)
+
+	(element PackItemCommonContent "component" "index"
+		(scope
+			(bind packItemComponent "component")
+			(bind icon "iconPath")
+			(bind itemName "itemNameIds")
+			(bind itemDesc "itemDescIds")
+		)
+	)
+)
+
+(def element ConsumableInfoContent (_component:gfx, index:number) layout=true
+	(scope
+		(var component:gfx = "_component")
+		(var consumableEntity:gfx = "$datahub.getPrimaryCompositeEntity(CC.battleConsumable, component.consumableType, -1)")
+		(var battleConsumable:gfx = "consumableEntity.battleConsumable")
+	)
+	
+	(element PackItemCommonContent "component" "index"
+		(scope
+			(bind packItemComponent "component")
+			(bind icon "'url:' + battleConsumable.viewData.iconPath")
+			(bind itemName "battleConsumable.viewData.title")
+			(bind itemDesc "battleConsumable.viewData.description")
+		)
+	)
+)
+
+(def element PackItemCommonContent (_component:gfx, index:number) layout=true
+	(scope
+		(event evSelectionChanged)
+		(event evHideItems)
+		(event evAddedToStage)
+
+		(var packItemComponent:gfx = "_component")
+		(var icon:str = "''" init=false)
+		(var itemName:str = "''" init=false)
+		(var itemDesc:str = "''" init=false)
+		(var selectCmd:number = "packItemComponent.cmd")
+		(var selectionId:number = "packItemComponent.indexInPack")
+		(var packId:number = "packItemComponent.packId")
+		(var selected:bool = "packItemComponent.selected" (event "packItemComponent.evSelectedChanged"))
+		(var rightAligned:bool = "index % 2 == 0")
+		
+		(var eventDelay:number = "selected 	? SC.Ingame_bonus_selector.ANIMATION_TIMEOUTS.SELECTED_ITEM_HIDE_DELAY_TIME + SC.Ingame_bonus_selector.ANIMATION_TIMEOUTS.ITEM_HIDE_TIME_DELAY
+											: SC.Ingame_bonus_selector.ANIMATION_TIMEOUTS.ITEM_HIDE_TIME_DELAY")
+
+		(var currentAlpha:number = "selected  ? 1.0 : 0.9")
+	)
+
+	(dispatch evAddedToStage on=addedToStage)
+	(dispatch evSelectionChanged dir="EventDirection.UP" (event "packItemComponent.evSelectedChanged"))
+
+	(style (flow = "horizontal"))
+		
+	(bind alpha "currentAlpha")
+
+	(element PackItemSeparator
+		(bind visible "index > 0")
+		(style 
+			(marginTop = "M")
+		)
+	)
+
+	(hblock
+		(alpha = 0)
+
+		(style
+			(width = "380px")
+			(margin = "M")
+			(bind align "rightAligned ? right : left")
+		)
+
+		(controller $Animation
+			(bindcall play duration="SC.Ingame_bonus_selector.ANIMATION_TIMEOUTS.ITEM_ANIMATION_TIME" delay="eventDelay" to={alpha: 0, scaleY: 0} action="killAll" (event "evHideItems"))
+			(bindcall play duration="SC.Ingame_bonus_selector.ANIMATION_TIMEOUTS.ITEM_ANIMATION_TIME" delay="0.7" from={alpha: 0, scaleY: 0} action="killAll" to={alpha: 1, scaleY: 1} (event "evAddedToStage"))
+		)
+
+		(macro MOUSE_LMB_EXTERNAL_CALL 'direct.action' "['ingamebonus.select', [packId, selectionId]]")
+
+		
+		(controller $Instance (renderer = 'PackItemIcon')
+			(bind enabled "!(rightAligned)")
+			(exprs
+				(scope
+					(bind _icon "icon")
+					(bind _selected "selected")
+					(bind _count "packItemComponent.count")
+				)
+				(style (marginRight = "M"))
+			)
+		)
+
+		(block
+			(style
+				(width = "100%")
+				(bind align "rightAligned ? right : left")
+			)
+
+			
+			(tf
+				(style
+					(width = "100%")
+					(bind textAlign "rightAligned ? right : left")
+					(marginBottom = "XS")
+				)
+				(class $TextDefaultBold17NM)
+				(bind class "selected ? '$FontColorGolden' : '$FontColorDefault'")
+				(bind text "tr(itemName)" init=false)
+			)
+
+			
+			(tf
+				(style
+					(width = "100%")
+					(bind textAlign "rightAligned ? right : left")
+				)
+				(class $TextDefaultNM)
+				(bind class "selected ? '$FontColorGolden' : '$FontColorDefault'")
+				(bind text "tr(itemDesc)" init=false)
+			)
+		)
+
+		
+		(controller $Instance (renderer = 'PackItemIcon')
+			(bind enabled "rightAligned")
+			(exprs
+				(scope
+					(bind _icon "icon")
+					(bind _selected "selected")
+					(bind _count "packItemComponent.count")
+				)
+				(style (marginLeft = "M"))
+			)
+		)
+	)
+)
+
+(def element PackItemIcon () layout=true
+	(scope
+		(var _icon:str = '')
+		(var _count:number = 0)
+		(var _selected:bool = false)
+	)
+
+	
+	(block
+		(style
+			(position = "absolute")
+			(width = "INGAME_BONUS_ICON_PLACEHOLDER_SIZE")
+			(height = "INGAME_BONUS_ICON_PLACEHOLDER_SIZE")
+			(backgroundSize = "fill")
+			(backgroundImage = "'url:../battle_hud/central_log/lower_log_bg.png'")
+		)
+	)
+
+	
+	(block
+		(style
+			(marginTop = 2px)
+			(marginLeft = 2px)
+		)
+
+		(block
+			(style
+				(width = "INGAME_BONUS_ICON_SIZE")
+				(height = "INGAME_BONUS_ICON_SIZE")
+				(backgroundSize = "fill")
+				(bind backgroundImage "_icon" init=false)
+			)
+		)
+
+		(block
+			(bind visible "_count > 0")
+			
+			(style 
+				(position = "absolute")
+				(left = 50%)
+				(bottom = 2)
+			)
+
+			(tf
+				(class $TextDefaultBold17NM)
+				(bind class "_selected ? '$FontColorGolden' : '$FontColorDefault'")
+				(style
+					(textAlign = "left")
+					(marginLeft = "12px")
+				)
+				(bind text "'x' + _count")
+			)
+		)
+	)
+)
+
+(def element PackItemSeparator () layout=true
+	(alpha = "TC")
+	(style
+		(height = "INGAME_BONUS_ICON_PLACEHOLDER_SIZE")
+		(align = "center")
+	)
+
+	(block
+		(style (height = "50%"))
+		(macro PACK_SEPARATOR_LINE "0" "$globalLayoutBounds[3] - S")
+	)
+	
+	(tf
+		(class $TextDefaultBoldNM)
+		(text = "toUpper(tr('IDS_OR'))")
+	)
+
+	(block
+		(style (height = 50%))
+		(macro PACK_SEPARATOR_LINE "0+S" "$globalLayoutBounds[3]")
+	)
+)
+
+(def element PackSelectionBG () layout=true	
+	(macro DIPLOMACY_BG)
+	(style			
+		(height = "100%")
+		(width = "100%")
+		(position = "absolute")
+	)
+)
+
+(def macro PACK_SEPARATOR_LINE (__startY:expression, __endY: expression)
+	(.graphics
+		(bindcall clear (event "$evLayoutBoundsChanged"))
+		(bindcall lineStyle 1 0xf1f1f1 1 (event "$evLayoutBoundsChanged"))
+		(bindcall moveTo "0" "__startY" (event "$evLayoutBoundsChanged"))
+		(bindcall lineTo "0" "__endY" (event "$evLayoutBoundsChanged"))
+	)
+)

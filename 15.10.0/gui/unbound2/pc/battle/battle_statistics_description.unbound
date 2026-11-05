@@ -1,0 +1,890 @@
+
+
+(def constant BATTLE_STATISTICS_INFO_PANEL_PADDING 16)
+(def constant BATTLE_STATISTICS_INFO_PANEL_COLOR 0x50000000)
+
+(def constant BATTLE_STATISTICS_LOADING_COLUMN_WIDTH 450)
+(def constant BATTLE_STATISTICS_LOADING_COLUMN_WIDTH_PVE 389)
+
+
+
+
+(def constant BATTLE_STATISTICS_TAB_COLUMN_WIDTH "{1280: 400, 1920: 450}")
+(def constant BATTLE_STATISTICS_TAB_TASKS_WIDTH 392)
+
+
+
+(def constant BATTLE_STATISTICS_TAB_PANEL_GAP "{1280: 10, 1920: 70}")			
+(def constant BATTLE_STATISTICS_TAB_PANEL_GAP_PVE "{1280: 23, 1920: 23}")		
+(def constant BATTLE_STATISTICS_LOADING_PANEL_GAP "{1280: 176, 1920: 176}")		
+(def constant BATTLE_STATISTICS_LOADING_PANEL_GAP_PVE "{1280: 71, 1920: 71}")	
+
+(def constant BATTLE_STATISTICS_TASK_ICON_SIZE 27px)
+
+
+
+
+
+
+(def constant BATTLE_STATISTICS_SCROLLBAR_GUTTER 18)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(def macro BATTLE_STATISTICS_SCROLL_COLUMN_SHELL (_widthHD:expression, _widthFHD:expression, _height:expression, _flush:expression="false")
+	(style
+		(bind width "{	1280: (_widthHD) + TEAM_ROW_MUTE_ICONS_GUTTER + BATTLE_STATISTICS_SCROLLBAR_GUTTER,
+						1920: (_widthFHD) + TEAM_ROW_MUTE_ICONS_GUTTER + BATTLE_STATISTICS_SCROLLBAR_GUTTER}")
+		(marginLeft = "(_flush) ? -TEAM_ROW_MUTE_ICONS_GUTTER : BATTLE_STATISTICS_SCROLLBAR_GUTTER - TEAM_ROW_MUTE_ICONS_GUTTER")
+		(marginRight = "(_flush) ? -BATTLE_STATISTICS_SCROLLBAR_GUTTER : 0")
+		(bind height "_height")
+		(backgroundColor = 0x01000000)
+	)
+
+	(verticalSlider = 'ScrollBarVLight')
+	(topShadow = 'ScrollAreaShadowTop')
+	(bottomShadow = 'ScrollAreaShadowBottom')
+
+	(hscrollPolicy = 'off')
+	(vscrollPolicy = 'auto')
+)
+
+
+(def macro BATTLE_STATISTICS_SCROLL_COLUMN_CONTENT (_widthHD:expression, _widthFHD:expression)
+	(style
+		(bind width "{	1280: (_widthHD) + TEAM_ROW_MUTE_ICONS_GUTTER,
+						1920: (_widthFHD) + TEAM_ROW_MUTE_ICONS_GUTTER}")
+		(paddingLeft = "TEAM_ROW_MUTE_ICONS_GUTTER")
+	)
+)
+
+
+
+(def macro BATTLE_STATISTICS_TOOLTIP_BEHAVIOUR (_event:expression)
+	(align = "bottom|center")
+	(position = "border")
+	(offset = [0, 6])
+	(screenBoundsOffset = {left: 10, top: 10, right: 10, bottom: 10})
+	(cache = false)
+	(macro SIMPLE_TOOLTIP_ANIMATION)
+	(macro BATTLE_STATS_LOG_TOOLTIP_DURATION "_event")
+)
+
+
+(def element BattleStatisticsHeader (battleInfo:gfx)
+	(scope
+		
+		(var gameModeId:number = "battleInfo.gameModeId" (event "battleInfo.evGameModeIdChanged"))
+		(var scenario:str = "battleInfo.scenario")
+		(var mapName:str = "battleInfo.mapName")
+		(var gameMode:str = "battleInfo.gameMode")
+		(var battleType:str = "battleInfo.battleType")
+	)
+	(style
+		(width = 100%)
+		(align = "center")
+	)
+	(tf
+		(name = 'mapName')
+		(class $TextDefaultBold21NM)
+		(style
+			(marginTop = "MS")
+			(marginBottom = 16px)
+		)
+		(alpha = "TA")
+		(bind text "gameModeId == SC.Battle.GAME_MODE.PVE ? tr('IDS_' + toUpper(scenario) + '_NAME') : toUpper(tr(mapName))")
+	)
+	(element HorizontalDividerTwoPx)
+
+	(tf
+		(name = 'battleType')
+		(class $TextDefaultNM)
+		(style
+			(marginTop = "SXS")
+			(marginBottom = "SXS")
+		)
+		(alpha = "TA")
+		(bind text "gameModeId == SC.Battle.GAME_MODE.PVE
+			? tr('IDS_' + toUpper(gameMode) + '_TITLE')
+			: tr('IDS_' + toUpper(gameMode) + '_TITLE') + ' — ' + tr('IDS_' + toUpper(battleType))")
+	)
+	(element HorizontalDividerTwoPx)
+)
+
+
+
+
+
+(def element BattleStatisticsInfoPanel (
+	_leftRenderer:str,
+	_rightRenderer:str,
+	_gap:dict,
+	_rightShown:bool=true) layout=true
+	(style
+		(width = 100%)
+		(padding = "BATTLE_STATISTICS_INFO_PANEL_PADDING")
+		(backgroundColor = "BATTLE_STATISTICS_INFO_PANEL_COLOR")
+	)
+
+	(hblock
+		(style (width = 100%))
+
+		
+		
+		
+		
+		(block
+			(controller $Instance layout=true
+				(bind renderer "_leftRenderer")
+			)
+		)
+		
+		(block
+			(bind visible "_rightShown")
+			(style (bind marginLeft "_gap"))
+			(controller $Instance layout=true
+				(bind renderer "_rightRenderer")
+				(bind enabled "_rightShown")
+			)
+		)
+	)
+)
+
+
+(def element BattleStatisticsTabRandomDescription () layout=true
+	
+	(name = 'battleStatisticsDescription')
+	(scope
+		
+		
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var battleInfo:gfx = "battleDataEntity ? battleDataEntity.battleInfo : null")
+		(var gameModeDescription:str = "battleInfo ? battleInfo.gameModeDescription : ''")
+	)
+	(style
+		(width = "BATTLE_STATISTICS_TAB_COLUMN_WIDTH")
+		(gap = "MS")
+	)
+
+	(element BattleStatisticsDescriptionSection
+		_title = "tr('IDS_PVE_OPERATION_GOAL')"
+		_description = "gameModeDescription"
+	)
+	(element BattleStatisticsMechanicsList)
+)
+
+(def element BattleStatisticsTabOperationDescription () layout=true
+	(name = 'battleStatisticsDescription')
+	(scope
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var battleInfo:gfx = "battleDataEntity ? battleDataEntity.battleInfo : null")
+		(var scenario:str = "battleInfo ? battleInfo.scenario : ''")
+	)
+	(style
+		(width = "BATTLE_STATISTICS_LOADING_COLUMN_WIDTH_PVE")
+		(gap = "MS")
+	)
+
+	
+	(element BattleStatisticsDescriptionSection
+		_title = "tr('IDS_PVE_OPERATION_GOAL')"
+		_description = "tr('IDS_' + toUpper(scenario) + '_GOAL')"
+	)
+	(element BattleStatisticsMechanicsList)
+)
+
+
+(def element BattleStatisticsTabPointsAccrual () layout=true
+	(scope
+		(event evBattleStatisticsPointsDetails)
+
+		
+		
+		
+		(var gameStatsCommandEntity:gfx = "$datahub.getPrimaryEntity(CC.commandMappingCommandName, 'CMD_GAME_STATS')")
+		(var isStatsShown:bool = "gameStatsCommandEntity ? gameStatsCommandEntity.commandMappingCommand.isDown : false" (event "gameStatsCommandEntity.commandMappingCommand.evIsDownChanged"))
+
+		(var rewardsCollection:gfx = "$datahub.getCollection(CC.winPointsRewardForDestroyingEnemyShip)")
+		(var penaltiesCollection:gfx = "$datahub.getCollection(CC.winPointsPenaltyForDestroyingAllyShip)")
+		(var holdingCollection:gfx = "$datahub.getCollection(CC.holdingPointsMessage)")
+		(var rewards:gfx = "rewardsCollection ? rewardsCollection.getChildByPath('sorted') : null")
+		(var penalties:gfx = "penaltiesCollection ? penaltiesCollection.getChildByPath('sorted') : null")
+		(var holding:gfx = "holdingCollection ? holdingCollection.getChildByPath('sorted') : null")
+		(bind rewards "rewardsCollection ? rewardsCollection.getChildByPath('sorted') : null" init=false watch=false (bind enabled "isStatsShown"))
+		(bind penalties "penaltiesCollection ? penaltiesCollection.getChildByPath('sorted') : null" init=false watch=false (bind enabled "isStatsShown"))
+		(bind holding "holdingCollection ? holdingCollection.getChildByPath('sorted') : null" init=false watch=false (bind enabled "isStatsShown"))
+		(var rewardItems:array = "rewards ? rewards.items : []" (event "rewards.evAdded") (event "rewards.evRemoved"))
+		(var penaltyItems:array = "penalties ? penalties.items : []" (event "penalties.evAdded") (event "penalties.evRemoved"))
+		(var holdingItems:array = "holding ? holding.items : []" (event "holding.evAdded") (event "holding.evRemoved"))
+		(var upgrades:gfx = "$datahub.getCollection(CC.upgradeCapturePoints)")
+		(var upgradeItems:array = "upgrades ? upgrades.items : []" (event "upgrades.evAdded") (event "upgrades.evRemoved"))
+	)
+	(style
+		(width = "BATTLE_STATISTICS_TAB_COLUMN_WIDTH")
+		(gap = "S")
+	)
+
+	(bindcall externalCall 'inputMapping.onAction'
+		"['battleStatisticsOpenPointsDetails', {}]"
+		init=false watch=false (event "evBattleStatisticsPointsDetails"))
+
+	(element BattleStatisticsMechanicDescription
+		_title = "tr('IDS_BATTLE_STATISTICS_POINTS_TITLE')"
+		_description = "tr('IDS_BATTLE_STATISTICS_POINTS_DESCRIPTION')"
+		_detailsLabel = "tr('IDS_BATTLE_STATISTICS_TAB_DETAILED')"
+		_detailsEvent = 'evBattleStatisticsPointsDetails'
+		_detailsName = 'pointsDetailsButton'
+	)
+
+	(controller $Repeat layout=true
+		(renderer = 'BattleStatisticsHoldingReward')
+		(bind count "holdingItems.length")
+		(args _entity = "holdingItems[$index]")
+	)
+	(controller $Repeat layout=true
+		(renderer = 'BattleStatisticsUpgradeCaptureRow')
+		(bind count "upgradeItems.length")
+		(args _entity = "upgradeItems[$index]")
+	)
+	(element BattleStatisticsClassPointsRow
+		_penaltyItems = "penaltyItems"
+		_rewardItems = "rewardItems"
+	)
+)
+
+
+
+(def element BattleStatisticsLoadingRandomDescription () layout=true
+	
+	(name = 'battleStatisticsDescription')
+	(scope
+		(event evBattleStatisticsPointsDetails)
+
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var battleInfo:gfx = "battleDataEntity.battleInfo")
+		(var gameModeDescription:str = "battleInfo.gameModeDescription")
+		(var gameModeId:number = "battleInfo.gameModeId" (event "battleInfo.evGameModeIdChanged"))
+		(var isPointsAccrualShown:bool = "!isIn(gameModeId, [SC.Battle.GAME_MODE.EPICENTER, SC.Battle.GAME_MODE.EPICENTER_RING, SC.Battle.GAME_MODE.CONVOY_AIRSHIP])")
+	)
+	(style
+		(width = "BATTLE_STATISTICS_LOADING_COLUMN_WIDTH")
+		(gap = "MS")
+	)
+
+	(bindcall externalCall 'inputMapping.onAction'
+		"['battleStatisticsOpenPointsDetails', {}]"
+		init=false watch=false (event "evBattleStatisticsPointsDetails"))
+
+	(element BattleStatisticsDescriptionSection
+		_title = "tr('IDS_PVE_OPERATION_GOAL')"
+		_description = "gameModeDescription"
+	)
+	
+	(block
+		(bind visible "isPointsAccrualShown")
+		(style (width = 100%))
+		(element BattleStatisticsMechanicDescription
+			_title = "tr('IDS_BATTLE_STATISTICS_POINTS_TITLE')"
+			_description = "tr('IDS_BATTLE_STATISTICS_POINTS_DESCRIPTION')"
+			_detailsLabel = "tr('IDS_BATTLE_STATISTICS_TAB_DETAILED')"
+			_detailsEvent = 'evBattleStatisticsPointsDetails'
+			_detailsName = 'pointsDetailsButton'
+		)
+	)
+	(element BattleStatisticsMechanicsList
+		_showInfographics = false
+		_showDescriptionItems = false
+	)
+)
+
+(def element BattleStatisticsLoadingOperationDescription () layout=true
+	(name = 'battleStatisticsDescription')
+	(scope
+		(var battleDataEntity:gfx = "$datahub.getSingleEntity(CC.battleData)")
+		(var battleInfo:gfx = "battleDataEntity.battleInfo")
+		(var scenario:str = "battleInfo.scenario")
+	)
+	(style
+		(width = "BATTLE_STATISTICS_LOADING_COLUMN_WIDTH_PVE")
+		(gap = "MS")
+	)
+
+	(element BattleStatisticsDescriptionSection
+		_title = "tr('IDS_PVE_OPERATION_BRIEFING')"
+		_description = "tr('IDS_' + toUpper(scenario) + '_DESCRIPTION')"
+	)
+	(element BattleStatisticsDescriptionSection
+		_title = "tr('IDS_PVE_OPERATION_GOAL')"
+		_description = "tr('IDS_' + toUpper(scenario) + '_GOAL')"
+	)
+	(element BattleStatisticsMechanicsList
+		_showInfographics = false
+		_showDescriptionItems = false
+	)
+)
+
+(def element BattleStatisticsDescriptionSection (_title:str, _description:str) layout=true
+	(style
+		(width = 100%)
+		(gap = 16px)
+	)
+
+	(tf
+		(class $TextDefaultBold19NM)
+		(style
+			(width = 100%)
+			(alpha = "TA")
+		)
+		(bind text "_title")
+	)
+	(tf
+		(class $TextDefaultNM)
+		(style
+			(width = 100%)
+			(leading = -2px)
+			(alpha = 0.7)
+		)
+		(bind text "_description")
+	)
+)
+
+
+
+
+
+
+(def constant BATTLE_STATISTICS_BULLET_COLUMN_WIDTH 15)
+
+(def element BattleStatisticsBulletList (_items:array) layout=true
+	(style
+		(width = 100%)
+		(gap = "S")
+	)
+
+	(controller $Repeat renderer='BattleStatisticsBulletItem' layout=true
+		(bind count "_items ? _items.length : 0")
+		(args _text = "tr(_items[$index])")
+	)
+)
+
+(def element BattleStatisticsBulletItem (_text:str) layout=true
+	(style (width = 100%))
+
+	(hblock
+		(style (width = 100%))
+		(tf
+			(class $TextDefaultNM)
+			(style
+				(width = "BATTLE_STATISTICS_BULLET_COLUMN_WIDTH")
+				(alpha = 0.7)
+			)
+			(text = '•')
+		)
+		(tf
+			(class $TextDefaultNM)
+			(style
+				(width = 100%)
+				(leading = -2px)
+				(alpha = 0.7)
+			)
+			(bind text "_text")
+		)
+	)
+)
+
+
+
+(def element BattleStatisticsClassPointsRow (_penaltyItems:array, _rewardItems:array) layout=true
+	(style
+		(width = 100%)
+		(flow = "horizontal")
+		(gap = "S")
+	)
+	(controller $Repeat layout=true
+		(renderer = 'BattleStatisticsShipPointsCell')
+		(bind count "_penaltyItems.length")
+		(args
+			_entity = "_penaltyItems[$index]"
+			_isPenalty = true
+		)
+	)
+	(controller $Repeat layout=true
+		(renderer = 'BattleStatisticsShipPointsCell')
+		(bind count "_rewardItems.length")
+		(args _entity = "_rewardItems[$index]")
+	)
+)
+
+
+(def element BattleStatisticsShipPointsCell (_entity:gfx, _isPenalty:bool=false) layout=true
+	(scope
+		(var pointsComponent:gfx = "_isPenalty	? _entity.winPointsPenaltyForDestroyingAllyShip
+												: _entity.winPointsRewardForDestroyingEnemyShip")
+		(var shipType:str = "pointsComponent.shipType")
+		(var points:number = "_isPenalty ? pointsComponent.penaltyPoints : pointsComponent.rewardPoints")
+	)
+	(style
+		(width = 27px)
+		(height = 38px)
+		(align = "center")
+	)
+	(block
+		(style
+			(width = 27px)
+			(height = 27px)
+		)
+		
+		(block
+			(style
+				(position = "absolute")
+				(left = 14px)
+				(top = 15px)
+				(width = 27px)
+				(height = 27px)
+			)
+			(mc icon_ship_reward
+				(bind visible "!_isPenalty")
+				(class $MiddleAligned)
+				(class $MiddleVAligned)
+				(bindcall gotoAndStop "shipType" init=true)
+			)
+			(mc icon_ship_penalty
+				(bind visible "_isPenalty")
+				(class $MiddleAligned)
+				(class $MiddleVAligned)
+				(bindcall gotoAndStop "shipType" init=true)
+			)
+		)
+	)
+	
+	(tf
+		(class $TextDefaultBoldNM)
+		(style
+			(multiline = false)
+			(alpha = 0.7)
+		)
+		(bind text "(_isPenalty ? '' : '+') + points")
+	)
+
+	
+	(element HIT_TEST_TOOLTIP_CONTAINER
+		(controller $Tooltip (renderer = 'BattleStatisticsPointsTooltip')
+			(args
+				_headerIDS = "(_isPenalty	? 'IDS_BATTLE_STATISTICS_TOOLTIP_DESTROY_ALLY_'
+											: 'IDS_BATTLE_STATISTICS_TOOLTIP_DESTROY_ENEMY_') + toUpper(shipType)"
+				_points = "points"
+			)
+			(macro BATTLE_STATISTICS_TOOLTIP_BEHAVIOUR "'ship_points_tooltip'")
+		)
+	)
+)
+
+
+
+
+(def element BattleStatisticsUpgradeCaptureRow (_entity:gfx) layout=true
+	(scope
+		(var upgrade:gfx = "_entity.upgradeCapturePoints")
+		(var penaltyPoints:number = "upgrade.penaltyPoints")
+		(var rewardPoints:number = "upgrade.rewardPoints")
+	)
+	(style
+		(height = 27px)
+		(flow = "horizontal")
+		(align = "middle")
+	)
+	(block
+		(style
+			(width = 27px)
+			(height = 27px)
+			(backgroundSize = "fill")
+			(backgroundImage = 'url:../battle_tasks/rules/icon_rules_gamemode_arms_race_1.png')
+		)
+	)
+	(hblock
+		(style
+			(marginLeft = "S")
+			(height = 27px)
+			(align = "middle")
+			(gap = "M")
+		)
+		(element BattleStatisticsUpgradeCaptureValue
+			_labelIDS = 'IDS_ENEMY_TEAM'
+			_headerIDS = 'IDS_BATTLE_STATISTICS_TOOLTIP_UPGRADE_CAPTURE_ENEMY'
+			_points = "penaltyPoints"
+		)
+		(element BattleStatisticsUpgradeCaptureValue
+			_labelIDS = 'IDS_ALLY_TEAM'
+			_headerIDS = 'IDS_BATTLE_STATISTICS_TOOLTIP_UPGRADE_CAPTURE_ALLY'
+			_points = "rewardPoints"
+		)
+	)
+)
+
+(def element BattleStatisticsUpgradeCaptureValue (_labelIDS:str, _headerIDS:str, _points:number) layout=true
+	(style
+		(height = 27px)
+		(flow = "horizontal")
+		(align = "middle")
+		(gap = "S")
+	)
+	(tf
+		(class $TextDefaultNM)
+		(style
+			(multiline = false)
+			(alpha = 0.7)
+		)
+		(bind text "tr(_labelIDS)")
+	)
+	(tf
+		(class $TextDefaultBoldNM)
+		(style
+			(multiline = false)
+			(alpha = "TA")
+		)
+		(bind text "(_points < 0 ? '' : '+') + _points")
+	)
+
+	(element HIT_TEST_TOOLTIP_CONTAINER
+		(controller $Tooltip (renderer = 'BattleStatisticsPointsTooltip')
+			(args
+				_headerIDS = "_headerIDS"
+				_points = "_points"
+			)
+			(macro BATTLE_STATISTICS_TOOLTIP_BEHAVIOUR "'upgrade_capture_tooltip'")
+		)
+	)
+)
+
+(def element BattleStatisticsHoldingReward (_entity:gfx) layout=true
+	(scope
+		(var holding:gfx = "_entity.holdingPointsMessage")
+		(var controlPointType:number = "holding.controlPointType")
+		
+		
+		(var reward:gfx = "_entity.holdingPointsReward")
+		(var rewardPoints:number = "reward ? reward.rewardPoints : 0")
+		(var periodLabel:str = "reward ? reward.periodLabel : ''")
+		(var periodMessage:str = "reward ? reward.periodMessage : ''")
+		(var imagePath:str = "controlPointType == CapturePointType.BASE_WITH_POINTS
+			? 'url:../battle_hud/briefing/holding_zones/flags.png'
+			: controlPointType == CapturePointType.EPICENTER_CP
+				? 'url:../battle_hud/briefing/holding_zones/epicenter_' + $index + '.png'
+				: 'url:../battle_hud/briefing/holding_zones/letters.png'")
+	)
+	(style
+		(height = 27px)
+		(flow = "horizontal")
+		(align = "middle")
+	)
+	(block
+		(style
+			(width = 27px)
+			(height = 27px)
+		)
+		(block
+			(style
+				(position = "absolute")
+				(left = -9px)
+				(top = -9px)
+				(width = 44px)
+				(height = 44px)
+				(backgroundSize = "fill")
+				(bind backgroundImage "imagePath")
+			)
+			(bind visible "controlPointType != CapturePointType.BUILDING_CP")
+		)
+		(block
+			(class $MiddleAligned)
+			(class $MiddleVAligned)
+			(bind visible "controlPointType == CapturePointType.BUILDING_CP")
+			(mc icon_hold_fort_object)
+		)
+	)
+	
+	(hblock
+		(style
+			(marginLeft = "S")
+			(height = 27px)
+			(align = "middle")
+		)
+		(bind visible "rewardPoints != 0")
+
+		(tf
+			(class $TextDefaultNM)
+			(style
+				(multiline = false)
+				(alpha = "TC")
+			)
+			(bind text "tr(controlPointType == CapturePointType.BASE_WITH_POINTS
+				? 'IDS_HOLDING_BASE'
+				: 'IDS_HOLDING_KEY_AREA')")
+		)
+		(tf
+			(class $TextDefaultBoldNM)
+			(style
+				(multiline = false)
+				(alpha = "TA")
+				(marginRight = 6px)
+			)
+			(bind text "(rewardPoints < 0 ? '' : '+') + rewardPoints")
+		)
+		(tf
+			(class $TextDefaultNM)
+			(style
+				(multiline = false)
+				(alpha = "TC")
+			)
+			(bind text "periodMessage")
+		)
+	)
+
+	(element HIT_TEST_TOOLTIP_CONTAINER
+		(controller $Tooltip (renderer = 'BattleStatisticsPointsTooltip')
+			(bind enabled "rewardPoints > 0")
+			(args
+				_headerIDS = "controlPointType == CapturePointType.BASE_WITH_POINTS
+					? 'IDS_BATTLE_STATISTICS_TOOLTIP_HOLDING_BASE'
+					: 'IDS_BATTLE_STATISTICS_TOOLTIP_HOLDING_CONTROL_POINT'"
+				_points = "rewardPoints"
+				_label = "periodLabel"
+			)
+			(macro BATTLE_STATISTICS_TOOLTIP_BEHAVIOUR "'holding_points_tooltip'")
+		)
+	)
+)
+
+
+
+
+(def element BattleStatisticsMechanicsList (_showInfographics:bool=true, _showDescriptionItems:bool=true) layout=true
+	(scope
+		
+		
+		(var gameStatsCommandEntity:gfx = "$datahub.getPrimaryEntity(CC.commandMappingCommandName, 'CMD_GAME_STATS')")
+		(var isStatsShown:bool = "gameStatsCommandEntity ? gameStatsCommandEntity.commandMappingCommand.isDown : false" (event "gameStatsCommandEntity.commandMappingCommand.evIsDownChanged"))
+
+		(var mechanicsCollection:gfx = "$datahub.getCollection(CC.battleMechanicDescription)")
+		(var mechanics:gfx = "mechanicsCollection ? mechanicsCollection.getChildByPath('sorted') : null")
+		(bind mechanics "mechanicsCollection ? mechanicsCollection.getChildByPath('sorted') : null" init=false watch=false (bind enabled "isStatsShown"))
+		(var mechanicItems:array = "mechanics ? mechanics.items : []" (event "mechanics.evAdded") (event "mechanics.evRemoved"))
+	)
+	(style
+		(width = 100%)
+		(gap = "MS")
+	)
+	(controller $Repeat layout=true
+		(renderer = 'BattleStatisticsMechanicBlock')
+		(bind count "mechanicItems.length")
+		(args
+			_entity = "mechanicItems[$index]"
+			_showInfographics = "_showInfographics"
+			_showDescriptionItems = "_showDescriptionItems"
+		)
+	)
+)
+
+(def element BattleStatisticsMechanicBlock (_entity:gfx, _showInfographics:bool=true, _showDescriptionItems:bool=true) layout=true
+	(scope
+		(event evBattleStatisticsMechanicDetails)
+
+		(var mech:gfx = "_entity.battleMechanicDescription")
+		(var typeName:str = "SC.Battle.BATTLE_MECHANIC_TYPE.VALUE_TO_NAME[mech.mechanicType]")
+		(var infographicItems:array = "mech.infographicItems ? mech.infographicItems : []")
+		(var descriptionItems:array = "mech.descriptionItems ? mech.descriptionItems : []")
+		
+		
+		(var descriptionIDS:str = "'IDS_BATTLE_MECHANIC_' + typeName + (descriptionItems.length > 0 && !_showDescriptionItems ? '_DESCRIPTION_SHORT' : '_DESCRIPTION')")
+	)
+	(style
+		(width = 100%)
+		(gap = "S")
+	)
+
+	
+	
+	(bindcall externalCall 'inputMapping.onAction'
+		"['battleStatisticsOpenMechanicDetails', { mechanicType: mech.mechanicType }]"
+		init=false watch=false (event "evBattleStatisticsMechanicDetails"))
+
+	(element BattleStatisticsMechanicDescription
+		_title = "tr('IDS_BATTLE_MECHANIC_' + typeName)"
+		
+		
+		_description = "mech.textParams	? subst(descriptionIDS, [], mech.textParams)
+										: tr(descriptionIDS)"
+		_descriptionItems = "_showDescriptionItems ? descriptionItems : []"
+		_detailsLabel = "tr('IDS_BATTLE_STATISTICS_TAB_DETAILED')"
+		_detailsEvent = 'evBattleStatisticsMechanicDetails'
+	)
+	(controller $Instance renderer='BattleStatisticsMechanicInfographic' layout=true
+		(bind enabled "_showInfographics && infographicItems.length > 0")
+		(args _items = "infographicItems")
+	)
+)
+
+
+(def element BattleStatisticsMechanicInfographic (_items:array) layout=true
+	(style
+		(flow = "horizontal")
+		(gap = "S")
+	)
+	(controller $Repeat layout=true
+		(renderer = 'BattleStatisticsMechanicInfographicIcon')
+		(bind count "_items.length")
+		(args
+			_tooltipData = "_items[$index]"
+			_iconPath = "'url:../powerups/drops/icon_marker_' + _items[$index].name + '.png'"
+		)
+	)
+)
+
+(def element BattleStatisticsMechanicInfographicIcon (_iconPath:str, _size:number=36, _tooltipData:dict="null") layout=true
+	(style
+		(bind width "_size")
+		(bind height "_size")
+		(backgroundSize = "fill")
+		(bind backgroundImage "_iconPath")
+	)
+
+	(element HIT_TEST_TOOLTIP_CONTAINER
+		
+		(controller $Tooltip (renderer = 'BattleStatisticsBuffTooltip')
+			(bind enabled "_tooltipData != null")
+			(args
+				_data = "_tooltipData"
+			)
+			(macro BATTLE_STATISTICS_TOOLTIP_BEHAVIOUR "'upgrade_drop_tooltip'")
+		)
+	)
+)
+
+
+
+(def element BattleStatisticsBuffTooltip (_data:dict) layout=true
+	(style (width = 300) (hitTest = false))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "_data.headerIDS"
+		)
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemParamsModifiersList
+			_attributesPositive = "_data.positive"
+			_attributesNegative = "_data.negative"
+			_attributesNeutral = "_data.neutral"
+		)
+	)
+)
+
+
+
+(def element BattleStatisticsPointsTooltip (_headerIDS:str, _points:number, _label:str='') layout=true
+	(scope
+		(var isPenalty:bool = "_points < 0")
+		(var rows:array = "[{	attributeIDS: _label ? _label : 'IDS_BATTLE_STATISTICS_TOOLTIP_POINTS',
+								measuredValue: (isPenalty ? '' : '+') + _points,
+								measure: '',
+								category: isPenalty ? 'negative' : 'positive' }]")
+	)
+	(style (width = 300) (hitTest = false))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "_headerIDS"
+		)
+		(element TooltipSystemHorizontalDivider)
+		(element TooltipSystemParamsModifiersList
+			_attributesPositive = "isPenalty ? [] : rows"
+			_attributesNegative = "isPenalty ? rows : []"
+		)
+	)
+)
+
+(def element BattleStatisticsMechanicDescription (
+	_title:str,
+	_description:str,
+	_detailsLabel:str='',
+	_detailsEvent:str='',
+	
+	
+	_detailsName:str='mechanicDetailsButton',
+	
+	_descriptionItems:array=[]) layout=true
+	(style
+		(width = 100%)
+		(gap = 16px)
+	)
+
+	(hblock
+		(style
+			(width = 100%)
+			(height = 15px)
+			(align = "middle")
+		)
+		
+		
+		(block
+			(style
+				(width = 100%)
+				(paddingRight = 147px)
+			)
+			(tf
+				(class $TextDefaultBold19NM)
+				(style
+					(width = 100%)
+					(alpha = "TA")
+				)
+				(bind text "_title")
+			)
+		)
+		(block
+			(class $MiddleVAlignedAbsolutely)
+			(style (right = 0))
+			(controller $Instance renderer='DefaultButton'
+				(bind enabled "_detailsLabel")
+				(args
+					_name = "_detailsName"
+					_width = 94
+					_size = "SIZE.SMALL"
+					_type = "SC.Ui_styles.BUTTON_TYPE.SECONDARY"
+					_label = "_detailsLabel"
+					_dispatchedEv = "_detailsEvent"
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(style
+			(width = 100%)
+			(gap = "S")
+		)
+		(tf
+			(class $TextDefaultNM)
+			(style
+				(width = 100%)
+				(leading = 1px)
+				(alpha = 0.7)
+			)
+			(bind text "_description")
+		)
+		(controller $Instance renderer='BattleStatisticsBulletList' layout=true
+			(bind enabled "_descriptionItems.length > 0")
+			(args _items = "_descriptionItems")
+		)
+	)
+)

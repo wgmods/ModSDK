@@ -1,0 +1,576 @@
+(def constant DEFAULT_ALPHA 0.7)
+(def constant HIGHLIGHTED_ALPHA 1.0)
+(def constant DISABLED_ALPHA 0.3)
+(def constant PRESSED_ALPHA 0.5)
+
+(def constant MINIMUM_SPEED_IDX 1)
+(def constant NORMAL_SPEED_IDX 5)
+(def constant MAXIMUM_SPEED_IDX 9)
+
+(def constant SPEED_READABLE_VALUES
+	[
+		'0',
+		'1/16',
+		'1/8',
+		'1/4',
+		'1/2',
+		'1',
+		'2',
+		'4',
+		'8',
+		'16'
+	]
+)
+
+(def macro PB_TOOLTIP_BEHAVIOR ()
+	(bindcall show animation={duration:0.1, delay:0.1, from:{alpha:0}, to:{alpha:1}} on='rollOver')
+	(bindcall hide animation={duration:0.05, delay:0.0, from:{alpha:1}, to:{alpha:0}} on='rollOut')
+)
+
+(def element PlaybackPanel () layout=true dispatch_size_change=true
+	(scope
+		(var command:gfx = "$datahub.getPrimaryEntity(CC.commandMappingCommand, Cmd.CMD_FREE_CURSOR)")
+		(var isCmdDown:bool = "command.commandMappingCommand.isDown" (event "command.commandMappingCommand.evIsDownChanged"))
+		
+		(var mouse:gfx = "$datahub.getSingleComponent(CC.mouse)")
+		(var isMouseActive:bool = "mouse.active" (event "mouse.evActiveChanged"))
+		
+		(var replayPlaybackData:gfx = "$datahub.getSingleComponent(CC.replayPlaybackData)")
+		(var isHidden:bool = "replayPlaybackData.isHidden" (event "replayPlaybackData.evHiddenChanged"))
+		
+		(var clientBuildInfoComponent:gfx = "$datahub.getSingleComponent(CC.clientBuildInfo)")
+		(var isDevModeEnabled:bool = "clientBuildInfoComponent.isDevModeEnabled")
+
+		(var isVisible:bool = "isCmdDown && isMouseActive && !isHidden")
+	)
+	(visible = "isVisible")
+	(alpha = 1)
+	(controller $Animation
+		(bindcall play duration=0.1 delay=0 from="{alpha:0, visible:true}" to="{alpha:HIGHLIGHTED_ALPHA, visible:true}" action="killAll" easing="Easing.quad_in" (bind enabled "isVisible"))
+		(bindcall play duration=0.1 delay=0 from="{alpha:HIGHLIGHTED_ALPHA, visible:false}" to="{alpha:0, visible:true}" action="killAll" easing="Easing.quad_out" (bind enabled "!isVisible"))
+	)
+	(style
+		(width = "100%")
+		(position = "absolute")
+		(bottom = "0px")
+		(height = "XL")
+		(paddingTop = "XS")
+		(paddingLeft = "S")
+		(paddingRight = "S")
+		(backgroundColor = 0xCC000000)
+	)
+	(element TimeLine)
+	(hblock
+		(style
+			(width = 100%)
+		)
+		
+		(element PlaybackControls
+			(style
+				(marginLeft = "isDevModeEnabled ? L : 0")
+			)
+		)
+		(element ServiceControls
+			(style
+				(position = "absolute")
+				(right = "0px")
+			)
+		)
+	)
+)
+
+(def element TimeLine () layout=true
+	(scope
+		(event evMouseMoveTimeLine)
+		(var stageComponent:gfx = "$datahub.getSingleComponent(CC.stage)")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		
+		(var battleInfoComponent:gfx = "$datahub.getSingleComponent(CC.battleInfo)")
+		(var duration:number = "battleInfoComponent ? battleInfoComponent.duration : 0")
+		(var durationSeconds:number = "duration * 60")
+		
+		(var replayPlaybackData:gfx = "$datahub.getSingleComponent(CC.replayPlaybackData)")
+		(var time:number = "replayPlaybackData ? replayPlaybackData.time : 0" (event "replayPlaybackData.evTimeChanged") (event "replayPlaybackData.evUpdate"))
+		(var timeTotal:number = "replayPlaybackData ? replayPlaybackData.timeTotal : 0" (event "replayPlaybackData.evUpdate"))
+		(var elementWidth:number = "stageWidth-16")
+
+		(var battleTimeAtClientReady:number = "replayPlaybackData ? replayPlaybackData.battleTimeAtClientReady : 0" (event "replayPlaybackData.evUpdate"))
+
+		(var timeDiff:number = "battleTimeAtClientReady - durationSeconds")
+
+		(var localX:number = "$event.localX" watch=false init=false (event "evMouseMoveTimeLine"))
+		(var multiplierByCursorPosition:number = "localX/elementWidth")
+		(var timeUnderCursor:number = "timeTotal*multiplierByCursorPosition")
+		(var battleTimeUnderCursor:number = "durationSeconds - timeUnderCursor + timeDiff")
+
+		(var tooltipShown:bool = false)
+	)
+
+	(macro MOUSE_LMB_EXTERNAL_CALL 'direct.action' "['replayPlayback.setTimeByPercent', [timeTotal*($event.localX/elementWidth)]]")
+
+	(style
+		(width = "100%")
+		(height = "M")
+		
+		(backgroundColor = 0x01FFFFFF)
+		(paddingTop = "XS")
+	)
+	(dispatch evMouseMoveTimeLine on='mouseMove' args="{localX: $event.localX, localY: $event.localY}" init=false)
+	
+	(block
+		(style
+			(width = "100%")
+			(height = "S")
+			(backgroundColor = 0x54FFFFFF)
+		)
+		
+		(block
+			(style
+				(hitTest = false)
+				(bind width "(elementWidth)*(time/(timeTotal ? timeTotal : 1))")
+				(height = "S")
+				(backgroundColor = 0xFF4CE8AA)
+			)
+		)
+		
+		(block
+			(bind visible "tooltipShown")
+			(style
+				(hitTest = false)
+				(bind left "localX")
+				(width = "XXS")
+				(height = "S")
+				(position = "absolute")
+				(backgroundColor = 0xFFFFFFFF)
+			)
+		)
+	)
+
+	(controller $Tooltip
+		(renderer='PlaybackTimeTooltip')
+		(exprs
+			(scope
+				(bind recordTime "timeUnderCursor")
+				
+				(bind battleTime "battleTimeUnderCursor > durationSeconds ? -(timeDiff - timeUnderCursor) : battleTimeUnderCursor")
+			)
+		)
+		(align="center|top")
+		(offset={x:"0px", y:"MS"})
+		(bind tooltipShown true init=false on='evShow')
+		(bind tooltipShown false init=false on='evHide')
+		(macro PB_TOOLTIP_BEHAVIOR)
+	)
+)
+
+(def element IconButton (_playbackAction:str, _imageName:str, _tipText:str, _cmdId:number) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+		(var isRightAlignTooltip:bool = false)
+		(var disabled:bool = false)
+	)
+
+	(style
+		(width = "L")
+		(height = "L")
+		(margin = "XS")
+		
+		
+	)
+
+	(macro MOUSE_LMB_EXTERNAL_CALL 'direct.action' "[_playbackAction, [ ]]" "!disabled")
+	
+	
+	(block
+		(controller $Animation
+			(bindcall play duration=0.05 delay=0 from="{alpha:DEFAULT_ALPHA}" to="{alpha:DISABLED_ALPHA}" action="killAll" easing="Easing.quad_in" (bind enabled "disabled"))
+			(bindcall play duration=0.05 delay=0 from="{alpha:DEFAULT_ALPHA}" to="{alpha:HIGHLIGHTED_ALPHA}" action="killAll" easing="Easing.quad_in" (bind enabled "!disabled && !mouseDown && rollOver"))
+			(bindcall play duration=0.05 delay=0 from="{alpha:DEFAULT_ALPHA}" to="{alpha:PRESSED_ALPHA}" action="killAll" easing="Easing.quad_in" (bind enabled "!disabled && mouseDown"))
+			(bindcall play duration=0.05 delay=0 from="{alpha:PRESSED_ALPHA}" to="{alpha:DEFAULT_ALPHA}" action="killAll" easing="Easing.quad_out" (bind enabled " !disabled && !(mouseDown) && !rollOver"))
+		)
+
+		(macro MOUSE_EVENTS_DISPATCHER)
+
+		(alpha = "DEFAULT_ALPHA")
+		(style
+			(width = "L")
+			(height = "L")
+			(backgroundSize = "cover")
+			(bind backgroundImage "'url:../service_kit/player_controls/button_' + _imageName + '.png'")
+		)
+	)
+
+	
+	(controller $Tooltip
+		(renderer='PlaybackTooltip')
+		(exprs
+			(scope
+				(bind tipText "disabled ? (_tipText + '_DESC_DISABLED') : _tipText")
+				(bind cmdId "disabled ? Cmd.CMD_NONE : _cmdId")
+			)
+		)
+		(bind align "isRightAlignTooltip ? innerRight|outerTop : innerLeft|outerTop")
+		(offset={x:"0px", y:"XS"})
+		(position="border")
+		(macro PB_TOOLTIP_BEHAVIOR)
+	)
+)
+
+(def element SpeedIndicatorWithReset () layout=true
+	(scope
+		(var replayPlaybackData:gfx = "$datahub.getSingleComponent(CC.replayPlaybackData)")
+		(var speedIndex:number = "replayPlaybackData.speedIndex" (event "replayPlaybackData.evSpeedIndexChanged"))
+	)
+	(hblock
+		(style 
+			(padding = "XS")
+			(align = "middle")
+		)
+		(alpha = "speedIndex == NORMAL_SPEED_IDX ? 0 : 1")
+		(controller $Animation
+			(bindcall play duration=0.3 delay=1 from="{alpha:1}" to="{alpha:0}" action="killAll" easing="Easing.quad_out" (bind enabled "speedIndex == NORMAL_SPEED_IDX"))
+			(bindcall play duration=0.05 delay=0 from="{alpha:0}" to="{alpha:1}" action="killAll" easing="Easing.quad_in" (bind enabled "speedIndex != NORMAL_SPEED_IDX"))
+		)
+		
+		
+		(element SpeedResetButton "'replayPlayback.setNormalSpeed'" "'IDS_REPLAYS_PLAYBACK_RESET_SPEED'" "Cmd.CMD_REPLAY_NORMAL_SPEED")
+		(element SpeedIndicator
+			(style (marginLeft = "S"))
+		)
+	)
+)
+
+(def element SpeedIndicator () layout=true
+	(scope
+		(var replayPlaybackData:gfx = "$datahub.getSingleComponent(CC.replayPlaybackData)")
+		(var speedIndex:number = "replayPlaybackData.speedIndex" (event "replayPlaybackData.evSpeedIndexChanged"))
+	)
+	(hblock
+		
+		(block
+			(tf
+				(alpha = 0.75)
+				(class $TextDefaultBoldNM)
+				(style
+					(margin = "XS")
+					(width = "L")
+					(textAlign = "center")
+				)
+				(bind text "SPEED_READABLE_VALUES[speedIndex]")
+			)
+			
+			(controller $Tooltip
+				(renderer='PlaybackTooltip')
+				(exprs
+					(scope
+						(bind tipText "'IDS_REPLAYS_PLAYBACK_SPEED_HINT'")
+					)
+				)
+				(align="innerRight|outerTop")
+				(offset={x:"0px", y:"XS"})
+				(position="border")
+				(macro PB_TOOLTIP_BEHAVIOR)
+			)
+		)
+	)
+	
+)
+
+(def element SpeedResetButton(_playbackAction:str, _tipText:str, _cmdId:number) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+		(var disabled:bool = false)
+		(var replayPlaybackData:gfx = "$datahub.getSingleComponent(CC.replayPlaybackData)")
+		(var speedIndex:number = "replayPlaybackData.speedIndex" (event "replayPlaybackData.evSpeedIndexChanged"))
+	)
+
+	(alpha = "speedIndex == NORMAL_SPEED_IDX ? 0 : 1")
+	(controller $Animation
+		(bindcall play duration=0.25 delay=0 from="{alpha:1}" to="{alpha:0}" action="killAll" easing="Easing.quad_out" (bind enabled "speedIndex == NORMAL_SPEED_IDX"))
+		(bindcall play duration=0.25 delay=0 from="{alpha:0}" to="{alpha:1}" action="killAll" easing="Easing.quad_in" (bind enabled "speedIndex != NORMAL_SPEED_IDX"))
+	)
+
+	(macro MOUSE_LMB_EXTERNAL_CALL 'direct.action' "[_playbackAction, [ ]]" "!disabled")
+
+	
+	(block
+		(controller $Animation
+			(bindcall play duration=0.05 delay=0 from="{alpha:DEFAULT_ALPHA}" to="{alpha:DISABLED_ALPHA}" action="killAll" easing="Easing.quad_in" (bind enabled "disabled"))
+			(bindcall play duration=0.05 delay=0 from="{alpha:DEFAULT_ALPHA}" to="{alpha:HIGHLIGHTED_ALPHA}" action="killAll" easing="Easing.quad_in" (bind enabled "!disabled && !mouseDown && rollOver"))
+			(bindcall play duration=0.05 delay=0 from="{alpha:DEFAULT_ALPHA}" to="{alpha:PRESSED_ALPHA}" action="killAll" easing="Easing.quad_in" (bind enabled "!disabled && mouseDown"))
+			(bindcall play duration=0.05 delay=0 from="{alpha:PRESSED_ALPHA}" to="{alpha:DEFAULT_ALPHA}" action="killAll" easing="Easing.quad_out" (bind enabled " !disabled && !(mouseDown) && !rollOver"))
+		)
+
+		(alpha = "DEFAULT_ALPHA")
+
+		(macro MOUSE_EVENTS_DISPATCHER)
+
+		(style
+			(backgroundImage = "'url:../service_kit/player_controls/frame_2px.png'")
+			(backgroundSize = "fill")
+			(scale9grid = 4)
+		)
+
+		(tf
+			(class $TextDefaultBold13NM)
+			(style
+				(hitTest = false)
+				(marginLeft = "S")
+				(marginRight = "7")
+				(marginTop = "1px")
+				(marginBottom = "XXS")
+			)
+			(text = "toUpper(tr('IDS_RESET'))")
+		)
+	)
+
+	
+	(controller $Tooltip
+		(renderer='PlaybackTooltip')
+		(exprs
+			(scope
+				(bind tipText "disabled ? (_tipText + '_DESC_DISABLED') : _tipText")
+				(bind cmdId "_cmdId")
+			)
+		)
+		(align="innerRight|outerTop")
+		(offset={x:"0px", y:"XS"})
+		(position="border")
+		(macro PB_TOOLTIP_BEHAVIOR)
+	)
+)
+
+(def element SpeedControls () layout=true
+	(scope
+		(var replayPlaybackData:gfx = "$datahub.getSingleComponent(CC.replayPlaybackData)")
+		(var speedIndex:number = "replayPlaybackData.speedIndex" (event "replayPlaybackData.evSpeedIndexChanged"))
+	)
+	(hblock
+		(style 
+			(marginRight="S")
+		)
+		
+		(element SpeedIndicatorWithReset)
+		
+		(element IconButton "'replayPlayback.slowDown'" 'speed_slower' "'IDS_REPLAYS_PLAYBACK_SLOWDOWN'" "Cmd.CMD_REPLAY_DECREASE_SPEED"
+			(scope
+				(bind isRightAlignTooltip "true")
+				(bind disabled "speedIndex <= MINIMUM_SPEED_IDX")
+			)
+		)
+		
+		(element IconButton "'replayPlayback.speedUp'" 'speed_faster' "'IDS_REPLAYS_PLAYBACK_SPEEDUP'" "Cmd.CMD_REPLAY_INCREASE_SPEED"
+			(scope
+				(bind isRightAlignTooltip "true")
+				(bind disabled "speedIndex >= MAXIMUM_SPEED_IDX")
+			)
+		)
+	)
+)
+
+(def element PlaybackControls () layout=true
+	(scope
+		(var replayPlaybackData:gfx = "$datahub.getSingleComponent(CC.replayPlaybackData)")
+		(var isPaused:bool = "replayPlaybackData.isPaused" (event "replayPlaybackData.evPausedChanged") (event "replayPlaybackData.evUpdate"))
+
+		(var hasNextReplay:bool = "replayPlaybackData.hasNextReplay" (event "replayPlaybackData.evUpdate"))
+		(var hasPrevReplay:bool = "replayPlaybackData.hasPrevReplay" (event "replayPlaybackData.evUpdate"))
+		(var isPlayList:bool = "hasNextReplay || hasPrevReplay")
+	)
+	(hblock
+		(style
+			(height = "LM")
+			
+		)
+
+		
+		(element IconButton "'replayPlayback.prevReplay'" 'jump_previous' "'IDS_REPLAYS_PLAYBACK_PREV_REPLAY'" "Cmd.CMD_NONE"
+			(bind visible "isPlayList")
+			(scope
+				(bind disabled "!hasPrevReplay")
+			)
+			(style
+				(marginLeft = "0px")
+			)
+		)
+
+		
+		(element IconButton "'replayPlayback.rewind'" 'rewind_back' "'IDS_REPLAYS_PLAYBACK_REWIND_20SEC'" "Cmd.CMD_REPLAY_REWIND")
+
+		
+		(element IconButton "'replayPlayback.play'" 'play' "'IDS_REPLAYS_PLAYBACK_PLAY'" "Cmd.CMD_REPLAY_PAUSE"
+			(bind visible "isPaused")
+		)
+		(element IconButton "'replayPlayback.pause'" 'pause' "'IDS_REPLAYS_PLAYBACK_PAUSE'" "Cmd.CMD_REPLAY_PAUSE"
+			(bind visible "!isPaused")
+		)
+
+		
+		(element IconButton "'replayPlayback.fastForward'" 'rewind_forward' "'IDS_REPLAYS_PLAYBACK_FASTFORWARD_20SEC'" "Cmd.CMD_REPLAY_FAST_FORWARD")
+
+		
+		(element IconButton "'replayPlayback.nextReplay'" 'jump_next' "'IDS_REPLAYS_PLAYBACK_NEXT_REPLAY'" "Cmd.CMD_NONE"
+			(bind visible "isPlayList")
+			(scope
+				(bind disabled "!hasNextReplay")
+			)
+		)
+		
+		(element PlaybackTimeText
+			(style (margin = "XS") (marginLeft = "SXS"))
+		)
+		
+	)
+)
+
+(def element PlaybackTimeText () layout=true
+	(scope
+		(var replayPlaybackData:gfx = "$datahub.getSingleComponent(CC.replayPlaybackData)")
+		(var timeTotalText:str = "replayPlaybackData ? replayPlaybackData.timeTotalText : '0'" (event "replayPlaybackData.evUpdate"))
+		(var timeText:str = "replayPlaybackData ? replayPlaybackData.timeText : '0'" (event "replayPlaybackData.evTimeChanged") (event "replayPlaybackData.evUpdate"))
+	)
+	(style
+		(flow = "horizontal")
+	)
+	(tf
+		(alpha = 0.75)
+		(class $TextDefaultBoldNM)
+		(style
+			(marginRight = "0px")
+			(marginTop= "XS")
+			(marginBottom = "XS")
+			(textAlign = "right")
+		)
+		(bind text "timeText")
+	)
+	(tf	
+		(alpha = 0.75)
+		(class $TextDefaultNM)
+		(style
+			(marginTop= "XS")
+			(marginBottom = "XS")
+		)
+		(bind text "'/' + timeTotalText")
+	)
+
+	(controller $Tooltip
+		(renderer='PlaybackTooltip')
+		(exprs
+			(scope
+				(bind tipText "'IDS_REPLAYS_PLAYBACK_TIME'")
+			)
+		)
+		(align="innerLeft|outerTop")
+		(offset={x:"0px", y:"XS"})
+		(position="border")
+		(macro PB_TOOLTIP_BEHAVIOR)
+	)
+)
+
+(def element HotkeysTooltipIcon (_imagePath:str) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+
+	(style
+		(width = "L")
+		(height = "L")
+		
+	)
+
+	
+
+	(block
+		(alpha = 0.8)
+
+		(macro MOUSE_EVENTS_DISPATCHER)
+
+		(controller $Animation
+			(bindcall play duration=0.05 delay=0 from="{alpha:DEFAULT_ALPHA}" to="{alpha:HIGHLIGHTED_ALPHA}" action="killAll" easing="Easing.quad_in" (bind enabled "rollOver"))
+			(bindcall play duration=0.05 delay=0 from="{alpha:HIGHLIGHTED_ALPHA}" to="{alpha:DEFAULT_ALPHA}" action="killAll" easing="Easing.quad_out" (bind enabled "!(rollOver)"))
+		)
+
+		(style
+			(width = "L")
+			(height = "L")
+			(backgroundSize = "cover")
+			(backgroundImage = "_imagePath")
+		)
+	)
+
+	(controller $Tooltip
+		(renderer='HotkeysTooltip')
+		(align="innerRight|outerTop")
+		(offset={x:"0px", y:"XS"})
+		(position="border")
+		(macro PB_TOOLTIP_BEHAVIOR)
+	)
+)
+
+(def element CameraControlButton () layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+		(var replayPlaybackData:gfx = "$datahub.getSingleComponent(CC.replayPlaybackData)")
+		(var cameraModeIndex:number = "replayPlaybackData.cameraModeIndex" (event "replayPlaybackData.evCameraModeIndexChanged"))
+	)
+
+	(style
+		(width = "L")
+		(height = "L")
+		
+	)
+
+	(macro MOUSE_LMB_EXTERNAL_CALL 'direct.action' "['replayPlayback.switchCameraMode', [ ]]")
+
+	(block
+		(alpha = 0.8)
+
+		(macro MOUSE_EVENTS_DISPATCHER)
+
+		(controller $Animation
+			(bindcall play duration=0.05 delay=0 from="{alpha:DEFAULT_ALPHA}" to="{alpha:HIGHLIGHTED_ALPHA}" action="killAll" easing="Easing.quad_in" (bind enabled "!mouseDown && rollOver"))
+			(bindcall play duration=0.05 delay=0 from="{alpha:DEFAULT_ALPHA}" to="{alpha:PRESSED_ALPHA}" action="killAll" easing="Easing.quad_in" (bind enabled "mouseDown"))
+			(bindcall play duration=0.05 delay=0 from="{alpha:PRESSED_ALPHA}" to="{alpha:DEFAULT_ALPHA}" action="killAll" easing="Easing.quad_out" (bind enabled " !(mouseDown) && !rollOver"))
+		)
+
+		(style
+			(width = "L")
+			(height = "L")
+			(backgroundSize = "cover")
+			(bind backgroundImage "cameraModeIndex == 1 ? 'url:../service_kit/player_controls/button_camera_auto.png' : 'url:../service_kit/player_controls/button_camera.png'")
+		)
+	)
+
+	(controller $Tooltip
+		(renderer='PlaybackTooltipWithHeader')
+		(args cmdId="Cmd.CMD_REPLAY_FREE_CAMERA" isRightAlign=true)
+		(exprs
+			(scope
+				(bind headerText "cameraModeIndex == 1 ? 'IDS_REPLAYS_PLAYBACK_CAMERA_MODE_RECORDED' : 'IDS_REPLAYS_PLAYBACK_CAMERA_MODE_OBSERVE'")
+				(bind tipText "'IDS_REPLAYS_PLAYBACK_CHANGE_CAMERA_MODE'")
+			)
+		)
+		(align="outerTop|innerRight")
+		(offset={x:"0px", y:"XS"})
+		(position="border")
+		(macro PB_TOOLTIP_BEHAVIOR)
+	)
+)
+
+(def element ServiceControls () layout=true
+	(hblock		
+		(style
+			(height = "LM")
+		)
+		
+		(element SpeedControls)
+
+		(element CameraControlButton
+			(style (margin = "XS"))
+		)
+
+		(element HotkeysTooltipIcon 'url:../service_kit/player_controls/icon_info.png' ''
+			(style (margin = "XS") (marginRight = 0px))
+		)
+	)
+)

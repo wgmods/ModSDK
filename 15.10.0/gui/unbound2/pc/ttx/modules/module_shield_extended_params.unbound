@@ -1,0 +1,82 @@
+(def layout ModuleShield_Extended_Parameters (shipTTX:gfx, _extendedInfo:gfx = null)
+	(scope
+		(var shieldBuffAttributes:gfx = "_extendedInfo ? _extendedInfo.shieldBuffAttributes : null" (event "_extendedInfo.evUpdated"))
+		(var shieldDisabledAttributes:gfx = "_extendedInfo ? _extendedInfo.shieldDisabledAttributes : null" (event "_extendedInfo.evUpdated"))
+	)
+	
+	(style (width = 100%))
+	
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_HEALTH'
+											_value = "shipTTX.shield.health"
+											_showDelta = false
+											_hideDiff = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_REGEN_DELAY'
+											_value = "shipTTX.shield.regenDelay"
+											_valueConfig = "VALUE_CONFIG.SECONDS"
+											_showDelta = false
+											_hideDiff = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHIELD_REGEN_COEFF'
+											_value = "shipTTX.shield.regenCoeff"
+											_valueConfig = "VALUE_CONFIG.PERCENT"
+											_showDelta = false
+											_hideDiff = true
+			)
+		)
+	)
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='ActiveShieldBuff'
+			(bind enabled "shieldBuffAttributes != null")
+			(args
+				_buffAttributes = "shieldBuffAttributes"
+			)
+		)
+	)
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='DisabledShieldBuff'
+			(bind enabled "shieldDisabledAttributes != null")
+			(args
+				_buffAttributes = "shieldDisabledAttributes"
+			)
+		)
+	)
+)
+
+(def element ActiveShieldBuff (_buffAttributes:gfx)
+	(style (width=100%))
+	(element TooltipSystemHorizontalDivider)
+	(element TooltipSystemInnerHeaderSubheaderText
+				_headerText= 'IDS_MODULE_SHIELD_ACTIVE_BUFF_HEADER'
+				_subheaderText = 'IDS_MODULE_SHIELD_ACTIVE_BUFF_DESCRIPTION'
+	)
+
+	(element TooltipSystemHorizontalDivider)
+
+	(element TooltipSystemParamsModifiersList
+		_attributesNegative="_buffAttributes.negative"
+		_attributesNeutral="_buffAttributes.neutral"
+		_attributesPositive="_buffAttributes.positive"
+	)
+)
+
+(def element DisabledShieldBuff (_buffAttributes:gfx)
+	(style (width=100%))
+	(element TooltipSystemHorizontalDivider)
+	(element TooltipSystemInnerHeaderSubheaderText
+				_headerText="'IDS_MODULE_SHIELD_DISABLED_BUFF_HEADER'"
+	)
+	(element TooltipSystemHorizontalDivider)
+
+	(element TooltipSystemParamsModifiersList
+		_attributesNegative="_buffAttributes.negative"
+		_attributesNeutral="_buffAttributes.neutral"
+		_attributesPositive="_buffAttributes.positive"
+	)
+)

@@ -1,0 +1,170 @@
+(def element FighterName (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(style (width = 100%))
+	(macro TTX_AMMO_ROW "'IDS_MODULE_TYPE_FIGHTER'" "squadronTTX"  "false")
+)
+
+
+(def element FighterParams (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(scope
+		(var isTwoSquadrons:bool = "shipTTX.squadrons.fighter && shipTTX.squadrons.fighterAlt")
+	)
+	(style (width = 100%))
+	(macro TTX_INSTANCE 'FighterName' "squadronTTX" "isTwoSquadrons")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro SHARED_SQUADRON_PARAMETERS "squadronTTX")
+			(element ShipParameter_Number	_title = "tr('IDS_SHIP_PARAM_SQUADRON_AMMO_ROCKET_' + toUpper(squadronTTX.payload.type) + '_SHORT') + ' ' + tr('IDS_' + squadronTTX.payload.name)"
+											_value = "squadronTTX.payload.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_ROCKET_DAMAGE'
+											_value = "squadronTTX.payload.damage"
+			)
+		)
+	)
+)
+
+(def layout ModuleFighter_Parameters (shipTTX:gfx)
+	(scope
+		(var squadrons:gfx = "shipTTX.squadrons")
+		(var mainPlane:gfx = "squadrons ? squadrons.fighter : null")
+		(var altPlane:gfx = "squadrons ? squadrons.fighterAlt : null")
+		(var isTwoSquadrons:bool = "mainPlane != null && altPlane != null")
+	)
+	(style (width = 100%))
+	(macro TTX_INSTANCE 'FighterParams' "mainPlane")
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "isTwoSquadrons")
+		)
+	)
+	(macro TTX_INSTANCE 'FighterParams' "altPlane")
+)
+
+(def element DiveBomberName (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(style (width = 100%))
+	(macro TTX_AMMO_ROW "'IDS_MODULE_TYPE_BOMBER'" "squadronTTX"  "false")
+)
+
+(def element DiveBomberParams (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(scope
+		(var isTwoSquadrons:bool = "shipTTX.squadrons.diveBomber && shipTTX.squadrons.diveBomberAlt")
+	)
+	(style (width = 100%))
+	(macro TTX_INSTANCE 'DiveBomberName' "squadronTTX" "isTwoSquadrons")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro SHARED_SQUADRON_PARAMETERS "squadronTTX")
+			(element ShipParameter_Number	_title = "tr('IDS_SHIP_PARAM_SQUADRON_AMMO_BOMB_' + toUpper(squadronTTX.payload.type) + '_SHORT') + ' ' + tr('IDS_' + squadronTTX.payload.name)"
+											_value = "squadronTTX.payload.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_DAMAGE'
+											_value = "squadronTTX.payload.damage"
+			)
+		)
+	)
+)
+
+(def layout ModuleDiveBomber_Parameters (shipTTX:gfx)
+	(scope
+		(var squadrons:gfx = "shipTTX.squadrons")
+		(var mainPlane:gfx = "squadrons ? squadrons.diveBomber : null")
+		(var altPlane:gfx = "squadrons ? squadrons.diveBomberAlt : null")
+		(var isTwoSquadrons:bool = "mainPlane != null && altPlane != null")
+	)
+	(style (width = 100%))
+	(macro TTX_INSTANCE 'DiveBomberParams' "mainPlane")
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "isTwoSquadrons")
+		)
+	)
+	(macro TTX_INSTANCE 'DiveBomberParams' "altPlane")
+)
+
+
+(def element TorpedoBomberName (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(style (width = 100%))
+	(macro TTX_AMMO_ROW "'IDS_MODULE_TYPE_TORPEDOBOMBER'" "squadronTTX" "false")
+)
+
+(def element TorpedoBomberParams (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(scope
+		(var isTwoSquadrons:bool = "shipTTX.squadrons.torpedoBomber && shipTTX.squadrons.torpedoBomberAlt")
+	)
+	(style (width = 100%))
+	(macro TTX_INSTANCE 'TorpedoBomberName' "squadronTTX" "isTwoSquadrons")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro SHARED_SQUADRON_PARAMETERS "squadronTTX")
+			(element ShipParameter_Number	_title = "tr('IDS_SHIP_PARAM_SQUADRON_AMMO_TORPEDO') + ' ' + tr('IDS_' + squadronTTX.payload.name)"
+											_value = "squadronTTX.payload.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_TORPEDO_DAMAGE'
+											_value = "squadronTTX.payload.damage"
+			)
+		)
+	)
+)
+
+(def layout ModuleTorpedoBomber_Parameters (shipTTX:gfx)
+	(scope
+		(var squadrons:gfx = "shipTTX.squadrons")
+		(var mainPlane:gfx = "squadrons ? squadrons.torpedoBomber : null")
+		(var altPlane:gfx = "squadrons ? squadrons.torpedoBomberAlt : null")
+		(var isTwoSquadrons:bool = "mainPlane != null && altPlane != null")
+	)
+	(style (width = 100%))
+	(macro TTX_INSTANCE 'TorpedoBomberParams' "mainPlane")
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "isTwoSquadrons")
+		)
+	)
+	(macro TTX_INSTANCE 'TorpedoBomberParams' "altPlane")
+)
+
+
+(def element SkipBomberName (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(style (width = 100%))
+	(macro TTX_AMMO_ROW "'IDS_MODULE_TYPE_SKIPBOMBER'" "squadronTTX" "false")
+)
+
+(def element SkipBomberParams (shipTTX:gfx, squadronTTX:gfx) layout=true
+	(scope
+		(var isTwoSquadrons:bool = "shipTTX.squadrons.skipBomber && shipTTX.squadrons.skipBomberAlt")
+	)
+	(style (width = 100%))
+	(macro TTX_INSTANCE 'SkipBomberName' "squadronTTX" "isTwoSquadrons")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro SHARED_SQUADRON_PARAMETERS "squadronTTX")
+			(element ShipParameter_Number	_title = "tr('IDS_SHIP_PARAM_SQUADRON_AMMO_BOMB_' + toUpper(squadronTTX.payload.type) + '_SHORT') + ' ' + tr('IDS_' + squadronTTX.payload.name)"
+											_value = "squadronTTX.payload.numBombs"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_DAMAGE'
+											_value = "squadronTTX.payload.damage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_BOMB_SKIPS_COUNT'
+											_value = "squadronTTX.payload.skipsCount"
+			)
+		)
+	)
+)
+
+(def layout ModuleSkipBomber_Parameters (shipTTX:gfx)
+	(scope
+		(var isTwoSquadrons:bool = "shipTTX.squadrons.skipBomber && shipTTX.squadrons.skipBomberAlt")
+	)
+	(style (width = 100%))
+	(macro TTX_INSTANCE 'SkipBomberParams' "shipTTX.squadrons.skipBomber")
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "isTwoSquadrons")
+		)
+	)
+	(macro TTX_INSTANCE 'SkipBomberParams' "shipTTX.squadrons.skipBomberAlt")
+)

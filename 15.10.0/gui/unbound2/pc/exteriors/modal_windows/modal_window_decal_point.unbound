@@ -1,0 +1,432 @@
+(def constant DECAL_INSET_WIDTH 360)
+
+(def element ModalWindowDecalPoint() layout=true
+	(macro MODAL_WINDOW_INIT)
+
+	(scope
+		(var currencies:array = "[	SC.Common.CURRENCIES.GOLD,
+									SC.Common.CURRENCIES.CREDITS,
+									SC.Common.CURRENCIES.FREE_XP ]")
+		(var routeEntity:gfx = "$datahub.getPrimaryEntity(CC.route, SC.Ui_windows.ROUTE.VISUAL_CUSTOMIZATION_NODE)")
+		(var dataComponent:gfx = "routeEntity ? routeEntity.dataComponent : null")
+		(var routeData:gfx = "dataComponent ? dataComponent.data : null")
+		(var nodeId:str = "routeData ? routeData.nodeId : null")
+	)
+	(dispatch startShow on='addedToStage')
+	(dispatch startHide on='removedFromStage')
+	(dispatch evDecalsRender dir="EventDirection.DOWN" on='addedToStage')
+
+	(class $FullsizeAbsolute)
+
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(style (width = 100%) (height = 56px))
+
+		(block
+			(class $Fullsize)
+			(element ModalWindowHeaderFullSize
+				_backButtonText = 'IDS_DECALS_EDITOR_BACK_BUTTON'
+				_hideDivider = true
+				_paddingTop = "M"
+				_paddingRight = "M"
+				_paddingLeft = "M"
+			)
+
+			(hblock
+				(style
+					(gap = "MS")
+					(position = "absolute")
+					(top = 10px)  (right = 91px)
+				)
+
+				(controller $Repeat renderer='AccountResource' count="currencies.length"
+					(args
+						_currencyId = "currencies[$index]"
+					)
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+
+		(style
+			(position = "absolute")
+
+			(top = "XLL")
+			(left = "S")
+
+			(width = "DECAL_INSET_WIDTH")
+		)
+
+		(element DecalsEditorContent _nodeId="nodeId")
+	)
+)
+
+(def element DecalsEditorContent(_nodeId:str)
+	(scope
+		(var ownDecalsCollection:gfx = "$datahub.getCollection(CC.ownDecal)")
+		(var ownDecalsByNodeCollection:gfx = "ownDecalsCollection ? ownDecalsCollection.getChildByPath('byNode') : null"	(event "ownDecalsCollection.evChildAdded")
+																															(event "ownDecalsCollection.evChildRemoved"))
+		(var ownDecalsByNode:gfx = "ownDecalsByNodeCollection ? ownDecalsByNodeCollection.items : []"	(event "ownDecalsByNodeCollection.evAdded")
+																										(event "ownDecalsByNodeCollection.evRemoved"))
+
+		(var hasDecalsInStorage:bool = "ownDecalsByNode.length > 0")
+	)
+
+	(class $Fullsize)
+
+	(element BlurPanelContainer
+		_alpha = 0.1
+
+		(style (width = 100%))
+
+
+		
+		(element DecalsEditorContentHeader
+			_nodeId = "_nodeId"
+		)
+
+		(element HorizontalDividerTwoPx)
+
+		
+		(block
+			(style
+				(width = 100%)
+				(backgroundColor = "SC.Ui_styles.SERVICE_COLORS.INNER_PANEL")
+			)
+
+			(block
+				(bind visible "!hasDecalsInStorage")
+				(style (width = 100%))
+				(element EmptyDecalsList)
+			)
+
+			(block
+				(bind visible "hasDecalsInStorage")
+				(style (width = 100%))
+				(element DecalsList
+					_nodeId = "_nodeId"
+					_ownDecalsByNodeCollection = "ownDecalsByNodeCollection"
+				)
+			)
+		)
+	)
+)
+
+(def element DecalsEditorContentHeader(_nodeId:str)
+	(scope
+		(var visualCustomizationNodeEntity:gfx = "$datahub.getPrimaryEntity(CC.visualCustomizationNode, _nodeId)")
+		(var visualCustomizationNodeComponent:gfx = "visualCustomizationNodeEntity ? visualCustomizationNodeEntity.visualCustomizationNode : null")
+		(var visualCustomizationNodeGroup:str = "visualCustomizationNodeComponent ? visualCustomizationNodeComponent.group: ''" (event "visualCustomizationNodeComponent.evChanged"))
+		(var title:str = "'IDS_' + visualCustomizationNodeGroup")
+	)
+
+	(style
+		(width = 100%)
+		(padding = "SXS")
+	)
+
+	(tf
+		(class $TextDefaultBold17NM)
+		(style
+			(alpha = "TA")
+		)
+		(bind text "title")
+	)
+)
+
+(def element DecalsList(_nodeId:str, _ownDecalsByNodeCollection:gfx)
+	(scope
+		(event onIncreaseCounter)
+
+		(macro STAGE_SIZE)
+		(var maxContainerHeight:number = "	stageHeight < 870	? 450 :
+											stageHeight < 1050	? 640
+																: 800")
+
+		
+
+		(macro PULL_ACCOUNT_RESOURCES)
+		(macro PULL_ACCOUNT_RESOURCE_BY_ID "'operationsLocked'" 'operationsAccountLocked') 
+
+		(macro PULL_CURRENT_SHIP_ID)
+		(macro PULL_OWN_SHIP
+			_shipId			= "shipId"
+			_entityField	= "'shipEntity'"
+			_scopeFieldShip	= "'shipInfo'"
+		)
+
+		(var ownShipInfo:gfx = "shipEntity ? shipEntity.ownShip : null"	(event "shipEntity.ship.evUpdate")
+																		(event "shipEntity.ship.evCurrentSkinChanged"))
+
+		(var isLocked:bool =		"ownShipInfo ? ownShipInfo.isLocked : false"		(event "ownShipInfo.evUpdateLock"))
+		(var isInFormation:bool =	"ownShipInfo ? ownShipInfo.isInFormation : false"	(event "ownShipInfo.evUpdateLock"))
+		(var isNeedRepair:bool =	"ownShipInfo ? ownShipInfo.isNeedRepair : false"	(event "ownShipInfo.evUpdateDockState"))
+		(var isNeedShell:bool =		"ownShipInfo ? ownShipInfo.isNeedShell : false"		(event "ownShipInfo.evUpdateDockState"))
+
+		(var isActionsAvailable:bool = "!(operationsAccountLocked || isInFormation || isLocked || isNeedRepair || isNeedShell)")
+
+		(var visibleGroupsCounter:number = 0)
+		(bind visibleGroupsCounter "visibleGroupsCounter + 1" watch=false init=false (event "onIncreaseCounter"))
+	)
+
+	(style
+		(width = 100%)
+	)
+
+	(scrollArea
+		(style
+			(width = "DECAL_INSET_WIDTH")
+			(bind maxHeight "maxContainerHeight")
+			(backgroundColor = 0x01000000)
+		)
+
+		(verticalSlider = 'ScrollBarVLight')
+		(hscrollPolicy = 'off')
+		(vscrollPolicy = 'auto')
+
+		(topShadow='ScrollAreaShadowTop')
+		(bottomShadow='ScrollAreaShadowBottom')
+
+		(activeControlsAlpha = 1)
+		(inactiveControlsAlpha = 0)
+		(animationDuration = 0.2)
+		(animationEasing = "Easing.cubic_out")
+
+		(repeatController = 'DecalsVisibleGroups')
+
+		(content
+			(style
+				(width = "DECAL_INSET_WIDTH")
+			)
+
+			(controller $Repeat renderer='DecalsVisibleGroups' name='DecalsVisibleGroups'
+				(bind count "SC.Exteriors.VISUAL_CUSTOMIZATION_SORTING_GROUP.SORT_ORDER.length")
+
+				(args
+					_groupType = "SC.Exteriors.VISUAL_CUSTOMIZATION_SORTING_GROUP.SORT_ORDER[$index]"
+					_isActionsAvailable = "isActionsAvailable"
+					_nodeId = "_nodeId"
+					_ownDecalsByNodeCollection = "_ownDecalsByNodeCollection"
+					_visibleGroupsCounter = "visibleGroupsCounter"
+				)
+
+				(exprs
+					(controller $Instance renderer='HorizontalDividerTwoPx'
+						(bind enabled "$index < SC.Exteriors.VISUAL_CUSTOMIZATION_SORTING_GROUP.SORT_ORDER.length - 1")
+
+						(exprs
+							(style (width = 100%))
+						)
+					)
+				)
+			)
+		)
+	)
+)
+
+(def element DecalsVisibleGroups(_groupType:str, _nodeId:str, _isActionsAvailable:bool=false, _visibleGroupsCounter:number=0, _ownDecalsByNodeCollection:gfx=null)
+	(scope
+		(event onIncreaseCounter)
+
+		(var ownDecalsByGroupCollection:gfx = "_ownDecalsByNodeCollection	? _ownDecalsByNodeCollection.getChildByPath('byGroup.' + _groupType) : null")
+		(var decalsList:array = "ownDecalsByGroupCollection	? ownDecalsByGroupCollection.items : []"	(event "ownDecalsByGroupCollection.evAdded")
+																										(event "ownDecalsByGroupCollection.evRemoved"))
+	)
+
+	(bind visible "decalsList.length > 0")
+
+	(style (width = 100%))
+
+	(dispatch onIncreaseCounter dir="EventDirection.UP" init=false on='addedToStage' (bind enabled "decalsList.length > 0"))
+
+	(controller $Instance renderer='DecalsGroup'
+		(args
+			_groupType = "_groupType"
+			_isActionsAvailable = "_isActionsAvailable"
+			_nodeId = "_nodeId"
+			_ownDecalsByGroupCollection = "ownDecalsByGroupCollection"
+			_visibleGroupsCounter = "_visibleGroupsCounter"
+			_index = "$index"
+		)
+	)
+)
+
+(def element DecalsGroup(_groupType:str, _nodeId:str, _isActionsAvailable:bool=false, _index:number=0, _visibleGroupsCounter:number=0, _ownDecalsByGroupCollection:gfx=null)
+	(scope
+		(var decalsList:array = "_ownDecalsByGroupCollection	? _ownDecalsByGroupCollection.items : []"	(event "_ownDecalsByGroupCollection.evAdded")
+																											(event "_ownDecalsByGroupCollection.evRemoved"))
+		
+
+		(var totalGroupsCount:number = "SC.Exteriors.VISUAL_CUSTOMIZATION_SORTING_GROUP.SORT_ORDER.length")
+		(var normalizedIndex:number = "totalGroupsCount > 0 ? _index * _visibleGroupsCounter / totalGroupsCount : 0") 
+		(var cumulativeDelay:number = "normalizedIndex * 0.15")
+
+		(var groupTitle:str = "'IDS_DECALS_GROUP_' + toUpper(_groupType)")
+	)
+
+	(style
+		(width = 100%)
+		(alpha = 0)
+	)
+
+	(controller $Animation
+		(play
+			delay = "cumulativeDelay"
+			duration = "0.15"
+			to = "{ alpha: 1 }"
+		)
+	)
+
+	
+	(block
+		(style
+			(width = 100%)
+			(padding = "MS")
+		)
+
+		
+		(block
+			(style
+				(width = 100%)
+				(marginBottom = "SXS")
+			)
+
+			(tf
+				(class $TextDefaultNM)
+				(style (alpha = "TA"))
+
+				(bind text "groupTitle")
+			)
+		)
+
+		
+		(block
+			(style
+				(width = 100%)
+				(flow = "tile_horizontal")
+				(gap = "MS")
+			)
+
+			(controller $Repeat renderer='DecalItemWrapper'
+				(bind count "decalsList.length")
+				(args
+					_decalEntityId = "decalsList[$index].id"
+					_nodeId = "_nodeId"
+					_isActionsAvailable = "_isActionsAvailable"
+					_delay = "cumulativeDelay"
+					_ownDecalsByGroupCollection = "_ownDecalsByGroupCollection"
+				)
+			)
+		)
+	)
+)
+
+(def element DecalItemWrapper(_decalEntityId:number=0, _nodeId:str='', _isActionsAvailable:bool=false, _delay:number=0, _ownDecalsByGroupCollection:gfx=null)
+	(scope
+		(event evDecalsRender)
+
+		(var isItemEnabled:bool = false)
+
+		(controller $Animation
+			(bindcall play
+				delay = "$index * 0.09 + _delay"
+				duration = "0.001"
+				from	 = "{ isItemEnabled: false }"
+				to		 = "{ isItemEnabled: true }"
+				(event "evDecalsRender")
+			)
+		)
+	)
+
+	(style
+		(width = 100%)
+		(alpha = 0)
+	)
+
+	(style (height = "DECAL_ITEM_SIZE") (width = "DECAL_ITEM_SIZE"))
+
+	(controller $Instance renderer='DecalItem'
+		(args
+			_decalEntityId="_decalEntityId"
+			_nodeId = "_nodeId"
+			_isActionsAvailable = "_isActionsAvailable"
+		)
+	)
+
+	(controller $Animation
+		(bindcall play
+			duration = "0.2"
+			from = "{ alpha: 0 }"
+			to = "{ alpha: 1 }"
+			(bind trigger "isItemEnabled")
+			(bind enabled "!isItemEnabled")
+		)
+		(bindcall play
+			duration = "0.2"
+			from = "{ alpha: 0 }"
+			to = "{ alpha: 1 }"
+			(event "_ownDecalsByGroupCollection.evAdded")
+		)
+	)
+)
+
+(def element EmptyDecalsList()
+	(style
+		(width = 100%)
+		(align = "center")
+		(paddingTop = "MS") (paddingBottom = "MS")
+	)
+
+	(tf
+		(class $TextDefaultNM)
+		(style (alpha = "TA"))
+		(bind text "'IDS_DECALS_EDITOR_ARE_NOT_AVAILABLE'")
+	)
+)
+
+(def element DecalEditorActionTipsContainer()
+	(style
+		(width = "100%")
+
+		(paddingRight = "S")
+		(paddingLeft = "S")
+
+		(align = "right")
+
+		(flow = "horizontal")
+		(gap = "S")
+	)
+
+	(element DecalEditorActionTip _renderer='DecalEditorShipOverviewTip')
+)
+
+(def element DecalEditorActionTip(_renderer:str)
+	(element BlurPanelContainer
+		_alpha = 0.1
+
+		(block
+			(style
+				(paddingLeft = "M") (paddingRight = "M")
+				(paddingTop = "SXS") (paddingBottom = "SXS")
+				(backgroundColor = "SC.Ui_styles.SERVICE_COLORS.INNER_PANEL")
+			)
+
+			(controller $Instance
+				(bind renderer "_renderer")
+			)
+		)
+	)
+)
+
+(def element DecalEditorShipOverviewTip()
+	(element StatusLine
+		_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_RIGHT"
+		_textClass = '$TextDefault17NM'
+		_text = 'IDS_DECAL_EDITOR_SHIP_OVERVIEW' 
+	)
+)

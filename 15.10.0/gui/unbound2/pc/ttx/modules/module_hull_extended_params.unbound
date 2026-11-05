@@ -1,0 +1,180 @@
+(def layout ModuleHull_Extended_Parameters (shipTTX:gfx, _extendedInfo:gfx=null)
+	(scope
+		(var atba:gfx =	"shipTTX.artillery
+					? shipTTX.artillery.controlledATBA.length > 0
+						? shipTTX.artillery.controlledATBA[0]
+						: shipTTX.artillery.atba.length > 0 ? shipTTX.artillery.atba[0]
+					: null : null")
+
+		(var fighterTTX:gfx = "shipTTX.squadrons ? shipTTX.squadrons.fighter : null")
+		(var extraArmaments:array = "_extendedInfo ? _extendedInfo.extraArmaments : []" (event "_extendedInfo.evUpdated"))
+	)
+	(style (width = 100%))
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_HEALTH'
+											_value = "shipTTX.durability.health"
+											_showDelta = false
+											_hideDiff = true
+			)
+			(element ShipParameter_Range	_title = 'IDS_SHIP_PARAM_ARMOR'
+											_valueMin = "shipTTX.armor.min"
+											_valueMax = "shipTTX.armor.max"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MAXSPEED'
+											_value = "shipTTX.mobility.speed"
+											_valueConfig = "VALUE_CONFIG.KNOT_FLOAT"
+											_showDelta = false
+											_hideDiff = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_VISIBILITY_DIST_BY_SHIP'
+											_value = "shipTTX.visibility.visibilityByShip.normal"
+											_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+											_showDelta = false
+											_hideDiff = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_AA_GUNS_COUNT'
+											_value = "shipTTX.hull.aaGunsCount"
+											_zeroValueHidden = true
+											_showDelta = false
+											_hideDiff = true
+			)
+		)
+	)
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='AtbaExtended'
+			(bind enabled "atba != null")
+			(args
+				shipTTX = "shipTTX"
+				atbaGunTTX = "atba"
+			)
+		)
+	)
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='AircraftExtended'
+			(bind enabled "fighterTTX != null && fighterTTX.health.value != 0")
+			(args
+				shipTTX = "shipTTX"
+				fighterTTX = "fighterTTX"
+			)
+		)
+	)
+
+	(block
+		(style (width = 100%))
+		(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "extraArmaments.length != 0"))
+	)
+
+	(block
+		(bind visible "extraArmaments.length != 0")
+		(style
+			(width = 100%)
+		)
+		(controller $Instance renderer='TooltipSystemModuleExtraInfo'
+			(bind enabled "extraArmaments.length != 0")
+			(args
+				_items = "extraArmaments"
+				_title = "'IDS_MODULE_EXTRA_ARMAMENTS'"
+				_iconPrefix = 'url:../ammo/'
+			)
+		)
+	)
+)
+
+(def element AtbaExtended (shipTTX:gfx, atbaGunTTX:gfx)
+	(scope
+		(var ammoTTX:gfx = "atbaGunTTX.ammoList[0]")
+		(var isSplitMaxDist:bool = "shipTTX.artillery.controlledAtbaMaxDist.value != null && shipTTX.artillery.atbaMaxDist.value != shipTTX.artillery.controlledAtbaMaxDist.value")
+	)
+
+	(style (width = 100%))
+	(macro TTX_AMMO_ROW "atbaGunTTX.isControllable.value ? 'IDS_TOOLTIP_MANUAL_ATBA_GUN' : 'IDS_TOOLTIP_ATBA_GUN'" "ammoTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ATBA_GUNS_COUNT'
+								_value = "shipTTX.hull.atbaGunsCount"
+								_zeroValueHidden = true
+								_showDelta = false
+								_hideDiff = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+								_value = "atbaGunTTX.reloadTime"
+								_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+								_showDelta = false
+								_hideDiff = true
+			)
+			(element ShipParameter_Number	_title = "isSplitMaxDist ? 'IDS_SHIP_PARAM_ATBA_MANUAL_MAX_DIST' : 'IDS_SHIP_PARAM_MAX_DIST'"
+								_value = "isSplitMaxDist ? shipTTX.artillery.controlledAtbaMaxDist : shipTTX.artillery.atbaMaxDist"
+								_valueConfig = "VALUE_CONFIG.KILOMETER"
+								_showDelta = false
+								_hideDiff = true
+			)
+			(controller $Instance
+				(bind enabled "isSplitMaxDist")
+				(bind renderer "'ShipParameter_Number'")
+				(args
+					_title = "'IDS_SHIP_PARAM_ATBA_AUTO_MAX_DIST'"
+					_value = "shipTTX.artillery.atbaMaxDist"
+					_valueConfig = "VALUE_CONFIG.KILOMETER"
+					_showDelta = false
+					_hideDiff = true
+				)
+			)
+			(macro TTX_INSTANCE 'HeatingPerShot' "shipTTX.artillery.heatingATBA")
+			(macro TTX_INSTANCE 'HeatCooldownSpeed' "shipTTX.artillery.heatingATBA")
+			(macro TTX_INSTANCE 'HeatCooldownDelay' "shipTTX.artillery.heatingATBA")
+			(macro TTX_INSTANCE 'OverheatCooldownDelay' "shipTTX.artillery.heatingATBA")
+			(macro TTX_INSTANCE 'HeatingDamageFactor' "shipTTX.artillery.heatingATBA")
+			(macro TTX_INSTANCE 'HeatingReloadFactor' "shipTTX.artillery.heatingATBA")
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+											_value = "ammoTTX.damage"
+											_showDelta = false
+											_hideDiff = true
+			)
+
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_SHIELD_MAX_DAMAGE'
+											_value = "ammoTTX.shieldDamage"
+											_showDelta = false
+											_hideDiff = true
+			)
+		)
+	)
+)
+
+(def element AircraftExtended (shipTTX:gfx, fighterTTX:gfx)
+	(style (width = 100%))
+	(element TooltipSystemHorizontalDivider)
+	(element TooltipSystemInnerHeaderSubheaderText
+				_headerText="tr('IDS_FIGHTER') + NEW_LINE + tr(toUpper('IDS_' + fighterTTX.name))"
+	)
+	(element TooltipSystemHorizontalDivider)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_ATTACKERS'
+											_value = "fighterTTX.numAttackers"
+											_showDelta = false
+											_hideDiff = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SQUADRON_NUM_PLANES'
+											_value = "fighterTTX.numPlanes"
+											_showDelta = false
+											_hideDiff = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_HANGARVOLUME'
+											_value = "fighterTTX.hangarVolume"
+											_showDelta = false
+											_hideDiff = true
+			)
+			(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_RATE'
+											_values = "[fighterTTX.restorePlanes, fighterTTX.restoreTime]"
+											_valueConfigs = "[VALUE_CONFIG.DEFAULT, VALUE_CONFIG.SECONDS_NEGATIVE]"
+											_showDelta = false
+			)
+		)
+	)
+)

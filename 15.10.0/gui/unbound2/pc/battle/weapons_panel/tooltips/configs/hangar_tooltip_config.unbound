@@ -1,0 +1,35 @@
+
+
+
+
+(def constant HANGAR_TOOLTIP_PARAMS_SET
+[
+	{
+		type:'number', paramName: 'planeCount', 			title: 'IDS_HANGAR_SQUADRON_PLANES_CURRENT', 		measure: '', roundNumber: 0,
+		alternateValueEntity: "SC.Battle.PARAMETER.hangarSize", isNullAlternateValueHidden: false
+	},
+	{
+		type:'number', paramName: 'maxPlanesInSquadron', 	title: 'IDS_HANGAR_SQUADRON_PLANES_MAX', 			measure: '', roundNumber: 0,
+		alternateValueEntity: '', isNullAlternateValueHidden: false
+	},
+	{
+		type:'number', paramName: 'timeToRestore', 			title: 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_TIME', 	measure: 'IDS_SECOND', roundNumber: 1,
+		alternateValueEntity: "SC.Battle.PARAMETER.planeRespawnTime", isNullAlternateValueHidden: true
+	},
+	{
+		type:'number', paramName: 'timeToRestore', 			title: 'IDS_SHIP_PARAM_SQUADRON_PLANES_RESTORE_TIME', 	measure: 'IDS_SECOND', roundNumber: 1,
+		alternateValueEntity: "SC.Battle.PARAMETER.planeRespawnTimeAlt", isNullAlternateValueHidden: true
+	},
+	{
+		type:'number', paramName: 'maxPlaneCount', 			title: 'IDS_HANGAR_SIZE', 							measure: '', roundNumber: 0,
+		alternateValueEntity: '', isNullAlternateValueHidden: false
+	},
+	{
+		type:'number', paramName: 'numAttakers', 			title: 'IDS_HANGAR_SQUADRON_NUM_ATTACKERS', 		measure: '', roundNumber: 0,
+		alternateValueEntity: '', isNullAlternateValueHidden: false
+	},
+	{
+		type:'number', paramName: 'planesInAttacker', 		title: 'IDS_HANGAR_SQUADRON_PLANES_IN_ATTACKER', 	measure: '', roundNumber: 0,
+		alternateValueEntity: '', isNullAlternateValueHidden: false
+	}
+])

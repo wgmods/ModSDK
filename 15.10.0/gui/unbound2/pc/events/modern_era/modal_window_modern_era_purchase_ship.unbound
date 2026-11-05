@@ -1,0 +1,124 @@
+(def constant MODERN_ERA_PURCHASE_WINDOW_WIDTH 412)
+
+
+(def element ModalWindowModernEraPurchaseShip (_shipEntityId:str) dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(scope
+		(macro PULL_MODERN_ERA_EVENT_ITEM_INFO "_shipEntityId") 
+		(macro PULL_MODERN_ERA_SHIP) 
+
+		(var currenciesPanelPrices:array = "[{currency: itemPrice.currency,	finalPrice: -itemPrice.finalPrice}]")
+
+		
+		(macro PULL_ACCOUNT_RESOURCES)
+		(macro IS_ENOUGH_RESOURCES_FOR_BUYING "[itemPrice]") 
+	)
+
+	(style (align = "middle|center"))
+
+	(block
+		(style
+			(width = "MODERN_ERA_PURCHASE_WINDOW_WIDTH")
+		)
+
+		(element ModalWindowShortHeader
+			_header = "'IDS_MODERN_ERA_PURCHASE_SHIP_TITLE'"
+			_hasDivider = false
+			_headerWidth = "MODERN_ERA_PURCHASE_WINDOW_WIDTH"
+		)
+
+		(element CurrenciesPanel
+			_priceInfo = "currenciesPanelPrices"
+			_width = "MODERN_ERA_PURCHASE_WINDOW_WIDTH"
+		)
+
+		(element ModalWindowShipPreview
+			_shipId = "shipId"
+			_width = "MODERN_ERA_PURCHASE_WINDOW_WIDTH"
+			(style (marginBottom = "SXS"))
+		)
+
+		(element HorizontalDividerTwoPx)
+
+		(block
+			(style
+				(width = 100%)
+				(height = "35px")
+			)
+
+			(block
+				(style
+					(width = "MODERN_ERA_PURCHASE_WINDOW_WIDTH")
+				)
+
+				
+
+				(block
+					(style
+						(width = 100%)
+						(paddingTop = "SXS") (paddingBottom = "SXS")
+						(paddingLeft = "M") (paddingRight = "M")
+					)
+
+					(hblock
+						(style (width = 100%))
+
+						(tf
+							(style (width = 100%) (alpha = "TC"))
+							(class $TextDefault17NM)
+							(text = "'IDS_MODAL_WINDOW_SHIP_PURCHASE_SHIP_PRICE'")
+						)
+
+						(element PriceTag
+							_priceInfo = "itemPrice"
+						)
+					)
+				)
+			)
+		)
+
+
+		(element HorizontalDividerTwoPx)
+
+		
+
+		(block
+			(style
+				(width = 100%) (align = "center")
+				(marginTop = "MS")
+				(gap = "MS")
+			)
+
+			(element PriceTagWithQuestion
+				_questionText = 'IDS_MODERN_ERA_PURCHASE_SHIP_QUESTION_PURCHASE_SHIP_FOR'
+				_priceInfo = "itemPrice"
+			)
+
+			(hblock
+				(style (gap = "M"))
+
+				(element DefaultButton
+					_width = '129px'
+					_label = 'IDS_YES'
+					_name = 'btn_ok'
+					_focusIndex = 0
+					_enabled = "isEnough"
+					_methods = "[{	type: 'inputMapping.onAction',
+					 				name: 'itemPurchase',
+					 				args: {itemId: id}}]"
+				)
+
+				(element DefaultButton
+					_width = '129px'
+					_label = 'IDS_NO'
+					_focusIndex = 1
+					_name = 'btn_cancel'
+				)
+			)
+		)
+
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+	)
+)

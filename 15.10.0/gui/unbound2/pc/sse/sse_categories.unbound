@@ -1,0 +1,40 @@
+(def element SseCategoryTooltipContent (_entity:gfx) layout=true
+	(scope
+		(var sseTagEntity:gfx = "_entity")
+		(var sseTag:gfx = "sseTagEntity ? sseTagEntity.sseTag : null" (event "sseTagEntity.sseTag.evChanged"))
+		
+		(var sseTagName:str = "sseTag ? sseTag.name : ''")
+		(var numTasks:number = "sseTag ? sseTag.activeAmount : null" (event "sseTag.evChanged"))
+
+		(var isNew:bool = "sseTagEntity && sseTagEntity.hasComponent(CC.newItem)" (event "sseTagEntity.evAdded") (event "sseTagEntity.evRemoved"))
+	)
+	(style (width = 100%) (bind marginTop "$index ? SXS : 0"))
+	
+	(element SseCategoryTooltipItem
+		_title = "sseTagName"
+		_value = "numTasks"
+		_isNew = "isNew"
+	)
+)
+
+(def element SseCategoryTooltipItem (_title:str, _value:number, _isNew:bool=false) layout=true
+	(style (flow = "horizontal") (width = 100%))
+	(hblock
+		(style (width = 100%))
+		(tf
+			(class $TextDefaultNM)
+			(style (width = 100%) (alpha = "TC"))
+			(bind text "_title")
+		)
+		(block
+			(bind visible "_isNew")
+			(style (marginLeft = 3px) (marginTop = -9px))
+			(element MarkerNew)
+		)
+	)
+	(tf
+		(class $TextDefaultNM)
+		(style (alpha = "TC"))
+		(bind text "toString(_value)")
+	)
+)

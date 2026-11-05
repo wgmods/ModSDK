@@ -1,0 +1,76 @@
+<replayCamera.xml><!-- copy paste from snake_tail section -->
+	<defaultKey>165.0</defaultKey>
+	<nearBinocularDistance>100.0</nearBinocularDistance>    <!-- diapason [100.0, 65.0, 25.0, 12.0, 0.0]-->
+	<farBinocularDistance>0.0</farBinocularDistance>    <!-- diapason [100.0, 65.0, 25.0, 12.0, 0.0]-->
+	<nearModelDistance>130.0</nearModelDistance>            <!-- diapason [120.0 - 180.0]-->
+	<farModelDistance>165.0</farModelDistance>            <!-- diapason [120.0 - 180.0]-->
+	<defaults>
+		<fovBase>50</fovBase>
+	</defaults>
+	<barrierKey>120</barrierKey>
+	<barrierKey>100</barrierKey>
+	<barrierKey>65</barrierKey>
+	<barrierKey>25</barrierKey>
+	<barrierKey>12</barrierKey>
+	<barrierKey>0</barrierKey>
+	<flyThrough> <minKey>0</minKey> <maxKey>12</maxKey> </flyThrough>
+	<flyThrough> <minKey>12</minKey> <maxKey>25</maxKey> </flyThrough>
+	<flyThrough> <minKey>25</minKey> <maxKey>65</maxKey> </flyThrough>
+	<flyThrough> <minKey>65</minKey> <maxKey>100</maxKey> </flyThrough>
+	<flyThrough> <minKey>100</minKey> <maxKey>120</maxKey> </flyThrough>
+	<states>
+		<state>
+			<key>0</key>
+			<zoom>12</zoom>
+			<smartZoomAngle> 1.0 </smartZoomAngle>
+			<smartZoomAngleMax> 8.0 </smartZoomAngleMax>
+			<nearPlane>2.0</nearPlane>
+			<minPitch>-2</minPitch>
+			<maxPitch>20</maxPitch>
+			<forwardResistance>4</forwardResistance>
+		</state>
+		<state>
+			<key>25</key>
+			<zoom>6</zoom>
+			<smartZoomAngle> 0.7 </smartZoomAngle>
+			<smartZoomAngleMax> 2.0 </smartZoomAngleMax>
+			<nearPlane>2.0</nearPlane>
+			<minPitch>-2</minPitch>
+			<maxPitch>20</maxPitch>
+		</state>
+		<state>
+			<key>65</key>
+			<zoom>3.5</zoom>
+			<nearPlane>1.5</nearPlane>
+			<minPitch>-10</minPitch>
+			<maxPitch>20</maxPitch>
+		</state>
+		<state>
+			<key>100</key>
+			<zoom>2</zoom>
+			<nearPlane>1.0</nearPlane>
+			<minPitch>-10</minPitch>
+			<maxPitch>20</maxPitch>
+			<forwardResistance>0.2</forwardResistance>
+		</state>
+		<state>
+			<key>120</key>
+			<zoom>1.0</zoom>
+			<minPitch>-20</minPitch>
+			<maxPitch>30</maxPitch>
+			<nearPlane>0.1</nearPlane>
+			<coeffRocking>1.0</coeffRocking>
+			<forwardResistance>0.1</forwardResistance>
+			<backwardResistance>0.1</backwardResistance>
+		</state>
+		<state>
+			<key>180</key>
+			<zoom>1.0</zoom>
+			<nearPlane>1.5</nearPlane>
+			<minPitch>-45</minPitch>
+			<maxPitch>35</maxPitch>
+			<coeffRocking>-3</coeffRocking>
+			<backwardResistance>0.5</backwardResistance>
+		</state>
+	</states>
+</replayCamera.xml>

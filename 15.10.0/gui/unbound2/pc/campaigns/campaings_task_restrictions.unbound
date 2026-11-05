@@ -1,0 +1,17 @@
+(def element TaskBattleTypeRestriction (_battleType:str) layout=true
+	(style
+		(marginRight = 6px)
+		(marginTop = 1px)
+		(width = 23px)
+		(height = 23px)
+		(bind backgroundImage "'url:../service_kit/battle_types/' + _battleType + '_tiny.png'")
+	)
+
+	(controller $Tooltip
+		(renderer='SimpleStatusTooltip')
+		(args
+			_text = "tr('IDS_' + toUpper(_battleType))"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)

@@ -1,0 +1,108 @@
+(def constant HYDROPHONE_ZONE_ANIM_DURATION 1.3)
+
+(def constant HYDROPHONE_ZONE_WORLD_ANIM_DURATION 1)
+
+(def constant HYDROPHONE_ZONE_ANIM_DELAY 0.6)
+(def constant HYDROPHONE_ZONE_CIRCLES_COUNT 5)
+
+(def element WorldHydrophoneZoneMarker (_markerEntity:gfx) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'submarineHydrophoneZone')
+
+		(var duration:number = "HYDROPHONE_ZONE_MINIMAP_ANIM_DURATION" watch=false)
+
+		(var customRad:number = "1" watch=false)
+		(var customAlpha:number = "0")
+
+		(var customRad_second:number = "1" watch=false)
+		(var customAlpha_second:number = "0")
+
+		(controller $Animation
+			(play
+				duration = "duration"
+				repeatCount=6
+				from = "{ customRad: 0}"
+				to = "{ customRad: 1}"
+				easing = "Easing.line"
+				watch=false
+			)
+			(play
+				duration = "duration"
+				repeatCount=6
+				from = "{ customAlpha: 1}"
+				to = "{ customAlpha: 0}"
+				easing = "Easing.line"
+				watch=false
+			)
+		)
+		
+		(controller $Animation
+			(play
+				duration = "duration"
+				delay = "duration/2"
+				repeatCount=5
+				from = "{ customRad_second: 0}"
+				to = "{ customRad_second: 1}"
+				easing = "Easing.line"
+				watch=false
+			)
+			(play
+				duration = "duration"
+				delay = "duration/2"
+				repeatCount=5
+				from = "{ customAlpha_second: 1}"
+				to = "{ customAlpha_second: 0}"
+				easing = "Easing.line"
+				watch=false
+			)
+		)
+	)
+
+	(controller $Animation
+		(bindcall play	duration="0.15"
+						from="{alpha: 1}"
+						to="{alpha: 0}"
+						action="kill"
+						(event "submarineHydrophoneZoneComponent.evHide")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(pivotX = 50%)
+			(pivotY = 50%)
+			(bind visualScaleX "customRad")
+			(bind visualScaleY "customRad")
+		)
+		(alpha = 0)
+		(bind alpha "customAlpha")
+
+		
+		(block
+			(style
+				(width = 53) (height = 53)
+				(bind backgroundImage "'url:../battle_hud/markers/hydrophone_zone/icon_hydrophone_round.png'")
+			)
+		)
+	)
+	(block
+		(style
+			(position = "absolute")
+			(pivotX = 50%)
+			(pivotY = 50%)
+			(bind visualScaleX "customRad_second")
+			(bind visualScaleY "customRad_second")
+		)
+		(alpha = 0)
+		(bind alpha "customAlpha_second")
+
+		
+		(block
+			(style
+				(width = 53) (height = 53)
+				(bind backgroundImage "'url:../battle_hud/markers/hydrophone_zone/icon_hydrophone_round.png'")
+			)
+		)
+	)
+)

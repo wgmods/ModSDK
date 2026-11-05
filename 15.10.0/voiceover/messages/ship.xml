@@ -1,0 +1,59 @@
+<ship.xml>
+	<Message
+			event="VO_Fire_Alarm"
+			tag="Alarm.Fire"
+			node="queue"
+			priority="69.0000"
+			lifetime="7.0000">
+		<Trigger
+				type="Before">
+			<SetSwitch
+					name="isPlayer"
+					value="True" />
+		</Trigger>
+	</Message>
+	<Message
+			event="VO_Ship_Avatar_Flooding"
+			tag="Alarm.ShipFlooding"
+			node="queue"
+			priority="68.0000"
+			lifetime="7.0000">
+		<Trigger
+				type="Before">
+			<SetSwitch
+					name="VO_Damage"
+					value="VO_Damage_Critical_Flooding" />
+		</Trigger>
+	</Message>
+	<Message
+			event="VO_Ship_Alarms_Torpedo_Danger"
+			tag="Alarm.TorpedoDanger"
+			node="queue"
+			priority="90.0000"
+			lifetime="7.0000" />
+	<Message
+			event="VO_Consumable_End"
+			tag="Consumable.End"
+			node="queue"
+			priority="58.0000"
+			lifetime="7.0000" />
+	<Message
+			event="VO_Consumable"
+			tag="Consumable.Begin"
+			node="queue"
+			priority="62.0000"
+			lifetime="7.0000" />
+	<Message
+			event="VO_Alarm_Defective_Modules"
+			tag="Alarm.DefectiveModules"
+			node="defective-module"
+			priority="67.0000"
+			lifetime="7.0000"
+			delay="2.1000" />
+	<Message
+			event="VO_Telegraph"
+			tag="Telegraph"
+			node="telegraph"
+			priority="45.0000"
+			lifetime="5.0000" />
+</ship.xml>

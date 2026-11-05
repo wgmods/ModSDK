@@ -1,0 +1,54 @@
+<autopilot.xml>
+	<Message
+			event="VO_Autopilot"
+			tag="Autopilot.On"
+			node="autopilot"
+			priority="51.4000"
+			lifetime="7.0000">
+		<Trigger
+				type="Before">
+			<SetSwitch
+					name="VO_Autopilot"
+					value="VO_Autopilot_On" />
+		</Trigger>
+	</Message>
+	<Message
+			event="VO_Autopilot"
+			tag="Autopilot.Off"
+			node="autopilot"
+			priority="51.1000"
+			lifetime="7.0000">
+		<Trigger
+				type="Before">
+			<SetSwitch
+					name="VO_Autopilot"
+					value="VO_Autopilot_Off" />
+		</Trigger>
+	</Message>
+	<Message
+			event="VO_Autopilot"
+			tag="Autopilot.Checkpoint"
+			node="autopilot"
+			priority="51.3000"
+			lifetime="7.0000">
+		<Trigger
+				type="Before">
+			<SetSwitch
+					name="VO_Autopilot"
+					value="VO_Autopilot_Checkpoint" />
+		</Trigger>
+	</Message>
+	<Message
+			event="VO_Autopilot"
+			tag="Autopilot.End"
+			node="queue"
+			priority="51.2000"
+			lifetime="7.0000">
+		<Trigger
+				type="Before">
+			<SetSwitch
+					name="VO_Autopilot"
+					value="VO_Autopilot_End" />
+		</Trigger>
+	</Message>
+</autopilot.xml>

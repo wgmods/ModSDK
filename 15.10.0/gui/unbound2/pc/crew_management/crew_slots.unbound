@@ -1,0 +1,365 @@
+(def constant CREW_SKILL_SLOT_ALPHA {
+	DEFAULT: 0.7,
+	PRESSED: 0.5,
+	FULL: 1
+})
+
+(def element CrewSkillSlotsPanel (_crewId:number)
+	(scope
+		(var crewEntity:gfx = "$datahub.getPrimaryEntity(CC.crew, _crewId)")
+		(var crewSkillSlots:gfx = "crewEntity ? crewEntity.crewSkillSlots : null")
+
+		(var installedItems:array = "crewSkillSlots ? crewSkillSlots.installedItems : []" (event "crewSkillSlots.evInstalledItemsChanged"))
+		(var lockedSlots:array = "crewSkillSlots ? crewSkillSlots.lockedSlots : []" (event "crewSkillSlots.evLockedSlotsChanged"))
+		(var allowedItems:array = "crewSkillSlots ? crewSkillSlots.allowedItems : []" (event "crewSkillSlots.evAllowedItemsChanged"))
+	)
+
+	(style
+		(width = 318)
+		(height = 110)
+	)
+
+	(block
+		(style
+			(width = 100%)
+			(height = 18)
+			(marginLeft = "L")
+			(marginTop = "S")
+			(marginBottom = "S")
+		)
+
+		(tf
+			(class $TextDefault17NM)
+			(text = 'IDS_COMMANDER_SKILLS')
+		)
+	)
+
+	(hblock
+		(class $Fullsize)
+		(style
+			(hgap = 10)
+			(align = "center")
+		)
+
+		(controller $Repeat renderer='CrewSkillSlot'
+			(bind count "installedItems.length")
+			(args
+				_installedItem = "installedItems[$index]"
+				_isLocked = "lockedSlots[$index]"
+				_allowedItems = "allowedItems[$index]"
+				_crewId = "_crewId"
+			)
+		)
+	)
+)
+
+(def element CrewSkillSlot (_installedItem:number, _isLocked:bool, _allowedItems:array, _crewId:number)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'crew_skill_'")
+		(macro PULL_INFOTIP_STATE_SCOPE)
+
+		(var installedEntity:gfx = "_installedItem != 0 ? $datahub.getPrimaryEntity(CC.crewSlotSkill, _installedItem) : null")
+		(var installedComponent:gfx = "installedEntity ? installedEntity.crewSlotSkill : null")
+
+		(var iconName:str = "	_installedItem > 0 	? 'url:../crew_commander/slot_talents/' + installedComponent.index +'.png' : ''")
+
+		(var infotipVisible:bool = false)
+		(var isSlotPressed:bool = "!_isLocked && !infotipVisible && crew_skill_mouseDown")
+		(var isSlotFullOpacity:bool = "_isLocked || infotipVisible || crew_skill_rollOver")
+
+		(var frameIconName:str = "_installedItem != 0 ? 'url:../events/bermuda/equipment_screen/slot_installed.png' : _isLocked ? 'url:../events/bermuda/equipment_screen/slot_lock.png' : 'url:../events/bermuda/equipment_screen/slot_add.png'")
+	)
+
+	(bind alpha "isSlotPressed ? CREW_SKILL_SLOT_ALPHA.PRESSED : isSlotFullOpacity ? CREW_SKILL_SLOT_ALPHA.FULL : CREW_SKILL_SLOT_ALPHA.DEFAULT")
+
+	(macro SOUND_HANDLER
+		_soundSet = "'button_skill'"
+		_prefix = "'crew_skill_'"
+		_enabled = "!_isLocked"
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER
+		_prefix = "'crew_skill_'"
+	)
+
+	(style
+		(width = 64)
+		(height = 64)
+		(bind backgroundImage "frameIconName")
+		(backgroundSize = "fill")
+	)
+
+	(block
+		(class $Fullsize)
+		(style
+			(bind backgroundImage "iconName")
+			(backgroundSize = "fill")
+		)
+		(bind colorTransform "_installedItem > 0 ? COLOR_TRANSFORM_WHITE_TO_YELLOW : {}")
+	)
+
+	(controller $Tooltip
+		(bind enabled "_isLocked")
+		(renderer = 'TooltipSystemSimpleTooltipWithWidth')
+		(args _tooltipText = 'IDS_BERMUDA_SKILL_UNLOCK_TOOLTIP')
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(macro SIMPLE_TOOLTIP_ANIMATION)
+		(offset = { x: 0, y: 20 })
+		(align = "left|bottom")
+	)
+
+	(controller $Tooltip
+		(renderer = 'SlotSkillTooltip')
+		(bind enabled "!_isLocked && _installedItem != 0 && !infotipVisible")
+		(args
+			_skillId = "_installedItem"
+			_isInstalled = true
+			_isSlotTooltip = true
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(offset = { x: 20, y: 20 })
+		(align = "left|bottom")
+	)
+
+	(controller $Tooltip
+		(renderer = 'SkillSelectInfotip')
+		(bind enabled "_installedItem == 0 && !_isLocked && !infotipVisible")
+		(args
+			_allowedItems = "_allowedItems"
+			_selectedItem = "_installedItem"
+			_crewId = "_crewId"
+			_slotIndex = "$index"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(offset = { x: 20, y: 20 })
+		(align = "left|bottom")
+	)
+
+	(controller $Tooltip
+		(renderer = 'SkillSelectInfotip')
+		(bind enabled "!_isLocked")
+
+		(args
+			_allowedItems = "_allowedItems"
+			_selectedItem = "_installedItem"
+			_crewId = "_crewId"
+			_slotIndex = "$index"
+			_isInfotip = true
+		)
+
+		(bindcall show animation={duration:0.1, easing:"Easing.cubic_in", from:{alpha:1}, to:{alpha:1}} on='leftClick')
+		(bindcall hide animation={duration:0.1, easing:"Easing.cubic_out", from:{alpha:1}, to:{alpha:0}} on='evClickOutside')
+		(macro INFOTIP_ESCAPE_BEHAVIOUR "infotipVisible")
+
+		(position = "borderNoTrack")
+		(offset = {x:-52, y: 12})
+		(align = "left|bottom")
+
+		(bind infotipVisible "true" init=false on='evStartShow')
+		(bind infotipVisible "false" init=false on='evHide')
+	)
+)
+
+(def element SkillSelectInfotip (_allowedItems:array, _selectedItem:number, _crewId:number, _slotIndex:number, _isInfotip:bool=false)
+	(style
+		(width = 320)
+		(backgroundColor = 0x01000000)
+	)
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND "_isInfotip")
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = 'IDS_CREW_SKILLS_SELECTION'
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = 'IDS_CREW_SKILLS_SELECTION_DESCRIPTION'
+		)
+
+		(element TooltipSystemHorizontalDivider)
+		
+		(block
+			(style
+				(width = 320)
+				(marginLeft = -16)
+				(marginRight = -16)
+				(marginBottom = -12)
+				(marginTop = -12)
+			)
+			(controller $Repeat renderer='CrewSkillInfotipItem'
+				(bind count "_allowedItems.length")
+				(args
+					_itemId = "_allowedItems[$index]"
+					_isInstalled = "_allowedItems[$index] == _selectedItem"
+					_crewId = "_crewId"
+					_slotIndex = "_slotIndex"
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider
+			(bind visible "!_isInfotip")
+		)
+
+		(element TooltipSystemStatusLine
+			_text = 'IDS_OPEN_CREW_SLOT_SKILL_LIST_MOUSE_INSTRUCTION'
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+
+			(bind visible "!_isInfotip")
+		)
+	)
+
+	(element InfotipPins "{pinTop: -8, pinBottom: 0, pinLeft: 0, pinRight: 0}" "!isHighContrast"
+		(bind visible "_isInfotip")
+	)
+)
+
+(def element CrewSkillInfotipItem (_itemId:number, _isInstalled:bool, _crewId:number, _slotIndex:number)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'crew_skill_'")
+
+		(var actionParams:dict = "_isInstalled ? {crewId: _crewId, slot: _slotIndex, item: 0} : {crewId: _crewId, slot: _slotIndex, item: _itemId}")
+
+		(var skillEntity:gfx = "$datahub.getPrimaryEntity(CC.crewSlotSkill, _itemId)")
+		(var skillComponent:gfx = "skillEntity ? skillEntity.crewSlotSkill : null")
+		(var skillState:gfx = "skillEntity ? skillEntity.crewSlotSkillState : null")
+		(var freeCount:number = "skillState ? skillState.freeCount : 0" (event "skillState.evFreeCountChanged"))
+
+		(var isOwned:bool = "skillState ? skillState.isOwned : false" (event "skillState.evIsOwnedChanged"))
+
+		(var shopItemEntityId:number = "skillState ? skillState.eventShopItemEntityId : 0" (event "skillState.evEventShopItemEntityIdChanged"))
+		(var shopItemEntity:gfx = "shopItemEntityId != 0 ? $datahub.getEntity(shopItemEntityId) : null")
+		(var itemPriceIds:array = "shopItemEntity ? shopItemEntity.eventShopItem.itemPriceIds : null" (event "shopItemEntity.eventShopItem.evChanged"))
+		(var itemPriceEntity:gfx = "itemPriceIds ? $datahub.getEntity(itemPriceIds[0]) : null")
+
+		
+		(var buyPriceInfo:gfx = "!isOwned && itemPriceEntity ? itemPriceEntity.itemPrice : null" (event "itemPriceEntity.itemPrice.evChanged"))
+
+		
+		(var isClickable:bool = "_isInstalled || freeCount > 0 || buyPriceInfo != null")
+
+		
+		(macro INFOTIP_ROW_BACKGROUND_SCOPE
+			_isHovered = "isClickable && crew_skill_rollOver"
+			_isPressed = "crew_skill_mouseDown"
+			_isSelected = "_isInstalled"
+		)
+	)
+
+	(bindcall externalCall "isClickable ? 'inputMapping.onAction' : ''" "['assignUniqueSkill', actionParams]" init=false watch=false on='leftClick')
+
+	(style
+		(width = 100%)
+		(backgroundColor = 0x00000001)	
+	)
+
+	(macro SOUND_HANDLER
+		_soundSet = "'button_skill'"
+		_prefix = "'crew_skill_'"
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER
+		_prefix = "'crew_skill_'"
+	)
+
+	(macro INFOTIP_ROW_BACKGROUND "currentAlpha")
+
+	(controller $Tooltip
+		(renderer = 'SlotSkillTooltip')
+		(args
+			_skillId = "_itemId"
+			_isInstalled = "_isInstalled"
+			_isPurchased = "isOwned"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		(offset = { x: 20, y: 20 })
+		(align = "left|bottom")
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(width = 288)
+			(top = -12)
+			(left = 16)
+		)
+		(controller $Instance renderer='TooltipSystemHorizontalDivider'
+			(bind enabled "$index != 0")
+		)
+	)
+
+	(block
+		(style
+			(width = 100%)
+			(height = 70)
+		)
+
+		(hblock
+			(class $FullsizeAbsolute)
+			(style
+				(align = "middle")
+			)
+			(block
+				(style
+					(width = 60)
+					(height = 60)
+
+					(marginLeft = "XS")
+
+					(bind backgroundImage "'url:../crew_commander/slot_talents/' + skillComponent.index +'.png'")
+					(backgroundSize = "fill")
+				)
+				(bind colorTransform "_isInstalled ? COLOR_TRANSFORM_WHITE_TO_YELLOW : {}")
+			)
+
+			(tf
+				(class $TextDefaultNM)
+				(style
+					(maxWidth = 170)
+					(height = 80%)
+					(bind textColor "_isInstalled ? 0xFFCC66 : 0xFFFFFF")
+				)
+				(bind text "'IDS_SKILL_' + skillComponent.index + '_NAME'")
+			)
+
+			(block
+				(style
+					(width = 100%)
+					(height = 80%)
+					(align = "right")
+					(paddingRight = "S")
+				)
+
+				(block
+					(bind visible "_isInstalled")
+					(style
+						(width = 20)
+						(height = 20)
+						(backgroundImage = 'url:../service_kit/unified_status_icons/icon_check.png')
+						(backgroundSize = "fill")
+					)
+				)
+
+				(tf
+					(bind visible "!_isInstalled && freeCount > 0")
+					(class $TextDefaultNM)
+					(style
+						(textAlign = "right")
+					)
+					(text = 'IDS_IN_WAREHOUSE_NO_COLON')
+				)
+
+				(controller $Instance renderer='PriceTag'
+					(bind enabled "!_isInstalled && freeCount == 0 && buyPriceInfo != null")
+					(args
+						_priceInfo			= "buyPriceInfo"
+						_showDiscountTag	= false
+					)
+				)
+			)
+		)
+	)
+)

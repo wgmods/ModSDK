@@ -1,0 +1,46 @@
+(def layout PingerCountInfoRenderer ()
+	(scope
+		(var waveHitCollection:gfx = "$datahub.getCollection(CC.waveHit)")
+		(var waveHitCount:number = "waveHitCollection ? waveHitCollection.items.length : 0" (event "waveHitCollection.evAdded") (event "waveHitCollection.evRemoved"))
+
+		(var selfVehicleWatcher:gfx = "$datahub.getFirstWatcher(CC.selfVehicle)")
+		(var selfVehicle:gfx = "selfVehicleWatcher.entity" (event "selfVehicleWatcher.event"))
+		(var shipTTX:gfx = "selfVehicle ? selfVehicle.selfVehicle.shipTTX : null")
+		(var pingerMaxTargets:number = "shipTTX ? shipTTX.pinger.maxTargets.value : 0")
+	)
+
+	(bind visible "pingerMaxTargets > 0")
+
+	(style
+		(width = "SLOT_SIZE")
+		(height = "SLOT_SIZE")
+		(position = "absolute")
+	)
+	(block
+		
+		(style
+			(width = 100%)
+			(height = 100%)
+			(backgroundColor = 0xCC000000)
+			(align = "center|middle")
+		)
+		(hblock
+			(class $MiddleAlignedAbsolutely)
+			(style (bottom = 12px))
+			(tf
+				(alpha = 0.7)
+				(class $TextDefaultBold21NM)
+				(style (marginRight = "0px"))
+				(bind text "waveHitCount")
+			)	
+			(tf
+				(alpha = 0.5)
+				(class $TextDefaultNM)
+				(style
+					(marginTop = "-2px")
+				)
+				(bind text "'/' + pingerMaxTargets")
+			)
+		)
+	)
+)

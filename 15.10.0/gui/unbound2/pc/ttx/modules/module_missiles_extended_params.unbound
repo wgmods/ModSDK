@@ -1,0 +1,39 @@
+(def element MissileLauncherParams (shipTTX:gfx, missilesTTX:gfx) layout=true
+	(scope
+		(var launcher:gfx = "missilesTTX.missileLaunchers[0]")
+	)
+	(style (width = 100%))
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_NUM_OF_MISSILE_TUBES'
+											_value = "launcher ? launcher.numBarrels : DEFAULT_TTX_VALUE"
+											_zeroValueHidden = true 
+											_showDelta = false
+											_hideDiff = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_TIME_BETWEEN_SHOTS'
+											_value = "missilesTTX.timeBetweenShots"
+											_valueConfig = "VALUE_CONFIG.SECONDS"
+											_showDelta = false
+											_hideDiff = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_MISSILE_RELOAD_TIME'
+											_value = "shipTTX.missile.reloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_showDelta = false
+											_hideDiff = true
+			)
+		)
+	)
+)
+
+(def layout ModuleMissiles_Extended_Parameters (shipTTX:gfx) 
+	(scope
+		(var missilesTTX:gfx = "shipTTX	? shipTTX.missile
+											: null")
+	)
+	(style (width = 100%))
+	(macro TTX_INSTANCE 'MissileLauncherParams' "missilesTTX")
+
+	(macro TTX_INSTANCE 'MissileAmmoTTX' "missilesTTX.missileAmmo" "true" "true")
+)

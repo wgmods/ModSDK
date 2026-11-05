@@ -1,0 +1,104 @@
+(def css $CrewPortraitSizeNormal ()
+	(width = "90px")
+	(height = "82px")
+	(hitTest = "false")
+)
+
+(def css $CrewPortraitSizeBig ()
+	(width = "125px")
+	(height = "114px")
+	(hitTest = "false")
+)
+
+(def element CrewPortraitWithBGR (_classificationId:number, _portraitWidth:number, _portraitHeight:number, _borderSize:number="0", _baseUrl:str="''", _overlayUrl:str="''", _isAnimated:bool=true) layout=true
+	(scope
+		(var backgroundName:str = "	_classificationId == SC.Common.COMMANDER_CLASSIFICATIONS.ADVANCED	? 'advanced.png' :
+									_classificationId == SC.Common.COMMANDER_CLASSIFICATIONS.UNIQUE		? 'unique.png'
+																										: 'common.png'")
+		(var portraitBaseUrl:str = "_baseUrl	? ('url:' + _baseUrl)
+												: 'url:../crew_commander/backgrounds/no_crew_portrait.png'")
+		
+		(event evAnimRefresh)
+	)
+	(class $CrewPortraitSizeNormal)
+	(style
+		(bind width		"_portraitWidth		? _portraitWidth	: 100px")
+		(bind height	"_portraitHeight	? _portraitHeight	: 92px")
+		(bind margin	"_borderSize		? _borderSize		: XS")
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style (bind padding "_borderSize ? -(_borderSize) : -XS"))
+
+		(block
+			(class $Fullsize)
+			(style
+				(backgroundImage = "'url:../crew_commander/backgrounds/frame.png'")
+				(scale9grid = 6)
+			)
+		)
+	)
+	(block
+		(class $Fullsize)
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(backgroundSize = "fill")
+				(bind backgroundImage "!_baseUrl ? '' : 'url:../crew_commander/backgrounds/' + backgroundName")
+			)
+		)
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(backgroundSize = "fill")
+				(bind backgroundImage "portraitBaseUrl")
+			)
+			(controller $Spine
+ 				(bindcall play sequence="_isAnimated ? SC.Ui_common.CREW_SPINE_STATE.ANIMATION : SC.Ui_common.CREW_SPINE_STATE.STATIC" (event "evAnimRefresh"))
+				(dispatch evAnimRefresh on=refresh)
+			)
+		)
+		(block
+			(bind visible "_overlayUrl")
+			(class $FullsizeAbsolute)
+			(style
+				(backgroundSize = "fill")
+				(bind backgroundImage "'url:' + _overlayUrl")
+			)
+		)
+	)
+	(block
+		(class $FullsizeAbsolute)
+		(style (bind padding "_borderSize ? -(_borderSize) : -XS"))
+
+		(block
+			(class $Fullsize)
+			(style
+				(backgroundImage = "'url:../crew_commander/backgrounds/overlay.png'")
+				(backgroundSize = "fill")
+			)
+		)
+	)
+)
+
+(def element CrewPortraitBig (_baseUrl:str, _overlayUrl:str = "''")
+	(class $CrewPortraitSizeBig)
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(hitTest = "false")
+			(backgroundSize = "fill")
+			(bind backgroundImage "'url:' + _baseUrl")
+		)
+	)
+	(block
+		(class $FullsizeAbsolute)
+		(bind visible "_overlayUrl")
+		(style
+			(hitTest = "false")
+			(backgroundSize = "fill")
+			(bind backgroundImage "'url:' + _overlayUrl")
+		)
+	)
+)

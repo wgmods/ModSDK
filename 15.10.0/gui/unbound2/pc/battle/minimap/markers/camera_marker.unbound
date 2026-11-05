@@ -1,0 +1,67 @@
+(def element MapCameraMarker (_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number, _isLoading:bool = false) layout = true
+	(scope
+		(var cameraYaw:number = "radToGrad(_markerEntity.camera.yaw)" (event "evEnterFrame"))
+		(var isTacticalCam:bool = "_markerEntity.camera.isTactical" (event "_markerEntity.camera.evTacticalStateChanged"))
+
+		(var visibilityRangeRadius:number = "_markerEntity.camera.visibilityRangePerc" (event "_markerEntity.camera.evVisibilityRangeChanged"))
+		(var visibilityVectorRadius:number = "max(visibilityRangeRadius, 0.5)" (event "_markerEntity.camera.evVisibilityRangeChanged"))
+		(var cameraFrustumAngle:number = "radToGrad(_markerEntity.camera.frustumAngle)" (event "_markerEntity.camera.evFrustumAngleChanged"))
+	)
+
+	(bind visible "!_isLoading")
+	(controller $Animation
+		(bindcall play  duration=0.15 
+						delay=0 
+						to={alpha: 0} 
+						easing="Easing.cubic_in" 
+						(bind enabled "isTacticalCam")
+		)
+		(bindcall play  duration=0.15
+						delay=0 
+						to={alpha: 1}
+						easing="Easing.cubic_out" 
+						(bind enabled "!(isTacticalCam)")
+		)
+	)
+
+	(block 
+		(block
+			(isMask = true)
+			(macro BIND_FAIR_SCALE "visibilityVectorRadius * 2")
+			(style
+				(position = "absolute")
+				(backgroundImage = "'symbol:minimap_observe_mask'")
+			)
+		)
+		(style 
+			(position = "absolute")
+			(width = "1px")
+			(height = "1px")
+			(backgroundImage = "'symbol:minimap_frustum_edge_vector'")
+			(bind rotation "cameraYaw")
+		)
+		(alpha = "0.7")
+	)
+
+
+	(block
+		(block
+			(isMask = true)
+			(macro BIND_FAIR_SCALE "visibilityRangeRadius * 2")
+			(style
+				(position = "absolute")
+				(backgroundImage = "'symbol:minimap_observe_mask'")
+			)
+		)
+		(bind alpha "0.08")
+		(style
+			(bind rotation "(cameraYaw - cameraFrustumAngle / 2)")
+		)
+		(controller $Sector
+			(bind color "0x7dffff")
+			(bind arc "cameraFrustumAngle")
+			(bind offset "-90")
+			(bind radius "300")
+		)
+	)
+)

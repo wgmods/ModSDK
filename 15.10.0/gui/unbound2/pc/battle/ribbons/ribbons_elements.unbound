@@ -1,0 +1,147 @@
+(def css $RibbonCaptionText ()
+	(extends $TextDefaultBold12NM)
+	(extends $FontDropShadowFilterBlack)
+
+	(textAlign = "center")
+	(leading = -3)
+)
+
+(def css $RibbonCountText ()
+	
+	(extends $TextDefaultBoldNM)
+	(extends $FontDropShadowFilterBlack)
+)
+
+
+(def constant RIBBON_ICON_HEIGHT 51)
+(def constant RIBBON_ICON_WIDTH 133)
+(def constant SUBRIBBON_ICON_WIDTH 65)
+
+(def constant ACHIEVEMENT_ICON_SIZE 60)
+
+
+
+(def element RibbonCaption (_textIds:str, _textWidth:number) layout=true
+	(scope
+		(event evShow)
+	)
+
+	(dispatch evShow on='addedToStage')
+
+	(block
+		(alpha = 0)
+		(controller $Animation
+			(bindcall play	duration=0.25
+							delay=0.1
+							from="{alpha: 0, marginTop: 10}"
+							to="{alpha: 1, marginTop: 0}"
+							(event "evShow")
+			)
+		)
+
+		(tf
+			(style
+				(bind maxWidth "_textWidth")
+				(maxHeight = 40)
+			)
+			(class $RibbonCaptionText)
+			(bind text "_textIds")
+		)
+	)
+)
+
+(def constant RIBBON_COUNTER_FX_LIFETIME 0.35)
+
+(def element RibbonCounter (_count:number, _scaleEnabled:bool=false) layout=true
+	(scope
+		(event evShow)
+
+		(var stepsAmount:number = 10)
+		(var clampedCount:number = "max(0, min(_count, stepsAmount))")
+		(var scaleValue:number = "_scaleEnabled ? 1 + (1 / stepsAmount * clampedCount) : 1")
+	)
+
+	(dispatch evShow on='addedToStage')
+
+	(block
+		(macro BIND_SCALE "scaleValue")
+
+		(alpha = 0)
+
+		(controller $Animation 
+			(bindcall play	duration=0.25
+							delay=0.15
+							from="{alpha: 0, marginBottom: -10}"
+							to="{alpha: 1, marginBottom: 0}"
+							(event "evShow")
+			)
+		)
+
+		(tf
+			(class $RibbonCountText)
+			(bind text "'x' + toString(_count)")
+		)
+
+		(controller $FxInstance renderer = 'RibbonCounterFX' lifetime="RIBBON_COUNTER_FX_LIFETIME"
+			(args "_count")
+			(bindcall create (bind trigger "_count"))
+		)
+	)
+)
+
+(def element RibbonCounterFX (_count:number) layout=true
+	(style
+		(align = "center|middle")
+	)
+	(class $FullsizeAbsolute)
+
+	(block
+		(style
+			(width = 0) (height = 0)
+			(align = "center|middle")
+		)
+
+		(controller $Animation 
+			(play	duration="RIBBON_COUNTER_FX_LIFETIME"
+					easing="Easing.cubic_out"
+					from="{alpha: 0, scaleX: 3, scaleY: 3}"
+					to="{alpha: 1, scaleX: 1, scaleY: 1}"
+			)
+		)
+
+		(tf
+			(class $TextDefaultBoldNM)
+			(bind text "'x' + toString(_count)")
+		)
+	)
+)
+
+
+(def element AchievementBattleIcon (_iconName:str) layout=true
+	(style 
+		(width = "ACHIEVEMENT_ICON_SIZE")
+		(height = "ACHIEVEMENT_ICON_SIZE")
+		(backgroundSize = "fill")
+		(bind backgroundImage "'url:../achievements/icon_achievement_' + _iconName + '.png'")
+	)
+)
+
+
+(def element RibbonIcon (_iconName:str) layout=true
+	(style 
+		(width = "RIBBON_ICON_WIDTH") 
+		(height = "RIBBON_ICON_HEIGHT") 
+		(backgroundSize = "fill")
+		(bind backgroundImage "'url:../ribbons/' + _iconName + '.png'")
+	)
+)
+
+
+(def element SubRibbonIcon (_iconName:str) layout=true
+	(style 
+		(width = "SUBRIBBON_ICON_WIDTH")
+		(height = "RIBBON_ICON_HEIGHT")
+		(backgroundSize = "fill")
+		(bind backgroundImage "'url:../ribbons/subribbons/' + _iconName + '.png'")
+	) 
+)

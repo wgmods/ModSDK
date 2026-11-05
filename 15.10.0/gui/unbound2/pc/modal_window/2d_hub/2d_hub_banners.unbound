@@ -1,0 +1,36 @@
+(def constant HUB2D_BACKGROUNDCOLOR_ACTIVE 0x21E8E8E8)
+(def constant HUB2D_BACKGROUNDCOLOR_INACTIVE 0x0DE8E8E8)
+(def constant HUB2D_BACKGROUNDCOLOR_ROLLOVER 0x34DBDBDB)
+
+(def constant HUB2D_NEWS_WIDTH 448)
+(def constant HUB2D_NEWS_HEIGHT 46)
+
+(def element Hub2DBanner(_collection:gfx) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(event evAddedToStage)
+		(var bannerEntity:gfx = "_collection ? _collection.items[$index] : null"
+			(event "_collection.evAdded") (event "_collection.evRemoved") (event "_collection.evUpdated")
+		)
+		(var baseDataComponent:gfx = "bannerEntity ? bannerEntity.hub2DBannerBaseData : null" (event "bannerEntity.evAdded") (event "bannerEntity.evRemoved"))
+		(var sectionType:str = "baseDataComponent ? baseDataComponent.sectionType : null" (event "baseDataComponent.evChanged"))
+		(var hubId:str = "baseDataComponent ? baseDataComponent.hub2dId : null" (event "baseDataComponent.evChanged"))
+		(var bannerId:str = "baseDataComponent ? baseDataComponent.id : null" (event "baseDataComponent.evChanged"))
+	)
+	(dispatch evAddedToStage on='addedToStage')
+
+	(block
+		(class $FullsizeAbsolute)
+
+		(controller $Instance 
+			(bind enabled "sectionType != null")
+			(bind renderer "'Hub2D' + sectionType + 'BannerContent'")
+			(args
+				_bannerEntity = "bannerEntity"
+			)
+		)
+	)
+
+	(bindcall externalCall "'inputMapping.onAction'" "['onBannerClick', {hubId: hubId, bannerId: bannerId}]" init=false watch=false on='click')
+)

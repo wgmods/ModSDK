@@ -1,0 +1,43 @@
+(def constant CENTER_BLOCK_WIDTH_MIN 520)
+(def constant CENTER_BLOCK_WIDTH_MAX 680)
+
+(def element SubmarineHud () layout=true
+	(scope
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageCenterX:number = "stageComponent.width/2" (event "stageComponent.evStageSizeChanged"))
+		(var stageCenterY:number = "stageComponent.height/2" (event "stageComponent.evStageSizeChanged"))
+		
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+	)
+
+	(class $FullsizeAbsolute)
+	(style
+		(hitTest = false)
+		(align = "center|middle")
+	)
+
+	
+	(block
+		(style
+			(macro ADAPTIVE_WIDTH	min="CENTER_BLOCK_WIDTH_MIN" stageMin="1280"
+									max="CENTER_BLOCK_WIDTH_MAX" stageMax="1920"
+									stageWidth="stageWidth")
+			(height = 20)
+			(marginTop = "XL")
+		)
+
+		(element DepthControlNew
+			(style
+				(position = "absolute")
+				(left = 0)
+			)
+		)
+
+		(element SubmarineBatterySimple
+			(style
+				(position = "absolute")
+				(right = 0)
+			)
+		)
+	)
+)

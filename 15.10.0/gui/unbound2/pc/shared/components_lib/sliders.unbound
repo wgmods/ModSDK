@@ -1,0 +1,145 @@
+(def element Slider (_value:number, _min:number, _max:number, _enabled:bool=true) layout=true
+	(scope
+		(event evShow)
+		(event evValueChanged)
+	)
+	(dispatch evShow args="{}" on='addedToStage')
+
+	(mc minimap_slider_default
+		(bind value "_value" watch=false (event "evShow"))
+		(bind minimum "_min")
+		(bind maximum "_max")
+		(bind enabled "_enabled")
+		(dispatch evValueChanged args="{value: $event.value}" dir="EventDirection.UP" on='valueChange')
+	)
+)
+
+(def element DefaultSlider (_value:number, _intervalsCount:number, _unitsInStepInterval:number=1, _width:number=200)
+	(scope
+		(event evSliderValueChanged)
+		(event evSliderValueChangedForTrack)
+
+		(event evRollOver)
+		(event evRollOut)
+		(event evMouseDown)
+		(event evStageMouseUp)
+
+		(event evSliderThumbMouseDown)
+
+		(event evSliderValueChangedInternal)
+		(var curValue:number = "$event ? $event.newValue : _value" (event "evSliderValueChangedInternal"))
+
+		(var rollOver:bool = "$event.isOver" init=false watch=false (event "evRollOver") (event "evRollOut"))
+		(var isMouseDown:bool = "$event.isDown" init=false watch=false (event "evMouseDown") (event "evSliderThumbMouseDown") (event "evStageMouseUp"))
+
+		
+		(var ctRollOver:dict = "{ redMultiplier: 1,	greenMultiplier: 1,	blueMultiplier: 1,	alphaMultiplier: 1,
+								  redOffset: 15,	greenOffset: 15,	blueOffset: 15,		alphaOffset: 0 }")
+		(var ctDown:dict = "	{ redMultiplier: 1,	greenMultiplier: 1,	blueMultiplier: 1,	alphaMultiplier: 1,
+								  redOffset: -20,	greenOffset: -20,	blueOffset: -20,	alphaOffset: 0 }")
+	)
+		
+	(dispatch evRollOver		on='rollOver'	args="{isOver: true}")
+	(dispatch evRollOut			on='rollOut'	args="{isOver: false}")
+
+	(dispatch evStageMouseUp	on='stageMouseUp'	args="{isDown: false}")
+	(dispatch evMouseDown		on='mouseDown'		args="{isDown: true}")
+
+	(bind colorTransform "	rollOver && !isMouseDown	? ctRollOver :
+							isMouseDown					? ctDown
+														: CT_NONE")
+
+	(dispatch evSliderValueChanged	args="{value: curValue}" dir="EventDirection.UP" on='addedToStage' (event "evSliderValueChangedInternal"))
+	(dispatch evSliderValueChangedForTrack	args="{value: curValue, intervalsCount: _intervalsCount}" dir="EventDirection.DOWN" (event "evSliderValueChanged"))
+
+	(bindcall externalCall 'sound.playSetSoundDirect' "['slider', SoundEvent.OVER]" init=false watch=false on='rollOver')
+	(bindcall externalCall 'sound.playSetSoundDirect' "['slider', SoundEvent.PRESS]" init=false watch=false on='mouseDown')
+	(bindcall externalCall 'sound.playSetSoundDirect' "['slider', SoundEvent.CHANGE]" init=false watch=false  (event "evSliderValueChangedInternal"))
+
+
+	(scroll_bar
+		(style (width = "_width"))
+
+		(bind maximum "_intervalsCount")	
+		(bind value "curValue")				
+	
+		(singleStep = 1)
+		(scrollDuration = 2)
+
+		(orientation = "horizontal")
+		(alignThumbToBorders = false)
+
+		(thumb = 'DefaultSliderThumb')
+		(track = 'DefaultSliderTrack')
+
+		(dispatch evSliderValueChangedInternal on='valueChanged' dir="EventDirection.NONE")
+	)
+)
+
+(def element DefaultSliderThumb ()
+	(scope
+		(event evSliderThumbMouseDown)
+		(event evSliderThumbMouseUp)
+	)
+
+	(bindcall externalCall 'sound.playSetSoundDirect' "['slider', SoundEvent.PRESS]" init=false watch=false on='mouseDown')
+
+	(dispatch evSliderThumbMouseDown args="{isDown: true}" on='mouseDown' dir="EventDirection.UP")
+	(dispatch evSliderThumbMouseUp args="{isDown: false}" on='stageMouseUp' dir="EventDirection.UP")
+
+	(style
+		(align = "center")
+		(marginTop = -6px)
+		(width = 10px)
+		(height = 22px)
+		(backgroundColor = 0x01000000)
+	)
+
+	(block
+		(class $Fullsize)
+		(style
+			(backgroundImage = 'url:../service_kit/slider/slider_thumb.png')
+		)
+	)
+)
+
+(def element DefaultSliderTrack ()
+	(scope
+		(event evSliderValueChangedForTrack)
+
+		(var filledWidth:number = 0)
+		(bind filledWidth "($event.value/$event.intervalsCount) * 100" init=false (event "evSliderValueChangedForTrack"))
+	)
+
+	(block
+		(style
+			(height = 10px)
+			(paddingLeft = "XXS")
+			(paddingRight = "XXS")
+			(width = 100%)
+			(backgroundImage = 'url:../service_kit/slider/slider_track.png')
+			(scale9grid = "[4, 0, 4, 0]")
+		)
+
+		(block
+			(style
+				(position = "absolute")
+				(top = 2px)
+				(height = 6px)
+				(backgroundColor = 0xFF4CE7A9)
+				(bind width "1% * filledWidth")
+			)
+		)
+	)
+
+	
+	(block
+		(style
+			(position = "absolute")
+			(top = -6px)
+			(width = 100%)
+			(height = 22px)
+			(backgroundColor = 0x01000000)
+		)
+	)
+)

@@ -1,0 +1,78 @@
+(def constant DEFAULT_FOG_EFFECT_PARAMS "'&noise=gui/fog/perlin-noise-full-2048.png&base-color=0x72728080&light-color=0xFFFFCCFF&base-intensity=0.4&lowest-intensity=0.2'")
+
+(def element BackgroundAnimatedSwitcher (_bgSymbol:str, _isSpine:bool=false, _isFogEnabled:bool=false) layout=true dispatch_size_change=true
+	(scope
+		(event evStartBackgroundChange)
+		(event evBackgroundChanged)
+
+		(macro STAGE_SIZE)
+		(var currentBgSymbol:str = "''")
+		(var animationTime:number = "0.15")
+
+		(bind currentBgSymbol "currentBgSymbol != '' ? currentBgSymbol : _bgSymbol" init=false watch=false (event "evStartBackgroundChange"))
+		(bind currentBgSymbol "_bgSymbol" init=false watch=false (event "evBackgroundChanged"))
+
+		(var isVisibleUpperLayerBG:bool = "true")
+		(bind isVisibleUpperLayerBG "true" init=false watch=false (event "evStartBackgroundChange"))
+		(bind isVisibleUpperLayerBG "false" init=false watch=false (event "evBackgroundChanged"))
+	)
+	(style (bind width "stageWidth") (bind height "stageHeight"))
+	(dispatch 'evStartBackgroundChange' dir="EventDirection.NONE" on='addedToStage' (bind trigger "_bgSymbol"))
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(bind backgroundImage "_isFogEnabled	? 'img://embedded:fog?background=' + currentBgSymbol + DEFAULT_FOG_EFFECT_PARAMS
+													: currentBgSymbol")
+			(backgroundSize = "cover")
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(bind visible "isVisibleUpperLayerBG || _isSpine")
+		(style
+			(bind backgroundImage "_isFogEnabled	? 'img://embedded:fog?background=' + _bgSymbol + DEFAULT_FOG_EFFECT_PARAMS
+													: _bgSymbol")
+			(backgroundSize = "cover")
+		)
+		(bind alpha "0" init=false (event "evStartBackgroundChange"))
+
+		(controller $Animation
+			(bind enabled "isVisibleUpperLayerBG")
+			(bindcall play
+				delay = "0.04"
+				duration = "animationTime"
+				to = "{ alpha: 1 }"
+				easing="Easing.sine_in"
+				action="kill"
+				(event "evStartBackgroundChange")
+			)
+			(dispatch evBackgroundChanged delay="0.01" on=evAnimEnded)
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(bind visible "isVisibleUpperLayerBG && _isSpine && currentBgSymbol != ''")
+		(style
+			(bind backgroundImage "_isFogEnabled	? 'img://embedded:fog?background=' + currentBgSymbol + DEFAULT_FOG_EFFECT_PARAMS
+													: currentBgSymbol")
+			(backgroundSize = "cover")
+		)
+		(bind alpha "1" init=false (event "evStartBackgroundChange"))
+		
+		(controller $Animation
+			(bind enabled "isVisibleUpperLayerBG")
+			(bindcall play
+				delay = "0.04"
+				duration = "animationTime"
+				to = "{ alpha: 0 }"
+				easing="Easing.sine_in"
+				action="kill"
+				(event "evStartBackgroundChange")
+			)
+			(dispatch evBackgroundChanged delay="0.01" on=evAnimEnded)
+		)
+	)
+)

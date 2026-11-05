@@ -1,0 +1,83 @@
+(def element AmmoPhaserShieldDamage (shipTTX:gfx, ammoTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_SHIELD_MAX_DAMAGE'
+									_value = "ammoTTX.shieldDamage"
+									_showDelta = false
+									_hideDiff = true
+	)
+)
+
+(def element AmmoPhaserDamage (shipTTX:gfx, ammoTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+									_value = "ammoTTX.damage"
+									_showDelta = false
+									_hideDiff = true
+	)
+)
+
+(def layout ModulePhaserLaser_Extended_Parameters (shipTTX:gfx, _extendedInfo:gfx=null)
+	(scope
+		(var anyGun:gfx = "shipTTX && shipTTX.phaserLasers ? shipTTX.phaserLasers.guns[0] : null")
+		(var rotationTime:gfx = "anyGun ? anyGun.rotationTime : DEFAULT_TTX_VALUE")
+		(var reloadTime:gfx = "shipTTX.phaserLasers ? shipTTX.phaserLasers.reloadTime : DEFAULT_TTX_VALUE")
+		(var maxDist:gfx = "shipTTX.phaserLasers ? shipTTX.phaserLasers.maxDist : DEFAULT_TTX_VALUE")
+		(var extraArmaments:array = "_extendedInfo ? _extendedInfo.extraArmaments : []" (event "_extendedInfo.evUpdated"))
+
+		(var ammoTTX:gfx = "shipTTX && shipTTX.phaserLasers && shipTTX.phaserLasers.ammo ? shipTTX.phaserLasers.ammo : null")
+		(var heatingTTX:gfx = "shipTTX && shipTTX.phaserLasers && shipTTX.phaserLasers.heating ? shipTTX.phaserLasers.heating : null")
+	)
+	(style (width = 100%))
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+											_value = "reloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_showDelta = false
+											_hideDiff = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ROTATION_TIME'
+											_value = "rotationTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_showDelta = false
+											_hideDiff = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_TOOLTIP_ARTILLERY_SHOOT_DIST'
+											_value="maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+											_showDelta = false
+											_hideDiff = true
+			)
+			(macro TTX_INSTANCE 'HeatingPerShot' "heatingTTX")
+			(macro TTX_INSTANCE 'HeatCooldownSpeed' "heatingTTX")
+			(macro TTX_INSTANCE 'HeatCooldownDelay' "heatingTTX")
+			(macro TTX_INSTANCE 'OverheatCooldownDelay' "heatingTTX")
+			(macro TTX_INSTANCE 'HeatingDamageFactor' "heatingTTX && heatingTTX.damageFactor.length != 0 ? heatingTTX : null")
+			(macro TTX_INSTANCE 'HeatingReloadFactor' "heatingTTX && heatingTTX.reloadFactor.length != 0 ? heatingTTX : null")
+			(macro TTX_INSTANCE 'AmmoPhaserShieldDamage' "ammoTTX")
+			(macro TTX_INSTANCE 'AmmoPhaserDamage' "ammoTTX")
+
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PHASER_SPLASH_RADIUS'
+											_value = "ammoTTX ? ammoTTX.splashRadius : DEFAULT_TTX_VALUE"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+											_zeroValueHidden = true
+											_showDelta = false
+											_hideDiff = true
+			)
+
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PHASER_MAX_SPLASH_ALPHA_DAMAGE'
+											_value = "ammoTTX ? ammoTTX.splashDamage : DEFAULT_TTX_VALUE"
+											_zeroValueHidden = true
+											_showDelta = false
+											_hideDiff = true
+			)
+
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PHASER_MAX_SPLASH_SHIELD_DAMAGE'
+											_value = "ammoTTX ? ammoTTX.splashShieldDamage : DEFAULT_TTX_VALUE"
+											_zeroValueHidden = true
+											_showDelta = false
+											_hideDiff = true
+			)
+		)
+	)
+)

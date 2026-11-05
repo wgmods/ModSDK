@@ -1,0 +1,266 @@
+(def element ModalWindowPreferencesCrosshairs () dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(scope
+		(var dynamicCrosshairsList:gfx = "$datahub.getPrimaryEntity(CC.crosshairsList, 1)")
+		(var dynamicCrosshairIds:array = "dynamicCrosshairsList.crosshairsList.crosshairIds")
+		(var dynamicCrosshairNames:array = "dynamicCrosshairsList.crosshairsList.names")
+
+		(var staticCrosshairsList:gfx = "$datahub.getPrimaryEntity(CC.crosshairsList, 0)")
+		(var staticCrosshairIds:array = "staticCrosshairsList.crosshairsList.crosshairIds")
+		(var staticCrosshairNames:array = "staticCrosshairsList.crosshairsList.names")
+
+		(macro GET_PREF 'crosshairIsDynamic' "'battle.ui.crosshair.isDynamic'")
+		(macro GET_PREF 'crosshairDynamicValue' "'battle.ui.crosshair.indexDynamic'")
+		(macro GET_PREF 'crosshairStaticValue' "'battle.ui.crosshair.indexStatic'")
+
+		(var selectedIndex:number = "crosshairIsDynamic ? crosshairDynamicValue : crosshairStaticValue")
+		(var isDynamic:bool = "crosshairIsDynamic")
+	)
+
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(style (width = 100%))
+
+		(block
+			(style (width = 100%))
+			(element ModalWindowHeaderFullSize
+				_windowName = 'IDS_MODAL_WINDOW_TITLE_PREFERENCES_CROSSHAIRS'
+				_paddingRight = "M"
+				_paddingLeft = "M"
+			)
+		)
+	)
+
+	(block (style (height = "LM")))
+
+	(hblock
+		(class $Fullsize)
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+			(style (height = 100%))
+
+			(element PrefsCrosshairAsidePanel
+				_dynamicCrosshairList	= "dynamicCrosshairNames"
+				_staticCrosshairList	= "staticCrosshairNames"
+				_selectedIndex			= "selectedIndex"
+				_isDynamicSelected		= "isDynamic"
+			)				
+		)
+		
+		(block
+			(macro DEFAULT_MODAL_WINDOW_ANIMATION 3)
+			(style (height = 100%))
+
+			(element PrefsNestedMWReferenceImageContainer
+				_type = "SECONDARY_MODAL_WINDOW_TYPE.crosshairs"
+				_crosshairId = "isDynamic ? dynamicCrosshairIds[selectedIndex] : staticCrosshairIds[selectedIndex]"
+				_isCrosshairDynamic = "isDynamic"
+			)
+		)
+	)
+
+	(block (style (height = "XL")))
+)
+
+(def element PrefsCrosshairAsidePanel (_dynamicCrosshairList:array=[], _staticCrosshairList:array=[], _selectedIndex:number=0, _isDynamicSelected:bool=false)
+	(scope
+		(var stageComponent:gfx = "$datahub.getSingleEntity(CC.stage).stage")
+		(var stageWidth:number = "stageComponent.width" (event "stageComponent.evStageSizeChanged"))
+		(var contentWidth:number = "stageWidth > 1366 ? 400px : 360px")
+
+		(var collectionOfNestedLevel:gfx = "$datahub.getCollection(CC.preferenceDelta).getChildByPath('byLevel.' + 1)")
+		(var isAnyDiff:bool = "collectionOfNestedLevel ? collectionOfNestedLevel.items.length > 0 : false" (event "collectionOfNestedLevel.evAdded") (event "collectionOfNestedLevel.evRemoved"))
+	)
+
+	(style
+		(bind width "contentWidth")
+		(height = 100%)
+	)
+
+	(block
+		(class $Fullsize)
+		(style
+			(bind paddingBottom "isAnyDiff ? XLL : LM")
+		)
+
+		(scrollArea
+			(class $Fullsize)
+			
+			
+			(style (backgroundColor = 0x01000000))
+
+			(verticalSlider='ScrollBarVLight')
+
+			(topShadow='InfotipShadowTop')
+			(bottomShadow='InfotipShadowBottom')
+
+			(hscrollPolicy='off')
+			(vscrollPolicy='auto')
+
+			(drag=false)
+
+			(content
+				(style (bind width "contentWidth"))
+
+				(controller $Repeat count="_dynamicCrosshairList.length" renderer='CrosshairListItem'
+					(args
+						_caption = "_dynamicCrosshairList[$index]"
+						_isDynamicList = true
+						_selectedIndex = "_selectedIndex"
+						_isDynamicSelected = "_isDynamicSelected"
+					)
+				)
+				(controller $Repeat count="_staticCrosshairList.length" renderer='CrosshairListItem'
+					(args
+						_caption = "_staticCrosshairList[$index]"
+						_isDynamicList = false
+						_selectedIndex = "_selectedIndex"
+						_isDynamicSelected = "_isDynamicSelected"
+					)
+				)
+			)
+		)
+	)
+
+	(block
+		(class $PrefsNestedAsideLowerButtonsContainer)
+
+		(block
+			(style (alpha = 0) (marginBottom = "M"))
+
+			(element DefaultButton
+				_enabled = "isAnyDiff"
+				_size = "SIZE.MEDIUM"
+				_name = 'btn_apply'
+				_width = 280
+				_label = 'IDS_APPLY'
+			)
+
+			(controller $Animation
+				(bindcall play
+					duration = 0.15
+					from	 = "{ alpha: 0, y: 10 }"
+					to		 = "{ alpha: 1, y: 0 }"
+					reverse  = "!isAnyDiff"
+					(bind trigger "isAnyDiff")
+				)
+			)
+		)
+
+		(element DefaultButton
+			_size = "SIZE.MEDIUM"
+			_name = 'btn_cancel'
+			_width = 280
+			_label = 'IDS_CLOSE_BTN'
+		)
+	)
+)
+
+(def element CrosshairListItem (_caption:str='', _isDynamicList:bool=false, _selectedIndex:number=0, _isDynamicSelected:bool=false)
+	(scope
+		(event evAddedToStage)
+
+		(var applyCrosshairMethods:array = "[ { type: 'direct.action', name: 'option.set', args: [ 'battle.ui.crosshair.isDynamic',		_isDynamicList ] },
+											  { type: 'direct.action', name: 'option.set', args: [ 'battle.ui.crosshair.indexDynamic',	_isDynamicList ? $index : 0 ] },
+											  { type: 'direct.action', name: 'option.set', args: [ 'battle.ui.crosshair.indexStatic',	_isDynamicList ? 0 : $index ] } ]")
+
+		(var isSelected:bool = "_selectedIndex == $index && _isDynamicList == _isDynamicSelected")
+
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+
+	(dispatch evAddedToStage init=false on='addedToStage')
+
+	(style (width = 100%))
+
+	(element HorizontalDividerTwoPx
+		(bind visible "$index == 0 && _isDynamicList")
+	)
+
+	
+	(block
+		(style
+			(height = 48px)
+			(width = 100%)
+		)
+
+		
+		(block
+			(class $FullsizeAbsolute)
+			(style (hitTest = false) (alpha = 1))
+
+			(block
+				(class $FullsizeAbsolute)
+				(style (alpha = 1) (paddingTop = -1px) (paddingBottom = -1px))
+
+				(block
+					(class $FullsizeAbsolute)
+					(style
+						(scale9grid = 3)
+						(bind backgroundImage "'url:../service_kit/panel_backgrounds/menu_item_panel.png'")
+					)
+
+					(controller $Animation
+						(bindcall play
+							duration = 0.05
+							from	 = { alpha: 0 }
+							to		 = { alpha: 0.7 }
+							reverse	 = "!(rollOver || isSelected)"
+							(bind trigger "rollOver || isSelected")
+							(event "evAddedToStage")
+						)
+					)
+				)
+
+				(controller $Animation
+					(bindcall play
+						duration = 0.05
+						from	 = { alpha: 1 }
+						to		 = { alpha: 1.75 }
+						reverse	 = "!(rollOver && !mouseDown)"
+						(bind trigger "rollOver && !mouseDown")
+					)
+				)
+			)
+
+			(controller $Animation
+				(bindcall play
+					duration = 0.05
+					from	 = { alpha: 1 }
+					to		 = { alpha: 0.7 }
+					reverse	 = "!(mouseDown)"
+					(bind trigger "mouseDown")
+				)
+			)
+		)
+		
+
+		(block
+			(style
+				(position = "absolute")
+				(align = "left|middle")
+				(height = 100%)
+				(width = 100%)
+			)
+
+			(tf
+				(class $TextDefaultBold19NM)
+				(style
+					(bind alpha "isSelected ? TA : TC")
+					(marginLeft = "M")
+				)
+				(bind text "_caption")
+			)
+		)
+	)
+	
+
+	(element HorizontalDividerTwoPx)
+
+	(macro MOUSE_HANDLER
+		_methods = "applyCrosshairMethods"
+		_soundSet = "'button_default'"
+	)
+)

@@ -1,0 +1,67 @@
+(def element ModalWindowGrandStrategyPass() layout=true dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+
+	(scope
+		(var previewRouteEntity:gfx = "$datahub.getPrimaryEntity(CC.route, SC.Ui_windows.ROUTE.SHIP_PREVIEW)")
+		(var isInPreview:bool = "previewRouteEntity.route.isActive" (event "previewRouteEntity.route.evIsActiveChanged"))
+
+		(var sseRouteEntity:gfx = "$datahub.getPrimaryEntity(CC.route, SC.Ui_windows.ROUTE.SSE)")
+		(var isInSSE:bool = "sseRouteEntity.route.isActive" (event "sseRouteEntity.route.evIsActiveChanged"))
+
+		(var isInterfaceHidden:bool = "isInPreview || isInSSE")
+	)
+
+	(name = "'window_ModalWindowGrandStrategyPass'")
+
+	(class $FullsizeAbsolute)
+
+	(style
+		(align = "center")
+		(alpha = 0)
+		(bind hitTest "!isInterfaceHidden")
+	)
+
+	
+	(controller $Animation
+		(bindcall play  duration=0.2
+						from = "{ alpha: 0 }"
+						to = "{ alpha: 1 }"
+						action="killAll"
+						(event "startShow")
+		)
+		(bindcall play  duration=0.2
+						delay=0.2
+						from = "{ alpha: 1 }"
+						to = "{ alpha: 0 }"
+						action="killAll"
+						(event "startHide")
+		)
+	)
+
+
+	
+	(controller $Animation
+		(bindcall play  duration=0.2
+						from = "{ alpha: 0 }"
+						to = "{ alpha: 1 }"
+						reverse="isInterfaceHidden"
+						action="killAll"
+						(bind trigger "isInterfaceHidden")
+		)
+	)
+
+
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(class $Fullsize)
+		(style (align = "center"))
+
+		(block
+			(class $FullsizeAbsolute)
+			(element GamefaceWidget
+				_gfName = 'gf_ub2_port_grand_strategy_pass'
+				_gfPath = 'gui/gameface/build/grand_strategy_pass/index.html'
+			)
+		)
+	)
+)

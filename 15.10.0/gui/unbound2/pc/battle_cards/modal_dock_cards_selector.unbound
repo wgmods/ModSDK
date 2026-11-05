@@ -1,0 +1,281 @@
+(def constant ACTIVE_CARD_LIST_RENDERERS_DOCK {
+	"SC.Battle.BATTLE_CARD_SELECTOR_TYPE.CARD_LIST": 'DockCardsSelectorActiveCardsList',
+	"SC.Battle.BATTLE_CARD_SELECTOR_TYPE.ENEMY_SHIP_LIST": 'DockCardsSelectorActiveCardsList'
+})
+
+(def element ModalWindowDockCardsSelector () layout=true
+	(macro MODAL_WINDOW_INIT)
+	(scope
+		(var dockCardSelectorWatcher:gfx = "$datahub.getFirstWatcher(CC.dockCardSelector)")
+		(var dockCardSelectorEntity:gfx = "dockCardSelectorWatcher ? dockCardSelectorWatcher.entity : null" (event "dockCardSelectorWatcher.event"))
+		(var isNew:bool = "dockCardSelectorEntity.hasComponent(CC.newItem)" (event "dockCardSelectorEntity.evAdded") (event "dockCardSelectorEntity.evRemoved"))
+		(var isAutoShow:bool = "dockCardSelectorEntity ? dockCardSelectorEntity.dockCardSelector.isAutoShow : false" (event "dockCardSelectorEntity.dockCardSelector.evIsAutoShowChanged"))
+		(var selectorMaxCount:number = "dockCardSelectorEntity ? dockCardSelectorEntity.dockCardSelector.maxCards : 1" (event "dockCardSelectorEntity.dockCardSelector.evMaxCardsChanged"))
+
+		(var selectorType:number = "SC.Battle.BATTLE_CARD_SELECTOR_TYPE.CARD_LIST")
+	)
+
+	(bindcall externalCall "isNew ? 'inputMapping.onAction' : ''" "['makeSeen', {entityId: dockCardSelectorEntity.id}]" init=false watch=false (event "startShow"))
+
+	(bindcall externalCall "isAutoShow ? 'direct.action' : ''" "[SC.Common.STATISTICS_EVENTS.LOG, [SC.Common.BATTLE_CARD_STATISTICS.DOCK_AUTO_SHOW_TURN_ON]]" init=false watch=false (event "dockCardSelectorEntity.dockCardSelector.evIsAutoShowChanged"))
+	(bindcall externalCall "!isAutoShow ? 'direct.action' : ''" "[SC.Common.STATISTICS_EVENTS.LOG, [SC.Common.BATTLE_CARD_STATISTICS.DOCK_AUTO_SHOW_TURN_OFF]]" init=false watch=false (event "dockCardSelectorEntity.dockCardSelector.evIsAutoShowChanged"))
+
+	
+	(macro MODAL_WINDOW_BG)
+	
+	(class $Fullsize)
+	(style
+		(align = "center")
+	)
+
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+		(style (width = 100%))
+
+		(element ModalWindowHeaderFullSize
+			_windowName = "'IDS_SHIP_MANAGEMENT_CARDS_BLOCK_HEADER'"
+			_hideBackButton = false
+		)
+	)
+
+	(block
+		(style
+			(width = "BATTLE_CARD_SELECTOR_WIDTH")
+			(height = 100%)
+			(align = "center")
+			(paddingTop = "{720: M, 1080: XL}")
+			(paddingBottom = "{720: M, 1080: XL}")
+		)
+		(hblock
+			(style
+				(width = 100%)
+				(height = 100%)
+				(marginBottom = "40px")
+				(hgap = "BATTLE_CARD_SELECTOR_COLUMN_GAP")
+			)
+			
+			
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 2)
+				(style (width = "BATTLE_CARD_SELECTOR_COLUMN_WIDTH"))
+				(tf
+					(class $TextDefaultBold21NM)
+					(style
+						(marginBottom = "MS")
+						(alpha = "TA")
+					)
+					(bind text "'IDS_CARD_SELECTOR_COLUMN_INSTALLED_' + SC.Battle.BATTLE_CARD_SELECTOR_TYPE.VALUE_TO_NAME[selectorType] + '_HEADER'")
+				)
+				(element DockCardsSelectorSelectedCardsList
+					_selectorEntity="dockCardSelectorEntity"
+					(style (width = 100%))
+				)
+			)
+			
+			
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 2.5)
+				(style
+					(width = "BATTLE_CARD_SELECTOR_COLUMN_WIDTH")
+					(height = 100%)
+				)
+				(controller $Instance
+					(bind renderer "ACTIVE_CARD_LIST_RENDERERS_DOCK[selectorType]")
+					(args _selectorEntity="dockCardSelectorEntity")
+				)
+			)
+
+			
+			(block
+				(macro DEFAULT_MODAL_WINDOW_ANIMATION 3)
+				(style (width = "BATTLE_CARD_SELECTOR_COLUMN_WIDTH"))
+				(tf
+					(class $TextDefaultBold21NM)
+					(style
+						(marginBottom = "MS")
+						(alpha = "TA")
+					)
+					(text = 'IDS_CARD_SELECTOR_COLUMN_MANAGEMENT_HEADER')
+				)
+				(tf
+					(class $TextDefault17NM)
+					(style
+						(width = 100%)
+						(marginBottom = "MS")
+						(alpha = "TC")
+					)
+					(bind text "'IDS_DOCK_CARD_SELECTOR_COLUMN_MANAGEMENT_' + SC.Battle.BATTLE_CARD_SELECTOR_TYPE.VALUE_TO_NAME[selectorType] + '_DESCRIPTION'")
+				)
+				(tf
+					(class $TextDefault17NM)
+					(style
+						(width = 100%)
+						(marginBottom = "MS")
+						(alpha = "TC")
+					)
+					(text ='IDS_DOCK_CARD_SELECTOR_COLUMN_MANAGEMENT_LEVEL_UP_DESCRIPTION')
+				)
+				(tf
+					(bind visible "selectorType == SC.Battle.BATTLE_CARD_SELECTOR_TYPE.CARD_LIST")
+					(class $TextDefault17NM)
+					(style
+						(width = 100%)
+						(marginBottom = "MS")
+						(alpha = "TC")
+					)
+					(text = 'IDS_DOCK_CARD_SELECTOR_COLUMN_MANAGEMENT_LIMITED_TIME_DESCRIPTION')
+				)
+				(element SwitchWithRightLabel
+					_label = 'IDS_DOCK_CARD_SELECTOR_AUTO_SHOW_AT_BATTLE_START'
+					_textClass = '$TextDefault17NM'
+					_textWidth = 240px
+					_state = "isAutoShow"
+					_methods = "[ { type: 'direct.action', name: 'setAutoShowSelectorWindow', args: [!isAutoShow] } ]"
+				)
+			)
+		)
+	
+		
+	)
+
+	
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 3.5)
+		(style
+			(width = 100%)
+		)
+		(element HorizontalDividerTwoPx)
+	)
+	
+	
+	(block
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 3.5)
+		(style
+			(width = 100%) (align="center")
+			(paddingTop = "{720: SXS, 1080: M}")
+			(paddingBottom = "{720: M, 1080: XL}")
+		)
+
+		(element DefaultButton
+				_width = 256
+				_name = 'btn_confirm_selection'
+				_enabled = true
+				_isTransactionBtn = true
+				_label = 'IDS_CARD_SELECTOR_CONFIRM_SELECTION'
+				_focusIndex = 1
+				_defaultFocused = false
+				_methods = "[]"
+				_clickInterval = 2000
+		)
+	)
+)
+
+(def element DockCardsSelectorSelectedCardsList (_selectorEntity:gfx)
+	(scope
+		(var battleCardsCollection:gfx = "$datahub.getCollection(CC.battleCard)")
+		(var selectedCardsCollection:gfx = "battleCardsCollection.child('installed').child('sorted')")
+
+		(var selectedCardsCollectionLength:number = "selectedCardsCollection.items.length" (event "selectedCardsCollection.evAdded") (event "selectedCardsCollection.evRemoved"))
+
+		(var isAvailable:bool = "true")
+		(var selectorMaxCount:number =	"_selectorEntity.dockCardSelector.maxCards" (event "_selectorEntity.dockCardSelector.evMaxCardsChanged"))
+		(var selectorType:number = "SC.Battle.BATTLE_CARD_SELECTOR_TYPE.CARD_LIST")
+	)
+	(style
+		(width = "BATTLE_CARD_SELECTOR_COLUMN_WIDTH")
+	)
+	(block
+		(style (align = "center|middle") (vgap="S") (marginBottom = "S"))
+		(controller $Repeat renderer='BattleCardItemLargeSlot'
+			(bind count "isAvailable ? selectorMaxCount : selectedCardsCollectionLength") 
+			(args
+				_cardCollection="selectedCardsCollection"
+				_clickActionPrefix="BATTLE_CARD_CLICK_PREFIX_DOCK"
+				_selectorType="selectorType"
+				_isAvailable="isAvailable"
+			)
+		)
+	)
+)
+
+(def element DockCardsSelectorActiveCardsList (_selectorEntity:gfx)
+	(scope
+		(var battleCardsCollection:gfx = "$datahub.getCollection(CC.battleCard)")
+		(var activeCardsCollection:gfx = "battleCardsCollection.getChildByPath('activeInEvent.sorted')")
+
+		(var activeCardsCollectionLength:number = "activeCardsCollection.items.length")
+
+		(var installedBattleCardCollection:gfx = "battleCardsCollection ? battleCardsCollection.child('installed') : null" (event "battleCardsCollection.evUpdated") (event "battleCardsCollection.evChildAdded") (event "battleCardsCollection.evChildRemoved"))
+		(var installedCardsCount:number = "installedBattleCardCollection ? installedBattleCardCollection.items.length : 0" (event "installedBattleCardCollection.evAdded") (event "installedBattleCardCollection.evRemoved"))
+
+		(var maxCardsToInstall:number = "_selectorEntity ? _selectorEntity.dockCardSelector.maxCards : BATTLE_CARD_MAX_SELECTED_COUNT" (event "_selectorEntity.dockCardSelector.evMaxCardsChanged"))
+
+		(var isMaxCardsInstalled:bool = "installedCardsCount >= maxCardsToInstall")
+
+		(var accountResource:gfx = "$datahub.getSingleComponent(CC.accountResource)")
+		(var battlecardumAmount:number = "accountResource.battlecardum" (event "accountResource.evChangedBattlecardum"))
+		(var battlecardumPriceInfo:dict = "{finalPrice: battlecardumAmount, currency: SC.Common.CURRENCIES.BATTLECARDUM}")
+	)
+	(class $Fullsize)
+	(tf
+		(class $TextDefaultBold21NM)
+		(style
+			(marginLeft = "M")
+			(marginBottom = "MS")
+			(alpha = "TA")
+		)
+		(text = 'IDS_CARD_SELECTOR_COLUMN_CARD_LIST_HEADER')
+	)
+	(element CurrenciesPanelSimple
+		_priceInfo = "battlecardumPriceInfo"
+		_width = "BATTLE_CARD_SELECTOR_COLUMN_WIDTH"
+		_isExpandable = false
+	)
+	
+	(scrollArea
+		(class $Fullsize)
+		
+		
+		(style (backgroundColor = 0x01000000))
+
+		(verticalSlider='ScrollBarVLightWithValueChangedEvent')
+
+		(topShadow='ScrollAreaShadowTop')
+		(bottomShadow='ScrollAreaShadowBottom')
+
+		(wheelScrollSpeed = "1.0")
+		(wheelScrollAcceleration = "1")
+		(maxScrollingAnimatedDistance = "50")
+
+		(hscrollPolicy='off')
+		(vscrollPolicy='auto')
+		(scrollPerItem=true)
+
+		(repeatController='battleCardItemLine')
+
+		(drag=false)
+
+		(content
+			(style
+				(width = "BATTLE_CARD_SELECTOR_COLUMN_WIDTH") 
+			)
+			(block
+				(style (width = 100%))
+				(controller $Repeat renderer='BattleCardItemLineUpgradeable' name='battleCardItemLine'
+					(reuseElements = true)
+					(itemWidth = "BATTLE_CARD_LINE_WIDTH")
+					(itemHeight = "BATTLE_CARD_LINE_HEIGHT")
+					(bind count "activeCardsCollectionLength")
+					(args
+						_battleCardItem="activeCardsCollection.items[$index]"
+						_clickActionPrefix="BATTLE_CARD_CLICK_PREFIX_DOCK"
+						_isMaxCardsInstalled="isMaxCardsInstalled"
+					)
+				)
+			)
+			(element HorizontalDividerTwoPx)
+		)
+	)
+)

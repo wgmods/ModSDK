@@ -1,0 +1,331 @@
+(def constant MIN_GUN_MARKER_SCALE 0.5)
+
+(def constant HEATING_DOTS_RADIUS 30)
+(def constant HEATING_DOTS_ARC 180)
+(def constant HEATING_DOTS_HALF_ARC 90)
+
+(def constant HEATING_STATE_OVERHEAT 3)
+(def constant HEATING_STATE_CRITICAL 2)
+(def constant HEATING_STATE_OPTIMAL 1)
+(def constant HEATING_STATE_COOL 0)
+
+(def constant HEAT_BAR_CT [
+		{redOffset:-255, greenOffset:-255, blueOffset:-255},
+		{redOffset:-255, greenOffset:-255, blueOffset:-255},
+		{redOffset:-255, greenOffset:-255, blueOffset:-255},
+		{redOffset:-168, greenOffset:-255, blueOffset:-255}
+	]
+)
+
+(def constant HEAT_FILL_CT [
+		{redOffset:-38, greenOffset:-38, blueOffset:-38},
+		{redOffset:-179, greenOffset:-23, blueOffset:-85},
+		{redOffset:0, greenOffset:-153, blueOffset:-255},
+		{redOffset:0, greenOffset:-204, blueOffset:-255}
+	]
+)
+
+(def css $TextGunMarkerStyle()
+	(extends $FontEnableReadability)
+	(extends $FontFamilyDefaultBold)
+	(extends $BlockDropShadowFilter3)
+	(fontSize = 12)
+	(textColor = 0xC5C5C5)
+	(extends $TextMouseDisable)
+)
+
+
+(def constant GunMarkerThemeMap {
+	'1': 'ready',
+	'2': 'ready',
+	'3': 'warning',
+	'4': 'warning',
+	'5': 'warning',
+	'6': 'charging',
+	'7': 'crit',
+	'8': 'dead',
+	'11': 'dead', 
+	'12': 'crit',
+})
+
+
+(def constant GunMarkerRenderMap {
+	SC.Weapons.GUN_MARKER_TYPE.CIRCLE: {
+		backgroundMC: 'crosshair_gun_marker_background',
+		markerMC: 'crosshair_gun_marker',
+		shootAnimMC: 'crosshair_gun_marker_shoot_anim',
+		hideIndex: false,
+		sectorRadius: 15
+	},
+	SC.Weapons.GUN_MARKER_TYPE.RECT: {
+		backgroundMC: 'crosshair_gun_marker_rect_background',
+		markerMC: 'crosshair_gun_marker_rect',
+		shootAnimMC: 'crosshair_gun_marker_rect_shoot_anim',
+		hideIndex: false,
+		sectorRadius: 20
+	},
+	SC.Weapons.GUN_MARKER_TYPE.CIRCLE_NO_INDEX: {
+		backgroundMC: 'crosshair_gun_marker_background',
+		markerMC: 'crosshair_gun_marker',
+		shootAnimMC: 'crosshair_gun_marker_shoot_anim',
+		hideIndex: true,
+		sectorRadius: 15
+	},
+})
+
+
+(def element GunMarker (_index:number, _markerType:number, _isVisible:bool, _isHeatable:bool, _heatingComponent:gfx=null) layout=true
+	(scope
+		(event evShoot)
+
+		
+		(var _azimuth:number = 0)
+		(var _state:number = 0)
+		(var _blocked:bool = false)
+		(var _rotated:bool = true)
+		(var _progress:number = 1)
+
+		
+		(var renderSettings:dict = "GunMarkerRenderMap[_markerType]")
+		(var theme:str = "_blocked
+								?
+									_state == SC.Weapons.GUN_STATE.WORK		? 'shooting_alert' :
+									_state < SC.Weapons.GUN_STATE.CRITICAL	? 'alert'
+																			: GunMarkerThemeMap[_state]
+								:
+									_state == SC.Weapons.GUN_STATE.WORK						? 'ready' :
+									!(_rotated) && _state < SC.Weapons.GUN_STATE.CHARGE		? 'warning'
+																							: GunMarkerThemeMap[_state]")
+
+		(var markerScale:number = "1 - abs(_azimuth) * (1 - MIN_GUN_MARKER_SCALE) / 180")
+		(var d:number = "25")																
+		(var reloadAngle:number = "_progress * (90 - d) * 4")								
+		(var startArcOffset:number = "-90 - d / 2")
+		(var customAngle:number = "min(360, 0
+									+ d
+									+ (reloadAngle >= (90-d) ? d : 0)
+									+ (reloadAngle >= (90-d) * 2 ? d : 0)
+									+ (reloadAngle >= (90-d) *3 ? d : 0)
+									+ reloadAngle
+								 )")
+	)
+
+	(style (position = "absolute"))
+
+	
+	(tf $enabled="!renderSettings.hideIndex && _index != 0"
+		(style
+			(width = 26) (height = 19)
+			(position="absolute")
+			(left = -13) (top = 4)
+			(textAlign="center")
+		)
+		(class $TextGunMarkerStyle)
+		(alpha = 0.6)
+
+		(bind text "_index")
+	)
+
+	(controller $Instance renderer='HeatingContainer'
+		(bind enabled "_index == 0 && _isHeatable")
+	)
+
+	(controller $Instance renderer='HeatingDot'
+		(bind enabled "_heatingComponent != null")
+		(args
+			_heatingComponent = "_heatingComponent"
+		)
+	)
+
+	
+	(mc "renderSettings.backgroundMC"
+		(style (position = "absolute"))
+
+		(bind scaleX "markerScale")
+		(bind scaleY "markerScale")
+
+		(bindcall setState "theme" false init=true)
+	)
+
+	
+	(block
+		(style (position = "absolute"))
+
+		(mc "renderSettings.markerMC"
+			(style (position = "absolute"))
+			(bind scaleX "markerScale")
+			(bind scaleY "markerScale")
+			(bindcall setState "theme" false init=true)
+		)
+
+		(block
+			(style (position = "absolute"))
+
+			(bind scaleX "markerScale")
+			(bind scaleY "markerScale")
+
+			(isMask = true)
+
+			(controller $Sector
+				(color = 0xFF000000)
+				(offset = "startArcOffset")
+				(bind arc "customAngle" )
+				(radius = "renderSettings.sectorRadius")
+			)
+		)
+	)
+
+	
+	(block
+		(style (position = "absolute"))
+
+		(mc "renderSettings.shootAnimMC"
+			(style (position = "absolute"))
+
+			(bind scaleX "markerScale")
+			(bind scaleY "markerScale")
+
+			(bindcall playAnim shoot init=false (event "evShoot"))
+		)
+	)
+)
+
+(def element HeatingContainer()
+	(scope
+		(var selfVehicleWatcher:gfx = "$datahub.getFirstWatcher(CC.selfVehicle)")
+		(var selfVehicle:gfx = "selfVehicleWatcher.entity" (event "selfVehicleWatcher.event"))
+		(var controller:gfx = "selfVehicle ? selfVehicle.weaponController : null" (event "selfVehicle.evAdded") (event "selfVehicle.evRemoved"))
+		(var selectedWeapon:number = "controller ? controller.selectedWeapon : -1" (event "controller.evSelectedWeaponChanged"))
+
+		(var rotatedMarkersCollection:gfx = "$datahub.getCollection(CC.gun).child('byWeaponType').child(toString(selectedWeapon)).child('rotated').child('sorted')")
+		(var rotatedMarkers:array = "rotatedMarkersCollection ? rotatedMarkersCollection.items : []" (event "rotatedMarkersCollection.evAdded") (event "rotatedMarkersCollection.evRemoved"))
+		(var rotatedCount:number = "rotatedMarkers ? rotatedMarkers.length : 0")
+		(var angleStep:number = "HEATING_DOTS_ARC / (rotatedCount + 1)")
+	)
+
+	(style
+		(position = "absolute")
+	)
+
+	(controller $Repeat renderer='HeatingDot'
+		(bind count "rotatedCount")
+		(args
+			_heatingComponent = "rotatedMarkers[$index].overheatableModifier"
+			_angleStep = "angleStep"
+			_index = "$index"
+		)
+	)
+)
+
+(def element HeatingDot(_heatingComponent:gfx, _index:number=0, _angleStep:number="HEATING_DOTS_HALF_ARC")
+	(scope
+		(var angleRad:number = "gradToRad(180 + _angleStep * (_index + 1))")
+
+		(var x:number = "HEATING_DOTS_RADIUS * cos(angleRad)")
+		(var y:number = "HEATING_DOTS_RADIUS * sin(angleRad)")
+
+		(var heat:number = "_heatingComponent.heat" (event "_heatingComponent.evHeatChanged"))
+		(var isLocked:bool = "_heatingComponent.isLocked" (event "_heatingComponent.evIsLockedChanged"))
+
+		(var maxUsefulHeat:number = "_heatingComponent.maxUsefulHeat")
+		(var minUsefulHeat:number = "_heatingComponent.minUsefulHeat")
+
+		(var state:number = "isLocked ? HEATING_STATE_OVERHEAT : heat > maxUsefulHeat ? HEATING_STATE_CRITICAL : heat > minUsefulHeat ? HEATING_STATE_OPTIMAL : HEATING_STATE_COOL")
+	)
+
+	(style
+		(position = "absolute")
+		(width = 6)
+		(height = 6)
+		(pivotX = 3)
+		(pivotY = 3)
+
+		(bind left "x")
+		(bind top "y")
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(alpha = 0)
+		(style
+			(scaleX = 0.7)
+			(scaleY = 0.7)
+		)
+
+		(controller $Animation
+			(bindcall play 	duration=0.25
+					keyframes="[
+						{percent:0, to:{scaleX: 0.7, scaleY: 0.7, alpha: 0, left: 0, top: 0}},
+						{percent:50, to:{scaleX: 2, scaleY: 2, alpha: 0.5, left: -3, top: -3}},
+						{percent:100, to:{scaleX: 3, scaleY: 3, alpha: 0, left: -6, top: -6}}
+					]"
+					(bind trigger "state")
+			)
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(backgroundImage = 'url:../battle_hud/crosshair/heating/bar.png')
+				(backgroundSize = "fill")
+			)
+			(bind colorTransform "HEAT_BAR_CT[state]")
+			(bind alpha "state == HEATING_STATE_COOL || state == HEATING_STATE_OVERHEAT ? 0.4 : 0.7")
+		)
+
+		(block
+			(style
+				(position = "absolute")
+				(width = 4)
+				(height = 4)
+				(left = 1)
+				(top = 1)
+
+				(backgroundImage = 'url:../battle_hud/crosshair/heating/point.png')
+				(backgroundSize = "fill")
+			)
+			(bind colorTransform "HEAT_FILL_CT[state]")
+			(alpha = 0.7)
+		)
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(alpha = 1)
+
+		(controller $Animation
+			(bindcall play 	duration=0.25
+					keyframes="[
+						{percent:0, to:{alpha: 1}},
+						{percent:50, to:{alpha: 0.2}},
+						{percent:100, to:{alpha: 1}}
+					]"
+					(bind trigger "state")
+			)
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(backgroundImage = 'url:../battle_hud/crosshair/heating/bar.png')
+				(backgroundSize = "fill")
+			)
+			(bind colorTransform "HEAT_BAR_CT[state]")
+			(bind alpha "state == HEATING_STATE_COOL || state == HEATING_STATE_OVERHEAT ? 0.6 : 1")
+		)
+
+		(block
+			(style
+				(position = "absolute")
+				(width = 4)
+				(height = 4)
+				(left = 1)
+				(top = 1)
+
+				(backgroundImage = 'url:../battle_hud/crosshair/heating/point.png')
+				(backgroundSize = "fill")
+			)
+			(bind colorTransform "HEAT_FILL_CT[state]")
+		)
+	)
+)

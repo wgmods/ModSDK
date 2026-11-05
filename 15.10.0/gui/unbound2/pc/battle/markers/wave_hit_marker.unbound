@@ -1,0 +1,55 @@
+(def constant WAVE_HIT_MARKER_ICON_SIZE 10)
+(def constant WAVE_HIT_MARKER_ICON_CROSS_SIZE 44)
+
+(def element WorldWaveHitMarker (_markerEntity:gfx) layout=true
+	(scope
+		(macro GET_MARKER_ENTITY_COMPONENT 'waveHit')
+
+		(var lifeTime:number = "waveHitComponent.lifeTime" (event "waveHitComponent.evLifeTimeChanged"))
+		(var hitCount:number = "waveHitComponent.hitCount ? waveHitComponent.hitCount : 1" (event "waveHitComponent.evHitCountChanged"))
+		(var isActive:bool = "waveHitComponent ? waveHitComponent.isActive : true" (event "waveHitComponent.evIsActiveChanged"))
+		(var alertTime:number = "waveHitComponent.alertTime" (event "waveHitComponent.evAlertTimeChanged"))
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var cameraMode:number = "cameraEntity.camera.mode" (event "cameraEntity.camera.evModeChanged"))
+
+		(var formatDigitsNumber:number = "lifeTime < alertTime ? 1 : 0")
+		(var timerText:str = "countdownFormat(lifeTime, formatDigitsNumber)")
+		(var timerTextColor:number = "lifeTime < alertTime ? SC.Ui_styles.SERVICE_COLORS.ORANGE : SC.Ui_styles.SERVICE_COLORS.WHITE")
+	)
+
+	(block
+		(style
+			(position = "absolute") (top = "-WAVE_HIT_MARKER_ICON_SIZE/2") (left = "-WAVE_HIT_MARKER_ICON_SIZE/2")
+			(bind backgroundImage "'url:../battle_hud/markers/wave_hit/icon_marker_wave_hit_' + hitCount + '.png'")
+			(align = "center")
+		)
+
+		(block
+			(bind alpha "(isActive && cameraMode == CameraMode.SHELLTRACKER) ? 1 : 0")
+			(style
+				(position = "absolute")
+				(top = "-(WAVE_HIT_MARKER_ICON_CROSS_SIZE - WAVE_HIT_MARKER_ICON_SIZE)/2")
+				(left = "-(WAVE_HIT_MARKER_ICON_CROSS_SIZE - WAVE_HIT_MARKER_ICON_SIZE)/2")
+				(width = "WAVE_HIT_MARKER_ICON_CROSS_SIZE") (height = "WAVE_HIT_MARKER_ICON_CROSS_SIZE")
+				(bind backgroundImage "'url:../battle_hud/markers/wave_hit/icon_marker_wave_hit_active.png'")
+			)
+		)
+
+		
+		(hblock
+			(style (bind marginTop "(isActive ? 8 : 0) + WAVE_HIT_MARKER_ICON_SIZE + XXS"))
+			(tf
+				(style (bind textColor "timerTextColor"))
+				(class $TextDefaultBold13NM)
+				(bind text "timerText")
+			)
+			(tf
+				(style (bind textColor "timerTextColor"))
+				(class $TextDefault13NM)
+				(alpha = "TA")
+				(text = 'IDS_SECOND_SPACE')
+			)
+		)
+	)   
+)

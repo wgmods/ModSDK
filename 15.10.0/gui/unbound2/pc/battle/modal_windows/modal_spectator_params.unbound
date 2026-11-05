@@ -1,0 +1,228 @@
+
+(def constant MODAL_WIDTH 500)
+(def constant MAX_WIDTH_HOTKEY_LIST 110)
+(def constant MAX_WIDTH_HOTKEY_NAME 300)
+(def constant MAX_WIDTH_HOTKEY_DESCRIPTION 290)
+
+(def constant BINDING_TYPE		{
+									KEYBOARD:	'Keyboard',
+									MOUSE:		'Mouse',
+									SCROLL:		'Scroll'
+})
+
+(def constant DIVIDER_TYPE 'Divider')
+
+(def constant SPECTATE_BINDING	{
+									CAMERA_CONTROL: 		{	title:			"'IDS_SPECTATE_CAM_MOVING'",
+																description:	"'IDS_SPECTATE_CAM_MOVING_DESCRIPTION'",
+																type:			"BINDING_TYPE.KEYBOARD",
+																values:			"[Cmd.CMD_CAMERA_MOVE_UP, Cmd.CMD_CAMERA_MOVE_LEFT, Cmd.CMD_CAMERA_MOVE_DOWN, Cmd.CMD_CAMERA_MOVE_RIGHT]"
+															},
+									SWITCH_SHIP: 			{	title:			"'IDS_SPECTATE_SWITCH_SHIP'",
+																description:	"'IDS_SPECTATE_SWITCH_SHIP_DESCRIPTION'",
+																type: 			"BINDING_TYPE.MOUSE",
+																values:			"[Cmd.CMD_NEXT_ALLIED_VEHICLE, Cmd.CMD_PREV_ALLIED_VEHICLE]"
+															},
+									ZOOM_CAMERA: 			{	title:			"'IDS_SPECTATE_ZOOM_CAMERA'",
+																description:	"null",
+																type: 			"BINDING_TYPE.SCROLL",
+																values:			"[]"
+															},
+									TRANSITION_TO_CENTER: 	{	title:			"'IDS_SPECTATE_SWITCH_TO_CENTER'",
+																description:	"'IDS_SPECTATE_SWITCH_TO_CENTER_DESCRIPTION'",
+																type: 			"BINDING_TYPE.KEYBOARD",
+																values:			"[Cmd.CMD_SELECTED_ALLIED_VEHICLE]"
+															},
+									SWITCH_CAMERA: 			{	title:			"'IDS_SPECTATE_SWITCH_CAMERA'",
+																description: 	"null",
+																type: 			"BINDING_TYPE.KEYBOARD",
+																values:			"[Cmd.CMD_SWITCH_CAMERA_SPECTATE]"
+															},
+									ALL_TEAMS: 				{	title:			"'IDS_SPECTATE_ALL_TEAMS'",
+																description:	"null",
+																type:			"BINDING_TYPE.KEYBOARD",
+																values:			"[Cmd.CMD_SPECTATE_ALL]"
+															},
+									SWITCH_TEAM: 			{	title:			"'IDS_SPECTATE_SWITCH_TEAM'",
+																description:	"null",
+																type:			"BINDING_TYPE.KEYBOARD",
+																values:			"[Cmd.CMD_SPECTATE_ALPHA, Cmd.CMD_SPECTATE_BRAVO]"
+															},
+									OUT_OF_BATTLE: 			{	title:			"'IDS_SPECTATE_OUT_OF_BATTLE'",
+																description:	"null",
+																type: 			"BINDING_TYPE.KEYBOARD",
+																values:			"[Cmd.CMD_ESC]"
+															}
+})
+
+(def constant SPECTATE_BIND_LIST					"[	{type: DIVIDER_TYPE},
+														SPECTATE_BINDING.SWITCH_CAMERA,
+														{type: DIVIDER_TYPE},
+														SPECTATE_BINDING.CAMERA_CONTROL,
+														SPECTATE_BINDING.SWITCH_SHIP,
+														SPECTATE_BINDING.TRANSITION_TO_CENTER,
+														SPECTATE_BINDING.ZOOM_CAMERA,
+														{type: DIVIDER_TYPE},
+														SPECTATE_BINDING.OUT_OF_BATTLE
+													]")
+
+(def constant SPECTATE_BIND_LIST_TRAINING_MODE		"[	{type: DIVIDER_TYPE},
+														SPECTATE_BINDING.SWITCH_CAMERA,
+														{type: DIVIDER_TYPE},
+														SPECTATE_BINDING.CAMERA_CONTROL,
+														SPECTATE_BINDING.SWITCH_SHIP,
+														SPECTATE_BINDING.TRANSITION_TO_CENTER,
+														SPECTATE_BINDING.ZOOM_CAMERA,
+														{type: DIVIDER_TYPE},
+														SPECTATE_BINDING.ALL_TEAMS,
+														SPECTATE_BINDING.SWITCH_TEAM,
+														{type: DIVIDER_TYPE},
+														SPECTATE_BINDING.OUT_OF_BATTLE
+													]")
+
+(def element SpectateModalWindow () layout=true
+	(scope
+		(macro IS_SPECTATOR_MODE)
+		(var spectatorParams:array = "isSpectatorTrainingMode	? SPECTATE_BIND_LIST_TRAINING_MODE
+																: SPECTATE_BIND_LIST" (event "spectatorEntity.spectatorState.evStateChanged"))
+
+		(var hotKeysParamsCmdEntity:gfx = "$datahub.getPrimaryEntity(CC.commandMappingCommandName, 'CMD_SPECTATOR_HOTKEYS')")
+		(var isDownSpectatorHotkey:bool = "hotKeysParamsCmdEntity.commandMappingCommand.isDown" (event "hotKeysParamsCmdEntity.commandMappingCommand.evIsDownChanged"))
+	)
+	(class $Fullsize)
+	(style (align = "center"))
+	(alpha = "isDownSpectatorHotkey ? 1 : 0")
+	(visible = "isDownSpectatorHotkey")
+
+	(controller $Animation
+		(bindcall play
+			duration=0.1
+			from={alpha:0, visible:false}
+			to={alpha:1, visible:true}
+			reverse="!isDownSpectatorHotkey"
+			(bind trigger "isDownSpectatorHotkey"))
+	)
+
+	(macro MODAL_WINDOW_BACKGROUND_BATTLE)
+	(block
+		(style (width = "MODAL_WIDTH") (height = 100% ) (align = "center") (marginTop = "23%"))
+
+		(tf
+			(class $TextDefaultBold21NM)
+			(style (alpha = "TA") (marginBottom = "SXS"))
+			(text = 'IDS_SPECTATE_MODAL_HEADER')
+		)
+
+		(block
+			(controller $Repeat renderer='SpectateModalHotKeyLine' (args "spectatorParams[$index]")
+				(bind count "spectatorParams.length")
+			)
+		)
+	)
+)
+
+(def element SpectateModalHotKeyLine (data:dict) layout=true
+	(scope
+		(var isDivider:bool = "data.type == DIVIDER_TYPE")
+	)
+	
+	(style
+		(bind marginTop		"isDivider ? XS : SXS")
+		(bind marginBottom	"isDivider ? XS : SXS")
+		(bind width			"isDivider ? '100%' : 'auto'")
+		(bind height		"isDivider ? XXS : 'auto'")
+	)
+
+	(controller $Instance renderer='SpectateModalDivider'
+		(bind enabled "isDivider")
+	)
+
+	(controller $Instance renderer='SpectateModalHotKeyBind'
+		(args data="data")
+		(bind enabled "!isDivider")
+	)
+)
+
+(def element SpectateModalHotKeyDescription (description:str) layout=true
+	(style (marginTop = "S") (alpha = "TS"))
+	(tf
+		(style (maxWidth = "MAX_WIDTH_HOTKEY_DESCRIPTION") (align = "middle"))
+		(class $TextDefaultNM)
+		(bind text "description")
+	)
+)
+
+(def element SpectateModalDivider () layout=true
+	(class $MiddleAlignedAbsolutely)
+	(style (width = "1px"))
+
+	(element HorizontalDividerTwoPx
+		(style
+			(marginLeft = -50%)
+			(width = "MODAL_WIDTH")
+		)
+	)
+)
+
+(def element SpectateModalHotKeyBind (data:dict) layout=true
+	(style (alpha = "TA") (flow = "horizontal"))
+
+	(hblock
+		(style (height = "1px") (width = "MAX_WIDTH_HOTKEY_LIST") (align = "right|middle") (marginTop = "6px"))
+
+		(controller $Repeat renderer='HotkeyIndicator'
+			(bind count "data.values.length")
+			(args 
+				_commandId = "data.values[$index]"
+				_fxOnDown = false
+				_active = true
+				_size = "SIZE.LARGE"
+			)
+			(exprs
+				(style (marginLeft = "XS") (marginRight = "XS"))
+			)
+		)
+
+		(block $enabled = "data.type == BINDING_TYPE.SCROLL" 
+			(style
+				(width = "HOTKEY_SIZE[SIZE.LARGE]")
+				(height = "HOTKEY_SIZE[SIZE.LARGE]")
+				(marginLeft = "XS")
+				(marginRight = "XS")
+				(bind backgroundImage "	'url:../service_kit/mouse_buttons/icon_mouse_scroll.png'")
+				(backgroundSize = "cover")
+			)
+		)
+	)
+	(block
+		(style (marginLeft = "S"))
+		(tf
+			(style (maxWidth = "MAX_WIDTH_HOTKEY_NAME"))
+			(class $TextDefault17NM)
+			(bind text "data.title")
+		)
+		(block
+			(style (width = "100%"))
+
+			(controller $Instance renderer='SpectateModalHotKeyDescription'
+				(args description="data.description")
+				(bind enabled "data.description != null")
+			)
+		)
+	)
+)
+
+(def element HotKeySpectatorPanel () layout=true
+	(style (flow = "horizontal") (align = "middle"))
+	(element HotkeyIndicator
+			_commandId = "Cmd.CMD_SPECTATOR_HOTKEYS"
+			_fxOnDown = true
+			_active = true
+			_size = "SIZE.LARGE"
+	)
+	(tf
+		(class $TextDefaultBold17NM)
+		(style (marginLeft="S") (alpha = "TA"))
+		(text = 'IDS_SPECTATE_H_PANEL_DESCRIPTION')
+	)
+)

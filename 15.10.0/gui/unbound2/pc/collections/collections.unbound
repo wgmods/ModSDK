@@ -1,0 +1,515 @@
+(def css $CollectionText()
+	(maxWidth = "320px")
+	(width  = "100%")
+	(leading = "-4")
+)
+
+(def macro PULL_COLLECTION_INFO_SCOPE (_collectionID:expression)
+	(var collectionEntity:gfx = "$datahub.getPrimaryEntity(CC.collectionAlbum, _collectionID)")
+	(var collectionAlbumComponent:gfx = "collectionEntity ? collectionEntity.collectionAlbum : null" (event "collectionEntity.evAdded") (event "collectionEntity.evUpdated"))
+
+	(var name:str = 				"collectionAlbumComponent ? collectionAlbumComponent.name : ''" 					(event "collectionAlbumComponent.evUpdate"))
+	(var cards:array = 				"collectionAlbumComponent ? collectionAlbumComponent.cards : []" 					(event "collectionAlbumComponent.evUpdate"))
+	(var rewards:array = 			"collectionAlbumComponent ? collectionAlbumComponent.rewards : []" 					(event "collectionAlbumComponent.evUpdate"))
+	(var isFull:bool = 				"collectionAlbumComponent ? collectionAlbumComponent.isFull : false" 				(event "collectionAlbumComponent.evUpdate"))
+	(var subAlbums:array = 			"collectionAlbumComponent ? collectionAlbumComponent.subAlbums : []" 				(event "collectionAlbumComponent.evUpdate"))
+	(var ownCards:array = 			"collectionAlbumComponent ? collectionAlbumComponent.ownCards : []" 				(event "collectionAlbumComponent.evUpdate"))
+	(var cardCost:number = 			"collectionAlbumComponent ? collectionAlbumComponent.cardCost : 0" 					(event "collectionAlbumComponent.evUpdate"))
+	(var isInArmory:bool = 			"collectionAlbumComponent ? collectionAlbumComponent.isInArmory : false" 			(event "collectionAlbumComponent.evUpdate"))
+	(var duplicates:number = 		"collectionAlbumComponent ? collectionAlbumComponent.duplicates : 0" 				(event "collectionAlbumComponent.evUpdate"))
+	(var rewardCategory:str = 		"collectionAlbumComponent ? collectionAlbumComponent.rewardCategory : ''" 			(event "collectionAlbumComponent.evUpdate"))
+	(var universalTokens:number = 	"collectionAlbumComponent ? collectionAlbumComponent.universals : 0" 				(event "collectionAlbumComponent.evUpdate"))
+	(var subscriptionEnable:bool = 	"collectionAlbumComponent ? collectionAlbumComponent.subscriptionEnable : false" 	(event "collectionAlbumComponent.evUpdate"))
+)
+
+(def macro PULL_COLLECTION_GROUP_INFO_SCOPE (_collectionID:expression, _collectionGroupID:expression)
+	(var collectionEntity:gfx = "$datahub.getPrimaryEntity(CC.collectionAlbum, _collectionID)")
+
+	(var subAlbumEntity:gfx = "$datahub.getEntity(_collectionGroupID)")
+	(var subAlbumComponent:gfx = "subAlbumEntity ? subAlbumEntity.collectionSubAlbum : null")
+
+	(var name:str = 			"subAlbumComponent ? subAlbumComponent.name : ''" 			)
+	(var rewards:array = 		"subAlbumComponent ? subAlbumComponent.rewards : []" 		)
+	(var rewardCategory:str = 	"subAlbumComponent ? subAlbumComponent.rewardCategory : ''" )
+	(var ownCards:array = 		"subAlbumComponent ? subAlbumComponent.ownCards : []" 		(event "collectionEntity.collectionAlbum.evUpdate"))
+	(var totalCards:array = 	"subAlbumComponent ? subAlbumComponent.cards : []" 			(event "collectionEntity.collectionAlbum.evUpdate"))
+
+	(var isFull:bool = "ownCards.length == totalCards.length")
+)
+
+(def macro PULL_COLLECTION_CARD_INFO (_cardID:expression)
+	(var collectionCardEntity:gfx = "$datahub.getPrimaryEntity(CC.collectionCard, _cardID)")
+
+	
+	(var collectionCardComponent:gfx = "collectionCardEntity ? collectionCardEntity.collectionCard : null")
+	(var name:str = 			"collectionCardComponent ? collectionCardComponent.name : ''"			)
+	(var collectionID:number = 	"collectionCardComponent ? collectionCardComponent.collectionId : 0"	)
+	(var collectionName:str = 	"collectionCardComponent ? collectionCardComponent.collectionName : ''"	)
+	(var isOwned:bool = 		"collectionCardComponent ? collectionCardComponent.isOwned : false" 	(event "collectionCardComponent.evOwn"))
+	
+)
+
+(def element CollectionTitle (_collectionID:number, _overrideCollectionRecieveDescription:str = '') layout=true
+	(scope
+		(macro PULL_COLLECTION_INFO_SCOPE "_collectionID")
+
+		(var collectionName:str = "name ? 'IDS_' + toUpper(name) : null")
+		(var receiveCollectionDescription:str = "	_overrideCollectionRecieveDescription != ''	? _overrideCollectionRecieveDescription :
+													subscriptionEnable							? 'IDS_COLLECTION_RECEIVE_IN_DAILY_REWARDS' :
+													isInArmory									? 'IDS_COLLECTION_RECEIVE_IN_ARMORY_BUNDLES'
+																								: 'IDS_COLLECTION_DISCONTINUED_CANNOT_RECEIVE'")
+	)
+
+	(style
+		(width = "100%")
+	)
+
+	
+	(tf
+		(class $TextDefaultBold25NM)
+		(class $CollectionText)
+		(style (marginBottom = "M") (alpha = "TA"))
+
+		(bind text "collectionName")
+	)
+
+	
+	(element CollectionDescriptionButton
+		_collectionID = "_collectionID"
+	)
+
+	
+	(tf
+		(bind visible "!isFull")
+
+		(class $TextDefault17NM)
+		(class $CollectionText)
+		(style (marginBottom = "MS") (alpha = "TC"))
+
+		(bind text "receiveCollectionDescription")
+	)
+)
+
+(def element CollectionDescriptionButton(_collectionID:number) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE
+			_prefix = "'CollectionDescriptionButton_'"
+		)
+
+		(var normalAlpha:number = "0.7")
+		(var mouseDownAlpha:number = "0.5")
+	)
+
+	(controller $Animation
+			(bindcall play  duration=0.15
+							action="kill"
+							from = "{ alpha: normalAlpha }"
+							to = "{ alpha: 1 }"
+							watch=false
+							reverse="!(CollectionDescriptionButton_rollOver)"
+							(bind trigger "CollectionDescriptionButton_rollOver")
+			)
+			(bindcall play  duration=0.15
+							action="kill"
+							from = "{ alpha: CollectionDescriptionButton_rollOver ? 1 : normalAlpha }"
+							to = "{ alpha: mouseDownAlpha }"
+							watch=false
+							reverse="!(CollectionDescriptionButton_mouseDown)"
+							(bind trigger "CollectionDescriptionButton_mouseDown")
+							(bind enabled "CollectionDescriptionButton_rollOver")
+			)
+		)
+
+	(controller $Tooltip
+		(bind renderer "'SimpleStatusTooltip'")
+		(args
+			_text = "'IDS_COLLECTION_DESCRIPRION_BUTTON_TOOLTIP'"
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(style
+		(flow = "horizontal")
+		(gap = "S")
+		(marginBottom = "MS")
+		(align = "middle")
+	)
+
+	(tf
+		(class $TextDefault17NM)
+		(style (leading  = "-4") (alpha = "TA"))
+		(bind text "'IDS_COLLECTION_DESCRIPRION_BUTTON'")
+	)
+
+	(block
+		(style
+			(width = "22px")
+			(height = "22px")
+			(bind backgroundImage "'url:../service_kit/buttons/info_tab_new.png'")
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_prefix = "'CollectionDescriptionButton_'"
+	)
+
+	(bindcall externalCall 'inputMapping.onRequest' "['openCollectionDescriptionWindow', {collectionID: _collectionID, isComplete: false}]" init=false watch=false on='click')
+)
+
+(def element CollectionReward (_collectionID:number) layout=true
+	(scope
+		(macro PULL_COLLECTION_INFO_SCOPE "_collectionID")
+	)
+
+	(style
+		(width = "100%")
+		(align = "middle")
+		(flow = "horizontal")
+	)
+
+	
+	(hblock
+		(style (width = "100%") (gap = "S"))
+
+		(tf
+			(class $TextDefault17NM)
+			(style (alpha = "TA"))
+			(bind text "'IDS_COLLECTION_CARDS_AMOUNT_COLON'")
+		)
+
+		(element DefaultDividedCounter
+			_curValueTextClass = '$TextDefaultBold17NM'
+			_curValue = "ownCards.length"
+			_curValueTooltipText = "'IDS_COLLECTION_PLAYER_POINTS_COUNTER'"
+			_maxValue = "cards.length"
+			_maxValueTooltipText = "'IDS_COLLECTION_PLAYER_POINTS_COUNTER'"
+		)
+	)
+
+	
+	(element CollectionGiftBox
+		_rewards = "rewards"
+		_tooltipHeader = "'IDS_REWARD_FOR_COLLECTION'"
+		_rewardCategory = "rewardCategory"
+		_isReceived = "isFull"
+	)
+)
+
+
+(def element CollectionGiftBox (_rewards:gfx, _tooltipHeader:str, _isReceived:bool, _rewardCategory:str) layout=true
+	(style
+		(width = "48px") (height = "48px")
+		(marginLeft = "S") (marginRight = "S")
+	)
+
+	(controller $Tooltip
+		(bind renderer "'CollectionRewardTooltip'")
+		(args
+			_rewards = "_rewards"
+			_tooltipHeader = "_tooltipHeader"
+			_unifiedStatus = "_isReceived ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			_isRewardClaimed = "_isReceived"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(controller $Instance renderer='RewardCategory'
+		(bind enabled "_rewardCategory != null")
+		(args
+			_rewardCategory = "_rewardCategory"
+			_isReceived = "_isReceived"
+		)
+	)
+)
+
+(def element CollectionTokensAndDuplicates (_collectionID:number) layout=true
+	(scope
+		(macro PULL_COLLECTION_INFO_SCOPE "_collectionID")
+
+		(var subheaderText:str = "'IDS_' + toUpper(name)")
+	)
+
+	
+	(bind visible "!isFull")
+
+	
+	(controller $Tooltip
+		(bind renderer "'CollectionUniversalElementTooltip'")
+		(args
+			_universalTokens = "universalTokens"
+			_duplicates = "duplicates"
+			_cardCost = "cardCost"
+			_name = "name"
+			_headerText = "'IDS_COLLECTION_UNIVERSAL_ELEMENT'"
+			_subheaderText = "subheaderText"
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	
+	(hblock
+		(style
+			(width = "100%")
+			(align = "middle")
+			(marginBottom = "M")
+			(gap = "S")
+		)
+
+		(tf
+			(class $TextDefault17NM)
+			(style (alpha = "TA"))
+			(bind text "'IDS_COLLECTION_ITEM_EXCHANGE_AVAILABLE_COLON'")
+		)
+
+		(element PriceTag
+			_priceInfo = "{ finalPrice: universalTokens ? universalTokens : 0,
+							currency: SC.Common.CURRENCIES.COLLECTION_TOKEN }"
+			_size = "SIZE.MEDIUM"
+		)
+	)
+
+	
+	(hblock
+		(style (width = "100%"))
+
+		(tf
+			(class $TextDefault17NM)
+			(style (alpha = "TA"))
+			(bind text "'IDS_COLLECTION_DUPLICATES_IN_COLLECTION_COLON'")
+		)
+
+		(block
+			(style (marginLeft = "S") (alpha = "TA"))
+
+			(element DefaultDividedCounter
+				_currValueTextClass = "'$TextDefaultBold17NM'"
+				_curValue = "duplicates"
+				_maxValue = "cardCost"
+			)
+		)
+	)
+)
+
+(def element CollectionRewardsList (_collectionID:number) layout=true
+	(scope
+		(macro PULL_COLLECTION_INFO_SCOPE "_collectionID")
+	)
+
+	(style (width = 100%) (gap = "SXS"))
+
+	(controller $Repeat renderer='CollectionRewardListItem'
+		(bind count "subAlbums.length")
+		(args
+			_collectionID = "_collectionID"
+			_collectionGroupID = "subAlbums[$index]"
+		)
+	)
+)
+
+(def element CollectionRewardListItem (_collectionID:number, _collectionGroupID:number) layout=true
+	(scope
+		(macro PULL_COLLECTION_GROUP_INFO_SCOPE "_collectionID" "_collectionGroupID")
+	)
+
+	(style
+		(width = 100%)
+		(backgroundColor = "0x10ffffff")
+		(flow = "horizontal") (gap = "M")
+		(paddingTop = "XS") (paddingBottom = "XS")
+		(paddingLeft = "M") (paddingRight = "S")
+		(align = "middle")
+	)
+
+	(controller $Tooltip
+		(bind renderer "'CollectionRewardTooltip'")
+		(args
+			_rewards = "rewards"
+			_tooltipHeader = "'IDS_REWARD_FOR_SUBCOLLECTION'"
+			_unifiedStatus = "isFull ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			_isRewardClaimed = "isFull"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	
+	(block
+		(style
+			(width = 100%)
+			(flow = "horizontal") (gap = "SXS")
+			(align = "middle")
+		)
+
+		(tf
+			(class $TextDefaultNM)
+			(style (alpha = "TA"))
+			(bind text "name")
+		)
+
+		(element DefaultDividedCounter
+			_curValueTextClass = '$TextDefaultBold17NM'
+			_curValue = "ownCards.length"
+			_maxValue = "totalCards.length"
+		)
+	)
+
+	
+	(element RewardCategory
+		_rewardCategory = "rewardCategory"
+		_isReceived = "isFull"
+	)
+)
+
+
+
+
+
+(def element CollectionRewardTooltip (	_rewards:gfx, _tooltipHeader:str,
+										_unifiedStatus:str, _isRewardClaimed:bool) layout=true dispatch_size_change=true
+
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "_unifiedStatus" "'textColor'" "'textAlpha'")
+
+	(style (hitTest = "false") (width = "320px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "_tooltipHeader"
+			_unifiedStatus = "_unifiedStatus"
+		)
+
+		
+		(block
+			(bind visible "_isRewardClaimed")
+			(style (width = 100%))
+
+			(element TooltipSystemHorizontalDivider)
+			(element TooltipSystemStatusLine
+				_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+				_text = "'IDS_TOOLTIP_REWARD_TAKEN'"
+			)
+		)
+
+		
+		(block
+			(bind visible "_rewards.length > 0")
+			(style (width = 100%))
+
+			(element TooltipSystemHorizontalDivider)
+			(element TooltipSystemDHRewards
+				_rewards = "_rewards"
+			)
+		)
+	)
+)
+
+(def element CollectionUniversalElementTooltip (	_universalTokens:number, _duplicates:number, _cardCost:number, _name:str,
+													_headerText:str, _subheaderText:str, _unifiedStatus:str) layout=true dispatch_size_change=true
+	(macro UNIFIED_STATUS_TO_COLOR_AND_ALPHA "_unifiedStatus" "'textColor'" "'textAlpha'")
+
+	(style (hitTest = "false") (width = "320px"))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_imageUrl="'url:../collections/collection_tokens/small/collection_token_' + _name + '.png'"
+				_headerIconType="SC.Ui_styles.TOOLTIP_SYSTEM_HEADER_ICON_TYPE.SIMPLE"
+				_imageWidth="XLM"
+				_imageHeight="XLM"
+				_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+				_headerText="_headerText"
+				_subheaderText="_subheaderText"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemPriceTagLine
+			_title = "'IDS_CURRENCY_IN_STOCK_COLON'"
+			_priceInfo = "{finalPrice: _universalTokens, currency: SC.Common.CURRENCIES.COLLECTION_TOKEN}"
+			(style (marginRight = "XS"))
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemDescriptionText
+			_descriptionText = "'IDS_COLLECTION_DESCRIPTION_UNIVERSAL_ELEMENT'"
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemProgressBarBlock
+			_title = "'IDS_COLLECTION_NEXT_UNIVERSAL_ELEMENT'"
+			_currentValue = "_duplicates"
+			_maxValue = "_cardCost"
+		)
+	)
+)
+
+(def element CollectionCardItemTooltip (_cardID:number, _isShowUB2Tooltip:bool = false) layout=true dispatch_size_change=true
+	(scope
+		
+		(macro PULL_COLLECTION_CARD_INFO "_cardID")
+		
+
+		
+		(var collectionEntity:gfx = "$datahub.getPrimaryEntity(CC.collectionAlbum, collectionID)")
+		(var collectionAlbumComponent:gfx = "collectionEntity ? collectionEntity.collectionAlbum : null" (event "collectionEntity.evAdded") (event "collectionEntity.evUpdated"))
+
+		(var isPuzzle:bool = 		"collectionAlbumComponent.isPuzzle" (event "collectionAlbumComponent.evUpdate"))
+		
+
+		(var headerText:str = 				"isPuzzle	? 'IDS_PUZZLE_COLLECTION_OWNED_TOOLTIP_HEADER'
+														: tr('IDS_' + toUpper(name))")
+		(var subheaderText:str = 			"subst('IDS_COLLECTION_NAME', [], { _collectionName: tr('IDS_' + toUpper(collectionName) + '_QUOTES' ) })")
+		(var imagePath:str = 				"!isOwned && isPuzzle	? 'url:../bg/puzzle_collection/default_puzzle_card.png'
+																	: 'url:../collections/object_icons/small/' + name + '.png'")
+		(var statusLineData:dict = 			"isOwned	? { unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.CHECK, text: 'IDS_COLLECTION_ITEM_TOOLTIP_ACHIEVED' }
+ 														: { unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.LOCK, text: 'IDS_COLLECTION_ITEM_TOOLTIP_NOT_ACHIEVED' }")
+		(var mouseInstructionData:dict = 	"!isOwned	? { unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT, text: 'IDS_BUY_COLLECTION_FOR_UNIVERSAL_ELEMENT' } :
+											!isPuzzle	? { unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT, text: 'IDS_GO_TO_OBJECT_SCREEN' }
+														: null")
+	)
+
+	(style (hitTest = "false") (width = "380px"))
+
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderWithIconAndText
+			_headerText = "headerText"
+			_subheaderText = "subheaderText"
+			_unifiedStatus = "isOwned ? SC.Ui_styles.UNIFIED_STATUS.CHECK : null"
+			_imageWidth = "120"
+			_imageHeight = "120"
+			_imageUrl = "imagePath"
+		)
+
+		
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "statusLineData.unifiedStatus"
+			_text = "statusLineData.text"
+		)
+
+		
+		(block
+			(bind visible "mouseInstructionData")
+			(style (width = "100%"))
+
+			(element TooltipSystemHorizontalDivider)
+
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "mouseInstructionData")
+				(args
+					_unifiedStatus = "mouseInstructionData.unifiedStatus"
+					_text = "mouseInstructionData.text"
+				)
+			)
+		)
+	)
+)

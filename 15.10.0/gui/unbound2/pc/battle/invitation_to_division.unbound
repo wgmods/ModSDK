@@ -1,0 +1,111 @@
+(def element InvitationToDivision (_invitationEntity:gfx) layout=true
+	(scope
+		(event evDeclineBtnClick)
+		(event evAcceptBtnClick)
+		
+		(var playerName:str = "_invitationEntity ? _invitationEntity.avatar.name : null ")
+		(var timeLeft:number = "_invitationEntity ? _invitationEntity.invitationToDivision.timeLeft : 0 " (event "_invitationEntity.invitationToDivision.evUpdate"))
+	)
+	(bindcall externalCall 'direct.action' "['acceptInvitationToDivision', []]" init=false watch=false (event "evAcceptBtnClick"))
+	(bindcall externalCall 'direct.action' "['declineInvitationToDivision', []]" init=false watch=false (event "evDeclineBtnClick"))
+	
+	(style
+		(width = 330px)
+		(marginTop = "XXS")
+		(backgroundImage='url:../service_kit/panel_backgrounds/notification_panel.png')
+		(scale9grid = 4)
+	)
+	
+	(controller $Animation
+		(play
+			duration=0.5
+			to={alpha:1}
+			from={alpha:0}
+		)
+	)
+
+	
+	(hblock
+		(style
+			(width = 100%)
+			(marginTop = "XXS")
+			(marginBottom = "XS")
+		)
+		
+		(block
+			(style
+				(width = 27px)
+				(height = 35px)
+				(marginLeft = 6px)
+				(marginTop = -6px)
+				(backgroundImage='url:../service_kit/icons/icon_division_want.png')
+			)
+		)
+		(tf
+			(class $TextDefault17NM)
+			(style
+				(width = 100%)
+				(marginLeft = "XS")
+				(marginTop = "S")
+				(multiline = true)
+				(elideMode = false)
+				(wordWrap = true)
+				(leading = -3)
+				(styleSheet = "'h3{font-weight:bold}'")
+			)
+
+			(bind htmlText "subst('IDS_PLAYER_INVITES_YOU_TO_DIVISION',[],{playerName: playerName})")
+		)
+
+		(element CloseButton
+			_dispatchedEv = 'evDeclineBtnClick'
+			
+			(style (marginTop = 9px) (marginRight = 5px))
+		)
+
+		(element HotkeyIndicator _commandId="Cmd.CMD_DIVISION_INVITATION_DECLINE"
+			(style
+				(position = "absolute")
+				(top = 5px)
+				(right = -12px)
+				(hitTest = false)
+			)
+		)
+	)
+
+	
+	(element HorizontalDividerTwoPx
+		(style
+			(width = 326px)
+			(marginLeft = "XXS")
+		)
+	)
+
+	
+	(block
+		(style
+			(width = 100%)
+			(align = "center")
+			(marginTop = "S")
+			(marginBottom = "S")
+		)
+		(element DefaultButton
+			_label = 'IDS_ACCEPT'
+			_dispatchedEv = 'evAcceptBtnClick'
+			_size = "SIZE.SMALL"
+			
+			(block
+				(style (position = "absolute") (width = 100%) (align = "center") (bottom = "-SXS") (hitTest = false))
+				(element HotkeyIndicator _commandId="Cmd.CMD_DIVISION_INVITATION_ACCEPT")
+			)
+		)
+		(block
+			(style (width = 100%) (position = "absolute") (top = 5px) (paddingRight = 10px) (align = "right") )
+			(tf
+				(class $TextDefaultNM)
+				(style (alpha = "TA"))
+				(bind text "countdownFormat(timeLeft, 0, true)")
+			)
+		)
+	)
+)

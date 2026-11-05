@@ -1,0 +1,157 @@
+(def constant PURCHASE_TALENT_WINDOW_WIDTH 398)
+(def constant PURCHASE_TALENT_ICON_SIZE 80)
+
+(def element ModalWindowPurchaseTalent (_talentId:number, _crewId:number, _slotIndex:number) dispatch_size_change=true
+	(macro MODAL_WINDOW_INIT)
+	(macro MODAL_WINDOW_BG)
+
+	(scope
+		(var skillEntity:gfx = "$datahub.getPrimaryEntity(CC.crewSlotSkill, _talentId)")
+		(var skillComponent:gfx = "skillEntity ? skillEntity.crewSlotSkill : null")
+		(var skillState:gfx = "skillEntity ? skillEntity.crewSlotSkillState : null")
+
+		(var shopItemEntityId:number = "skillState ? skillState.eventShopItemEntityId : 0" (event "skillState.evEventShopItemEntityIdChanged"))
+		(var shopItemEntity:gfx = "shopItemEntityId != 0 ? $datahub.getEntity(shopItemEntityId) : null")
+		(var itemPriceIds:array = "shopItemEntity ? shopItemEntity.eventShopItem.itemPriceIds : null" (event "shopItemEntity.eventShopItem.evChanged"))
+		(var itemPriceEntity:gfx = "itemPriceIds ? $datahub.getEntity(itemPriceIds[0]) : null")
+		(var priceInfo:gfx = "itemPriceEntity ? itemPriceEntity.itemPrice : null" (event "itemPriceEntity.itemPrice.evChanged"))
+
+		(var priceCurrency:str = "priceInfo ? priceInfo.currency : ''")
+		(macro PULL_ACCOUNT_RESOURCES)
+		(macro PULL_ACCOUNT_RESOURCE_BY_ID "priceCurrency" 'accountAmount')
+
+		(var metaDeficit:number = "priceInfo && priceInfo.finalPrice > accountAmount ? priceInfo.finalPrice - accountAmount : 0")
+		(var currenciesPanelPrices:array = "priceInfo ? [{currency: priceInfo.currency, finalPrice: -priceInfo.finalPrice}] : []")
+		(var isEnough:bool = "priceInfo != null && metaDeficit <= 0")
+
+		(var iconPath:str = "skillComponent ? 'url:../crew_commander/slot_talents/' + skillComponent.index + '.png' : ''")
+		(var nameText:str = "skillComponent ? 'IDS_SKILL_' + skillComponent.index + '_NAME' : ''")
+	)
+
+	(style (align = "middle|center"))
+
+	(block
+		(style
+			(width = "PURCHASE_TALENT_WINDOW_WIDTH")
+			(align = "center")
+		)
+
+		(element ModalWindowShortHeader
+			_header = 'IDS_CREW_SKILLS_SELECTION'
+			_hasDivider = false
+			_headerWidth = "PURCHASE_TALENT_WINDOW_WIDTH"
+		)
+
+		(element CurrenciesPanel
+			_priceInfo = "currenciesPanelPrices"
+			_width = "PURCHASE_TALENT_WINDOW_WIDTH"
+		)
+
+		
+		(hblock
+			(style
+				(width = 100%)
+				(gap = "S")
+				(align = "middle")
+				(marginBottom = "M")
+			)
+
+			(block
+				(style
+					(width = "PURCHASE_TALENT_ICON_SIZE")
+					(height = "PURCHASE_TALENT_ICON_SIZE")
+					(backgroundSize = "cover")
+					(bind backgroundImage "iconPath")
+				)
+			)
+
+			(block
+				(style (width = 100%))
+
+				(tf
+					(class $TextDefaultBold19NM)
+					(style (width = 100%) (leading = "-4") (alpha = "TA"))
+					(bind text "nameText")
+				)
+
+				(tf
+					(class $TextDefaultNM)
+					(style
+						(width = 100%)
+						(marginTop = "S")
+						(leading = "-2")
+						(alpha = "TC")
+					)
+					(text = 'IDS_TALENT_CAT_NAME_DEFAULT')
+				)
+			)
+		)
+
+		(element HorizontalDividerTwoPx
+			(style (marginBottom = "MS"))
+		)
+
+		(block
+			(bind visible "isEnough")
+			(style (width = 100%) (align = "center"))
+
+			(element PriceTagWithQuestion
+				_questionText = 'IDS_QUESTION_PURCHASE_AND_INSTALL_FOR'
+				_priceInfo = "priceInfo"
+
+				(style
+					(flow = "tile_horizontal")
+					(width = "PURCHASE_TALENT_WINDOW_WIDTH")
+					(align = "center")
+				)
+			)
+		)
+
+		(block
+			(bind visible "!isEnough")
+			(style (width = 100%) (align = "center") (gap = "S"))
+
+			(tf
+				(class $TextDefault17NM)
+				(style
+					(width = 100%)
+					(textAlign = "center")
+					(alpha = "TA")
+					(textColor = "SC.Ui_styles.SERVICE_COLORS.ORANGE")
+				)
+				(text = 'IDS_NOT_ENOUGH_FUNDS')
+			)
+
+			(element PriceDeficit
+				_priceInfo = "priceInfo"
+				_deficit = "metaDeficit"
+			)
+		)
+
+		(hblock
+			(style (gap = "M") (marginTop = "MS"))
+
+			(element DefaultButton
+				_width = '129px'
+				_label = 'IDS_YES'
+				_name = 'btn_ok'
+				_focusIndex = 0
+				_defaultFocused = true
+				_enabled = "isEnough"
+				_isTransactionBtn = true
+				_methods = "[{	type: 'inputMapping.onAction',
+								name: 'purchaseTalent',
+								args: {crewId: _crewId, slot: _slotIndex, item: _talentId}}]"
+			)
+
+			(element DefaultButton
+				_width = '129px'
+				_label = "isEnough ? 'IDS_NO' : 'IDS_CLOSE_UPPER_CASE'"
+				_focusIndex = 1
+				_name = 'btn_cancel'
+			)
+		)
+
+		(macro DEFAULT_MODAL_WINDOW_ANIMATION 1)
+	)
+)

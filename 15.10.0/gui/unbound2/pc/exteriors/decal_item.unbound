@@ -1,0 +1,526 @@
+(def constant DECAL_ITEM_SIZE 60)
+
+(def constant DECAL_USER_PREF_EXTERIOR_PREVIEW_KEY 'previewExteriorId')
+
+(def macro DECAL_ITEM_SOUND_HANDLER (_soundSet:expression='', _isPreviewedExterior:expression="true", _isDecalInstalled:expression="false", _enabled:expression="false")
+	(bindcall externalCall "_enabled													? 'sound.playSetSoundDirect' : ''" "[_soundSet, 'over']" init=false watch=false on='rollOver')
+	(bindcall externalCall "_enabled && !_isPreviewedExterior							? 'sound.playSetSoundDirect' : ''" "[_soundSet, 'select']" init=false watch=false on='click')
+	(bindcall externalCall "_enabled && (_isPreviewedExterior || _isDecalInstalled)		? 'sound.playSetSoundDirect' : ''" "[_soundSet, 'unselect']" init=false watch=false on='click')
+)
+
+(def element DecalItem (_decalEntityId:number=0, _nodeId:str = '', _isActionsAvailable:bool=false) layout=true dispatch_size_change=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+		(macro MOUSE_HANDLER_SCOPE "'clickArea_'")
+
+		(var currentNodeEntity:gfx = "$datahub.getPrimaryEntity(CC.visualCustomizationNode, _nodeId)")
+		(var visualCustomizationNodeComponent:gfx = "currentNodeEntity ? currentNodeEntity.visualCustomizationNode : null")
+
+		(var decalEntity:gfx = "$datahub.getEntity(_decalEntityId)")
+		(var decalComponent:gfx = "decalEntity ? decalEntity.ownDecal : null")
+		(var decalCountComponent:gfx = "decalEntity 		? decalEntity.countComponent : null"		(event "decalEntity.evAdded") (event "decalEntity.evRemoved"))
+		(var decalExtraCountComponent:gfx = "decalEntity	? decalEntity.extraCountComponent : null" 	(event "decalEntity.evAdded") (event "decalEntity.evRemoved"))
+
+		(var decalId:number = "decalComponent ? decalComponent.id : 0"	(event "decalComponent.evUpdated"))
+		(var decalTags:array = "decalComponent ? decalComponent.customizationTags : []"	(event "decalComponent.evUpdated"))
+
+		(var isDecalInstalled:bool = "decalComponent ? decalComponent.id == visualCustomizationNodeComponent.customizationId : false" (event "visualCustomizationNodeComponent.evUpdated"))
+		(var hasAnotherSlot:bool = "decalComponent	? decalComponent.hasAnotherSlot : false"  (event "decalComponent.evUpdated"))
+
+		(var decalsInStorageCount:number = "		decalCountComponent				? decalCountComponent.value			: 0"		(event "decalCountComponent.evUpdate"))
+		(var decalsInExtraStorageCount:number = "	decalExtraCountComponent		? decalExtraCountComponent.value	: 0"		(event "decalExtraCountComponent.evUpdate"))
+
+		(var canInstall:bool = "decalsInExtraStorageCount > 0")
+		(var canLink:bool = "decalsInStorageCount > 0 && !canInstall && !isDecalInstalled")
+
+		(var decalsAmount:number = "canLink	? decalsInStorageCount : decalsInExtraStorageCount")
+
+		
+		(var exteriorConfig:gfx = "decalEntity ? decalEntity.exteriorConfig : null")
+		(var exteriorName:str = "exteriorConfig ? exteriorConfig.name : ''")
+
+		
+		(macro USER_PREF_DATA) 
+		(var previewExteriorId:number = "userPrefs[DECAL_USER_PREF_EXTERIOR_PREVIEW_KEY]")
+		(var isPreviewedExterior:bool = "previewExteriorId == decalId")
+		(var isAnotherExteriorPreviewed:bool = "previewExteriorId && !isPreviewedExterior")
+
+		
+		(macro PULL_RARITY "decalEntity" "'decalRarity'") 
+
+		(var mouseInstruction:dict = "	!_isActionsAvailable	? {} :
+										isDecalInstalled		? isAnotherExteriorPreviewed	? { unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT, text: 'IDS_MOUSE_INSTRUCTION_SHOW_DECAL' }
+																								: { unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT, text: 'IDS_MOUSE_INSTRUCTION_DEMOUNT_DECAL' } :
+										canInstall				? { unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT, text: 'IDS_MOUSE_INSTRUCTION_MOUNT_DECALS' } :
+										isPreviewedExterior		? { unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT, text: 'IDS_MOUSE_INSTRUCTION_HIDE_DECAL' }
+																: { unifiedStatus: SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT, text: 'IDS_MOUSE_INSTRUCTION_SHOW_DECAL' }")
+
+		
+		(var clickAction:str = "	!_isActionsAvailable	? '' :
+									isDecalInstalled		? 	isAnotherExteriorPreviewed	? SC.Ui_common.DECAL_ACTIONS.DISABLE_PREVIEW
+																							: SC.Ui_common.DECAL_ACTIONS.UNINSTALL :
+									canInstall				? SC.Ui_common.DECAL_ACTIONS.INSTALL :
+									isPreviewedExterior		? SC.Ui_common.DECAL_ACTIONS.DISABLE_PREVIEW
+															: SC.Ui_common.DECAL_ACTIONS.ENABLE_PREVIEW ")
+		(var clickPayload:dict = "{ customizationId: decalId, nodeId: _nodeId }")
+
+	)
+
+	(style (height = "DECAL_ITEM_SIZE") (width = "DECAL_ITEM_SIZE"))
+
+	
+	(block
+		(style (width = "DECAL_ITEM_SIZE") (height = "DECAL_ITEM_SIZE"))
+
+		(bind colorTransform "	!_isActionsAvailable	? {} :
+								clickArea_mouseDown		? ITEM_DOWN_COLOR_TRANSFORM_PARAMS :
+								rollOver				? ITEM_OVER_COLOR_TRANSFORM_PARAMS
+														: {}")
+
+		(element DecalItemView
+			_name = "exteriorName"
+			_amount = "decalsAmount"
+			_isInstalled = "isDecalInstalled"
+			_isAvailableToLink = "canLink"
+			_rarity = "decalRarity"
+		)
+
+		(controller $Tooltip
+			(bind renderer "'DecalTooltip'")
+			(args
+				_id = "decalId"
+				_amount = "decalsInExtraStorageCount"
+				_amountToLink = "decalsInStorageCount"
+				_isAvailableToLink = "canLink"
+				_isInstalled = "isDecalInstalled"
+				_rarity = "decalRarity"
+				_hasAnotherSlot = "hasAnotherSlot"
+				_mouseInstruction = "mouseInstruction"
+			)
+			(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+		)
+
+		(macro MOUSE_EVENTS_DISPATCHER "'clickArea_'")
+
+		(macro DECAL_ITEM_SOUND_HANDLER "'button_decals_item_2D' " "isPreviewedExterior" "isDecalInstalled" "_isActionsAvailable")
+
+		(bindcall externalCall "'inputMapping.onAction'" "[clickAction, clickPayload]" init=false watch=false on='click')
+		(bindcall externalCall "'inputMapping.onAction'" "['setUserPref',	clickAction == SC.Ui_common.DECAL_ACTIONS.ENABLE_PREVIEW	? { value: decalId, name: DECAL_USER_PREF_EXTERIOR_PREVIEW_KEY }
+																																		: { value: 0, name: DECAL_USER_PREF_EXTERIOR_PREVIEW_KEY }]" init=false watch=false on='click')
+	)
+
+	
+	(block
+		(bind visible "isDecalInstalled || isPreviewedExterior")
+
+		(style
+			(height = 64px) (width = 64px)
+			(position = "absolute")
+			(top = -2px) (left = -2px)
+			(backgroundImage = "'url:../service_kit/frames/one_pixel_frame.png'") (scale9grid = "2")
+			(hitTest = "false")
+		)
+		(bind colorTransform "	isDecalInstalled	? COLOR_TRANSFORM_WHITE_TO_YELLOW
+													: {}")
+	)
+
+	
+	(block
+		(style (position = "absolute") (width = 100%) (bottom = -22px) (align = "center"))
+
+		(controller $Instance renderer='VisualCustomizationLinkButton'
+			(bind enabled "canLink && _isActionsAvailable")
+			(args
+				_rollOver = "rollOver"
+				_customizationId = "decalId"
+				_nodeId = "_nodeId"
+			)
+		)
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER)
+)
+
+(def element VisualCustomizationLinkButton (_customizationId:number, _nodeId:str, _rollOver:bool)
+	(style (alpha = 0))
+	(controller $Animation
+		(bindcall play
+			from =	"{alpha: 0, top: -10}"
+			to =	"{alpha: 1, top: 0}"
+			reverse = "!_rollOver"
+			duration="0.1"
+			easing="Easing.quad_out"
+			(bind trigger "_rollOver")
+		)
+	)
+
+	(element DefaultButton
+		_width = 82
+		_size = "SIZE.SMALL"
+		_isTransactionBtn = "true"
+		_label = 'IDS_LINK_EXTERIOR_UPPER_CASE'
+		_methods = "[	{	type: 'inputMapping.onRequest',
+							name: SC.Ui_common.EXTERIOR_ACTIONS.OPEN_MODAL_BUY_AND_INSTALL,
+							args: { exteriorId: _customizationId, nodeId: _nodeId }
+						}]"
+		_soundSet = 'button_decals_link'
+	)
+)
+
+(def element DecalItemStatic(_id:number, _amount:number=0, _isReward:bool=false, _params:dict={})
+	(scope
+		(var exteriorEntity:gfx = "$datahub.getPrimaryEntity(CC.exteriorConfig, _id)")
+		(var exteriorConfig:gfx = "exteriorEntity ? exteriorEntity.exteriorConfig : null")
+
+		(var pointForMount:array = "exteriorEntity ? exteriorEntity.ownDecal.mountPointsNames : null")
+
+		(macro PULL_RARITY "exteriorEntity" "'decalRarity'") 
+	)
+
+	(bind name "'ExteriorItemDock_' + exteriorConfig.name")
+
+	(style (height = "DECAL_ITEM_SIZE") (width = "DECAL_ITEM_SIZE"))
+
+	(controller $Instance renderer='DecalItemView'
+		(bind enabled "exteriorConfig")
+		(args
+			_isReward = "_isReward"
+			_name = "exteriorConfig.name"
+			_amount = "_amount"
+			_rarity = "decalRarity"
+		)
+	)
+
+	(controller $Tooltip
+		(bind renderer "'DecalTooltip'")
+		(args
+			_id = "_id"
+			_amount = "_amount"
+			_rarity = "decalRarity"
+			_isReward = "_isReward"
+			_mountPoints = "pointForMount"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element DecalItemView (_name:str, _amount:number = 0, _isAvailableToLink:bool = false, _isReward:bool=false,
+							_rarity:str = null, _isInstalled:bool = true)
+
+	(scope
+		(var isInStorage:bool = "_amount > 0 || _isInstalled")
+		(var imageURL:str = "'url:../exteriors/decals/' + _name + '.png'")
+		(var isTransparent:bool = "!isInStorage && !_isReward")
+	)
+
+	(bind name "'ExteriorWithAmount_' + _name")
+
+	(style (height = "DECAL_ITEM_SIZE") (width = "DECAL_ITEM_SIZE"))
+
+	(block
+		(bind alpha "isTransparent ? 0.2 : 1")
+		(class $Fullsize)
+		(style (bind backgroundImage "imageURL"))
+	)
+
+	(element RarityPattern _rarity="_rarity"
+		(bind alpha "isTransparent ? 0.2 : 1")
+	)
+
+	(block
+		(bind visible "isInStorage")
+
+		(class $FullsizeAbsolute)
+		(style (align = "bottom|right"))
+
+		(controller $Instance renderer='ImageItemsCounter'
+			(args
+				_amount = "_amount"
+			)
+		)
+	)
+
+	(block
+		(bind visible "_isAvailableToLink || _isReward")
+		(style (position = "absolute"))
+		(controller $Instance renderer='LinkableItemIcon')
+	)
+)
+
+(def element DecalTooltip (	_id:number, _amount:number = 0, _amountToLink:number = 0, _rarity:str = null, _isAvailableToLink:bool = false, _isReward:bool = false,
+							_isInstalled:bool = false, _hasAnotherSlot:bool=false, _mouseInstruction:dict = {}, _mountPoints:array = [])
+	(scope
+		(macro IS_RARITY_SHOWN "_rarity" "'isRarityShown'") 
+
+		
+		(var decalEntity:gfx = "$datahub.getPrimaryEntity(CC.exteriorConfig, _id)")
+		(var exteriorConfig:gfx = "decalEntity ? decalEntity.exteriorConfig : null")
+
+		
+
+		(var unifiedStatus:str = "	_isInstalled	? SC.Ui_styles.UNIFIED_STATUS.CHECK
+													: SC.Ui_styles.UNIFIED_STATUS.DEFAULT")
+
+		(var headerText:str = "tr('IDS_' + toUpper(exteriorConfig.name))")
+		(var subheaderText:str = "'IDS_EXTERIOR_TYPE_' + SC.Exteriors.EXTERIOR_TYPE.VALUE_TO_NAME[exteriorConfig.type]")
+		(var headerIconPath:str = "'url:../exteriors/decals/' + exteriorConfig.name + '.png'")
+
+		
+		(var isAmountVisible:bool = "_amount > 0")
+		(var isLinkAmountVisible:bool = "_amountToLink > 0")
+		(var isMountedOnOtherPointsVisible:bool = "_hasAnotherSlot && !(isAmountVisible || isLinkAmountVisible || _isInstalled)")
+		(var isMountPointInfoVisible:bool = "_mountPoints.length > 0")
+		(var isMouseInstructionEnabled:bool = "('unifiedStatus' in _mouseInstruction) && ('text' in _mouseInstruction)")
+	)
+
+	(style (hitTest = false) (width = 320px))
+
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+
+		
+		(element TooltipSystemHeaderWithIconAndText
+			_imageUrl= "headerIconPath"
+			_imageWidth = "60"
+			_imageHeight = "60"
+			_unifiedStatus = "unifiedStatus"
+			_headerText = "headerText"
+			_subheaderText = "subheaderText"
+		)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_isInstalled"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "_isInstalled")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+					_text = "'IDS_INSTALLED'"
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isRarityShown"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemRarityText'
+				(bind enabled "isRarityShown")
+				(args
+					_rarity = "_rarity"
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isAmountVisible"))
+		)
+
+		(block
+			(bind visible "isAmountVisible")
+
+			(style (width = 100%))
+
+			(controller $Instance renderer='TooltipSystemCounterLineAdjoined'
+				(bind enabled "isAmountVisible")
+				(args
+					_title = "_isReward ? 'IDS_COUNT' : 'IDS_IN_WAREHOUSE'"
+					_count = "_amount"
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isLinkAmountVisible"))
+		)
+
+		(block
+			(bind visible "isLinkAmountVisible")
+
+			(style (width = 100%))
+
+			(controller $Instance renderer='TooltipSystemCounterLineAdjoined'
+				(bind enabled "isLinkAmountVisible")
+				(args
+					_title = "'IDS_IN_WAREHOUSE_TO_LINK'"
+					_count = "_amountToLink"
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isMountedOnOtherPointsVisible && !_isReward"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isMountedOnOtherPointsVisible && !_isReward")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.WARNING"
+					_text = "'IDS_AVAILABLE_DECALS_MOUNTED_ON_OTHER_POINTS'"
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_isAvailableToLink || _isReward"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "_isAvailableToLink || _isReward")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.LINKED"
+					_text = "'IDS_VISUAL_CUSTOMIZATION_NOT_LINKED'"
+				)
+			)
+		)
+
+
+		
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_isReward"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "_isReward")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.INFO"
+					_text = "'IDS_VISUAL_CUSTOMIZATION_RESTRICTIONS'"
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isMountPointInfoVisible"))
+		)
+
+		(element TOOLTIP_SYSTEM_ELEMENTS_GROUP
+			(bind visible "isMountPointInfoVisible")
+
+			(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+				(style (marginBottom = "MS"))
+
+				(element TooltipSystemStatusLine
+					_text = 'IDS_VISUAL_CUSTOMIZATION_AVAILABLE_TO_MOUNT_ON_POINTS'
+				)
+			)
+
+			(controller $Repeat renderer='DecalTooltipMountPoint'
+				(bind count "_mountPoints.length")
+
+				(args
+					_pointName = "_mountPoints[$index]"
+				)
+			)
+		)
+
+		
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "isMouseInstructionEnabled"))
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "isMouseInstructionEnabled")
+				(args
+					_unifiedStatus = "_mouseInstruction.unifiedStatus"
+					_text = "_mouseInstruction.text"
+				)
+			)
+		)
+	)
+)
+
+(def element DecalTooltipMountPoint(_pointName:str) layout=true
+	(style (width = 100%))
+
+	(element TOOLTIP_SYSTEM_GROUP_ELEMENT
+		(element TooltipSystemDescriptionText
+			_descriptionText = "'IDS_' + toUpper(_pointName)"
+		)
+	)
+)
+
+
+
+(def element DecalItemWithHeaderAndSubheader(_exteriorId:number)
+	(scope
+		(var decalEntity:gfx = "$datahub.getPrimaryEntity(CC.exteriorConfig, _exteriorId)")
+		(var exteriorConfig:gfx = "decalEntity ? decalEntity.exteriorConfig : null")
+
+		(var headerText:str = "tr('IDS_' + toUpper(exteriorConfig.name))")
+		(var subheaderText:str = "'IDS_EXTERIOR_TYPE_' + SC.Exteriors.EXTERIOR_TYPE.VALUE_TO_NAME[exteriorConfig.type]")
+
+		(macro PULL_RARITY "decalEntity" "'decalRarity'") 
+	)
+
+	(style
+		(width = 376px)
+		(marginLeft = "SXS") (marginRight = "SXS")
+		(flow = "horizontal") (gap = "S")
+		(align = "middle")
+		(backgroundColor = 0x01000000)
+	)
+
+	(element DecalItemView
+		_name = "exteriorConfig.name"
+		_rarity = "decalRarity"
+		_isAvailableToLink = true
+		_isReward = true
+	)
+
+	(block
+		(style (width = 100%) (gap = "S"))
+
+		(tf
+			(class $TextDefaultBold19NM)
+			(alpha = "TA")
+			(bind text "headerText")
+		)
+
+		(tf
+			(class $TextDefaultNM)
+			(alpha = "TC")
+			(bind text "subheaderText")
+		)
+	)
+
+	(controller $Tooltip
+		(bind renderer "'DecalTooltip'")
+		(args
+			_id = "_exteriorId"
+			_isAvailableToLink = "true"
+			_rarity = "decalRarity"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)

@@ -1,0 +1,42 @@
+(def element WorldDepthChargeMarker (_markerEntity:gfx) layout=true
+	(scope
+		(event evMarkerShow)
+
+		(macro GET_MARKER_ENTITY_COMPONENT 'depthCharge')
+
+		(var dangerLevel:number = "depthChargeComponent.dangerLevel" (event "depthChargeComponent.evDangerLevelChanged"))
+		(var dangerPostfix:str = "dangerLevel == SC.Battle.DANGER_LEVEL.CRITICAL ? '_danger' : ''")
+
+		(var markerIcon:str = "'icon_depth_charge' + dangerPostfix")
+	)
+
+	(dispatch evMarkerShow args="{}" on='addedToStage')
+
+	(controller $Animation
+		(bindcall play	duration="0.15"
+						from="{alpha: 0}"
+						to="{alpha: 1}"
+						action="kill"
+						(event "evMarkerShow")
+		)
+		(bindcall play	duration=0.15
+						from="{alpha: 1}"
+						to="{alpha: 0}"
+						action="kill"
+						(event "depthChargeComponent.evBlowUp")
+		)
+	)
+
+	(style
+		(width = 0) (height = 0)
+		(align = "center|middle")
+	)
+
+	(block
+		(bind visible "dangerLevel != SC.Battle.DANGER_LEVEL.NORMAL")
+		(style
+			(bind backgroundImage "'url:../battle_hud/markers/depth_charges/' + markerIcon + '.png'")
+			(backgroundSize = "autosize")
+		)
+	)
+)

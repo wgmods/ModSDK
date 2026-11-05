@@ -1,0 +1,198 @@
+(def constant ANIMATION_DURATION_PROGRESS_BAR_BG "0.1")
+(def constant ANIMATION_DURATION_PROGRESS_BAR_FILL "0.5")
+(def constant ANIMATION_DURATION_PROGRESS_BAR_LEVEL_UP_DELAY "0.6")
+
+(def css $InGameLevelingTextFormat()
+	(extends $TextDefaultBold21NM)
+	(textAlign = "center")
+	(width = "100%")
+)
+
+(def element InGameLevelingHolder () layout=true dispatch_size_change=true
+	(scope
+		(var ingameLevelEntity:gfx = "$datahub.getSingleEntity(CC.battleLeveling)")
+		(var ingameLevelComponent:gfx = "ingameLevelEntity.battleLeveling")
+		(var realLevel:number = "ingameLevelComponent.level" watch=false (event "ingameLevelComponent.evChanged"))
+		(var isMax:bool = "ingameLevelComponent.isMax" (event "ingameLevelComponent.evChanged"))
+
+		(var progress:gfx = "ingameLevelEntity.progress")
+		(var currentProgress:number = "progress ? progress.value : 0" (event "progress.evChanged"))
+		(var maxProgress:number = "progress ? progress.max : 0" (event "progress.evChanged"))
+		(var minProgress:number = "progress ? progress.min : 0" (event "progress.evChanged"))
+
+		(event evAnimationFinished)
+		(event evRepeatSequenceEmpty)
+		(event evProcessLevelup)
+
+		(event evLevelChanged)
+		(event evProgressChanged)
+		(event evProgressChangeFinished)
+
+		(var animationCounter:number = "0")
+		(var isAnimationRunning:bool = "animationCounter > 0 && animationCounter < 1")
+		(var currentLevel:number = "ingameLevelComponent ? ingameLevelComponent.level : 0" watch=false)
+		(bind currentLevel "currentLevel + 1" watch=false init=false (event "evAnimationFinished"))
+
+		(controller $Animation
+			(bindcall play 	duration="ANIMATION_DURATION_PROGRESS_BAR_FILL * 2 + ANIMATION_DURATION_PROGRESS_BAR_LEVEL_UP_DELAY"	
+							delay="0" 
+							from="{animationCounter : 0}" 
+							to="{animationCounter : 1}" watch=false (event "evProcessLevelup"))
+		)
+	)
+
+	(dispatch evProcessLevelup dir="EventDirection.NONE" (bind enabled "!isAnimationRunning") (event "ingameLevelComponent.evChanged"))
+	(dispatch evProcessLevelup dir="EventDirection.NONE" (bind enabled "currentLevel < realLevel") (bind trigger "currentLevel"))
+
+	(dispatch evAnimationFinished dir="EventDirection.NONE" (bind enabled "animationCounter == 1") (bind trigger "animationCounter == 1"))
+	(dispatch evRepeatSequenceEmpty dir="EventDirection.NONE" (bind enabled "currentLevel == realLevel && !isMax") (bind trigger "currentLevel"))
+
+	(dispatch evLevelChanged dir="EventDirection.DOWN" 	args="{	currentLevel : currentLevel + 1, 
+																wholeLevel : (realLevel - currentLevel) > 0,
+																repeatCount : realLevel - currentLevel,
+																currentProgress : currentProgress}" (bind enabled "isAnimationRunning") (bind trigger "isAnimationRunning"))
+
+	(dispatch evProgressChanged dir="EventDirection.DOWN" args="{	currentProgress : currentProgress, 
+																	currentLevel : currentLevel, 
+																	maxProgress : progress.max}" (bind enabled "currentLevel == realLevel") (event "progress.evChanged"))
+
+	(dispatch evProgressChangeFinished dir="EventDirection.DOWN" args="{	currentProgress : currentProgress, 
+																			currentLevel : currentLevel, 
+																			maxProgress : maxProgress}"(event "evRepeatSequenceEmpty"))
+
+	(bind visible "currentLevel > 0")
+
+	(element InGameLevelInfo "currentLevel" "currentProgress" "maxProgress" "isMax"
+		(scope
+			(bind maxProgress "maxProgress")
+			(bind isMax "isMax")
+			(bind realLevel "realLevel")
+		)
+	)
+)
+
+(def element InGameLevelInfo (_currentLevel:number, _currentProgress:number, _maxProgress:number, _isMax:bool) layout=true
+	(scope
+		
+		(event evLevelChanged)
+		(event evProgressChanged)
+		(event evMaxProgressChanged)
+
+		(var currentLevel:number = "_currentLevel")
+		(var isMax:bool = "_isMax")
+		(var realLevel:number = "0")
+		(var isMaxScopeValue:bool = "isMax && currentLevel == realLevel")
+		(var currentProgress:number = "_currentProgress" watch=false)
+		(var maxProgress:number = "_maxProgress" watch=false)
+
+		(var currentLevelInt:number = "isMax ? -1 : floor(currentLevel)")
+		(var triangleWidth:number = "50")
+		(var triangleHeight:number = "floor(sqrt(3)/2 * triangleWidth)")
+		(var barWidth:number = "260")
+		(var barGap:number = "XXS")
+
+		(var currentProgressFloor:str = "floor(currentProgress)" watch=true)
+		(var maxProgressFloor:str = "floor(maxProgress)" watch=true)
+
+		(var progressStr:str = "isMax ? currentProgressFloor : currentProgressFloor + '/' + maxProgressFloor" watch=true)
+		
+		(controller $Animation
+			 
+			(bindcall play 	duration="ANIMATION_DURATION_PROGRESS_BAR_FILL + (ANIMATION_DURATION_PROGRESS_BAR_FILL + ANIMATION_DURATION_PROGRESS_BAR_LEVEL_UP_DELAY) * $event.repeatCount"
+							to="{currentProgress : $event.currentProgress}"
+							watch=false
+							action="killAll"
+							(event "evLevelChanged")
+			)
+
+			
+			(bindcall play 	duration="ANIMATION_DURATION_PROGRESS_BAR_FILL"
+							delay="currentLevel == $event.currentLevel ? 0 : (ANIMATION_DURATION_PROGRESS_BAR_FILL + ANIMATION_DURATION_PROGRESS_BAR_LEVEL_UP_DELAY)" 
+							to="{currentProgress : $event.currentProgress}"
+							watch=false
+							(event "evProgressChanged")
+			)
+			
+			
+			(bindcall play 	duration="0.01"
+							delay="ANIMATION_DURATION_PROGRESS_BAR_LEVEL_UP_DELAY"
+							to="{currentLevel : $event.currentLevel}"
+							watch=true
+							(event "evLevelChanged")
+			)
+		)
+	)
+
+	(hblock
+		(block
+			(style
+				(width = "46px")
+				(height = "39px")
+				(align = "center|middle")
+				(backgroundImage = "'url:../events/halloween20/bg_leveling_left.png'")
+			)
+
+			(macro InGameLeveling_LevelTextBlock "currentLevelInt")
+		)
+
+		(hblock
+			(style
+				(backgroundImage = "'url:../events/halloween20/bg_leveling_center.png'")
+				(width = "214px")
+				(height = "39px")
+				(align = "center|middle")
+			)
+
+			(tf
+				(class $TextDefaultBold21NM)
+				(alpha = 2.0)
+				(bind text "progressStr")
+			)
+
+			(block
+				(style
+					(marginLeft = "XXS")
+					(marginTop = "-XXS")
+					(width = "16px")
+					(height = "20px")
+					(backgroundImage = "'url:../events/halloween20/icon_battle_points_bar.png'")
+				)
+			)
+		)
+
+		(block
+			(style
+				(width = "46px")
+				(height = "39px")
+				(align = "center|middle")
+				(backgroundImage = "'url:../events/halloween20/bg_leveling_right.png'")
+			)
+
+			(macro InGameLeveling_LevelTextBlock "currentLevelInt + 1")
+			
+		)
+	)
+)
+
+(def macro InGameLeveling_LevelTextBlock(displayLevel:expression)
+	(block
+		(bind visible "displayLevel > 0")
+		(style
+			(width = "100%")
+			(marginLeft = "100%")
+		)
+
+		(tf
+			(class $InGameLevelingTextFormat)
+			(bind text "subst('%(level)r',[], {level : displayLevel})")
+			(style
+				(marginLeft = "-50%")
+			)
+		)
+
+		(controller $Animation
+			(bindcall play duration="0.3" delay="ANIMATION_DURATION_PROGRESS_BAR_LEVEL_UP_DELAY" from="{scaleX : 1, scaleY : 1}" to="{scaleX : 2.0, scaleY : 2.0}" watch=false (event "evLevelChanged"))
+			(bindcall play duration="0.15" delay="ANIMATION_DURATION_PROGRESS_BAR_LEVEL_UP_DELAY + 0.3" from="{scaleX : 2.0, scaleY : 2.0}" to="{scaleX : 1, scaleY : 1}" watch=false (event "evLevelChanged"))
+		)
+	)
+)

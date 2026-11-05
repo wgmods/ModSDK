@@ -1,0 +1,24 @@
+(def constant MIN_TIME_LEFT 60)
+
+(def element BattleTimer (_battleState:number) layout=true
+	(scope
+		(var battleEntity:gfx = "$datahub.getSingleEntity(CC.battleTimer)")
+		(var battleTime:number = "battleEntity.battleTimer.battleTime" (event "battleEntity.battleTimer.evBattleTimeChanged"))
+		(var battleDuration:number = "battleEntity.battleInfo.duration * 60")
+		(var battleTimeLeft:number = "battleDuration - battleTime")
+		(var isBattleStarted:bool = "_battleState == SC.Common.CLIENT_BATTLE_STATE.STARTED")
+		(var btTextColor:number = "(isBattleStarted && battleTimeLeft < MIN_TIME_LEFT)	? SC.Ui_styles.SERVICE_COLORS.ORANGE
+																						: SC.Ui_styles.SERVICE_COLORS.WHITE")
+		(var timerText:str = "countdownFormat(battleTimeLeft, 0, true)")
+	)
+	
+	(tf
+		(class $TextDefaultBold17NM)
+		(style
+			(width = "42")
+			(bind textColor "btTextColor")
+		)
+		
+		(bind text "timerText")
+	)
+)

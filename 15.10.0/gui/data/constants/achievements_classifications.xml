@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<constants>
+	<enum name="ACHIEVEMENT_GROUP" type="String">
+		<const name="BATTLE"		value="battle"		/>
+		<const name="ADVANCED"		value="advanced"	/>
+		<const name="EXPLORING"		value="exploring"	/>
+		<const name="MEMORABLE"		value="memorable"	/>
+		<const name="NOT_USED"		value="not_used"		/>
+
+		<value_to_name/>
+
+		<range name="SORT_ORDER" values="BATTLE, ADVANCED, EXPLORING, MEMORABLE"/>
+	</enum>
+	
+	<enum name="ACHIEVEMENT_VISIBILITY" type="String">
+		<const name="VISIBLE"	value="visible"/>
+		<const name="HIDDEN"	value="hidden"/>
+
+		<value_to_name/>
+
+		<range name="SORT_ORDER" values="VISIBLE, HIDDEN"/>
+	</enum>
+	
+	<enum name="BATTLE_ACHIEVEMENT" type="String">
+		<const name="RANDOM_OR_RANK"	value="random_or_rank"/>
+		<const name="SQUAD"				value="squad"/>
+		<const name="OPERATIONS"		value="operations"/>
+
+		<const name="HEROIC"			value="heroic"/>
+		<const name="HONORABLE"			value="honorable"/>
+
+		<value_to_name/>
+
+		<range name="SUBGROUP_SORT_ORDER"	values="RANDOM_OR_RANK, SQUAD, OPERATIONS"/>
+		<range name="REMAINING_SORT_ORDER"	values="HEROIC, HONORABLE"/>
+	</enum>
+	
+	<enum name="ADVANCED_ACHIEVEMENT" type="String">
+		<const name="CLANS"		value="clans"/>
+		<const name="RANKS"		value="ranks"/>
+		
+		<const name="HEROIC"	value="heroic"/>
+		<const name="HONORABLE"	value="honorable"/>
+		<const name="COMMON"	value="common"/>
+
+		<value_to_name/>
+		
+		<range name="SUBGROUP_SORT_ORDER" values="CLANS, RANKS"/>
+		<range name="REMAINING_SORT_ORDER" values="HEROIC, HONORABLE, COMMON"/>
+	</enum>
+	
+	<enum name="EXPLORING_ACHIEVEMENT" type="String">
+		<const name="COMMON"		value="common"/>
+		<const name="OPERATIONS"	value="operations"/>
+		<const name="CAMPAIGNS"		value="campaigns"/>
+		<const name="COLLECTIONS"	value="collections"/>
+		
+		<const name="PARAGONS"		value="paragons"/>
+		<const name="STANDART"		value="standart"/>
+		<const name="NEWBIE"		value="newbie"/>
+		
+		<const name="MULTIPLE"		value="multiple"/>
+		<const name="SINGLE"		value="single"/>
+		
+		<const name="TEMPORARY"		value="temporary"/>
+		<const name="PERMANENT"		value="permanent"/>
+
+		<value_to_name/>
+		
+		<range name="SUBGROUP_SORT_ORDER" values="COMMON, OPERATIONS, CAMPAIGNS, COLLECTIONS"/>
+		<range name="REMAINING_SORT_ORDER" values="PARAGONS, STANDART, NEWBIE, MULTIPLE, SINGLE, TEMPORARY, PERMANENT"/>
+	</enum>
+	
+	<enum name="MEMORABLE_ACHIEVEMENT" type="String">
+		<const name="EVENT_BATTLES"					value="event_battles"/>
+		<const name="COMPETITIONS"					value="competitions"/>
+		<const name="ACHIEVEMENTS_MARATHON"			value="achievements_marathon"/>
+		<const name="SPECIAL"						value="special"/>
+		
+		<const name="IRL_EVENTS"					value="irl_events"/>
+		<const name="PARTICIPATING_IN_DEVELOPMENT"	value="participating_in_development"/>
+		<const name="EXTERNAL_PLATFORMS"			value="external_platforms"/>
+
+		<value_to_name/>
+		
+		<range name="SUBGROUP_SORT_ORDER" values="COMPETITIONS, ACHIEVEMENTS_MARATHON, SPECIAL, EVENT_BATTLES"/>
+		<range name="REMAINING_SORT_ORDER" values="PARTICIPATING_IN_DEVELOPMENT, EXTERNAL_PLATFORMS, IRL_EVENTS"/>
+	</enum>
+</constants>

@@ -1,0 +1,86 @@
+(def element SlotWorkStartedFX (accented:bool=false, strokeUrl:str='url:../battle_hud/weapons_panel/slot/weapon_panel_slot_stroke_green.png') layout=true
+	(scope
+		(event evShow)
+	)
+	(style
+		(position = "absolute")
+		(left = "SLOT_SIZE / 2")
+		(top = "SLOT_SIZE / 2")
+	)
+
+	(dispatch evShow on=addedToStage)
+
+	(block
+		(bind visible "accented")
+		(style
+			(position = "absolute")
+			(backgroundImage = 'url:../battle_hud/weapons_panel/slot/weapon_panel_slot_bg.png')
+
+			(pivotX = "SLOT_FX_SIZE / 2")
+			(pivotY = "SLOT_FX_SIZE / 2")
+		)
+
+		(block
+			(style
+				(position = "absolute")
+				(backgroundImage = "'url:../battle_hud/weapons_panel/slot/weapon_panel_slot_tint_green.png'")	
+			)
+		)
+
+		(controller $Animation
+			(bindcall play  duration=0.5
+							from="{ alpha: 1.5 }"
+							to="{ alpha: 0 }"
+							(event "evShow")
+							(bind enabled "accented")
+			)
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(backgroundImage = "strokeUrl")
+			(pivotX = "SLOT_FX_SIZE / 2")
+			(pivotY = "SLOT_FX_SIZE / 2")
+		)
+
+		(controller $Animation
+			(bindcall play  duration=0.3
+							from="{ scaleX: 1, scaleY: 1, alpha: 1 }"
+							to="{ scaleX: 1.3, scaleY: 1.3, alpha: 0 }"
+							(event "evShow")
+			)
+		)
+	)
+)
+
+(def element SlotReloadStartedFX () layout=true
+	(scope
+		(event evShow)
+	)
+	(style
+		(position = "absolute")
+		(left = "SLOT_SIZE / 2")
+		(top = "SLOT_SIZE / 2")
+	)
+
+	(dispatch evShow on=addedToStage)
+
+	(block
+		(style
+			(position = "absolute")
+			(backgroundImage = 'url:../battle_hud/weapons_panel/slot/weapon_panel_slot_stroke_orange.png')
+			(pivotX = "SLOT_FX_SIZE / 2")
+			(pivotY = "SLOT_FX_SIZE / 2")
+		)
+
+		(controller $Animation
+			(bindcall play  duration=0.3
+							from="{ scaleX: 1, scaleY: 1, alpha: 1 }"
+							to="{ scaleX: 1.3, scaleY: 1.3, alpha: 0 }"
+							(event "evShow")
+			)
+		)
+	)
+)

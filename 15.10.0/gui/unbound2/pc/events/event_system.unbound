@@ -1,0 +1,498 @@
+(def layout EventSystemInfoTextBlock (_headerText:str, _subheaderText:str=null)
+	(style (width = 100%) (marginTop = "M") (vgap = "S"))
+
+	(tf
+		(class $TextDefaultBold19NM)
+		(style (width = 100%))
+		(alpha = "TA")
+		(bind text "_headerText")
+	)
+	(tf
+		(bind visible "_subheaderText")
+		(class $TextDefaultNM)
+		(style (width = 100%))
+		(alpha = "TS")
+		(bind text "_subheaderText")
+	)
+)
+
+(def layout EventSystemDescriptionBlock (_text:str, _textColor:str="SC.Ui_styles.SERVICE_COLORS.WHITE")
+	(style (width = 100%) (marginTop = "M"))
+
+	(tf
+		(class $TextDefaultNM)
+		(style
+			(width = 100%)
+			(bind alpha "_textColor == SC.Ui_styles.SERVICE_COLORS.WHITE ? TC : 1")
+			(bind textColor "_textColor")
+		)
+		(bind text "_text")
+	)
+)
+
+(def layout EventSystemPaginatorPhaseItem (_icon:str, _text:str=null, _isRewardAvailable:bool=false, _isActive:bool=false, _isLocked:bool=false,
+											_isCompleted:bool=false, _soundSet:str=null)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'phase_'")
+
+		(var tooltipData:dict = null)
+	)
+
+	(macro SOUND_HANDLER
+		_enabled = "_soundSet != null"
+		_soundSet = "_soundSet"
+		_prefix = "'phase_'"
+	)
+
+	(style
+		(width = 34px) (height = 34px)
+		(align = "center|middle")
+	)
+
+	
+	(block
+		(style
+			(position = "absolute")
+			(top = 1px) (left = 1px)
+			(width = "L") (height = "L")
+			(backgroundColor = 0xFF000000)
+			(alpha = 0.5)
+		)
+	)
+
+	
+	(block
+		(bind visible "!_isRewardAvailable")
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundColor = 0xFFFFFFFF)
+			(bind alpha "_isActive ? 1 : 0")
+		)
+		(controller $Animation
+			(bindcall play  duration=0.2
+							from="{alpha:1}"
+							to="{alpha: 0.75}"
+							reverse="!phase_rollOver"
+							(bind trigger "phase_rollOver")
+							(bind enabled "!_isLocked && _isActive")
+			)
+			(bindcall play  duration=0.2
+							from="{alpha:0}"
+							to="{alpha: 0.75}"
+							reverse="!phase_rollOver"
+							(bind trigger "phase_rollOver")
+							(bind enabled "!_isLocked && !_isActive")
+			)
+			(bindcall play  duration=0.2
+							from="{alpha:0}"
+							to="{alpha: 0.5}"
+							reverse="!phase_rollOver"
+							(bind trigger "phase_rollOver")
+							(bind enabled "_isLocked")
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "!_isLocked && _isRewardAvailable")
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundColor = 0xFFFFCC66)
+			(bind alpha "_isActive ? 1 : 0")
+		)
+		(controller $Animation
+			(bindcall play  duration=0.2
+							from="{alpha:1}"
+							to="{alpha: 0.75}"
+							reverse="!phase_rollOver"
+							(bind trigger "phase_rollOver")
+							(bind enabled "_isActive")
+			)
+			(bindcall play  duration=0.2
+							from="{alpha:0}"
+							to="{alpha: 0.75}"
+							reverse="!phase_rollOver"
+							(bind trigger "phase_rollOver")
+							(bind enabled "!_isActive")
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "_isLocked")
+		(style
+			(position = "absolute")
+			(top = 4px) (left = 4px)
+			(width = 26px) (height = 26px)
+		)
+
+		(block 
+			(class $FullsizeAbsolute)
+			(style
+				(backgroundImage = 'url:../events/paginator/misc/bg_locked_phase.png')
+				(backgroundSize = "cover")
+			)
+			(controller $Animation
+				(bindcall play  duration=0.2
+								from="{alpha: 1}"
+								to="{alpha: 0}"
+								reverse="!phase_rollOver"
+								(bind trigger "phase_rollOver")
+				)
+			)
+		)
+
+		(block 
+			(class $FullsizeAbsolute)
+			(style
+				(backgroundImage = 'url:../events/paginator/misc/bg_locked_phase_hover.png')
+				(backgroundSize = "cover")
+			)
+			(controller $Animation
+				(bindcall play  duration=0.2
+								from="{alpha: 0}"
+								to ="{alpha: 1}"
+								reverse="!phase_rollOver"
+								(bind trigger "phase_rollOver")
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "!_isActive && !phase_rollOver")
+		(class $FullsizeAbsolute)
+		(style
+			(scale9grid = 3)
+			(bind alpha "_isLocked ? 0.25 : 1")
+			(bind backgroundImage "'url:../events/paginator/panels/panel' + (_isRewardAvailable ? '_reward' : '') + '.png'")
+		)
+	)
+
+	
+	(block
+		(bind visible "!_text && _icon")
+		(class $MiddleVHAbsolutely)
+		(style
+			(width = 19px) (height = 19px)
+			(bind alpha "_isLocked ? 0.5 : 1")
+			(bind backgroundImage "'url:../events/paginator/icons/icon_' + _icon + (_isActive || phase_rollOver ? '_selected' : _isRewardAvailable ? '_reward' : '') + '.png'")
+		)
+	)
+
+	
+	(tf
+		(bind visible "_text")
+		(bind class "_isActive || _isRewardAvailable || phase_rollOver ? '$TextDefaultBoldNMWithoutShadow' : '$TextDefaultNMWithoutShadow'")
+		(style
+			(width = 100%)
+			(textAlign = "center")
+			(marginTop = -1px)
+			(bind alpha "_isLocked && !phase_rollOver ? 0.5 : 1")
+			(bind textColor "	_isLocked && phase_rollOver	? 0xFF1C1C1C :
+								_isActive || phase_rollOver	? 0xFF000000 :
+								_isRewardAvailable			? 0xFFFFCC66
+															: 0xFFFFFFFF")
+		)
+		(bind text "_text")
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER "'phase_'")
+
+	(controller $Tooltip
+		(bind renderer "'EventSystemPaginatorItemTooltip'")
+		(bind enabled "tooltipData")
+		(args
+			_headerText = "tooltipData.header"
+			_unifiedStatus = "_isRewardAvailable ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			_completeText = "_isCompleted ? tooltipData.complete : null"
+			_rewardText = "!_isLocked && _isRewardAvailable ? tooltipData.reward : null"
+			_selectText = "!_isLocked && !_isActive ? tooltipData.select : null"
+			_lockText = "_isLocked ? tooltipData.lock : null"
+		)
+		(macro EVENT_SYSTEM_PAGINATOR_ITEM_BEHAVIOUR "0")
+	)
+)
+
+(def layout EventSystemPaginatorLevelItem (_icon:str, _text:str=null, _isRewardAvailable:bool=false, _isActive:bool=false, _isLocked:bool=false,
+											_isCompleted:bool=false, _soundSet:str=null)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'level_'")
+
+		(var tooltipData:dict = null)
+	)
+
+	(macro SOUND_HANDLER
+		_enabled = "_soundSet != null"
+		_soundSet = "_soundSet"
+		_prefix = "'level_'"
+	)
+
+	(style
+		(width = 34px) (height = 26px)
+		(align = "center|middle")
+	)
+
+	
+	(block
+		(style
+			(position = "absolute")
+			(top = 1px) (left = 1px)
+			(width = "L") (height = "MS")
+			(backgroundColor = 0xFF000000)
+			(alpha = 0.5)
+		)
+	)
+
+	
+	(block
+		(bind visible "!_isRewardAvailable")
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundColor = 0xFFFFFFFF)
+			(bind alpha "_isActive ? 1 : 0")
+		)
+		(controller $Animation
+			(bindcall play  duration=0.2
+							from="{alpha:1}"
+							to="{alpha: 0.75}"
+							reverse="!level_rollOver"
+							(bind trigger "level_rollOver")
+							(bind enabled "!_isLocked && _isActive")
+			)
+			(bindcall play  duration=0.2
+							from="{alpha:0}"
+							to="{alpha: 0.75}"
+							reverse="!level_rollOver"
+							(bind trigger "level_rollOver")
+							(bind enabled "!_isLocked && !_isActive")
+			)
+			(bindcall play  duration=0.2
+							from="{alpha:0}"
+							to="{alpha: 0.5}"
+							reverse="!level_rollOver"
+							(bind trigger "level_rollOver")
+							(bind enabled "_isLocked")
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "!_isLocked && _isRewardAvailable")
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundColor = 0xFFFFCC66)
+			(bind alpha "_isActive ? 1 : 0")
+		)
+		(controller $Animation
+			(bindcall play  duration=0.2
+							from="{alpha:1}"
+							to="{alpha: 0.75}"
+							reverse="!level_rollOver"
+							(bind trigger "level_rollOver")
+							(bind enabled "_isActive")
+			)
+			(bindcall play  duration=0.2
+							from="{alpha:0}"
+							to="{alpha: 0.75}"
+							reverse="!level_rollOver"
+							(bind trigger "level_rollOver")
+							(bind enabled "!_isActive")
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "_isLocked")
+		(style
+			(position = "absolute")
+			(top = 4px) (left = 4px)
+			(width = 26px) (height = 18px)
+		)
+
+		(block 
+			(class $FullsizeAbsolute)
+			(style
+				(backgroundImage = 'url:../events/paginator/misc/bg_locked_level.png')
+				(backgroundSize = "cover")
+			)
+			(controller $Animation
+				(bindcall play  duration=0.2
+								from="{alpha: 1}"
+								to="{alpha: 0}"
+								reverse="!level_rollOver"
+								(bind trigger "level_rollOver")
+				)
+			)
+		)
+
+		(block 
+			(class $FullsizeAbsolute)
+			(style
+				(backgroundImage = 'url:../events/paginator/misc/bg_locked_level_hover.png')
+				(backgroundSize = "cover")
+			)
+			(controller $Animation
+				(bindcall play  duration=0.2
+								from="{alpha: 0}"
+								to ="{alpha: 1}"
+								reverse="!level_rollOver"
+								(bind trigger "level_rollOver")
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "!_isActive && !level_rollOver")
+		(class $FullsizeAbsolute)
+		(style
+			(scale9grid = 3)
+			(bind alpha "_isLocked ? 0.25 : 1")
+			(bind backgroundImage "'url:../events/paginator/panels/panel' + (_isRewardAvailable ? '_reward' : '') + '.png'")
+		)
+	)
+
+	
+	(block
+		(bind visible "!_text && _icon")
+		(class $MiddleVHAbsolutely)
+		(style
+			(width = 19px) (height = 19px)
+			(bind alpha "_isLocked ? 0.5 : 1")
+			(bind backgroundImage "'url:../events/paginator/icons/icon_' + _icon + (_isActive || level_rollOver ? '_selected' : _isRewardAvailable ? '_reward' : '') + '.png'")
+		)
+	)
+
+	
+	(tf
+		(bind visible "_text")
+		(bind class "_isActive || _isRewardAvailable || level_rollOver ? '$TextDefaultBoldNMWithoutShadow' : '$TextDefaultNMWithoutShadow'")
+		(style
+			(width = 100%)
+			(textAlign = "center")
+			(marginTop = -1px)
+			(bind alpha "_isLocked && !level_rollOver ? 0.5 : 1")
+			(bind textColor "	_isLocked && level_rollOver	? 0xFF1C1C1C :
+								_isActive || level_rollOver	? 0xFF000000 :
+								_isRewardAvailable			? 0xFFFFCC66
+															: 0xFFFFFFFF")
+		)
+		(bind text "_text")
+	)
+
+	(macro MOUSE_EVENTS_DISPATCHER "'level_'")
+
+	(controller $Tooltip
+		(bind renderer "'EventSystemPaginatorItemTooltip'")
+		(bind enabled "tooltipData")
+		(args
+			_headerText = "tooltipData.header"
+			_unifiedStatus = "_isRewardAvailable ? SC.Ui_styles.UNIFIED_STATUS.CHECK : SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+			_completeText = "_isCompleted ? tooltipData.complete : null"
+			_rewardText = "!_isLocked && _isRewardAvailable ? tooltipData.reward : null"
+			_selectText = "!_isLocked && !_isActive ? tooltipData.select : null"
+			_lockText = "_isLocked ? tooltipData.lock : null"
+			_progressData = "!_isLocked && !_isCompleted ? tooltipData.progressData : null"
+		)
+		(macro EVENT_SYSTEM_PAGINATOR_ITEM_BEHAVIOUR "0")
+	)
+)
+
+(def layout EventSystemPaginatorItemTooltip (_isShowUB2Tooltip:bool, _headerText:str, _unifiedStatus:str="SC.Ui_styles.UNIFIED_STATUS.DEFAULT",
+												_completeText:str=null, _rewardText:str=null, _selectText:str=null, _lockText:str=null, _progressData:dict=null)
+	(macro PULL_TOOLTIP_UB2_STATE)
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+	(style (width = 320px))
+
+	(name = 'EventSystemPaginatorItemTooltip')
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "_headerText"
+			_unifiedStatus = "_unifiedStatus"
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "!_lockText && !_rewardText && _completeText"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "!_lockText && !_rewardText && _completeText")
+				(args
+					_text = "_completeText"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "!_lockText && _rewardText"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "!_lockText && _rewardText")
+				(args
+					_text = "_rewardText"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.REWARD_AVAILABLE"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "!_lockText && _progressData"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemProgressBarBlock'
+				(bind enabled "!_lockText && _progressData")
+				(args
+					_title = "_progressData.title"
+					_currentValue = "_progressData.currentValue"
+					_maxValue = "_progressData.maxValue"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "!_lockText && _selectText"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "!_lockText && _selectText")
+				(args
+					_text = "_selectText"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+				)
+			)
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_lockText"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "_lockText")
+				(args
+					_text = "_lockText"
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.LOCK"
+				)
+			)
+		)
+	)
+)

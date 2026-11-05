@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<constants>
+	<enum name="DATA_PROVIDER_NAME"	type="String">
+		<const name="SHIP_DESTRUCTION"		value="gf_ub2_ship_destruction"/>
+		<const name="ADVENT_CALENDAR"		value="gf_ub2_port_advent"/>
+		<const name="GRAND_STRATEGY_PASS"	value="gf_ub2_port_grand_strategy_pass"/>
+		<const name="LOOTBOXES"				value="gf_ub2_lootboxes"/>
+		<const name="PROMO_SCREEN"			value="gf_ub2_promoscreen"/>
+		<const name="NARRATIVE_CAMPAIGN"	value="gf_ub2_port_narrative_campaign_2026"/>
+		<const name="WAREHOUSE"				value="gf_ub2_warehouse" />
+	</enum>
+	<enum name="WAREHOUSE_EVENTS_SERVICE" type="String">
+		<const name="EVENT_INVENTORY_CHANGED"	value="inventory_changed"/>
+		<const name="EVENT_CATALOG_CHANGED"		value="catalog_changed"/>
+		<const name="EVENT_PRICING_CHANGED"		value="pricing_changed"/>
+		<const name="EVENT_SELECTION_CHANGED"	value="selection_changed"/>
+		<const name="EVENT_FULL_INVALIDATION"	value="full_invalidation"/>
+		<range name="RESET_STORE_EVENTS" values="EVENT_INVENTORY_CHANGED, EVENT_PRICING_CHANGED"/>
+	</enum>
+	<enum name="WAREHOUSE_UNSELLABLE_REASON" type="String">
+		<const name="UNSUPPORTED_ITEM"				value="unsupported_item"/>
+		<const name="ITEM_TYPE_NOT_SELLABLE"		value="item_type_not_sellable"/>
+		<const name="UNIT_GROUP_NOT_SELLABLE"		value="unit_group_not_sellable"/>
+		<const name="ITEM_CAN_SELL_DISABLED"		value="item_can_sell_disabled"/>
+		<const name="EXTERIOR_SPECIES_NOT_SELLABLE"	value="exterior_species_not_sellable"/>
+		<const name="PRICE_LIST_UNAVAILABLE"		value="price_list_unavailable"/>
+		<const name="NO_SELL_PRICE"					value="no_sell_price"/>
+		<const name="INVALID_AMOUNT"				value="invalid_amount"/>
+		<const name="NOT_ENOUGH_ITEMS_IN_STORAGE"	value="not_enough_items_in_storage"/>
+		<const name="EMPTY_SALE"					value="empty_sale"/>
+		<const name="TRANSACTION_UNAVAILABLE"		value="transaction_unavailable"/>
+		<const name="ITEM_NOT_SELLABLE"				value="item_not_sellable"/>
+	</enum>
+</constants>

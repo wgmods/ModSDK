@@ -1,0 +1,62 @@
+(def constant AIM_POS_MAX_SHIFT_HEIGHT 4)
+
+(def element MapAimPositionMarker (_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number, _isLoading:number=false) layout=true
+	(scope
+		(var isVisible:bool = "_isLoading ? false : _markerEntity.aimPosition.visible" (event "_markerEntity.aimPosition.evChanged"))
+		(var position:gfx = "_markerEntity.mapPosition.position")
+		(var posX:number = "position.x" (event "evEnterFrame"))
+		(var posY:number = "position.y" (event "evEnterFrame"))
+		(var yaw:number = "radToGrad(_markerEntity.mapPosition.yaw)" (event "evEnterFrame"))
+
+		(var offset:number = "_markerEntity.aimPosition.offset" (event "evEnterFrame"))
+
+		(var rangesAlphaComponent:gfx = "$datahub.getPrimaryEntity(CC.minimapOption, SC.Battle.MINIMAP_OPTION.rangesAlpha).minimapOption")
+		(var rangesAlpha:number = "rangesAlphaComponent.value * 0.01" (event "rangesAlphaComponent.evValueChanged"))
+
+		(var positionX:number = "posX * _scaleRatio" watch=false)
+		(bind positionX "posX * _scaleRatio" watch=false init=false (bind trigger "_scaleRatio"))
+		(controller $Animation
+			(bindcall play  duration=0.07
+							easing="Easing.line"
+							to="{ positionX:position.x * _scaleRatio }"
+							watch=false
+							(bind trigger "posX")
+							(bind enabled "isVisible")
+			)
+		)
+
+		(var positionY:number = "posY * _scaleRatio" watch=false)
+		(bind positionY "posY * _scaleRatio" watch=false init=false (bind trigger "_scaleRatio"))
+		(controller $Animation
+			(bindcall play  duration=0.07
+							easing="Easing.line"
+							to="{ positionY:position.y * _scaleRatio }"
+							watch=false
+							(bind trigger "posY")
+							(bind enabled "isVisible")
+			)
+		)
+	)
+	(style
+		(position = "absolute")
+		(bind left "positionX")
+		(bind top "positionY")
+		(bind rotation "yaw")
+		(bind alpha "rangesAlpha")
+	)
+
+	(macro BIND_FAIR_SCALE "_mapScale")
+
+	(bind visible "isVisible")
+	(block
+		(style
+			(position = "absolute")
+			(bind top "-offset")
+		)
+		(block
+			(style
+				(backgroundImage = "'symbol:minimap_aim_position'")	
+			)
+		)
+	)
+)

@@ -1,0 +1,85 @@
+(def layout PhaserLaser_ParametersForDock (_shipTTX:gfx) dispatch_size_change=true
+	(style (width = 100%))
+	(scope
+		(var ammoTTX:gfx = "_shipTTX.phaserLasers.ammo")
+	)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+											_value = "ammoTTX.damage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_SHIELD_MAX_DAMAGE'
+											_value = "ammoTTX.shieldDamage"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+											_value = "_shipTTX.phaserLasers.reloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_CALIBER'
+											_value = "_shipTTX.phaserLasers.guns[0].caliber"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_TOOLTIP_ARTILLERY_SHOOT_DIST'
+											_value="_shipTTX.phaserLasers.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PHASER_SPLASH_RADIUS'
+											_value = "ammoTTX.splashRadius"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PHASER_MAX_SPLASH_ALPHA_DAMAGE'
+											_value = "ammoTTX.splashDamage"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PHASER_MAX_SPLASH_SHIELD_DAMAGE'
+											_value = "ammoTTX.splashShieldDamage"
+											_zeroValueHidden = true
+			)
+		)
+	)
+)
+
+(def layout PhaserLaser_ParametersForBattle (_shipTTX:gfx) dispatch_size_change=true
+	(style (width = 100%))
+	(scope
+		(var ammoTTX:gfx = "_shipTTX.phaserLasers.ammo")
+	)
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_MAX_DAMAGE'
+											_value = "ammoTTX.damage"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_SHIELD_MAX_DAMAGE'
+											_value = "ammoTTX.shieldDamage"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+											_value = "_shipTTX.phaserLasers.reloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ARTILLERY_CALIBER'
+											_value = "_shipTTX.phaserLasers.guns[0].caliber"
+											_valueConfig = "VALUE_CONFIG.MILLIMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_TOOLTIP_ARTILLERY_SHOOT_DIST'
+											_value="_shipTTX.phaserLasers.maxDist"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PHASER_SPLASH_RADIUS'
+											_value = "ammoTTX.splashRadius"
+											_valueConfig = "VALUE_CONFIG.KILOMETER"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PHASER_MAX_SPLASH_ALPHA_DAMAGE'
+											_value = "ammoTTX.splashDamage"
+											_zeroValueHidden = true
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_PHASER_MAX_SPLASH_SHIELD_DAMAGE'
+											_value = "ammoTTX.splashShieldDamage"
+											_zeroValueHidden = true
+			)
+		)
+	)
+)

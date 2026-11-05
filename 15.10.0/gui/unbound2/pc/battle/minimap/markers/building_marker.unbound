@@ -1,0 +1,58 @@
+(def constant BUILDING_TYPE_TO_MAP_ICON {
+	'CoastalArtillery': 'icon_ground_artillery',
+	'Complex': 'icon_ground_artillery',
+	'AntiAircraft': 'icon_ground_air_defence',
+	'SensorTower': 'icon_ground_radar',
+	'Military': 'icon_ground_supply',
+	'RayTower': 'icon_ground_tower',
+	'AirBase': 'icon_ground_airbase',
+	'SpaceStation': 'icon_ground_station',
+	'Generator': 'icon_ground_supply',
+	'bermuda_lighthouse': 'icon_bermuda_lighthouse',
+	'bermuda_monument': 'icon_bermuda_monument',
+	'bermuda_radio': 'icon_bermuda_radio'
+})
+
+(def element MapBuildingMarker (_markerEntity:gfx, _mapScale:number, _itemScale:number, _scaleRatio:number, _isLoading:bool = false) layout=true
+	(scope
+		(var markerScale:number = "_itemScale / _mapScale")
+
+		(var buildingComponent:gfx = "_markerEntity.building")
+		(var isSuppressed:bool = "buildingComponent.isSuppressed" (event "buildingComponent.evSuppressionChanged"))
+
+		(var healthComponent:gfx = "_markerEntity.health" (event "_markerEntity.evAdded"))
+		(var isAlive:bool = "healthComponent.isAlive" (event "healthComponent.evIsAliveChanged"))
+
+		(var mapVisible:bool = "_markerEntity.visibility.mapVisible" (event "_markerEntity.visibility.evChanged"))
+
+		(macro VAR_RELATION "_markerEntity")
+
+		(var iconName:str = "BUILDING_TYPE_TO_MAP_ICON[buildingComponent.type]")
+		(var suppressedStr:str = "isSuppressed ? '_suppressed' : ''")
+		(var relationStr:str = "'_' + (relation == RELATION_NAMES.OWN ? RELATION_NAMES.NEUTRAL : relation)")
+		(var iconState:str =
+			"!(mapVisible)
+				? '_last_visible'
+				: isAlive
+					? suppressedStr + relationStr
+					: '_dead'")
+		(var markerIcon:str = "'url:../battle_hud/markers_minimap/building_icons/' + iconName + iconState + '.png'")
+
+		(macro SCOPE_HIGHLIGHT_MARKER_ON_MAP_MOUSE_OVER "_markerEntity")
+	)
+
+	(style
+		(width = 0) (height = 0)
+		(align = "center|middle")
+	)
+
+	(macro BIND_FAIR_SCALE "markerScale")
+
+	(block
+		(macro EFFECT_HIGHLIGHT_MARKER_ON_MOUSE_OVER)
+		(style
+			(bind backgroundImage "markerIcon")
+			(backgroundSize = "autosize")
+		)
+	)
+)

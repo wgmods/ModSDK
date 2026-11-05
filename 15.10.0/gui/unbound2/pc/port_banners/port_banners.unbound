@@ -1,0 +1,711 @@
+(def css $PortBannerMargins ()
+	(marginBottom  = "XS")
+	(marginRight = "XS")
+	(width = 240px)
+)
+
+(def css $PortBannerInnerMargins ()
+	(width = 100%)
+)
+
+(def css $PortBannerStatusMargin ()
+	(width = "L")
+	(height = "L")
+	(position = "absolute")
+	(right = 0)
+)
+
+(def constant PORT_BANNER_WIDTH 240)
+(def constant PORT_BANNER_SMALL_HEIGHT 36)
+(def constant PORT_BANNER_LARGE_HEIGHT 100)
+
+(def constant HUB2D_ENTER_BANNER_WIDTH 240)
+(def constant HUB2D_ENTER_BANNER_LARGE_HEIGHT 100)
+(def constant HUB2D_ENTER_BANNER_SMALL_HEIGHT 36)
+
+(def element Banner2DHub (_isSmall:bool=false)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+		(event evAddedToStage)
+
+		
+		(var visibleBannersCollection:gfx = "$datahub.getCollection(CC.hub2DBannerBlockData).getChildByPath('visibleBanners')")
+
+		(var bannersWithRewardCollection:gfx = "visibleBannersCollection.getChildByPath('bannersWithReward')")
+		(var hasBannersWithReward:bool = "bannersWithRewardCollection ? bannersWithRewardCollection.items.length > 0 : false"
+			(event "bannersWithRewardCollection.evAdded")
+			(event "bannersWithRewardCollection.evRemoved")
+			(event "bannersWithRewardCollection.evChanged")
+		)
+
+		
+		(var newContentEntity:gfx = "$datahub.getPrimaryEntity(CC.newContent, SC.Common.CONTENT_CATEGORY.HUB2D_BANNER)")
+		(var newContentCounter:number = "newContentEntity ? newContentEntity.newContent.count : 0" (event "newContentEntity.newContent.evCountChanged"))
+		(var hasNewData:bool = "newContentCounter > 0")
+
+		
+		(var hub2DWatcher:gfx = "$datahub.getFirstWatcher(CC.hub2D)")
+		(var hub2DEntity:gfx = "hub2DWatcher ? hub2DWatcher.entity : null" (event "hub2DWatcher.event"))
+		(var hub2DComponent:gfx = "hub2DEntity ? hub2DEntity.hub2D : null" (event "hub2DEntity.hub2D.evChanged"))
+
+		(var entryPointImageUrl:str = "hub2DComponent ? hub2DComponent.entryPointImageUrl : ''" (event "hub2DComponent.evChanged"))
+		(var entryPointRewardImageUrl:str = "hub2DComponent ? hub2DComponent.entryPointRewardImageUrl : ''" (event "hub2DComponent.evChanged"))
+		(var entryPointCurrentImageUrl:str = "hasBannersWithReward ? entryPointRewardImageUrl : entryPointImageUrl" (event "hub2DComponent.evChanged"))
+
+		(var byteArrayCollection:gfx = "$datahub.getCollection(CC.byteArrayData)")
+		(var byteArrayEntity:gfx = "$datahub.getPrimaryEntity(CC.byteArrayData, entryPointCurrentImageUrl)" (event "byteArrayCollection.evAdded"))
+		(var entryPointImageUrlByteArrayComponent:gfx = "byteArrayEntity ? byteArrayEntity.byteArrayData : null")
+
+		(var bannerTitleText:str = "'IDS_DOCK_BANNER_2D_HUB'")
+		(var containerImageName:str = "'port_banner' + (_isSmall ? '_small' : '') + (hasBannersWithReward ? '_reward': '')")
+	)
+
+	(bindcall externalCall "'inputMapping.onRequest'" "['show2DHub', {}]" init=false watch=false  on='click')
+
+	(style
+		(bind width "HUB2D_ENTER_BANNER_WIDTH")
+		(bind height "_isSmall ? HUB2D_ENTER_BANNER_SMALL_HEIGHT : HUB2D_ENTER_BANNER_LARGE_HEIGHT")
+		(padding = "XS")
+		(backgroundSize = "cover")
+		(bind backgroundImage "	entryPointImageUrlByteArrayComponent &&
+								entryPointImageUrlByteArrayComponent.data	?	entryPointImageUrlByteArrayComponent.data
+																			:	'url:../events/2d_hub/port/' + containerImageName + '.png'")
+	)
+
+	(controller $Animation
+		(bindcall play  duration="0.15"
+						delay="0.15"
+						from = "{ alpha: 0, top: 5 }"
+						to = "{ alpha: 1, top: 0 }"
+						(event "evAddedToStage")
+		)
+	)
+
+	(block
+		(style
+			(position = "absolute") (bottom = 0)
+			(width = 100%) (height = 28px)
+			(padding = "S")
+		)
+
+		(controller $Instance renderer='BannerItemTitle'
+			(bind enabled "true")
+			(args
+				_title = "toUpper(tr(bannerTitleText))"
+				_textColor = "hasBannersWithReward ? SC.Ui_styles.SERVICE_COLORS.YELLOW : SC.Ui_styles.SERVICE_COLORS.PAPER"
+				_isNew = "hasNewData"
+			)
+		)
+	)
+
+	(macro PORT_BANNER_HOVER_STATE "rollOver")
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_banner'"
+	)
+
+	(controller $Tooltip
+		(bind renderer "'Banner2DHubTooltip'")
+		(args
+			_isRewardAvailable = "hasBannersWithReward"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element FlagshipPVEBanner (_operationEntityId:number)
+	(scope
+		(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM_SCOPE)
+		(macro MOUSE_HANDLER_SCOPE)
+		(var operationEntity:gfx="$datahub.getEntity(_operationEntityId)")
+		(var bannerPath:str = "'url:../flagships_pve/port_banner/banner_flagships.png'")
+	)
+
+	(class $Fullsize)
+	(style
+		(align = "bottom")
+		(width = 240px)
+		(height = 60px)
+	)
+
+	(bindcall externalCall "'inputMapping.onRequest'" "['openGrandStrategyPassModal', {}]" init=false watch=false on='click')
+
+	
+	(block
+		(bind visible "rollOver")
+
+		(class $FullsizeAbsolute)
+		(style (backgroundColor = "0x10FFFFFF"))
+		
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundSize = "cover")
+			(backgroundImage = "bannerPath")
+		)
+	)
+
+	(block
+		(style
+			(width = 100%)
+			(position = "absolute")
+			(left = 12px)
+			(bottom = 12px)
+		)
+		(controller $Instance renderer='BannerItemTitle'
+			(bind enabled "true")
+			(args
+				_title = "toUpper(tr('IDS_FLAGSHIP_BANNER_TITLE'))"
+				_textColor = "SC.Ui_styles.SERVICE_COLORS.PAPER"
+			)
+		)
+	)
+	(block
+		(bind visible "rollOver")
+
+		(class $FullsizeAbsolute)
+		(style (backgroundColor = "0x10FFFFFF"))
+		
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_banner'"
+	)
+
+	(controller $Tooltip
+		(bind renderer "'FlagshipBannerTooltip'")
+		(args
+			_operationEntity = "operationEntity"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element RespawnEventBanner (_operationEntityId:number)
+	(scope
+		(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM_SCOPE)
+		(macro MOUSE_HANDLER_SCOPE)
+		(var operationEntity:gfx="$datahub.getEntity(_operationEntityId)")
+		(var bannerPath:str = "'url:../events/respawns_event/port_banner/banner_respawns.png'")
+	)
+
+	(class $Fullsize)
+	(style
+		(align = "bottom")
+		(width = 240px)
+		(height = 36px)
+	)
+
+	(bindcall externalCall "'inputMapping.onAction'" "['openEventWikiPage', {'topicName': 'respawns'}]" init=false watch=false on='click')
+
+	
+	(block
+		(bind visible "rollOver")
+
+		(class $FullsizeAbsolute)
+		(style (backgroundColor = "0x10FFFFFF"))
+		
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundSize = "cover")
+			(backgroundImage = "bannerPath")
+		)
+	)
+
+	(block
+		(style
+			(width = 100%)
+			(position = "absolute")
+			(left = 12px)
+			(bottom = 12px)
+		)
+		(controller $Instance renderer='BannerItemTitle'
+			(bind enabled "true")
+			(args
+				_title = "toUpper(tr('IDS_RESPAWNS_BANNER_TITLE'))"
+				_textColor = "SC.Ui_styles.SERVICE_COLORS.PAPER"
+			)
+		)
+	)
+
+	(block
+		(bind visible "rollOver")
+
+		(class $FullsizeAbsolute)
+		(style (backgroundColor = "0x10FFFFFF"))
+		
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_banner'"
+	)
+
+	(controller $Tooltip
+		(bind renderer "'RespawnsBannerTooltip'")
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element EventWikiPageBannerForEvent (_eventName:str, _battleTypeId:number)
+	
+	(scope
+		(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM_SCOPE)
+		(macro MOUSE_HANDLER_SCOPE)
+		
+		(var eventNameForContent:str = "isIn(_eventName, SC.Ui_common.EVENTS.WOWS_CLASSIC_EVENTS) ? SC.Ui_common.EVENTS.WOWS_CLASSIC_EVENTS[0] : _eventName")
+		(var bannerPath:str = "'url:../events/' + eventNameForContent + '/port_banner/banner_' + eventNameForContent + '.png'")
+		(var bannerTitleText:str = "'IDS_' + _eventName + '_BANNER_TITLE'")
+
+		(var battleTypeEntity:gfx = "$datahub.getEntity(_battleTypeId)")
+		(var isNew:bool = "battleTypeEntity.hasComponent(CC.newItem)" (event "battleTypeEntity.evAdded") (event "battleTypeEntity.evRemoved"))
+		(var timeOfBattleEventComponent:gfx = "battleTypeEntity.timeOfBattleEvent")
+		(var endTime:number = "isIn(_eventName, SC.Ui_common.EVENTS_TO_DRAW_BANNER.WITH_END_TIME) && timeOfBattleEventComponent ? timeOfBattleEventComponent.finishTime : 0")
+	)
+
+	(class $Fullsize)
+	(style
+		(align = "bottom")
+		(width = 240px)
+		(height = 36px)
+	)
+
+	(bindcall externalCall "'inputMapping.onRequest'" "['openEventWikiPage', {'topicName': eventNameForContent}]" init=false watch=false on='click')
+	(bindcall externalCall "isNew ? 'inputMapping.onAction' : ''" "['makeSeen', {entityId: _battleTypeId}]" init=false watch=false on='click')
+
+	
+	(block
+		(bind visible "rollOver")
+
+		(class $FullsizeAbsolute)
+		(style (backgroundColor = "0x10FFFFFF"))
+		
+	)
+
+	(block
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundSize = "cover")
+			(bind backgroundImage "bannerPath")
+		)
+	)
+
+	(block
+		(style
+			(width = 100%)
+			(position = "absolute")
+			(left = 12px)
+			(bottom = 12px)
+		)
+
+		(controller $Instance renderer='BannerItemTitle'
+			(bind enabled "true")
+			(args
+				_title = "toUpper(tr(bannerTitleText))"
+				_textColor = "SC.Ui_styles.SERVICE_COLORS.PAPER"
+				_isNew = "isNew"
+			)
+		)
+	)
+
+	(block
+		(bind visible "rollOver")
+
+		(class $FullsizeAbsolute)
+		(style (backgroundColor = "0x10FFFFFF"))
+		
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_banner'"
+	)
+
+	(controller $Tooltip
+		(bind renderer "'EventBannerTooltip'")
+		(args
+			_eventName = "_eventName"
+			_endTime = "endTime"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element GrandStrategyPassBanner ()
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+		(var grandStrategyPassEntity:gfx = "$datahub.getCollection(CC.grandStrategyPass)")
+		(var grandStrategyPassComponent:gfx = "grandStrategyPassEntity	? grandStrategyPassEntity.items[0]	? grandStrategyPassEntity.items[0].grandStrategyPass
+																											: null
+																		: null"	(event "grandStrategyPassEntity.evAdded")
+																				(event "grandStrategyPassEntity.evRemoved")
+																				(event "grandStrategyPassEntity.evChanged"))
+		(var claimedProvincesCount:number = "grandStrategyPassComponent ? grandStrategyPassComponent.claimedProvincesCount : 0" (event "grandStrategyPassComponent.evChanged"))
+		(var availableProvincesCount:number = "grandStrategyPassComponent ? grandStrategyPassComponent.availableProvincesCount : 0" (event "grandStrategyPassComponent.evChanged"))
+
+		(var isClaimAvailable:bool = "grandStrategyPassComponent ? grandStrategyPassComponent.isClaimAvailable : false" (event "grandStrategyPassComponent.evChanged"))
+		(var isProgressVisible:bool = "claimedProvincesCount < availableProvincesCount && availableProvincesCount > 0")
+
+		(var subtitleText:str = "subst('IDS_SUBST_GRAND_STRATEGY_PASS_BANNER_PROGRESS_INFO', [], {_level: claimedProvincesCount, _maxLevel: availableProvincesCount})")
+
+		(var grandStrategyPassCurrency:str = "grandStrategyPassComponent	? grandStrategyPassComponent.freeCurrencies.length	? grandStrategyPassComponent.freeCurrencies[0]
+																																: ''
+																			:''" (event "grandStrategyPassComponent.evChanged"))
+	)
+
+	(macro PORT_BANNER_BG)
+
+	(name = 'grandStrategyPass_banner')
+	(class $Fullsize)
+	(style
+		(width = 240px)
+		(bind height "isProgressVisible ? 69px : 36px")
+		(align = "middle|center")
+	)
+
+	(mc inner_panel
+		(class $FullsizeAbsolute)
+		(alpha = 0)
+		(bind visible "isHighContrast")
+		(controller $Animation
+			(bindcall play
+				from = "{alpha: 0}"
+				to   = "{alpha: 1}"
+				reverse = "!(rollOver && !mouseDown)"
+				duration = "0.15"
+				(bind trigger "rollOver && !mouseDown")
+			)
+		)
+	)
+
+	(bindcall externalCall "'inputMapping.onAction'" "['enterGrandStrategyPass', {}]" init=false watch=false on='click')
+
+	(block
+		(style
+			(width = 100%)
+			(paddingLeft = "SXS") (paddingRight = "SXS")
+		)
+
+		(element BannerItemTitle
+			_title = 'IDS_GRAND_STRATEGY_PASS_BANNER_HEADER'
+			_textColor = "isClaimAvailable ? SC.Ui_styles.SERVICE_COLORS.YELLOW : SC.Ui_styles.SERVICE_COLORS.WHITE"
+			_isDropShadowDisabler = "false"
+		)
+
+		(block
+			(bind visible "isClaimAvailable")
+			(class $PortBannerStatusMargin)
+			(style (bind top "isProgressVisible ? -8px : -10px"))
+
+			(element MarkerNewRewardsAnimate
+				_iconReward = 'url:../service_kit/port_banner/icon_banner_reward.png'
+			)
+		)
+
+		(block
+			(bind visible "isProgressVisible")
+			(style (width = "100%") (align = "center") (marginTop = "S"))
+
+			(controller $Instance renderer='ProgressBarWithProgressInfo'
+				(bind enabled "isProgressVisible")
+				(args
+					_points = "claimedProvincesCount"
+					_goalPoints = "availableProvincesCount"
+					_titleText = "subtitleText"
+					_hideProgressInfo=true
+				)
+			)
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_banner'"
+	)
+
+	(controller $Tooltip
+		(bind renderer "'GrandStrategyPassBannerTooltip'")
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def layout ModernEraBanner (_isSmall:bool=false)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var eventHubSeasonWatcher:gfx = "$datahub.getFirstWatcher(CC.eventHubSeason)")
+		(var eventHubSeasonEntity:gfx = "eventHubSeasonWatcher ? eventHubSeasonWatcher.entity : null" (event "eventHubSeasonWatcher.event"))
+
+		(var unseenPhaseIdxList:gfx = "eventHubSeasonEntity	? eventHubSeasonEntity.eventHubSeason.unseenPhaseConfigIdxList
+															: []" (event "eventHubSeasonEntity.eventHubSeason.evChanged"))
+		(var isNarrativeAvailable:bool = "unseenPhaseIdxList.length > 0")
+
+		(var modernEraAvailableToPurchaseCollection:gfx = "$datahub.getCollection(CC.eventShopItem).getChildByPath('availableToPurchase')")
+		(var isAvailableToPurchase:bool = "modernEraAvailableToPurchaseCollection.items.length > 0" (event "modernEraAvailableToPurchaseCollection.evChanged")
+																									(event "modernEraAvailableToPurchaseCollection.evAdded")
+																									(event "modernEraAvailableToPurchaseCollection.evRemoved"))
+	)
+
+	
+
+	(class $Fullsize)
+	(style
+		(backgroundImage = "isAvailableToPurchase ? 'url:../modern_era/banner/bg/background_medium.png' : 'url:../modern_era/banner/bg/background_small.png'")
+		(width = 240px)
+		(backgroundSize = "fill")
+		(bind height "isAvailableToPurchase ? 56px : 36px")
+		(bind align "middle|center")
+	)
+
+	(bindcall externalCall "'inputMapping.onAction'" "[	'navigateTo', { route: SC.Ui_windows.ROUTE.MODERN_ERA_MAIN }]" init=false watch=false on='click')
+
+	(block
+		(style
+			(width = 100%)
+			(paddingLeft = "SXS")
+			(align = "middle|center")
+		)
+
+		(element BannerItemTitle
+			_title = 'IDS_MODERN_ERA_BANNER_TITLE'
+			_textColor = "SC.Ui_styles.SERVICE_COLORS.WHITE"
+			_isDropShadowDisabler = "false"
+		)
+
+		(block
+			(bind visible "isAvailableToPurchase")
+
+			(style (width = 100%))
+
+			(element BannerItemDescription
+				_description = 'IDS_MODERN_ERA_BANNER_DESCRIPTION'
+				_textColor = "SC.Ui_styles.SERVICE_COLORS.WHITE"
+			)
+		)
+	)
+
+	(macro PORT_BANNER_HOVER_STATE "rollOver")
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_banner'"
+	)
+
+	(controller $Tooltip
+		(bind renderer "'ModernEraBannerTooltip'")
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def layout NarrativeCampaignBanner ()
+	(scope
+		(macro SIMPLE_MOUSE_OVER_DOWN_SELECTED_COLORTRANSFORM_SCOPE)
+		(macro MOUSE_HANDLER_SCOPE)
+
+		(var campaignEntity:gfx = "$datahub.getSingleEntity(CC.narrativeCampaign)")
+		(var campaignComponent:gfx = "campaignEntity ? campaignEntity.narrativeCampaign : null")
+		(var isRewardAvailable:gfx = "campaignComponent ? campaignComponent.hasUnseenNarrative : false" (event "campaignComponent.evNarrativeUnseenStatusUpdated"))
+		(var containerImageName:str = "isRewardAvailable ? 'banner_reward' : 'banner'")
+	)
+
+	(bindcall externalCall "'inputMapping.onRequest'" "['openNarrativeCampaignModal', {}]" init=false watch=false on='click')
+
+	(style
+		(width = 240px)
+		(backgroundSize = "fill")
+		
+		(height = 36px) 
+		(bind backgroundImage "'url:../events/narrative_campaign/port_banners/' + containerImageName + '.png'")
+	)
+
+	(block
+		
+		
+		
+		
+		
+		
+
+		(style 
+			(width = 100%)
+			(position = "absolute")
+			(left = 12px)
+			(bottom = 12px)
+		)
+
+		(controller $Instance renderer='BannerItemTitle'
+			(args
+				_title = "toUpper(tr('IDS_NARRATIVE_CAMPAIGN_EVENT_NAME'))"
+				_textColor = "isRewardAvailable	? SC.Ui_styles.SERVICE_COLORS.YELLOW
+												: SC.Ui_styles.SERVICE_COLORS.PAPER"
+			)
+		)
+	)
+
+	(block
+		(bind visible "rollOver")
+
+		(class $FullsizeAbsolute)
+		(style (backgroundColor = "0x10FFFFFF"))
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_banner'"
+	)
+
+	(controller $Tooltip
+		(bind renderer "'NarrativeCampaignBannerTooltip'")
+		(args
+			_isRewardAvailable = "isRewardAvailable"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)
+
+(def element EventLobbyBanner (_isSmall:bool=false)
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+		(event evAddedToStage)
+		(var isMouseOver:bool="rollOver && !mouseDown")
+
+		
+		(macro PULL_EVENT_LOBBY_SCOPE) 
+
+		(var eventsWithLobbyCollection:gfx = "$datahub.getCollection(CC.battleType).getChildByPath('common.eventsWithLobby')")
+
+		(var eventsWithLobbyEntity:gfx = "eventsWithLobbyCollection	? eventsWithLobbyCollection.items[0] : null"
+																				(event "eventsWithLobbyCollection.evAdded")
+																				(event "eventsWithLobbyCollection.evRemoved"))
+		(var eventBattleState:gfx = "eventsWithLobbyEntity ? eventsWithLobbyEntity.eventBattleState : null")
+		(var entityId:number = "eventsWithLobbyEntity ? eventsWithLobbyEntity.id : 0"	(event "eventsWithLobbyCollection.evAdded")
+																						(event "eventsWithLobbyCollection.evRemoved"))
+		(var uniqueId:number = "eventBattleState ? eventBattleState.uniqueId : null" (event "eventBattleState.evChanged"))
+		(var name:str = "eventBattleState ? eventBattleState.name : null" (event "eventBattleState.evChanged"))
+		(var eventId:number = "eventBattleState ? eventBattleState.eventId : null" (event "eventBattleState.evChanged"))
+
+		(var battleTypeComponent:gfx = "eventsWithLobbyEntity ? eventsWithLobbyEntity.battleType : null")
+		(var battleType:str = "battleTypeComponent ? battleTypeComponent.type : SC.Common.BATTLE_TYPES.COOPERATIVE_BATTLE")
+		(var battleGPID:number = "battleTypeComponent ? battleTypeComponent.battleTypeGameParamId : 0")
+
+		(var eventArgs:dict = "!portLockedByEvent	? {battleType: battleType, battleTypeGameParamId: battleGPID}
+													: {battleType: SC.Common.BATTLE_TYPES.COOPERATIVE_BATTLE, battleTypeGameParamId: 0}")
+		
+
+		(var myAccountEntity:gfx = "$datahub.getSingleEntity(CC.accountSelf)")
+		(var myAccountInfo:gfx = "myAccountEntity ? myAccountEntity.accountInfo : null")
+		(var abuseStatus:number = "myAccountInfo ? myAccountInfo.abuseStatus : SC.Common.ABUSE_STATUS.NORMAL" (event "myAccountEntity.accountInfo.evAbuseStatusChanged"))
+		(var isAbuseStatusConfirmed:bool = "abuseStatus == SC.Common.ABUSE_STATUS.CONFIRMED")
+
+		(var bannerTitleText:str = "!portLockedByEvent ? 'IDS_EVENT_LOBBY_BANNER_ENTER' : 'IDS_EVENT_LOBBY_BANNER_LEAVE'")
+	)
+
+	(bindcall externalCall "!isAbuseStatusConfirmed ? 'inputMapping.onAction' : ''" "['setBattleType', eventArgs]" init=false watch=false  on='click')
+
+	(macro PORT_BANNER_BG "portLockedByEvent" "false")
+
+	(controller $Animation
+		(bindcall play  duration="0.15"
+						delay="0.15"
+						from = "{ alpha: 0, top: 5 }"
+						to = "{ alpha: 1, top: 0 }"
+						(event "evAddedToStage")
+		)
+	)
+
+	(style
+		(bind width "PORT_BANNER_WIDTH")
+		(bind height "_isSmall ? PORT_BANNER_SMALL_HEIGHT : PORT_BANNER_LARGE_HEIGHT")
+	)
+
+	(block
+		(bind visible "!portLockedByEvent")
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundSize = "cover")
+			(backgroundImage = "'url:../events/bermuda/event_lobby_banner/enter.png'")
+		)
+	)
+
+	(hblock
+		(style
+			(position = "absolute") (bottom = 0)
+			(width = 100%) (height = 36px)
+			(align = "middle")
+			(left = "SXS")
+		)
+		(block
+			(style
+				(maxWidth = "100%")
+			)
+			(controller $Instance renderer='BannerItemTitle'
+				(bind enabled "true")
+				(args
+					_title = "bannerTitleText"
+					_textColor = "!portLockedByEvent ? SC.Ui_styles.SERVICE_COLORS.PAPER : SC.Ui_styles.SERVICE_COLORS.WHITE"
+					_isDropShadowDisabler = false
+				)
+			)
+		)
+
+		(block
+			(bind visible "portLockedByEvent")
+			(style 
+				(position = "absolute")
+				(align = "middle")
+				(height = 100%)
+				(right = "16px") 
+			)
+			(block
+				(style
+					(width = "L") (height = "L")
+					(align = "middle")
+				)
+				(controller $Instance renderer='BannerItemIcon'
+					(bind enabled "portLockedByEvent")
+					(args
+						_iconUrl = "'service_kit/port_banner/icon_event_lobby_leave'"
+					)
+				)
+			)
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_soundSet = "'button_banner'"
+	)
+
+	(mc inner_panel
+		(class $FullsizeAbsolute)
+		(alpha = 0)
+		(style (hitTest = false))
+		(controller $Animation
+			(bindcall play
+				from = "{alpha: 0}"
+				to   = "{alpha: 1}"
+				reverse = "!isMouseOver"
+				duration = "0.15"
+				(bind trigger "isMouseOver")
+			)
+		)
+	)
+
+	(controller $Tooltip
+		(bind enabled "!portLockedByEvent")
+		(renderer = 'EventBattleTypeTooltip')
+		(args
+			_battleTypeEntityId = "entityId"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(controller $Tooltip
+		(bind enabled "portLockedByEvent")
+		(bind renderer "'SimpleStatusTooltip'")
+		(args
+			_text = "'IDS_EVENT_LOBBY_BANNER_LEAVE_TOOLTIP'"
+			_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)

@@ -1,0 +1,187 @@
+(def element CheckBox (	_name:str='', _enabled:bool=true, _isChecked:bool=false, _statusTooltipData:gfx={}, _customLabelInstance:str='', _customLabelInstanceParams:gfx={}, _label:str='', _maxTfWidth:number=0,
+						_dispatchedEv:str='', _dispatchParams:gfx={}, _methods:array=[]) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+	)
+
+	(bind name "_name")
+
+	(style
+		(flow = "horizontal")
+		(bind alpha "_enabled ? 1 : 0.4")
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(height = 20px)
+			(width = 20px)
+			(backgroundImage = 'url:../service_kit/buttons/check_box/background.png')
+			(scale9grid = 4)
+		)
+	)
+
+	(hblock
+		(controller $Animation
+			(bindcall play
+				duration = 0.05
+				from	 = { alpha: 1 }
+				to		 = { alpha: 0.6 }
+				reverse	 = "!mouseDown"
+				(bind trigger "mouseDown")
+			)
+		)
+
+		(style (alpha = "mouseDown ? 0.6 : 1"))
+
+		
+		(block
+			(controller $Animation
+				(bindcall play
+					duration = 0.05
+					from	 = { alpha: 0 }
+					to		 = { alpha: 1 }
+					reverse	 = "!rollOver"
+					(bind trigger "rollOver")
+				)
+			)
+
+			(style
+				(height = 20px)
+				(width = 20px)
+				(alpha = "rollOver ? 1 : 0")
+				(backgroundImage = 'url:../service_kit/buttons/check_box/over.png')
+				(scale9grid = 4)
+			)
+		)
+
+		
+		(block
+			(bind visible "_isChecked")
+
+			(controller $Animation
+				(bindcall play
+					duration = 0.05
+					from	 = { alpha: 0.75 }
+					to		 = { alpha: 1 }
+					reverse	 = "!(rollOver && !mouseDown)"
+					(bind trigger "rollOver && !mouseDown")
+				)
+			)
+
+			(style
+				(position = "absolute")
+				(height = 20px)
+				(width = 20px)
+				(alpha = 0.75)
+				(backgroundImage = 'url:../service_kit/buttons/check_box/check_icon.png')
+			)
+		)
+
+		
+			
+			
+			
+			
+			
+		
+
+		(block
+			(controller $Instance renderer='CheckBoxTextLabel'
+				(args
+					_label = "_label"
+					_rollOver = "rollOver"
+					_maxTfWidth = "_maxTfWidth"
+				)
+				(bind enabled "_label")
+			)
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "_enabled"
+		_dispatchedEv = "_dispatchedEv"
+		_dispatchParams = "_dispatchParams"
+		_methods = "_methods"
+		_soundSet = "'check_box'"
+	)
+)
+
+(def element CheckBoxTextLabel (_label:str='', _rollOver:bool=false, _maxTfWidth:number=0) layout=true
+	(controller $Animation
+		(bindcall play
+			duration = 0.05
+			from	 = "{ alpha: TC }"
+			to		 = "{ alpha: TA }"
+			reverse	 = "!_rollOver"
+			(bind trigger "_rollOver")
+		)
+	)
+
+	(style
+		(marginLeft = "S")
+		(marginTop = "XS")
+		(alpha = "_rollOver ? TA : TC")
+	)
+
+	(tf
+		(class $TextDefault17NM)
+		(style (maxWidth = "_maxTfWidth ? _maxTfWidth : 300"))
+		(bind text "_label")
+	)
+)
+
+(def element CheckBoxNoLabel (_selected:bool, _enabled:bool=true, _interactive:bool=true, _rollOver:bool=false) layout=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE "'cb_'")
+
+		(var privRollOver:bool = "cb_rollOver || _rollOver")
+	)
+
+	(style (width = "20px") (height = "20px"))
+
+	
+	(block
+		(bind visible "_interactive")
+
+		(style
+			(backgroundImage = "'bitmap:checkbox_up'")
+		)
+
+		
+		(block
+			(bind alpha "	_enabled	? (privRollOver ? 0.7 : 0) :
+							_selected	? 0.7
+										: 0")
+			(style
+				(position = "absolute")
+				(backgroundImage = "'bitmap:checkbox_over'")
+			)
+
+			(controller $Animation
+				(bindcall play
+					duration=0.3
+					from={alpha: 0}
+					to={alpha: 0.7}
+					reverse="!(privRollOver)"
+					easing="Easing.line"
+					(bind trigger "privRollOver")
+				)
+			)
+		)
+	)
+
+	
+	(block
+		(bind visible "_selected")
+		(style
+			(position = "absolute")
+			(backgroundImage = "'bitmap:checkbox_check'")
+		)
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "_enabled"
+		_prefix = "'cb_'"
+	)
+)

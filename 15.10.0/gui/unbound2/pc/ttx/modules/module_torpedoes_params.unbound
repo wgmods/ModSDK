@@ -1,0 +1,57 @@
+(def element TorpedoLauncherParams (shipTTX:gfx, torpedoTTX:gfx, _hideDiff:bool) layout=true
+	(scope
+		(var torpedoesTTX:gfx = "shipTTX ? shipTTX.torpedoes : null")
+		(var hasGroups:bool = "torpedoesTTX ? torpedoesTTX.groups.length > 0 : false")
+		(var launchersRotationTime:gfx = "torpedoesTTX && torpedoesTTX.ungroupedLaunchers && torpedoesTTX.ungroupedLaunchers.launchers.length != 0 ? torpedoesTTX.ungroupedLaunchers.launchers[0].rotationTime : null")
+		(var torpedoesReloadTime:gfx = "torpedoesTTX ? torpedoesTTX.reloadTime : null")
+		(var torpedoesSwitchTime:gfx = "torpedoesTTX ? torpedoesTTX.ammoSwitchTime : null")
+	)
+	(style (width = 100%))
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ROTATION_TIME'
+											_value = "launchersRotationTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_zeroValueHidden = true
+											_showDelta = "!_hideDiff"
+											_hideDiff = "_hideDiff"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDOES_TIME_RELOAD'
+											_value = "torpedoesReloadTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_zeroValueHidden = true
+											_showDelta = "!_hideDiff"
+											_hideDiff = "_hideDiff"
+			)
+			(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_MIN_SWITCH_TIME'
+											_value = "torpedoesSwitchTime"
+											_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+											_zeroValueHidden = true
+											_showDelta = "!_hideDiff"
+											_hideDiff = "_hideDiff"
+			)
+			(macro TTX_INSTANCE 'TorpedoLoaderInfoInner' "torpedoesTTX" "hasGroups")
+		)
+	)
+)
+
+(def element TorpedoLoaderInfoInner (shipTTX:gfx, torpedoTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_TORPEDO_LOADERS_COUNT'
+									_values = "torpedoTTX.loadersCounts"
+	)
+)
+
+(def layout ModuleTorpedoes_Parameters (shipTTX:gfx, _extendedInfo:gfx=null)
+	(scope
+		(var torpedoesTTX:gfx = "shipTTX	? shipTTX.torpedoes
+											: null")
+		(var hideDiff:bool = "_extendedInfo != null")
+	)
+	(style (width = 100%))
+	(macro TTX_INSTANCE 'TorpedoLauncherParams' "torpedoesTTX" "true" "hideDiff")
+
+	(macro TTX_INSTANCE 'TorpedoDefaultTTX' "torpedoesTTX.torpedo" "true" "hideDiff")
+	(macro TTX_INSTANCE 'TorpedoDefaultTTX' "torpedoesTTX.torpedoDeepwater" "true" "hideDiff")
+	(macro TTX_INSTANCE 'TorpedoDefaultTTX' "torpedoesTTX.torpedoAlt" "true" "hideDiff")
+)

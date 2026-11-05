@@ -1,0 +1,119 @@
+(def element FlagshipsBattleStats () dispatch_size_change=true
+	(scope
+		(var showState:number = "SC.Ui_windows.WINDOW_STATE.INIT")
+		(var stateCollection:gfx = "$datahub.getCollection(CC.state)")
+		(var flagshipsCollection:gfx = "stateCollection.getChildByPath('flagships.specialization')" (event "stateCollection.evChildAdded") (event "stateCollection.evChildRemoved"))
+		(var flagshipsCollectionLength:number = "flagshipsCollection ? flagshipsCollection.items.length : 0" (event "flagshipsCollection.evAdded") (event "flagshipsCollection.evRemoved"))
+	)
+	(style
+		(width = 400px)
+		(paddingRight = "-S") 
+	)
+	(tf
+		(controller $Animation
+			(bindcall play
+				duration = 0.15
+				delay = 0.54
+				from = "{alpha: 0, visualOffsetY: 10}"
+				to = "{alpha: 0, visualOffsetY: 0}"
+				easing = "Easing.line"
+				(bind enabled "showState == SC.Ui_windows.WINDOW_STATE.SHOW")
+				(bind trigger "showState == SC.Ui_windows.WINDOW_STATE.SHOW")
+			)
+		)
+		(class $TextDefaultBold23NM)
+		(style (width = 100%) (marginBottom = "SXS"))
+		(text = 'IDS_PVE_FLAGSHIP_HEADER')
+	)
+	
+	(tf
+		(controller $Animation
+			(bindcall play
+				duration = 0.15
+				delay = 0.61
+				from = "{alpha: 0, visualOffsetY: 10}"
+				to = "{alpha: 0, visualOffsetY: 0}"
+				easing = "Easing.line"
+				(bind enabled "showState == SC.Ui_windows.WINDOW_STATE.SHOW")
+				(bind trigger "showState == SC.Ui_windows.WINDOW_STATE.SHOW")
+			)
+		)
+		(style (width = 100%) (marginBottom = "MS") (leading = -3) (alpha = "TC"))
+		(class $TextDefault19NM)
+		(text = 'IDS_PVE_FLAGSHIP_BATTLESTATS_SUBHEADER')
+	)
+	(block
+		(style (width = 100%) (vgap = "S"))
+		(controller $Repeat renderer='FlagshipDescriptionText'
+			(bind count "flagshipsCollectionLength")
+			(args _flagshipEntity="flagshipsCollection.items[$index]")
+		)
+	)
+)
+
+(def element FlagshipsCardSelectorInfo () dispatch_size_change=true
+	(scope
+		(var stateCollection:gfx = "$datahub.getCollection(CC.state)")
+		(var flagshipsCollection:gfx = "stateCollection.getChildByPath('flagships.specialization')" (event "stateCollection.evChildAdded") (event "stateCollection.evChildRemoved"))
+		(var flagshipsCollectionLength:number = "flagshipsCollection ? flagshipsCollection.items.length : 0" (event "flagshipsCollection.evAdded") (event "flagshipsCollection.evRemoved"))
+	)
+	(style (width = 100%))
+
+	(tf
+		(class $TextDefaultBold21NM)
+		(style (width = 100%) (marginBottom = "MS"))
+		(text = 'IDS_PVE_FLAGSHIP_HEADER')
+	)
+
+	(tf
+		(style (width = 100%) (marginBottom = "MS") (leading = -3) (alpha = "TC"))
+		(class $TextDefault17NM)
+		(text = 'IDS_PVE_FLAGSHIP_PREBATTLE_SUGGESTION')
+	)
+
+	(hblock
+		(style (width = 100%) (hgap = "MS"))
+		(controller $Repeat renderer='FlagshipDescriptionText'
+			(bind count "flagshipsCollectionLength")
+			(args _flagshipEntity="flagshipsCollection.items[$index]" _useTextBlock=false)
+		)
+	)
+)
+
+
+(def element FlagshipDescriptionText (_flagshipEntity:gfx, _useTextBlock:bool = true)
+	(scope
+		(var name:str = "_flagshipEntity ? _flagshipEntity.flagshipSpeciality.name : ''")
+		(var iconPath:str = "_flagshipEntity ? 'url:../flagships_pve/tooltip/icon_' + toLower(name) + '.png' : ''")
+	)
+	(style
+		(bind width "100%" (bind enabled "_useTextBlock"))
+		(flow = "horizontal")
+		(align = "left|middle")
+	)
+	(block
+		(style
+			(width = 60px)
+			(height = 60px)
+			(bind backgroundImage "iconPath")
+		)
+	)
+	(tf
+		(bind visible "_useTextBlock")
+		(style
+			(width = 100%)
+			(marginLeft = "S")
+		)
+		(class $TextDefaultBold19NM)
+		(bind text "'IDS_FLAGSHIPS_BATTLESTAT_SPEC_NAME_' + toUpper(name)")
+	)
+
+	(controller $Tooltip
+		(renderer = 'FlagshipsDescriptionTooltip')
+		(args
+			_name = "name"
+			_imageUrl = "iconPath"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+)

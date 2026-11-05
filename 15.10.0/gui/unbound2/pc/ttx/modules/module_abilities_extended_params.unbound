@@ -1,0 +1,20 @@
+(def layout ModuleAbilities_Extended_Parameters (shipTTX:gfx, _extendedInfo:gfx=null)
+	(scope
+		(var extraConsumables:array = "_extendedInfo ? _extendedInfo.extraConsumables : []" (event "_extendedInfo.evUpdated"))
+	)
+
+	(style
+		(width = 100%)
+	)
+
+	(bind visible "extraConsumables.length != 0")
+
+	(controller $Instance renderer='TooltipSystemModuleExtraInfo'
+		(bind enabled "extraConsumables.length != 0")
+		(args
+			_items = "extraConsumables"
+			_title = "'IDS_MODULE_EXTRA_CONSUMABLES'"
+			_iconPrefix = 'url:../consumables/'
+		)
+	)
+)

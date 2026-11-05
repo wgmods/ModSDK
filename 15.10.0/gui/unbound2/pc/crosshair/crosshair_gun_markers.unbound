@@ -1,0 +1,98 @@
+(def constant GUN_MARKER_RENDERER {
+	SC.Weapons.GUN_MARKER_TYPE.CIRCLE :'GunMarker',
+	SC.Weapons.GUN_MARKER_TYPE.RECT: 'GunMarker',
+	SC.Weapons.GUN_MARKER_TYPE.CIRCLE_NO_INDEX: 'GunMarker',
+	SC.Weapons.GUN_MARKER_TYPE.SCALABLE_RECT: 'ScalableRectGunMarker',
+})
+
+(def element CrosshairGunMarkersContainer () layout=true
+	(scope
+		(var markers:gfx = "$datahub.getCollection(CC.gunMarker)")
+
+		(var selfVehicleWatcher:gfx = "$datahub.getFirstWatcher(CC.selfVehicle)")
+		(var selfVehicle:gfx = "selfVehicleWatcher.entity" (event "selfVehicleWatcher.event"))
+		(var controller:gfx = "selfVehicle ? selfVehicle.weaponController : null" (event "selfVehicle.evAdded") (event "selfVehicle.evRemoved"))
+		(var selectedWeapon:number = "controller ? controller.selectedWeapon : -1" (event "controller.evSelectedWeaponChanged"))
+
+		(var heatableGunsCollection:gfx = "$datahub.getCollection(CC.overheatableModifier)")
+		(var selectedGunsCollection:gfx = "heatableGunsCollection && heatableGunsCollection.items.length !=0 ? heatableGunsCollection.child('byWeaponType').child(toString(selectedWeapon)) : null")
+		(var heatableGuns:array = "selectedGunsCollection ? selectedGunsCollection.items : []" (event "heatableGunsCollection.evAdded") (event "heatableGunsCollection.evRemoved"))
+	)
+	(style (position = "absolute"))
+
+	(controller $Repeat renderer='GunMarkerRenderer'
+		(bind count "markers.items.length")
+		(args 
+			_markerID = "markers.items[$index].id"
+			_isHeatable = "heatableGuns.length != 0"
+		)
+	)
+)
+
+(def element GunMarkerRenderer (_markerID:number, _isHeatable:bool) layout=true
+	(scope
+		(event evShoot)
+
+		
+		(var marker:gfx = "$datahub.getEntity(_markerID)")
+		(var markerType:number = "marker.gunMarker.markerType")
+		(var state:number = "marker.gunMarker.state" (event "marker.gunMarker.evStateChanged"))
+		(var index:number = "marker.gunMarker.index" (event "marker.gunMarker.evIndexChanged"))
+		(var customWidth:number = "min(0.95, marker.gunMarker.customWidth)" (event "marker.gunMarker.evCustomWidthChanged"))
+
+		
+		(var progressValue:number = "marker.progress.value" (event "marker.progress.evChanged"))
+		(var maxProgress:number = "marker.progress.max" (event "marker.progress.evChanged"))
+		(var progress:number = "maxProgress != 0 ? progressValue / maxProgress : 0")
+
+		
+		(var heatingComponent:gfx = "marker.hasComponent(CC.overheatableModifier) ? marker.overheatableModifier : null")
+
+		
+		(var azimuth:number = "radToGrad(marker.gunTarget.azimuth)" (event "marker.gunTarget.evAzimuthChanged"))
+		(var isBlocked:bool = "marker.gunTarget.invalid" (event "marker.gunTarget.evInvalidChanged"))
+		(var isRotated:bool = "marker.gunTarget.rotated" (event "marker.gunTarget.evRotatedChanged"))
+		(var isCentral:bool = "index == 0")
+
+		
+		(var isActive:bool = "marker.gunMarker.active" (event "marker.gunMarker.evActiveChanged"))
+		(var position:number = "marker.gunMarker.position" (event "marker.gunMarker.evPositionChanged"))
+		(var isVisible:bool = "marker.gunMarker.visible" (event "marker.gunMarker.evVisibleChanged"))
+		(var isCentralVisible:bool = "!isIn(state, SC.Weapons.GUN_STATE.REPAIRABLE)")
+		
+		(var cameraComponent:gfx = "$datahub.getSingleComponent(CC.camera)")
+		(var isInTacticalMap:bool = "cameraComponent ? cameraComponent.isTactical : false" (event "cameraComponent.evTacticalStateChanged"))
+
+		(var markerRenderer:str = "GUN_MARKER_RENDERER[markerType]")
+		(var isUiVisible:bool = "isActive && isVisible && (isCentral || !isRotated) && (!isCentral || isCentralVisible)")
+	)
+
+	(style (position = "absolute"))
+
+	(bind visible "isUiVisible")
+
+	(dispatch evShoot dir="EventDirection.DOWN" (bind enabled "(isCentral && !isInTacticalMap)") (event "marker.weapon.evShoot"))
+
+	(controller $Instance
+		(bind renderer "markerRenderer")
+		(args
+			_index = "index"
+			_markerType = "markerType"
+			_customWidth = "customWidth"
+			_isVisible = "isUiVisible"
+			_progressValue = "state == SC.Weapons.GUN_STATE.WORK ? progressValue : maxProgress - progressValue"
+			_isHeatable = "_isHeatable"
+			_heatingComponent = "heatingComponent"
+		)
+		(exprs
+			(scope
+				(bind _azimuth "azimuth")
+				(bind _state "state")
+				(bind _blocked "isBlocked")
+				(bind _progress "progress")
+				(bind _rotated "isRotated")
+			)
+			(style (bind left "position") (position = "absolute"))
+		)
+	)
+)

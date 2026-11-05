@@ -1,0 +1,167 @@
+(def element PlaneReloadProgressAndAttackersBarSlot (_slotId:str, _showProgressBar:bool) layout=true
+	(scope
+		(var slot:gfx = "$datahub.getPrimaryEntity(CC.weaponSlot, _slotId)")
+		(var ammoEntity:gfx = "$datahub.getPrimaryEntity(CC.ammo, _slotId)")
+		(var squadId:number = "ammoEntity ? ammoEntity.ammo.squadId : -1")
+	)
+	(style (position = "absolute"))
+	(element PlaneReloadProgressAndAttackersBar "squadId" "true" "_showProgressBar")
+)
+
+(def element PlaneReloadProgressAndAttackersBar (_squadronId:number, _isBig:bool, _showProgressBar:bool) layout=true
+	(scope
+		(var squadronEntity:gfx = "$datahub.getPrimaryEntity(CC.ownSquadron, _squadronId)")
+		(var attackerSize:number = "squadronEntity ? squadronEntity.ownSquadron.attackerSize : 0")
+		(var maxSquadPlanes:number = "squadronEntity ? squadronEntity.health.max : 0" (event "squadronEntity.health.evValueChanged"))
+
+		(var hangarEntity:gfx = "$datahub.getPrimaryEntity(CC.hangar, _squadronId)")
+		(var curPlanesInHangar:number = "hangarEntity ? hangarEntity.hangar.planeCount : 0" (event "hangarEntity.hangar.evChanged"))
+		(var maxPlanesInHangar:number = "hangarEntity ? hangarEntity.hangar.maxPlaneCount : 0" (event "hangarEntity.hangar.evChanged"))
+
+		(var countdown:gfx = "hangarEntity && hangarEntity.hasComponent(CC.countDown) ? hangarEntity.countDown : null" (event "hangarEntity.evAdded") (event "hangarEntity.evRemoved"))
+		(var reloadRemainTime:number = "countdown ? countdown.remain : 0" (event "countdown.evRemainChanged"))
+		(macro HUMAN_READABLE_COUNTDOWN_SCOPE "reloadRemainTime")
+		
+		(var numAttackers:number = "attackerSize ? maxSquadPlanes/attackerSize : 0")
+		(var squadPlanesReady:number = "curPlanesInHangar < maxSquadPlanes ? curPlanesInHangar : maxSquadPlanes")
+
+		(var _width:number = "_isBig ? SLOT_SIZE : SLOT_SIZE / 2")
+		(var _height:number = "_width")
+		
+		(var hangarStatusBarSize:number =  "maxPlanesInHangar ? (curPlanesInHangar / maxPlanesInHangar) * (_width - 2) : 0")
+		(var restoreAnimation:bool = "curPlanesInHangar < maxPlanesInHangar && reloadRemainTime > 0")
+
+		(var cameraEntity:gfx = "$datahub.getSingleEntity(CC.camera)")
+		(var altVision:bool = "cameraEntity.camera.altVision" (event "cameraEntity.camera.evAltVisionChanged"))
+
+		(var statusBarTextParams:array = "altVision ? [curPlanesInHangar, maxPlanesInHangar] : [squadPlanesReady, maxSquadPlanes]")
+	)
+
+	(style
+		(position = "absolute")
+		(width = "_width")
+		(height = "_height")
+	)
+
+	(block
+		(style
+			(position = "absolute")
+			(width = "_width")
+			(bottom = "_height + XXS")
+			(align = "center")
+		)
+
+		
+		(element PlanesStatusBarText "statusBarTextParams[0]" "statusBarTextParams[1]" "curPlanesInHangar >= maxSquadPlanes")
+
+		
+		(block
+			(style (marginTop = 2px))
+
+			(mc hud_bar_bg_sliced
+				(style
+					(height = 4px)
+					(width = "_width")
+				)
+			)
+
+			(hblock
+				(bind visible "!altVision")
+				(style (position = "absolute") (paddingTop = 1px))
+				(controller $Repeat renderer='AttackerStatusBar' layout=false
+					(bind count "numAttackers")
+					(args "_squadronId" "_width")
+				)
+			)
+
+			(block
+				(bind visible "altVision")
+				(style
+					(position = "absolute") (height = 2px) (left = 1) (top = 1)
+					(backgroundColor = 0xFFD7D7D7)
+					(bind width "hangarStatusBarSize")
+				)
+			)
+		)
+	)
+
+	(block
+		(bind visible "altVision && restoreAnimation && _showProgressBar")
+		(class $FullsizeAbsolute)
+		(style
+			(backgroundColor = 0xCC000000)
+			(align = "center|middle")
+		)
+		(block
+			(tf
+				(style (marginRight = 1px) (marginLeft = 2px))
+				(alpha = 0.8)
+				(bind class "_isBig ? '$TextDefault27NM' : '$TextDefaultBold13NM'")
+				(bind text "countdownText")
+			)
+		)
+	)
+)
+
+(def element PlanesStatusBarText (_firstParam:number, _secondParam:number, _isBold:bool) layout=true
+	(style (flow = "horizontal"))
+	(alpha = 0.8)
+
+	(tf
+		(bind class "_isBold ? '$TextDefaultBold13NM' : '$TextDefault13NM'")
+		(bind text "_firstParam")
+	)
+	(block
+		(style (marginTop = 1px) (marginLeft = 3px))
+		(tf
+			(class $TextDefault12NM)
+			(bind text "'/' + _secondParam")
+		)
+	)
+)
+
+(def element AttackerStatusBar (_squadId:number, _totalWidth:number) layout=true
+	(scope
+		(var squadronEntity:gfx = "$datahub.getPrimaryEntity(CC.ownSquadron, _squadId)")
+		(var hangarEntity:gfx = "$datahub.getPrimaryEntity(CC.hangar, squadronEntity.ownSquadron.id)")
+
+		(var attackerSize:number = "squadronEntity.ownSquadron.attackerSize")
+		(var curPlanesInHangar:number = "hangarEntity ? hangarEntity.hangar.planeCount : 0" (event "hangarEntity.hangar.evChanged"))
+		(var maxSquadPlanes:number = "squadronEntity.health.max" (event "squadronEntity.health.evValueChanged"))
+
+		(var squadPlanesReady:number = "curPlanesInHangar < maxSquadPlanes ? curPlanesInHangar : maxSquadPlanes")
+
+		(var numAttackers:number = "attackerSize ? maxSquadPlanes / attackerSize : 0")
+		(var attackerStatusBarSize:number = "numAttackers ? round(_totalWidth / numAttackers) : 0")
+		(var fullAttakers:number = "attackerSize ? floor(squadPlanesReady / attackerSize) : 0")
+		(var planesInNotFullAttacker:number = "attackerSize ? (squadPlanesReady % attackerSize) : 0")
+
+
+		(var aircarrierEntity:gfx = "$datahub.getSingleEntity(CC.aircarrier)")
+		(var canLaunchSquadrons:bool = "aircarrierEntity ? aircarrierEntity.aircarrier.canLaunchSquadrons : false" (event "aircarrierEntity.aircarrier.evCanLaunchSquadronsChanged"))
+
+		
+		(var airplaneColorStatus:str = "canLaunchSquadrons ? ($index < fullAttakers ? '$ColorStatePlaneFullHP' : '$ColorStatePlaneHalfHP') : '$ColorStatePlaneHalfHP'")
+		(var delta:number = "($index == numAttackers - 1) ? _totalWidth - numAttackers * attackerStatusBarSize : 0")
+		(var barWidth:number = "attackerStatusBarSize - 2 + delta")
+		(var percentNotFullAttacker:number = "(attackerSize && planesInNotFullAttacker) ? planesInNotFullAttacker / attackerSize : 0")
+	)
+
+	(style
+		(height = 2px) (marginLeft = 1px) (marginRight = 1px)
+		(bind width "barWidth")
+	)
+	(block
+		(style
+			(position = "absolute")
+			(height = 2px)
+			(bind width "$index == fullAttakers ? percentNotFullAttacker * barWidth :
+                    	$index > fullAttakers   ? 0% :
+                    	$index < fullAttakers   ? 100%
+                    	                        : 0%"
+            )
+		)
+		(bind visible "$index <= fullAttakers")
+		(bind class "airplaneColorStatus")
+	)
+)

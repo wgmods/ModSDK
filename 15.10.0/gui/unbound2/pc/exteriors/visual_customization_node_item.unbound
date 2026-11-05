@@ -1,0 +1,135 @@
+(def element VisualCustomizationNodeItem (_isLinkedDecal:bool=false, _visualCustomizationNodeEntityId:number=0, _isActionsAvailable:bool=false) layout=true dispatch_size_change=true
+	(scope
+		(macro MOUSE_HANDLER_SCOPE)
+		(var visualCustomizationNodeEntity:gfx = "$datahub.getEntity(_visualCustomizationNodeEntityId)")
+		(var visualCustomizationNodeComponent:gfx = "visualCustomizationNodeEntity ? visualCustomizationNodeEntity.visualCustomizationNode : null"
+																									(event "visualCustomizationNodeEntity.evAdded")
+																									(event "visualCustomizationNodeEntity.evRemoved"))
+
+		(var nodeName:str = "visualCustomizationNodeComponent ? visualCustomizationNodeComponent.nodeName : null"								(event "visualCustomizationNodeComponent.evUpdated"))
+		(var installedDecalId:number = "visualCustomizationNodeComponent ? visualCustomizationNodeComponent.customizationId : null"				(event "visualCustomizationNodeComponent.evUpdated"))
+		(var isDecalInNode:bool = "installedDecalId && visualCustomizationNodeComponent ? visualCustomizationNodeComponent.isLinked : false"	(event "visualCustomizationNodeComponent.evUpdated"))
+
+		(var decalEntity:gfx = "$datahub.getPrimaryEntity(CC.ownDecal, installedDecalId)")
+		(var exteriorConfig:gfx = "decalEntity ? decalEntity.exteriorConfig : null")
+
+		(var iconPath:str = "isDecalInNode && exteriorConfig	? 'url:../exteriors/decals/' + exteriorConfig.name + '.png'
+																: 'url:../exteriors/visual_customization_nodes/slot.png'")
+	)
+	(bind visible "visualCustomizationNodeComponent")
+	(bind name "'VisualCustomizationNodeDock_' + nodeName")
+	(macro MOUSE_EVENTS_DISPATCHER)
+
+	(bindcall externalCall 'inputMapping.onAction' "[_isActionsAvailable ? 'highlightVisualCustomizationNode' : '', { nodeId: nodeName }]" init=false watch=false (event "evRollOver"))
+	(bindcall externalCall 'inputMapping.onAction' "[_isActionsAvailable ? 'unhighlightVisualCustomizationNode' : '', { nodeId: nodeName }]" init=false watch=false (event "evRollOut"))
+
+	(bindcall externalCall 'inputMapping.onAction' "[_isActionsAvailable ? 'moveToVisualCustomizationNode' : '', {nodeId: nodeName}]" init=false watch=false on='leftClick')
+
+	(bindcall externalCall 'direct.action' "[SC.Common.STATISTICS_EVENTS.LOG, [SC.Common.VISUAL_CUSTOMIZATION_STATISTICS.OPEN_NODE_BY_2D + '_' + nodeName]]"	init=false
+																																								watch=false
+																																								on='leftClick')
+
+	(block
+		(bind colorTransform "	!_isActionsAvailable	? {} :
+								mouseDown				? ITEM_DOWN_COLOR_TRANSFORM_PARAMS :
+								rollOver				? ITEM_OVER_COLOR_TRANSFORM_PARAMS
+														: {}")
+
+		(style
+			(height = 60px) (width = 60px)
+			(bind backgroundColor "rollOver && _isActionsAvailable ? 0x357F7F7F : 0x10FFFFFF")
+		)
+
+		(block
+			(class $Fullsize)
+			(bind alpha "rollOver && _isActionsAvailable ? 1 : 0.9")
+			(style (bind backgroundImage "iconPath"))
+		)
+
+		(block
+			(class $FullsizeAbsolute)
+			(style
+				(hitTest = "false")
+				(padding = "XXS")
+				(scale9grid = "2")
+				(backgroundImage = 'url:../service_kit/frames/64px_not_empty_field.png')
+				(bind alpha "rollOver && _isActionsAvailable ? 1 : 0.6")
+			)
+		)
+	)
+
+	(controller $Tooltip
+		(bind enabled "visualCustomizationNodeComponent")
+		(renderer='VisualCustomizationNodeTooltip')
+		(args
+			_headerText = "visualCustomizationNodeComponent ? visualCustomizationNodeComponent.group : ''"
+			_isDecalInNode = "isDecalInNode"
+			_isActionsAvailable = "_isActionsAvailable"
+		)
+		(macro DEFAULT_TOOLTIP_BEHAVIOUR "0")
+	)
+
+	(macro SOUND_HANDLER
+		_soundSet = "_isActionsAvailable ? 'button_decal' : ''"
+	)
+)
+
+(def element VisualCustomizationNodeTooltip (_headerText:str, _isDecalInNode:bool, _isActionsAvailable:bool, _isShowUB2Tooltip:bool)
+	(scope
+		(var accountResourceEntity:gfx = "$datahub.getSingleEntity(CC.accountResource)")
+		(var operationsAccountLocked:bool = "accountResourceEntity.accountResource.operationsLocked" (event "accountResourceEntity.accountResource.evOperationsLockChanged"))
+
+		(macro PULL_CURRENT_SHIP_ID)
+		(macro PULL_OWN_SHIP_SCOPE "shipId" "'shipEntity'" "'shipInfo'")
+
+		(var ownShipInfo:gfx = "shipEntity ? shipEntity.ownShip : null"	(event "shipEntity.ship.evUpdate")
+																		(event "shipEntity.ship.evCurrentSkinChanged")
+																		(event "shipEntity.ship.evFlagNameWithCrewChanged"))
+
+		(var isLocked:bool =		"ownShipInfo ? ownShipInfo.isLocked : false"		(event "ownShipInfo.evUpdateLock"))
+		(var isInFormation:bool =	"ownShipInfo ? ownShipInfo.isInFormation : false"	(event "ownShipInfo.evUpdateLock"))
+		(var isNeedRepair:bool =	"ownShipInfo ? ownShipInfo.isNeedRepair : false"	(event "ownShipInfo.evUpdateDockState"))
+		(var isNeedShell:bool =		"ownShipInfo ? ownShipInfo.isNeedShell : false"		(event "ownShipInfo.evUpdateDockState"))
+
+		(var mouseInstructionText:str = "	isInFormation				?	'IDS_SET_UNREADY_DIVISION_FIRST_TO_OPERATE_EXTERIORS' :
+											isLocked					?	'IDS_LEAVE_BATTLE_FIRST_TO_OPERATE_EXTERIORS' :
+											isNeedRepair || isNeedShell	?	'IDS_SERVICE_SHIP_TO_OPERATE_EXTERIORS' :
+											_isDecalInNode				?	'IDS_MOUSE_INSTRUCTION_CHANGE_DECAL'
+																		:	'IDS_MOUSE_INSTRUCTION_SELECT_NODE'")
+
+		(var unifiedStatus:str = "	!_isActionsAvailable	?	SC.Ui_styles.UNIFIED_STATUS.ATTENTION
+															:	SC.Ui_styles.UNIFIED_STATUS.MOUSE_LEFT")
+	)
+	(macro PULL_TOOLTIP_UB2_STATE)
+
+	(style (hitTest = "false") (width = 320px))
+	(macro TOOLTIP_SYSTEM_DEFAULT_BACKGROUND)
+
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+			_headerText = "tr('IDS_' + toUpper(_headerText))"
+		)
+
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemHorizontalDivider' (bind enabled "_isDecalInNode && _isActionsAvailable"))
+		)
+		(block
+			(style (width = 100%))
+			(controller $Instance renderer='TooltipSystemStatusLine'
+				(bind enabled "_isDecalInNode && _isActionsAvailable")
+				(args
+					_unifiedStatus = "SC.Ui_styles.UNIFIED_STATUS.CHECK"
+					_text = 'IDS_VISUAL_CUSTOMIZATION_DECAL_MOUNTED_TOOLTIP_STATUS'
+				)
+			)
+		)
+
+		(element TooltipSystemHorizontalDivider)
+
+		(element TooltipSystemStatusLine
+			_unifiedStatus = "unifiedStatus"
+			_text = "mouseInstructionText"
+		)
+	)
+)

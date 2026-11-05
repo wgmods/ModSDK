@@ -1,0 +1,32 @@
+(def element WarehouseInset () layout=true dispatch_size_change=true
+	(scope
+		(macro STAGE_SIZE)
+		(macro PULL_ROUTE "SC.Ui_windows.ROUTE.WAREHOUSE" "'isOnWarehouse'")
+		(var gfStateWatcher:gfx = "$datahub.getFirstWatcher(CC.gamefaceGlobalState)")
+		(var gfStateEntity:gfx = "gfStateWatcher.entity" (event "gfStateWatcher.event"))
+		(var gfStateComponent:gfx = "gfStateEntity ? gfStateEntity.gamefaceGlobalState : null")
+		(var gfStateHasControl:bool = "gfStateComponent ? gfStateComponent.gamefaceHasControl : false"	(event "gfStateComponent.evChanged")
+																										(event "gfStateComponent.evGamefaceHasControlChanged"))
+
+		(event evAddedToStage)
+	)
+
+	(dispatch evAddedToStage on='addedToStage')
+
+	(name = "'WarehouseInset'")
+
+	(style (bind width "stageWidth") (bind height "stageHeight") (align = "center") (position = "absolute"))
+
+	(controller $Instance renderer='WarehouseContent'
+		(bind enabled "isOnWarehouse")
+	)
+)
+
+(def element WarehouseContent () layout=true
+	(class $FullsizeAbsolute)
+	(element GamefaceWidget
+		_gfName = "SC.Gameface.DATA_PROVIDER_NAME.WAREHOUSE"
+		_gfPath = 'gui/gameface/build/warehouse/index.html'
+	)
+	(element DeclareBlurLayer)
+)

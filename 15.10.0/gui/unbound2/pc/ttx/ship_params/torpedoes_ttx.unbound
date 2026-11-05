@@ -1,0 +1,254 @@
+(def element UnifiedTorpedoesTTX (shipTTX:gfx) layout=true
+	(scope
+		(var launchers:array = "
+			shipTTX.torpedoes	? shipTTX.torpedoes.ungroupedLaunchers	? shipTTX.torpedoes.ungroupedLaunchers.launchers
+																			: null
+								: null")
+		(var groups:array = "shipTTX.torpedoes ? shipTTX.torpedoes.groups : null")
+	)
+	(style (width = 100%))
+	(class $TTXSecondaryPanel)
+
+	(macro TTX_REPEAT 'TorpedoGroupTTXRow' "groups")
+
+	(macro TTX_REPEAT 'TorpedoLauncherTTX' "launchers")
+
+	(macro TTX_INSTANCE 'TorpedoLoadersStatsTTX' "shipTTX.torpedoes" "groups && groups.length > 0")
+
+	(macro TTX_INSTANCE 'TorpedoRangeTTX' "shipTTX.torpedoes")
+)
+
+(def element TorpedoLauncherTTX (shipTTX:gfx, torpedoLauncherTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_GunConfiguration	_title = 'IDS_SHIP_PARAM_TORPEDO_GUN'
+											_gunTTX = "torpedoLauncherTTX"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro TTX_TOOLTIP 'TorpedoLauncherTooltipTTX' "torpedoLauncherTTX")
+		(element ShipParamExcursionButton	_shipTTX = "shipTTX" _excursionId="['_Torpedoes', $index]" _isExcursionOn="false")
+	)
+)
+
+(def element TorpedoLauncherTooltipTTX (shipTTX:gfx, torpedoLauncherTTX:gfx) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW "'IDS_SHIP_PARAM_TORPEDO_GUN'" "'IDS_TOOLTIP_TORPEDO_GUN'")
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ROTATION_TIME'
+												_value = "torpedoLauncherTTX.rotationTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDOES_TIME_RELOAD'
+												_value = "shipTTX.torpedoes.reloadTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_MIN_SWITCH_TIME'
+												_value = "shipTTX.torpedoes.ammoSwitchTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+												_zeroValueHidden = true
+				)
+			)
+		)
+		(macro TTX_INSTANCE 'TorpedoDefaultTTX' "shipTTX.torpedoes.torpedo")
+		(macro TTX_INSTANCE 'TorpedoDefaultTTX' "shipTTX.torpedoes.torpedoDeepwater")
+		(macro TTX_INSTANCE 'TorpedoDefaultTTX' "shipTTX.torpedoes.torpedoAlt")
+		(element TooltipSystemExcursionMouseInstruction		_shipTTX="shipTTX")
+	)
+)
+
+
+(def element TorpedoDefaultTTX (shipTTX:gfx, torpedoTTX:gfx, _hideDiff:bool=false) layout=true
+	(style (width = 100%))
+	(macro TTX_AMMO_ROW "'IDS_SHIP_PARAM_' + toUpper(torpedoTTX.type) + '_AMMO'" "torpedoTTX")
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(element ShipParameter_ClassIcons	_title = 'IDS_SHIP_PARAM_TORPEDOES_AFFECTED_SHIPS'
+												_values = "torpedoTTX.canHitClasses"
+			)
+			(element ShipParameter_Number		_title = 'IDS_SHIP_PARAM_PROJECTILE_MAX_DIST'
+												_value = "torpedoTTX.maxDist"
+												_valueConfig = "VALUE_CONFIG.KILOMETER"
+												_showDelta = "!_hideDiff"
+												_hideDiff = "_hideDiff"
+			)
+			(element ShipParameter_Number		_title = 'IDS_SHIP_PARAM_TORPEDO_DAMAGE'
+												_value = "torpedoTTX.damage"
+												_showDelta = "!_hideDiff"
+												_hideDiff = "_hideDiff"
+			)
+			(element ShipParameter_Number		_title = 'IDS_SHIP_PARAM_TORPEDO_SHIELD_DAMAGE'
+												_value = "torpedoTTX.shieldDamage"
+												_zeroValueHidden = true
+												_showDelta = "!_hideDiff"
+												_hideDiff = "_hideDiff"
+			)
+			(element ShipParameter_Number		_title = 'IDS_SHIP_PARAM_PROJECTILE_SPEED'
+												_value = "torpedoTTX.speed"
+												_valueConfig = "VALUE_CONFIG.KNOT"
+												_showDelta = "!_hideDiff"
+												_hideDiff = "_hideDiff"
+			)
+			(element ShipParameter_Number		_title = 'IDS_SHIP_TOOLTIP_VISIBILITY'
+												_value = "torpedoTTX.visibility"
+												_valueConfig = "VALUE_CONFIG.KILOMETER_NEGATIVE"
+												_zeroValueHidden = true
+												_showDelta = "!_hideDiff"
+												_hideDiff = "_hideDiff"
+			)
+			(element ShipParameter_Number_PureDeltaToStr
+				_title = 'IDS_SHIP_PARAM_TORPEDO_DISTANCE_OF_MAX_DAMAGE'
+				_removeTitle = 'IDS_SHIP_PARAM_TORPEDO_DISTANCE_OF_MAX_DAMAGE_REMOVED'
+				_value = "torpedoTTX.distanceOfMaxDamage"
+				_valueConfig = "torpedoTTX.isDamageIncreasing.value	? VALUE_CONFIG.KILOMETER_FROM : VALUE_CONFIG.KILOMETER_TO"
+				_zeroValueHidden = true
+			)
+			(element ShipParameter_Bool			_title = 'IDS_PARAMS_MODIFIER_NOTAVAILABLE_DEPTHSTATE'
+												_value = "torpedoTTX.disabledUnderwater"
+			)
+		)
+	)
+)
+
+
+(def element TorpedoGroupTTXRow (shipTTX:gfx, torpedoGroupTTX:gfx) layout=true
+	(scope
+		(var groupTitleKey:str = "'IDS_SHIP_PARAM_TORPEDO_GUNS_GROUP_' + toUpper(torpedoGroupTTX.groupType)")
+		
+		(var groupTitle:str = "torpedoGroupTTX.groupIndex > 0	? subst(groupTitleKey + '_NUMBERED', [], { groupIndex: toString(torpedoGroupTTX.groupIndex) })
+																: groupTitleKey")
+	)
+	(style (width = 100%))
+	(element ShipParameter_GunConfiguration	_title = "groupTitle"
+											_gunTTX = "torpedoGroupTTX"
+		(macro PARAM_APPEAR_ANIMATION)
+		(macro TTX_TOOLTIP 'TorpedoGroupTooltipTTX' "torpedoGroupTTX")
+	)
+)
+
+(def element TorpedoLoadersStatsTTX (shipTTX:gfx, torpedoesTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_TORPEDO_LOADERS_COUNT'
+									_values = "torpedoesTTX.loadersCounts"
+		(macro TTX_TOOLTIP 'TorpedoLoadersTooltipTTX' "torpedoesTTX")
+	)
+)
+
+(def element TorpedoRangeTTX (shipTTX:gfx, torpedoesTTX:gfx) layout=true
+	(scope
+		(var maxDists:array = "torpedoesTTX.maxDists")
+		
+		(var rangeValueConfigs:array = "maxDists.length == 1	? [VALUE_CONFIG.KILOMETER]
+										: (maxDists.length == 2	? [VALUE_CONFIG.FLOAT, VALUE_CONFIG.KILOMETER]
+																: [VALUE_CONFIG.FLOAT, VALUE_CONFIG.FLOAT, VALUE_CONFIG.KILOMETER])")
+	)
+	(style (width = 100%))
+	(element ShipParameter_Repeat	_title = 'IDS_SHIP_PARAM_TORPEDOES_MAX_DIST'
+									_values = "maxDists"
+									_valueConfigs = "rangeValueConfigs"
+		(macro TTX_TOOLTIP 'TorpedoRangeTooltipTTX' "torpedoesTTX")
+	)
+)
+
+(def element TorpedoRangeTooltipTTX (shipTTX:gfx, torpedoesTTX:gfx) layout=true
+	(scope
+		(var hasMultipleRanges:bool = "torpedoesTTX.maxDists.length > 1")
+	)
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(element TooltipSystemHeaderSubheaderText
+					_headerText="'IDS_SHIP_PARAM_TORPEDOES_MAX_DIST'"
+					_unifiedStatus="SC.Ui_styles.UNIFIED_STATUS.DEFAULT"
+		)
+		(element TooltipSystemHorizontalDivider)
+		(controller $Instance renderer='TooltipSystemDescriptionText'
+			(bind enabled "!hasMultipleRanges")
+			(args _descriptionText="'IDS_TOOLTIP_TORPEDOES_MAX_DIST'")
+		)
+		(controller $Instance renderer='TorpedoRangeTooltipRowsTTX'
+			(bind enabled "hasMultipleRanges")
+			(args "shipTTX" "torpedoesTTX")
+		)
+	)
+)
+
+(def element TorpedoRangeTooltipRowsTTX (shipTTX:gfx, torpedoesTTX:gfx) layout=true
+	(style (width = 100%))
+	(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+		(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+			(macro TTX_INSTANCE 'TorpedoRangeTooltipRowTTX' "torpedoesTTX.torpedo")
+			(macro TTX_INSTANCE 'TorpedoRangeTooltipRowTTX' "torpedoesTTX.torpedoDeepwater")
+			(macro TTX_INSTANCE 'TorpedoRangeTooltipRowTTX' "torpedoesTTX.torpedoAlt")
+		)
+	)
+)
+
+(def element TorpedoRangeTooltipRowTTX (shipTTX:gfx, torpedoTTX:gfx) layout=true
+	(style (width = 100%))
+	(element ShipParameter_Number	_title = "'IDS_SHIP_PARAM_' + toUpper(torpedoTTX.type) + '_MAX_DIST'"
+									_value = "torpedoTTX.maxDist"
+									_valueConfig = "VALUE_CONFIG.KILOMETER"
+	)
+)
+
+(def element TorpedoGroupTooltipTTX (shipTTX:gfx, torpedoGroupTTX:gfx) layout=true
+	(scope
+		(var groupTitleKey:str = "'IDS_SHIP_PARAM_TORPEDO_GUNS_GROUP_' + toUpper(torpedoGroupTTX.groupType)")
+		(var groupTitle:str = "torpedoGroupTTX.groupIndex > 0	? subst(groupTitleKey + '_NUMBERED', [], { groupIndex: toString(torpedoGroupTTX.groupIndex) })
+																: groupTitleKey")
+	)
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW "groupTitle" "'IDS_TOOLTIP_TORPEDO_GUNS_GROUP_' + toUpper(torpedoGroupTTX.groupType)")
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_ROTATION_TIME'
+												_value = "torpedoGroupTTX.rotationTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+												_zeroValueHidden = true
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_SHOT_DELAY'
+												_value = "torpedoGroupTTX.reloadTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_MIN_SWITCH_TIME'
+												_value = "torpedoGroupTTX.ammoSwitchTime"
+												_valueConfig = "VALUE_CONFIG.SECONDS_NEGATIVE"
+												_zeroValueHidden = true
+				)
+				(element ShipParameter_Number	_title = 'IDS_SHIP_PARAM_TORPEDO_LOADERS_COUNT'
+												_value = "torpedoGroupTTX.numLoaders"
+				)
+			)
+		)
+		(macro TTX_INSTANCE 'TorpedoDefaultTTX' "shipTTX.torpedoes.torpedo")
+		(macro TTX_INSTANCE 'TorpedoDefaultTTX' "shipTTX.torpedoes.torpedoDeepwater")
+		(macro TTX_INSTANCE 'TorpedoDefaultTTX' "shipTTX.torpedoes.torpedoAlt")
+	)
+)
+
+(def element TorpedoLoadersTooltipTTX (shipTTX:gfx, torpedoesTTX:gfx) layout=true
+	(macro TTX_TOOLTIP_STYLE)
+	(element TOOLTIP_SYSTEM_DEFAULT_CONTAINER
+		(macro TTX_HEADER_ROW "'IDS_SHIP_PARAM_TORPEDO_LOADERS_COUNT'" "'IDS_TOOLTIP_TORPEDO_LOADERS_COUNT'")
+		(element TooltipSystemHorizontalDivider)
+		(element TOOLTIP_SYSTEM_PARAMS_WRAPPER
+			(element TOOLTIP_SYSTEM_PARAMS_BLOCK
+				(macro TTX_REPEAT 'TorpedoGroupLoadersRowTTX' "torpedoesTTX.groups")
+			)
+		)
+	)
+)
+
+(def element TorpedoGroupLoadersRowTTX (shipTTX:gfx, torpedoGroupTTX:gfx) layout=true
+	(scope
+		(var loadersTitleKey:str = "'IDS_SHIP_PARAM_TORPEDO_LOADERS_COUNT_' + toUpper(torpedoGroupTTX.groupType)")
+		(var loadersTitle:str = "torpedoGroupTTX.groupIndex > 0	? subst(loadersTitleKey + '_NUMBERED', [], { groupIndex: toString(torpedoGroupTTX.groupIndex) })
+																: loadersTitleKey")
+	)
+	(style (width = 100%))
+	(element ShipParameter_Number	_title = "loadersTitle"
+									_value = "torpedoGroupTTX.numLoaders"
+	)
+)

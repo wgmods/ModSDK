@@ -1,0 +1,69 @@
+(def constant HEADER_WINDOW_HEIGHT 55)
+(def constant LEFT_CONTAINER_WIDTH 168)
+
+(def constant DAILY_REWARD_CARD_ANIMATION 0.07)
+(def constant DAILY_REWARD_CARD_BG_DEFAULT 0x10000000)
+(def constant DAILY_REWARD_CARD_BG_HOVERED 0x10FFFFFF)
+
+(def element ModalWindowChristmasTree () layout=true
+	(scope
+		(macro STAGE_SIZE)
+		(event startShow)
+		(event startHide)
+	)
+
+	(style
+		(bind width "stageWidth") (bind height "stageHeight")
+		(align = "center") (alpha = 0)
+		(bind alpha "0" (event "startShow"))
+	)
+
+	(controller $Animation
+		(bindcall play duration=0.25 delay=0.2 from="{alpha: 0}" to="{alpha: 1}" action="killAll" (event "startShow"))
+		(bindcall play duration=0.35 from="{alpha: 1}" to="{alpha: 0}" action="killAll" (event "startHide"))
+	)
+
+	(dispatch startShow on='addedToStage')
+	(dispatch startHide on='removedFromStage')
+
+	
+	(block
+		(style (width = 100%) (align = "center"))
+
+		
+		(block
+			(style (width = 100%) (marginBottom = "M"))
+
+			(element ModalWindowHeaderFullSize
+				_backButtonText = 'IDS_RETURN_TO_DOCK'
+				_hideCloseButton = true
+				_hideDivider = true
+				_paddingRight = "M"
+				_paddingLeft = "M"
+				_paddingTop = "MS"
+			)
+		)
+	)
+
+
+	
+	(block
+
+		(class $FullsizeAbsolute)
+		(style
+			(align = "middle")
+			(paddingLeft = "M")
+		)
+
+		(block
+			(style
+				(flow = "vertical")
+				(gap = "L")
+			)
+
+			(element DecorationSlotsContainer)
+
+			(element ChristmasTreeRewardsContainer)
+		)
+	)
+)

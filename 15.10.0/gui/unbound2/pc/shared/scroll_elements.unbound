@@ -1,0 +1,89 @@
+(def css SBButtonUpStyle() (backgroundColor = 0xFF000000) )
+(def css SBButtonHoverStyle() (backgroundColor = 0xFFFFFFFF) )
+(def css SBButtonPressStyle() (backgroundColor = 0xFF888888) )
+(def css SBButtonDisabledStyle() (backgroundColor = 0xFF111111) )
+
+(def constant SB_BUTTON {
+		up : 'SBButtonUpStyle',
+		over : 'SBButtonHoverStyle',
+		down : 'SBButtonPressStyle',
+		disabled : 'SBButtonDisabledStyle' }
+)
+
+(def css SBTrackUpStyle() (backgroundColor = 0xFFD0D0D0) )
+(def css SBTrackHoverStyle() )
+(def css SBTrackPressStyle() )
+(def css SBTrackDisabledStyle() )
+
+(def constant SB_TRACK {
+		up : 'SBTrackUpStyle',
+		over : 'SBTrackHoverStyle',
+		down : 'SBTrackPressStyle',
+		disabled : 'SBTrackDisabledStyle' }
+)
+
+(def css SBTrackLightUpStyle() (backgroundColor = 0x01000000) )
+(def css SBTrackLightHoverStyle() )
+(def css SBTrackLightPressStyle() )
+(def css SBTrackLightDisabledStyle() )
+
+(def constant SB_TRACK_LIGHT {
+		up : 'SBTrackLightUpStyle',
+		over : 'SBTrackLightHoverStyle',
+		down : 'SBTrackLightPressStyle',
+		disabled : 'SBTrackLightDisabledStyle' }
+)
+
+
+(def element SBVThumbLight ()
+	(bind class "SB_BUTTON[$event.state]" init=false on='stateChanged')
+	(style
+		(width = 6)
+		(padding = 1)
+		(height = 80)
+		(minHeight = 40)
+		(backgroundColor = 0x10FFFFFF)
+	)
+
+	(block
+		(class $Fullsize)
+		(style (backgroundColor = 0x66000000))
+	)
+
+	
+)
+
+(def element SBVTrackLight ()
+	(style
+		(width = 7)
+		(height = 100%)
+	)
+	(bind class "SB_TRACK_LIGHT[$event.state]" init=false on='stateChanged')
+
+	
+)
+
+(def element ScrollBarVLightWithValueChangedEvent ()
+	(scope
+		(event evScrollAreaValueChanged)
+	)
+
+	(scroll_bar
+		(value = 0)
+		(singleStep = 50)
+		(orientation = "vertical")
+		(thumb = 'SBVThumbLight')
+		(track = 'SBVTrackLight')
+
+		(dispatch evScrollAreaValueChanged dir="EventDirection.UP" on='valueChanged')
+	)
+)
+
+(def element ScrollBarVLight ()
+	(scroll_bar
+		(value = 0)
+		(orientation = "vertical")
+		(thumb = 'SBVThumbLight')
+		(track = 'SBVTrackLight')
+	)
+)

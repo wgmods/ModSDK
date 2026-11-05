@@ -1,0 +1,54 @@
+(def element ButtonExpand (_isInOverState:bool=false, _isInDownState:bool=false, _expanded:bool=false, _enabled:bool=true) layout=true
+	(scope
+		(event evOnButtonClicked)
+		(event btnExpand_evMouseUp)
+
+		(macro MOUSE_HANDLER_SCOPE "'btnExpand_'")
+
+		(var isInOverState:bool = "_isInOverState || btnExpand_rollOver && !btnExpand_mouseDown")
+		(var isInDownState:bool = "_isInDownState || btnExpand_rollOver && btnExpand_mouseDown")
+
+		(var targetAlpha:number = "	isInDownState	? 0.6 :
+									isInOverState	? 1
+													: 0.75")
+		(var targetRotation:number = "_expanded ? 90 : 0")
+	)
+
+	(macro MOUSE_HANDLER
+		_enabled = "_enabled"
+		_prefix = "'btnExpand_'"
+		_soundSet = "'dropdown'"
+	)
+	(dispatch btnExpand_evMouseUp on='mouseUp' args="{isDown: false}" (bind enabled "_enabled"))
+	(dispatch evOnButtonClicked args={} dir="EventDirection.UP" (event "btnExpand_evMouseUp"))
+
+	(style
+		(width = 13px)
+		(height = 13px)
+		(align = "center|middle")
+	)
+
+	(alpha = "targetAlpha")
+
+	(controller $Animation
+		(bindcall play	duration=0.07	to="{alpha: targetAlpha}"	(bind trigger "targetAlpha"))
+	)
+
+	(block
+		(style
+			(hitTest = "false")
+			(backgroundSize = "autosize")
+			(backgroundImage = "'url:../service_kit/buttons/expand_over.png'")
+
+			(pivotX = 50%)
+			(pivotY = 50%)
+			(left = 0%)
+			(right = 0%)
+			(rotation = "targetRotation")
+		)
+
+		(controller $Animation
+			(bindcall play	duration=0.15	to="{rotation: targetRotation}"	(bind trigger "targetRotation"))
+		)
+	)
+)
